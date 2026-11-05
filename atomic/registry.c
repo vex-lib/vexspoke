@@ -14,8 +14,7 @@
 #include <pthread.h>
 #include <stdatomic.h>
 #include <stdbool.h>
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
