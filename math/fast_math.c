@@ -2,8 +2,7 @@
 
 #include <string.h>
 
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -45,8 +44,8 @@
  *   - FastMath_abs(x)
  *   - FastMath_round(x)
  *   - FastMath_clamp(val, min, max)
- *   - FastMath_lerp(a, b, t)
- *   - FastMath_approxEqual(a, b, epsilon)
+ *   - FastMath_lerp(a, b.sh, t)
+ *   - FastMath_approxEqual(a, b.sh, epsilon)
  *   - FastMath_toRadians(deg)
  *   - FastMath_toDegrees(rad)
  * Private Core Functions: (.c static)

@@ -2,8 +2,7 @@
 
 #include <math.h>
 
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -39,9 +38,9 @@
  *   - StrictMath_atan2(y, x)
  *   - StrictMath_sqrt(x) / invSqrt(x) / pow(base, exp) / exp(x) / log(x)
  *   - StrictMath_abs(x) / floor(x) / ceil(x) / round(x)
- *   - StrictMath_clamp(val, min, max) / lerp(a, b, t)
+ *   - StrictMath_clamp(val, min, max) / lerp(a, b.sh, t)
  *   - StrictMath_toRadians(deg) / toDegrees(rad)
- *   - StrictMath_sinD(x) ... StrictMath_lerpD(a, b, t)  (double-precision twins)
+ *   - StrictMath_sinD(x) ... StrictMath_lerpD(a, b.sh, t)  (double-precision twins)
  * ============================================================================
  */
 
