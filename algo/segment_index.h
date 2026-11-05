@@ -14,7 +14,7 @@
 //
 // The Relational Engine's search algorithm. A registered name is one flat
 // dotted string (character.position.x); a QUERY is a '.',-split filter, and the
-// dot is a splitter, never an address — searching "b.c" matches "a.b.c" without
+// dot is a splitter, never an address — searching "b.sh.c" matches "a.b.sh.c" without
 // knowing the parent, and searching "x" alone is broad on purpose.
 //
 // The index is positional (the textbook phrase-search shape):

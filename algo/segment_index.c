@@ -9,9 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "annotation/definition.h"
-#include "annotation/overview.h"
-#include "annotation/intention.h"
+#include "annotation/annotation.h"
 #include "nio/mem.h"
 #include "oop/type.h"
 #include "relational/variable_slot.h"
@@ -77,7 +75,7 @@
  *   - postSegment(index, entry, pos, seg)  : append one posting
  *   - findPosting(list, entry, position)   : binary search inside a posting list
  *   - splitFold(path, segs)                : fold + split a query into segments
- *   - matchBefore(index, a, b)             : the ranking comparator
+ *   - matchBefore(index, a, b.sh)             : the ranking comparator
  *   - insertMatch(index, out, cap, kept, m): top-cap insertion sort
  *   - buildFn(slot, userdata)              : map forEach -> add
  *   - freePostingsFn(slot, userdata)       : map forEach -> free a posting list

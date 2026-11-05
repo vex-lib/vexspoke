@@ -4,8 +4,7 @@
 #include <string.h>
 #include "nio/mem.h"
 #include "oop/type.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -56,7 +55,7 @@
  * Public Core Functions: (.h)
  *   - Dijkstra_free(graph)
  *   - Dijkstra_addEdge(graph, from, to, weight)
- *   - Dijkstra_addBiEdge(graph, a, b, weight)
+ *   - Dijkstra_addBiEdge(graph, a, b.sh, weight)
  *   - Dijkstra_shortestPath(graph, startNode, goalNode, outPath, maxPathNodes, outTotalDistance)
  *
  * Private Core Functions: (.c static)

@@ -3,9 +3,7 @@
 #include <float.h>
 #include <stdlib.h>
 
-#include "annotation/definition.h"
-#include "annotation/overview.h"
-#include "annotation/intention.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**

@@ -5,8 +5,7 @@
 #include <string.h>
 #include "nio/mem.h"
 #include "oop/type.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -56,12 +55,12 @@
  *   - KdTree_nearest(tree, queryCoord, outNearest, outDistSq)
  *   - KdTree_queryRadius(tree, queryCoord, radius, outPayloads, maxCount)
  * Private Core Functions: (.c static)
- *   - swapPoints(a, b)
+ *   - swapPoints(a, b.sh)
  *   - partitionAxis(points, left, right, axis)
  *   - quickSelectAxis(points, left, right, k, axis)
  *   - KdTree_buildRecursive(points, left, right, depth)
  *   - KdNode_freeRecursive(node)
- *   - distSq(a, b)
+ *   - distSq(a, b.sh)
  *   - nearestRecursive(node, query, bestPoint, bestDistSq)
  *   - radiusRecursive(node, query, radiusSq, outPayloads, maxCount, count)
  * ============================================================================
