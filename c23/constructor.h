@@ -15,7 +15,7 @@
 // Call sites read like Java:
 //
 //     Window *a = Window();                 // => Window_0()
-//     Window *b = Window("_main");           // => Window_1("_main")
+//     Window *b.sh = Window("_main");           // => Window_1("_main")
 //     Window *c = Window("_main", 800, 600); // => Window_3(...)
 //
 // Dispatch is by ARG COUNT only. Type-based overloading (add(x, y) over

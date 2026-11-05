@@ -2,8 +2,7 @@
 
 #include <string.h>
 
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 #include "nio/mem.h"
 #include "relational/symbol_table.h"
 
@@ -32,7 +31,7 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Core Functions:
- *   - isEqual(a, b)                    : Identity + header + payload equality
+ *   - isEqual(a, b.sh)                    : Identity + header + payload equality
  *   - isEquallyNamed(v, nameA, nameB)  : Registry form via SymbolTable symbols
  * ============================================================================
  */
