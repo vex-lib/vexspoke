@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "type/type.h"
+#include "re/type/type.h"
 
 // oop/type.h — vexspoke's OWN class registry (the One Type Registry Law).
 //
