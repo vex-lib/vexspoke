@@ -1,11 +1,9 @@
 #include "thread/ui.h"
 #include "thread/compute.h"
 
-#include "annotation/incomplete.h"
+#include "annotation/annotation.h"
 
 #include "oop/type.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
 
 ;;DEFINITION
 /**

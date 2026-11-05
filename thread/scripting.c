@@ -1,11 +1,9 @@
 #include "thread/scripting.h"
 #include "thread/compute.h"
 
-#include "annotation/incomplete.h"
-#include "annotation/definition.h"
+#include "annotation/annotation.h"
 
 #include "oop/type.h"
-#include "annotation/overview.h"
 
 ;;DEFINITION
 /**

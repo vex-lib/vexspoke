@@ -8,8 +8,7 @@
 #include "oop/type.h"
 #include "struct/array.h"
 #include "struct/map.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**

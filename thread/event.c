@@ -5,8 +5,7 @@
 #include "input/mouse.h"
 #include "input/touch.h"
 #include "oop/type.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**

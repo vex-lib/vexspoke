@@ -3,8 +3,7 @@
 #include <stdatomic.h>
 
 #include "oop/type.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
