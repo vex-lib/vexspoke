@@ -3,8 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 #include "exception/throw.h"
 #include "security/blake2b.h"
 
@@ -32,7 +31,7 @@
  *                    type, version, memory }  one derivation's live state
  *   storeLE32(p, v)              little-endian 32-bit store
  *   rotr64(v, bits)              right rotation
- *   mixArgon(v, a, b, c, d)      the BlaMka G (a+b+2*lo(a)*lo(b))
+ *   mixArgon(v, a, b.sh, c, d)      the BlaMka G (a+b.sh+2*lo(a)*lo(b.sh))
  *   roundP(v)                    the 16-word BLAKE2b permutation P
  *   fillBlock(prev, ref, next, withXor)   the compression G(X, Y)
  *   nextAddresses(address, input, zero)   Argon2i address block

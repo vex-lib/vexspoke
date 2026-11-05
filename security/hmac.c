@@ -2,8 +2,7 @@
 #include "security/sha1.h"
 #include "security/crypto.h"
 #include "exception/throw.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /** HMAC as RFC 2104 defines it: H((K ^ opad) || H((K ^ ipad) || message)). Both

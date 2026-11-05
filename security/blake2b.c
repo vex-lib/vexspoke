@@ -2,8 +2,7 @@
 
 #include <string.h>
 
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 #include "exception/throw.h"
 
 ;;DEFINITION
@@ -37,7 +36,7 @@
  *   BLAKE2B_IV[8]         the RFC 7693 IV
  *   BLAKE2B_SIGMA[12][16] the message schedule
  *   rotr64(v, bits)       right rotation
- *   mix(v, a, b, c, d, x, y)   the G mixing function
+ *   mix(v, a, b.sh, c, d, x, y)   the G mixing function
  *   compress(self, block, last)  one 128-byte compression
  * CONTRACT: init validates outlen/keylen and THROWs; update accepts any length;
  * final THROWs on a short destination and zeroes the context. No allocation, no

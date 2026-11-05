@@ -2,8 +2,7 @@
 
 #include <string.h>
 
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 #include "exception/throw.h"
 
 ;;DEFINITION
@@ -24,7 +23,7 @@
  * PRIVATE HELPERS
  *   load32(p) / store32(p, v)   little-endian word access
  *   rotl32(v, bits)             left rotation
- *   quarterRound(s, a, b, c, d) the ARX quarter round
+ *   quarterRound(s, a, b.sh, c, d) the ARX quarter round
  * FUNCTION REGISTRY (exports)
  *   ChaCha20_block(out, key, counter, nonce)
  *   ChaCha20_xor(data, len, key, counter, nonce)

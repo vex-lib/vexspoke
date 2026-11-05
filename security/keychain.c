@@ -1,8 +1,7 @@
 #include "security/keychain.h"
-#include "platform/platform.h"
+#include "lifetime/platform.h"
 #include "exception/throw.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 #include <string.h>
 
 #if defined(VEX_PLATFORM_APPLE)

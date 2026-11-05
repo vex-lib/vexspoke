@@ -7,9 +7,7 @@
 #import <LocalAuthentication/LocalAuthentication.h>
 
 #include "security/touchid.h"
-#include "annotation/platform_exclusive.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -30,7 +28,7 @@
 ;;OVERVIEW
 /**
  * ============================================================================
- * MODULE: Touchid_cocoa (objc/touchid_cocoa.m)
+ * MODULE: Touchid_cocoa (security/touchid_cocoa.m)
  * ============================================================================
  * macOS LocalAuthentication bridge for TouchID.
  *

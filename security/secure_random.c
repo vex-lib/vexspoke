@@ -1,12 +1,11 @@
 #include "security/secure_random.h"
-#include "platform/platform.h"
+#include "lifetime/platform.h"
 
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**

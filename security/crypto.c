@@ -1,8 +1,7 @@
 #include "security/crypto.h"
 
 #include <string.h>
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -46,7 +45,7 @@
  *   - Crypto_sha256Final(ctx, outDigest)
  *   - Crypto_sha256(data, len, outDigest)
  *   - Crypto_sha256Hex(data, len, outHex)
- *   - Crypto_constantTimeEquals(a, b, len)
+ *   - Crypto_constantTimeEquals(a, b.sh, len)
  *   - Crypto_hash64(data, len)
  *   - Crypto_hash32(data, len)
  *   - Crypto_rngInit(rng, seed)

@@ -1,7 +1,6 @@
 #include "security/base32.h"
 #include "exception/throw.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /** RFC 4648 base32, the encoding every authenticator app reads a TOTP secret in.

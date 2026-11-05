@@ -5,8 +5,7 @@
 #include "security/crypto.h"
 #include "security/secure_random.h"
 #include "exception/throw.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /** Password owns the cold password-verifier boundary. Its legacy raw path is
