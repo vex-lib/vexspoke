@@ -5,8 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 #include "nio/mem.h"
 #include "oop/type.h"
 
@@ -68,16 +67,12 @@ bool Method_init(Method *self, const char *name, MethodFn invoke, void *target) 
     return true;
 }
 
-static Method *instant(void) {
+Method *Method_0(void) {
     Method *self = (Method*) Memory_alloc(TYPE_REFLECT_METHOD, sizeof(Method));
     if (self == nullptr)
         return nullptr;
     memset(self, 0, sizeof(*self));
     return self;
-}
-
-Method *Method_0(void) {
-    return instant();
 }
 
 Method *Method_1(const char *name) {
@@ -89,7 +84,7 @@ Method *Method_2(const char *name, MethodFn invoke) {
 }
 
 Method *Method_3(const char *name, MethodFn invoke, void *target) {
-    Method *self = instant();
+    Method *self = Method_0();
     if (self == nullptr)
         return nullptr;
     if (!Method_init(self, name, invoke, target)) {

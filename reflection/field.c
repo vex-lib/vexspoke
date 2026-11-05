@@ -5,8 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 #include "nio/mem.h"
 #include "oop/stride.h"
 #include "oop/type.h"
@@ -79,16 +78,12 @@ bool Field_init(Field *self, const char *name, VariableReadFn read, FieldSetFn s
     return true;
 }
 
-static Field *instant(void) {
+Field *Field_0(void) {
     Field *self = (Field*) Memory_alloc(TYPE_REFLECT_FIELD, sizeof(Field));
     if (self == nullptr)
         return nullptr;
     memset(self, 0, sizeof(*self));
     return self;
-}
-
-Field *Field_0(void) {
-    return instant();
 }
 
 Field *Field_1(const char *name) {
@@ -104,7 +99,7 @@ Field *Field_3(const char *name, VariableReadFn read, FieldSetFn set) {
 }
 
 Field *Field_4(const char *name, VariableReadFn read, FieldSetFn set, void *target) {
-    Field *self = instant();
+    Field *self = Field_0();
     if (self == nullptr)
         return nullptr;
     if (!Field_init(self, name, read, set, target)) {

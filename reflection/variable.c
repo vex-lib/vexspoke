@@ -5,8 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 #include "nio/mem.h"
 #include "oop/type.h"
 
@@ -68,16 +67,12 @@ bool Variable_init(Variable *self, const char *name, VariableReadFn read, void *
     return true;
 }
 
-static Variable *instant(void) {
+Variable *Variable_0(void) {
     Variable *self = (Variable*) Memory_alloc(TYPE_REFLECT_VARIABLE, sizeof(Variable));
     if (self == nullptr)
         return nullptr;
     memset(self, 0, sizeof(*self));
     return self;
-}
-
-Variable *Variable_0(void) {
-    return instant();
 }
 
 Variable *Variable_1(const char *name) {
@@ -89,7 +84,7 @@ Variable *Variable_2(const char *name, VariableReadFn read) {
 }
 
 Variable *Variable_3(const char *name, VariableReadFn read, void *target) {
-    Variable *self = instant();
+    Variable *self = Variable_0();
     if (self == nullptr)
         return nullptr;
     if (!Variable_init(self, name, read, target)) {
