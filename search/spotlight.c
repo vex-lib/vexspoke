@@ -5,8 +5,7 @@
 #include <string.h>
 
 #include "search/calc.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -45,7 +44,7 @@
  *
  * Private Core Functions: (.c static)
  *   - calculate_score(candidate, query)
- *   - compare_matches(a, b)
+ *   - compare_matches(a, b.sh)
  * ============================================================================
  */
 
