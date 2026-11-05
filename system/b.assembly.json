@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 2,
+  "application": {
+    "id": "org.vexgraph.vexspoke.system",
+    "name": "system",
+    "displayName": "system",
+    "version": "0.1.0",
+    "type": "lib",
+    "authors": [
+      "vexgraph"
+    ],
+    "publisher": "vexgraph",
+    "description": "vexspoke/system: C core with a platform Objective-C body",
+    "license": "MIT",
+    "homepage": "",
+    "icon": ""
+  },
+  "build": {
+    "entry": "",
+    "sources": [
+      "app_detect.c",
+      "browser.c",
+      "capture_tool.c",
+      "display_info.c",
+      "display_monitor.c",
+      "graphics_info.c",
+      "hardware_info.c",
+      "process_probe.c",
+      "system.c",
+      "discovery.m",
+      "image_mac.m"
+    ],
+    "includes": [
+      "vexspoke",
+      "."
+    ],
+    "defines": [],
+    "options": [
+      "-Wall",
+      "-Wextra"
+    ],
+    "link": "static"
+  },
+  "payload": {
+    "files": []
+  },
+  "targets": {},
+  "formats": [
+    "portable"
+  ],
+  "statePolicy": "clean"
+}

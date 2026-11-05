@@ -6,9 +6,7 @@
 #include "input/touch.h"
 #include "time/nanotime.h"
 #include "io/hot_file.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
-#include "annotation/intention.h"
+#include "annotation/annotation.h"
 
 #include <stdlib.h>
 #include <string.h>

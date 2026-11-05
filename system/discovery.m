@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdatomic.h>
-#include "platform/platform.h"
+#include "lifetime/platform.h"
 
 #include "system/display_info.h"
 #include "system/display_monitor.h"
@@ -14,8 +14,7 @@
 #if defined(VEX_PLATFORM_APPLE)
 #include <sys/sysctl.h>
 #include <CoreGraphics/CoreGraphics.h>
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -34,7 +33,7 @@
 ;;OVERVIEW
 /**
  * ============================================================================
- * MODULE: Discovery (objc/discovery.m)
+ * MODULE: Discovery (system/discovery.m)
  * ============================================================================
  * native hardware, display, and GPU probe (Legacy: system/SystemDiscovery.java)
  *

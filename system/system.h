@@ -12,6 +12,7 @@
 #include "system/hardware_info.h"
 #include "system/graphics_info.h"
 #include "system/app_detect.h"
+#include "system/browser.h"
 #include "system/capture_tool.h"
 #include "system/process_probe.h"
 

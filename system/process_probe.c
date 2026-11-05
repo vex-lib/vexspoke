@@ -1,8 +1,6 @@
-#include "annotation/intention.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 #include "system/process_probe.h"
-#include "platform/platform.h"
+#include "lifetime/platform.h"
 
 #include <dirent.h>
 #include <string.h>

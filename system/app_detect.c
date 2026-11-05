@@ -1,6 +1,4 @@
-#include "annotation/intention.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 #include "system/app_detect.h"
 #include "system/process_probe.h"
 
