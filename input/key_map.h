@@ -5,8 +5,7 @@
 #include "c23/constructor.h"
 #include <stdbool.h>
 
-#include "annotation/draft.h"
-#include "annotation/intention.h"
+#include "annotation/annotation.h"
 
 // input/key_map.h — input binding registry (combo → fn pointer).
 //
