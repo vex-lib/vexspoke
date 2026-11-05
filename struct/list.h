@@ -23,7 +23,7 @@ typedef struct List {
 List *List_2(uint32_t element_class, size_t capacity);
 
 // List pre-filled to count slots (legacy allocate): active_count = count.
-List *List_2Count(uint32_t element_class, size_t count);
+List *List_3(uint32_t element_class, size_t capacity, size_t count);
 
 // Free the list and its data buffer.
 void List_free(List *list);

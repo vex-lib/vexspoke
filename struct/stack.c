@@ -7,8 +7,7 @@
 #include "oop/type.h"
 #include "exception/throw.h"
 #include "struct/exhaustion.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -44,9 +43,9 @@
  * Constructors:
  *   - Stack_2(element_class, capacity)
  *   - Stack_1(element_class)
+ *   - Stack(element_class, capacity, count)
  *
  * Core Functions:
- *   - Stack_2Count(element_class, count)
  *   - Stack_free(stack)
  *   - Stack_push(stack, value_or_pointer)
  *   - Stack_pushTry(stack, value_or_pointer)
@@ -74,7 +73,7 @@ static Collection *asCollection(Stack *stack) {
     return (Collection*) stack;
 }
 
-static Stack *instant(uint32_t elementClass, size_t capacity, size_t count) {
+Stack *Stack_3(uint32_t elementClass, size_t capacity, size_t count) {
     size_t stride = Stride_get(elementClass);
     size_t cap = capacity < DEFAULT_CAPACITY ? DEFAULT_CAPACITY : capacity;
     Stack *stack = (Stack*) Memory_alloc(TYPE_STACK, sizeof(Stack));
@@ -106,11 +105,7 @@ static Stack *instant(uint32_t elementClass, size_t capacity, size_t count) {
 }
 
 Stack *Stack_2(uint32_t elementClass, size_t capacity) {
-    return instant(elementClass, capacity, 0);
-}
-
-Stack *Stack_2Count(uint32_t elementClass, size_t count) {
-    return instant(elementClass, count, count);
+    return Stack_3(elementClass, capacity, 0);
 }
 
 void Stack_free(Stack *stack) {

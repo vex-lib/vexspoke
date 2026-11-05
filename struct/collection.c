@@ -7,10 +7,7 @@
 #include "nio/mem.h"
 #include "exception/throw.h"
 #include "struct/exhaustion.h"
-#include "annotation/debug.h"
-#include "annotation/test.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -137,7 +134,7 @@ uint32_t Collection_capacity(Collection *c) {
 // --- Exhaustion observability (the Exhaustion Loudness Law) ---
 
 /** Count a refused grow and emit the epoch's single diagnostic. Always false. */
-;;DEBUG
+;;VALIDATOR
 bool Collection_reportExhaustion(Collection *c, size_t requestedBytes) {
     if (!c) {
         THROW("collection: grow refused on a null collection (%zu bytes)", requestedBytes);

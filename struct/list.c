@@ -7,8 +7,7 @@
 #include "oop/stride.h"
 #include "oop/type.h"
 #include "struct/exhaustion.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -43,15 +42,15 @@
  * Constructors:
  *   - List_2(element_class, capacity)
  *   - List_1(element_class)
+ *   - List(element_class, capacity, count)
  *
  * Core Functions:
- *   - List_2Count(element_class, count)
  *   - List_free(list)
  *   - List_add(list, value_or_pointer)
  *   - List_addSlot(list)
  *   - List_slot(list, index)
  *   - List_remove(list, index)
- *   - List_compare(a, b)
+ *   - List_compare(a, b.sh)
  *   - List_size(list)
  *   - List_length(list)
  *   - List_capacity(list)
@@ -100,7 +99,7 @@ static uint8_t *bufferGrow(Collection *c, size_t needed) {
     return next;
 }
 
-static List *instant(uint32_t elementClass, size_t capacity, size_t count) {
+List *List_3(uint32_t elementClass, size_t capacity, size_t count) {
     size_t stride = Stride_get(elementClass);
     size_t cap = capacity < DEFAULT_CAPACITY ? DEFAULT_CAPACITY : capacity;
     List *list = (List*) Memory_alloc(TYPE_LIST, sizeof(List));
@@ -132,11 +131,7 @@ static List *instant(uint32_t elementClass, size_t capacity, size_t count) {
 }
 
 List *List_2(uint32_t elementClass, size_t capacity) {
-    return instant(elementClass, capacity, 0);
-}
-
-List *List_2Count(uint32_t elementClass, size_t count) {
-    return instant(elementClass, count, count);
+    return List_3(elementClass, capacity, 0);
 }
 
 void List_free(List *list) {

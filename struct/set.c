@@ -7,8 +7,7 @@
 #include "struct/exhaustion.h"
 #include "util/arrays.h"
 #include "util/hash.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**

@@ -4,8 +4,7 @@
 #include <math.h>
 #include "nio/mem.h"
 #include "oop/type.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -74,7 +73,7 @@
  *   - Octree_count(self)
  *   - Octree_clear(self)
  *   - OctreeAABB_containsPoint(box, p)
- *   - OctreeAABB_intersects(a, b)
+ *   - OctreeAABB_intersects(a, b.sh)
  *   - OctreeAABB_intersectsSphere(box, center, radius)
  *
  * Private Core Functions: (.c static)

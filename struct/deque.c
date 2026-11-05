@@ -6,8 +6,7 @@
 #include "oop/stride.h"
 #include "oop/type.h"
 #include "struct/exhaustion.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -43,9 +42,9 @@
  * Constructors:
  *   - Deque_2(element_class, capacity)
  *   - Deque_1(element_class)
+ *   - Deque(element_class, capacity, count)
  *
  * Core Functions:
- *   - Deque_2Count(element_class, count)
  *   - Deque_free(deque)
  *   - Deque_addFirst(deque, value_or_pointer)
  *   - Deque_addLast(deque, value_or_pointer)
@@ -78,7 +77,7 @@ static Collection *asCollection(Deque *deque) {
     return (Collection*) deque;
 }
 
-static Deque *instant(uint32_t elementClass, size_t capacity, size_t count) {
+Deque *Deque_3(uint32_t elementClass, size_t capacity, size_t count) {
     size_t stride = Stride_get(elementClass);
     size_t cap = capacity < DEFAULT_CAPACITY ? DEFAULT_CAPACITY : capacity;
     Deque *deque = (Deque*) Memory_alloc(TYPE_DEQUE, sizeof(Deque));
@@ -140,11 +139,7 @@ static int ensureCapacity(Collection *c) {
 }
 
 Deque *Deque_2(uint32_t elementClass, size_t capacity) {
-    return instant(elementClass, capacity, 0);
-}
-
-Deque *Deque_2Count(uint32_t elementClass, size_t count) {
-    return instant(elementClass, count, count);
+    return Deque_3(elementClass, capacity, 0);
 }
 
 void Deque_free(Deque *deque) {

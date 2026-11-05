@@ -4,8 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "annotation/debug.h"
-#include "annotation/test.h"
+#include "annotation/annotation.h"
 
 // struct/exhaustion.h — the shared loud-refusal seam (the Exhaustion Loudness
 // Law) for owners that own finite storage but do not embed a Collection.
@@ -21,7 +20,7 @@
 // caller can write `return Struct_reportExhaustion(...)`. `boundBytes` is the
 // capacity the owner hit (0 when there is no meaningful bound), so the
 // diagnostic names the request AND the bound (the Exhaustion Loudness Law).
-;;DEBUG
+;;VALIDATOR
 bool Struct_reportExhaustion(uint64_t *count, bool *reported, const char *owner,
                              size_t requestedBytes, size_t boundBytes);
 
@@ -39,7 +38,7 @@ void Struct_resetExhaustion(uint64_t *count, bool *reported);
 // always, reported once per process epoch. Same loudness contract, one owner.
 
 // Count a construction refusal and report the epoch's first one. Always false.
-;;DEBUG
+;;VALIDATOR
 bool Struct_reportConstructionExhaustion(const char *owner, size_t requestedBytes);
 
 // The process-wide construction-refusal count for the current epoch.

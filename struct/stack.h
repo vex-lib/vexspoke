@@ -19,7 +19,7 @@ typedef struct Stack {
 Stack *Stack_2(uint32_t element_class, size_t capacity);
 
 // Stack pre-filled to count slots (legacy allocate): active_count = count.
-Stack *Stack_2Count(uint32_t element_class, size_t count);
+Stack *Stack_3(uint32_t element_class, size_t capacity, size_t count);
 
 void Stack_free(Stack *stack);
 

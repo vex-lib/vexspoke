@@ -19,7 +19,7 @@ typedef struct Deque {
 Deque *Deque_2(uint32_t element_class, size_t capacity);
 
 // Deque pre-filled to count slots (legacy allocate): active_count = count.
-Deque *Deque_2Count(uint32_t element_class, size_t count);
+Deque *Deque_3(uint32_t element_class, size_t capacity, size_t count);
 
 void Deque_free(Deque *deque);
 

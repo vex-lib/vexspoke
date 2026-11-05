@@ -7,10 +7,7 @@
 #include "oop/stride.h"
 #include "oop/type.h"
 #include "struct/exhaustion.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
-#include "annotation/checker.h"
-#include "annotation/hotcode.h"
+#include "annotation/annotation.h"
 #include "exception/try_value.h"
 #include "exception/throw.h"
 

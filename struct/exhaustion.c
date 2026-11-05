@@ -1,8 +1,7 @@
 #include "struct/exhaustion.h"
 
 #include "exception/throw.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -40,7 +39,7 @@
  */
 
 /** Count a refusal and emit the epoch's single diagnostic. Always false. */
-;;DEBUG
+;;VALIDATOR
 bool Struct_reportExhaustion(uint64_t *count, bool *reported, const char *owner,
                              size_t requestedBytes, size_t boundBytes) {
     if (count == nullptr || reported == nullptr) {
@@ -81,7 +80,7 @@ static uint64_t s_constructionCount = 0;
 static bool s_constructionReported = false;
 
 /** Count a construction refusal and report the epoch's first one. Always false. */
-;;DEBUG
+;;VALIDATOR
 bool Struct_reportConstructionExhaustion(const char *owner, size_t requestedBytes) {
     s_constructionCount++;
     if (!s_constructionReported) {

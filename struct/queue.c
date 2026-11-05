@@ -6,8 +6,7 @@
 #include "oop/stride.h"
 #include "oop/type.h"
 #include "struct/exhaustion.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -41,9 +40,9 @@
  * Constructors:
  *   - Queue_2(element_class, capacity)
  *   - Queue_1(element_class)
+ *   - Queue(element_class, capacity, count)
  *
  * Core Functions:
- *   - Queue_2Count(element_class, count)
  *   - Queue_free(queue)
  *   - Queue_push(queue, value_or_pointer)
  *   - Queue_pop(queue)
@@ -71,7 +70,7 @@ static Collection *asCollection(Queue *queue) {
     return (Collection*) queue;
 }
 
-static Queue *instant(uint32_t elementClass, size_t capacity, size_t count) {
+Queue *Queue_3(uint32_t elementClass, size_t capacity, size_t count) {
     size_t stride = Stride_get(elementClass);
     size_t cap = capacity < DEFAULT_CAPACITY ? DEFAULT_CAPACITY : capacity;
     Queue *queue = (Queue*) Memory_alloc(TYPE_QUEUE, sizeof(Queue));
@@ -133,11 +132,7 @@ static int ensureCapacity(Collection *c) {
 }
 
 Queue *Queue_2(uint32_t elementClass, size_t capacity) {
-    return instant(elementClass, capacity, 0);
-}
-
-Queue *Queue_2Count(uint32_t elementClass, size_t count) {
-    return instant(elementClass, count, count);
+    return Queue_3(elementClass, capacity, 0);
 }
 
 void Queue_free(Queue *queue) {

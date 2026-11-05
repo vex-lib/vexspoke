@@ -11,8 +11,7 @@
 
 #include "atomic/spin.h"
 #include "struct/exhaustion.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 #include "nio/mem.h"
 #include "oop/stride.h"
 #include "oop/type.h"
@@ -470,7 +469,7 @@ static ChunkedList *buildPaged(uint32_t elementClass, size_t stride, const uint3
 }
 
 // The 2-level byte-budget form (the historical shape).
-static ChunkedList *instant(uint32_t elementClass, size_t stride, uint32_t chunkBytes) {
+ChunkedList *ChunkedList_3(uint32_t elementClass, uint32_t stride, uint32_t chunkBytes) {
     if (stride == 0u)
         stride = Stride_get(elementClass);
     if (stride == 0u)
@@ -502,15 +501,11 @@ static void freeSubtree(uint8_t *node, const ChunkedList *self, uint32_t depth) 
 // CONSTRUCTORS
 
 ChunkedList *ChunkedList_1(uint32_t elementClass) {
-    return instant(elementClass, Stride_get(elementClass), VEX_CHUNKED_BYTES_DEFAULT);
+    return ChunkedList_3(elementClass, Stride_get(elementClass), VEX_CHUNKED_BYTES_DEFAULT);
 }
 
 ChunkedList *ChunkedList_2(uint32_t elementClass, uint32_t chunkBytes) {
-    return instant(elementClass, Stride_get(elementClass), chunkBytes);
-}
-
-ChunkedList *ChunkedList_3(uint32_t elementClass, uint32_t stride, uint32_t chunkBytes) {
-    return instant(elementClass, stride, chunkBytes);
+    return ChunkedList_3(elementClass, Stride_get(elementClass), chunkBytes);
 }
 
 ChunkedList *ChunkedList_paged(uint32_t elementClass, uint32_t stride, const int32_t *radices, size_t count) {

@@ -5,8 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "annotation/debug.h"
-#include "annotation/test.h"
+#include "annotation/annotation.h"
 
 // struct/collection.h — the Collection metadata struct, ported from
 // struct/Collection.java.
@@ -48,7 +47,7 @@ uint8_t *Collection_dataBuffer(Collection *c);
 // emits the epoch's single THROW naming the requested bytes. Always returns
 // false so a caller can `return Collection_reportExhaustion(...)`. A collection
 // constructed (or reset) starts a fresh epoch.
-;;DEBUG
+;;VALIDATOR
 bool Collection_reportExhaustion(Collection *c, size_t requestedBytes);
 // The number of refused grows since the collection was constructed or reset.
 ;;TEST

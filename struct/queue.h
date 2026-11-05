@@ -18,7 +18,7 @@ typedef struct Queue {
 Queue *Queue_2(uint32_t element_class, size_t capacity);
 
 // Queue pre-filled to count slots (legacy allocate): active_count = count.
-Queue *Queue_2Count(uint32_t element_class, size_t count);
+Queue *Queue_3(uint32_t element_class, size_t capacity, size_t count);
 
 void Queue_free(Queue *queue);
 
