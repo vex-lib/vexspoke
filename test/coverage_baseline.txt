@@ -1,0 +1,75 @@
+# vexspoke/test/coverage_baseline.txt
+# Production units compiled into libvexspoke that do NOT yet have a dedicated
+# owner test (the Per-File Battle Test Law). Enforced by `b check`.
+# THIS FILE MAY ONLY SHRINK: delete a
+# line the moment its owner test lands. Adding a line here is a regression.
+#
+# Baseline reconstruction (2026-10-02): the prior ratchet derived units from a
+# CMakeLists.txt that commit 0391122 purged, so it could not run at all. It also
+# enumerated only .c files and matched owners by basename anywhere, which let two
+# different units that share a basename (src/reactive/reactive.c and
+# src/thread/reactive.c) claim one test. This list is the accurate current set:
+# the original 53 plus 7 Objective-C .m units (always compiled on Apple, never
+# enumerated before) and src/thread/reactive.c (previously mis-owned by
+# vexspoke/test/reactive/reactive_test.c). No production code regressed; the
+# former tool was blind to these.
+src/audio/audio_hal_stub.c
+src/audio/audio_stub.c
+src/cli/command.c
+src/cli/commandparser.c
+src/cli/commandregistry.c
+src/cli/console.c
+src/cli/logcommands.c
+src/cli/scanner.c
+src/engine/loop.c
+src/exception/exception.c
+src/input/focus.c
+src/input/gamepad.c
+src/input/gesture.c
+src/input/hardware_event.c
+src/input/key.c
+src/input/mouse.c
+src/input/piano_key.c
+src/input/touch.c
+src/input/turntable.c
+src/io/clipboard_stub.c
+src/io/hot_file.c
+src/io/process_spawn.c
+src/lang/point/point.c
+src/lang/rect/rectangle.c
+src/lang/str.c
+src/lang/vec2/vec2d.c
+src/lang/vec3/vec3_int_float.c
+src/lang/vec3/vec3_long_double.c
+src/lang/vec3/vec3d.c
+src/lang/vec4/vec4d.c
+src/net/download.c
+src/net/http.c
+src/net/json.c
+src/net/netfacade.c
+src/net/tls_curl.c
+src/objc/audio_cocoa.m
+src/objc/audio_hal_mac.m
+src/objc/clipboard_mac.m
+src/objc/discovery.m
+src/objc/tls_apple.m
+src/objc/touchid_cocoa.m
+src/reactive/reactive_object.c
+src/reactive/reactive_primitive.c
+src/reactive/reactive_probable.c
+src/reflection/class.c
+src/reflection/field.c
+src/reflection/method.c
+src/reflection/struct.c
+src/reflection/variable.c
+src/relational/relational.c
+src/search/calc.c
+src/security/touchid.c
+src/spoke/bespoke.c
+src/system/image_mac.m
+src/thread/draw.c
+src/thread/event.c
+src/thread/networking.c
+src/thread/reactive.c
+src/thread/scripting.c
+src/thread/ui.c

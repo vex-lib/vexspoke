@@ -1,0 +1,28 @@
+{
+  "application": {
+    "id": "local.vexgraph.math",
+    "name": "math",
+    "displayName": "Math",
+    "version": "",
+    "type": "cli",
+    "authors": ["vexgraph"],
+    "publisher": "vexgraph",
+    "description": "",
+    "license": "UNLICENSED",
+    "homepage": "",
+    "icon": ""
+  },
+  "build": {
+    "entry": "coord_frame_test.c",
+    "sources": ["coord_frame_test.c", "fast_math_test.c", "math_coord_test.c", "math_test.c", "strict_math_test.c"],
+    "includes": ["vexspoke", "re", "lifetime"],
+    "dependencies": ["lifetime", "re", "vexspoke"],
+    "defines": [],
+    "options": [],
+    "link": "executable"
+  },
+  "payload": { "files": [] },
+  "targets": {},
+  "formats": ["portable"],
+  "statePolicy": "clean"
+}

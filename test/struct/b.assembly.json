@@ -1,0 +1,28 @@
+{
+  "application": {
+    "id": "local.vexgraph.struct",
+    "name": "struct",
+    "displayName": "Struct",
+    "version": "",
+    "type": "cli",
+    "authors": ["vexgraph"],
+    "publisher": "vexgraph",
+    "description": "",
+    "license": "UNLICENSED",
+    "homepage": "",
+    "icon": ""
+  },
+  "build": {
+    "entry": "array_test.c",
+    "sources": ["array_test.c", "chunked_list_test.c", "chunked_paged_test.c", "circle_array_test.c", "collection_test.c", "deque_test.c", "exhaustion_test.c", "list_test.c", "map_test.c", "minheap_test.c", "octree_test.c", "queue_test.c", "set_test.c", "sparseset_test.c", "spatial_struct_test.c", "sphere_array_test.c", "stack_observability_test.c", "stack_test.c"],
+    "includes": ["vexspoke", "re", "lifetime"],
+    "dependencies": ["lifetime", "re", "vexspoke"],
+    "defines": [],
+    "options": [],
+    "link": "executable"
+  },
+  "payload": { "files": [] },
+  "targets": {},
+  "formats": ["portable"],
+  "statePolicy": "clean"
+}

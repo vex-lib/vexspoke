@@ -1,0 +1,28 @@
+{
+  "application": {
+    "id": "local.vexgraph.time",
+    "name": "time",
+    "displayName": "Time",
+    "version": "",
+    "type": "cli",
+    "authors": ["vexgraph"],
+    "publisher": "vexgraph",
+    "description": "",
+    "license": "UNLICENSED",
+    "homepage": "",
+    "icon": ""
+  },
+  "build": {
+    "entry": "calendar_test.c",
+    "sources": ["calendar_test.c", "clock_test.c", "datetime_test.c", "nanotime_test.c", "time_test.c"],
+    "includes": ["vexspoke", "re", "lifetime"],
+    "dependencies": ["lifetime", "re", "vexspoke"],
+    "defines": [],
+    "options": [],
+    "link": "executable"
+  },
+  "payload": { "files": [] },
+  "targets": {},
+  "formats": ["portable"],
+  "statePolicy": "clean"
+}

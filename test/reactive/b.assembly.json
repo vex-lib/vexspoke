@@ -1,0 +1,28 @@
+{
+  "application": {
+    "id": "local.vexgraph.reactive",
+    "name": "reactive",
+    "displayName": "Reactive",
+    "version": "",
+    "type": "cli",
+    "authors": ["vexgraph"],
+    "publisher": "vexgraph",
+    "description": "",
+    "license": "UNLICENSED",
+    "homepage": "",
+    "icon": ""
+  },
+  "build": {
+    "entry": "reactive_test.c",
+    "sources": ["reactive_test.c", "reactive_typed_test.c"],
+    "includes": ["vexspoke", "re", "lifetime"],
+    "dependencies": ["lifetime", "re", "vexspoke"],
+    "defines": [],
+    "options": [],
+    "link": "executable"
+  },
+  "payload": { "files": [] },
+  "targets": {},
+  "formats": ["portable"],
+  "statePolicy": "clean"
+}

@@ -1,0 +1,28 @@
+{
+  "application": {
+    "id": "local.vexgraph.vexspoke",
+    "name": "vexspoke",
+    "displayName": "Vexspoke",
+    "version": "",
+    "type": "library",
+    "authors": ["vexgraph"],
+    "publisher": "vexgraph",
+    "description": "",
+    "license": "UNLICENSED",
+    "homepage": "",
+    "icon": ""
+  },
+  "build": {
+    "entry": "",
+    "sources": ["backend_contract_test.py"],
+    "includes": ["vexspoke", "re", "lifetime"],
+    "dependencies": ["lifetime", "re", "vexspoke"],
+    "defines": [],
+    "options": [],
+    "link": "static"
+  },
+  "payload": { "files": [] },
+  "targets": {},
+  "formats": ["portable"],
+  "statePolicy": "clean"
+}

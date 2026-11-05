@@ -1,0 +1,28 @@
+{
+  "application": {
+    "id": "local.vexgraph.system",
+    "name": "system",
+    "displayName": "System",
+    "version": "",
+    "type": "cli",
+    "authors": ["vexgraph"],
+    "publisher": "vexgraph",
+    "description": "",
+    "license": "UNLICENSED",
+    "homepage": "",
+    "icon": ""
+  },
+  "build": {
+    "entry": "app_detect_test.c",
+    "sources": ["app_detect_test.c", "capture_tool_test.c", "display_info_test.c", "display_monitor_test.c", "graphics_info_test.c", "hardware_info_test.c", "process_probe_test.c", "system_test.c"],
+    "includes": ["vexspoke", "re", "lifetime"],
+    "dependencies": ["lifetime", "re", "vexspoke"],
+    "defines": [],
+    "options": [],
+    "link": "executable"
+  },
+  "payload": { "files": [] },
+  "targets": {},
+  "formats": ["portable"],
+  "statePolicy": "clean"
+}

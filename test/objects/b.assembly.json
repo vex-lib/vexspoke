@@ -1,0 +1,28 @@
+{
+  "application": {
+    "id": "local.vexgraph.objects",
+    "name": "objects",
+    "displayName": "Objects",
+    "version": "",
+    "type": "cli",
+    "authors": ["vexgraph"],
+    "publisher": "vexgraph",
+    "description": "",
+    "license": "UNLICENSED",
+    "homepage": "",
+    "icon": ""
+  },
+  "build": {
+    "entry": "choice_test.c",
+    "sources": ["choice_test.c", "future_test.c", "global_test.c", "local_test.c", "passive_test.c", "probable_objects_test.c", "probable_test.c"],
+    "includes": ["vexspoke", "re", "lifetime"],
+    "dependencies": ["lifetime", "re", "vexspoke"],
+    "defines": [],
+    "options": [],
+    "link": "executable"
+  },
+  "payload": { "files": [] },
+  "targets": {},
+  "formats": ["portable"],
+  "statePolicy": "clean"
+}

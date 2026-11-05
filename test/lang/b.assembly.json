@@ -1,0 +1,28 @@
+{
+  "application": {
+    "id": "local.vexgraph.lang",
+    "name": "lang",
+    "displayName": "Lang",
+    "version": "",
+    "type": "cli",
+    "authors": ["vexgraph"],
+    "publisher": "vexgraph",
+    "description": "",
+    "license": "UNLICENSED",
+    "homepage": "",
+    "icon": ""
+  },
+  "build": {
+    "entry": "mat4_test.c",
+    "sources": ["mat4_test.c", "vec2_test.c", "vec3_test.c", "vec4_test.c"],
+    "includes": ["vexspoke", "re", "lifetime"],
+    "dependencies": ["lifetime", "re", "vexspoke"],
+    "defines": [],
+    "options": [],
+    "link": "executable"
+  },
+  "payload": { "files": [] },
+  "targets": {},
+  "formats": ["portable"],
+  "statePolicy": "clean"
+}

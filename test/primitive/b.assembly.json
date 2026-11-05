@@ -1,0 +1,28 @@
+{
+  "application": {
+    "id": "local.vexgraph.primitive",
+    "name": "primitive",
+    "displayName": "Primitive",
+    "version": "",
+    "type": "cli",
+    "authors": ["vexgraph"],
+    "publisher": "vexgraph",
+    "description": "",
+    "license": "UNLICENSED",
+    "homepage": "",
+    "icon": ""
+  },
+  "build": {
+    "entry": "bool_test.c",
+    "sources": ["bool_test.c", "brain_test.c", "buffer_test.c", "byte_test.c", "double_test.c", "fixed32_test.c", "fixed64_test.c", "float_test.c", "int_double_test.c", "int_float_test.c", "int_test.c", "long_double_test.c", "long_float_test.c", "long_test.c", "pack_test.c", "short_test.c", "vex-string_test.c"],
+    "includes": ["vexspoke", "re", "lifetime"],
+    "dependencies": ["lifetime", "re", "vexspoke"],
+    "defines": [],
+    "options": [],
+    "link": "executable"
+  },
+  "payload": { "files": [] },
+  "targets": {},
+  "formats": ["portable"],
+  "statePolicy": "clean"
+}

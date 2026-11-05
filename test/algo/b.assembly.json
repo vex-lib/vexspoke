@@ -1,0 +1,28 @@
+{
+  "application": {
+    "id": "local.vexgraph.algo",
+    "name": "algo",
+    "displayName": "Algo",
+    "version": "",
+    "type": "cli",
+    "authors": ["vexgraph"],
+    "publisher": "vexgraph",
+    "description": "",
+    "license": "UNLICENSED",
+    "homepage": "",
+    "icon": ""
+  },
+  "build": {
+    "entry": "algo_suite_test.c",
+    "sources": ["algo_suite_test.c", "bvh_test.c", "dijkstra_test.c", "kd_tree_test.c", "radix_sort_test.c", "segment_index_test.c", "sort_test.c", "spatial_test.c", "tree_sit_test.c"],
+    "includes": ["vexspoke", "re", "lifetime"],
+    "dependencies": ["lifetime", "re", "vexspoke"],
+    "defines": [],
+    "options": [],
+    "link": "executable"
+  },
+  "payload": { "files": [] },
+  "targets": {},
+  "formats": ["portable"],
+  "statePolicy": "clean"
+}

@@ -1,0 +1,28 @@
+{
+  "application": {
+    "id": "local.vexgraph.exception",
+    "name": "exception",
+    "displayName": "Exception",
+    "version": "",
+    "type": "cli",
+    "authors": ["vexgraph"],
+    "publisher": "vexgraph",
+    "description": "",
+    "license": "UNLICENSED",
+    "homepage": "",
+    "icon": ""
+  },
+  "build": {
+    "entry": "exception_test.c",
+    "sources": ["exception_test.c", "throw_test.c", "try_code_test.c", "try_ptr_test.c", "try_value_test.c"],
+    "includes": ["vexspoke", "re", "lifetime"],
+    "dependencies": ["lifetime", "re", "vexspoke"],
+    "defines": [],
+    "options": [],
+    "link": "executable"
+  },
+  "payload": { "files": [] },
+  "targets": {},
+  "formats": ["portable"],
+  "statePolicy": "clean"
+}

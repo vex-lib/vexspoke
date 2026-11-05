@@ -1,0 +1,28 @@
+{
+  "application": {
+    "id": "local.vexgraph.security",
+    "name": "security",
+    "displayName": "Security",
+    "version": "",
+    "type": "cli",
+    "authors": ["vexgraph"],
+    "publisher": "vexgraph",
+    "description": "",
+    "license": "UNLICENSED",
+    "homepage": "",
+    "icon": ""
+  },
+  "build": {
+    "entry": "argon2_test.c",
+    "sources": ["argon2_test.c", "base32_test.c", "blake2b_test.c", "chacha20_test.c", "chacha20poly1305_test.c", "crypto_security_test.c", "crypto_test.c", "hkdf_test.c", "hmac_test.c", "keychain_test.c", "otpauth_test.c", "password_test.c", "password_verifier_test.c", "poly1305_test.c", "secure_random_test.c", "sha1_test.c", "totp_test.c"],
+    "includes": ["vexspoke", "re", "lifetime"],
+    "dependencies": ["lifetime", "re", "vexspoke"],
+    "defines": [],
+    "options": [],
+    "link": "executable"
+  },
+  "payload": { "files": [] },
+  "targets": {},
+  "formats": ["portable"],
+  "statePolicy": "clean"
+}

@@ -1,0 +1,10 @@
+# vexspoke/test/mirror_exceptions.txt
+# Deliberate deviations from the Test Tree Mirror Law. Each line maps a
+# production unit (relative to ecosystem/vexspoke/) to its owner test (relative
+# to tests/). The owner test still compiles the unit's public header and is the
+# unit's proof; only its directory differs. Enforced by `b check`. Keep this
+# list minimal and justified.
+src/lang/vec2/vec2.c  vexspoke/lang/vec2_test.c
+src/lang/vec3/vec3.c  vexspoke/lang/vec3_test.c
+src/lang/vec4/vec4.c  vexspoke/lang/vec4_test.c
+src/net/vex_ws_source.c  api-haven/ws_source_binding_test.c
