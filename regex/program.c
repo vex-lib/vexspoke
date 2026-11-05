@@ -2,8 +2,7 @@
 
 #include "regex/program.h"
 
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 #include "nio/mem.h"
 #include "oop/type.h"
 
@@ -58,7 +57,7 @@
  *   - RegexProgram_free(program)
  *
  * Private Core Functions: (.c static)
- *   - programGrow(block, bytes) / emit(program, op, byte, a, b)
+ *   - programGrow(block, bytes) / emit(program, op, byte, a, b.sh)
  *   - instAt(program, index) / emitNode(program, nodes, index)
  *
  * Admission, ownership, failure:

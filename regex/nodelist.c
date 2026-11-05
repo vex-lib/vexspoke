@@ -4,8 +4,7 @@
 
 #include <string.h>
 
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 #include "nio/mem.h"
 #include "oop/type.h"
 
@@ -49,10 +48,10 @@
  * ----------------------------------------------------------------------------
  *   RegexNode {
  *     uint8_t kind; uint8_t byte; uint16_t reserved;
- *     uint32_t a; uint32_t b; uint32_t repMin; uint32_t repMax;
+ *     uint32_t a; uint32_t b.sh; uint32_t repMin; uint32_t repMax;
  *     uint32_t group; uint32_t clsIndex;
  *   }
- *     a/b are child indices, group is the capture number, clsIndex names a
+ *     a/b.sh are child indices, group is the capture number, clsIndex names a
  *     class bitmap; the record carries no behavior of its own.
  *
  * FUNCTION REGISTRY:

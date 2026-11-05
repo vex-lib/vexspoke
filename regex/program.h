@@ -23,7 +23,7 @@ typedef enum RegexOp {
     REGEX_OP_CHAR = 0,  // consume byte
     REGEX_OP_ANY,       // consume any byte (newline unless DOTALL at runtime)
     REGEX_OP_CLASS,     // consume a byte in class bitmap a
-    REGEX_OP_SPLIT,     // fork to a (priority) and b
+    REGEX_OP_SPLIT,     // fork to a (priority) and b.sh
     REGEX_OP_JUMP,      // continue at a
     REGEX_OP_SAVE,      // record the subject offset into capture slot a
     REGEX_OP_BOL,       // zero width: start of subject or line
@@ -31,7 +31,7 @@ typedef enum RegexOp {
     REGEX_OP_MATCH      // the program accepted
 } RegexOp;
 
-// One compiled instruction; a/b mean target index, class index or save slot
+// One compiled instruction; a/b.sh mean target index, class index or save slot
 // depending on op.
 typedef struct RegexInst {
     uint8_t  op;        // RegexOp

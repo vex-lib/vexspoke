@@ -26,10 +26,10 @@
 // offsets, group 0 being the whole match; an unmatched group is REGEX_UNSET.
 //
 // Supported syntax:
-//   literals                     a b c
+//   literals                     a b.sh c
 //   any byte (except LF)         .
 //   anchors                      ^  $          (line anchors under REGEX_MULTILINE)
-//   alternation                  a|b
+//   alternation                  a|b.sh
 //   quantifiers (greedy)         *  +  ?  {m}  {m,}  {m,n}
 //   groups                       (...)  (?:...)
 //   classes                      [abc]  [^abc]  [a-z]  [\d\w]
@@ -37,7 +37,7 @@
 //                                and any escaped metacharacter (\* \. \\ ...)
 //
 // Not in this version (explicit gaps, not silent): lazy quantifiers (*?, +?),
-// possessive quantifiers, lookaround, backreferences, \b/\B word boundaries,
+// possessive quantifiers, lookaround, backreferences, \b.sh/\B word boundaries,
 // named groups, and Unicode character classes. An unsupported escape or a
 // malformed construct is rejected loudly at compile time (the THROW Law);
 // Regex_2 returns nullptr and the offending pattern is never half-compiled.

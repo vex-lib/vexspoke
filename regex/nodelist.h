@@ -30,8 +30,8 @@ typedef enum RegexNodeKind {
     REGEX_NODE_CLASS,      // one byte in class bitmap clsIndex
     REGEX_NODE_BOL,        // '^' — zero width
     REGEX_NODE_EOL,        // '$' — zero width
-    REGEX_NODE_CONCAT,     // a then b
-    REGEX_NODE_ALT,        // a or b
+    REGEX_NODE_CONCAT,     // a then b.sh
+    REGEX_NODE_ALT,        // a or b.sh
     REGEX_NODE_STAR,       // a*
     REGEX_NODE_PLUS,       // a+
     REGEX_NODE_QUEST,      // a?

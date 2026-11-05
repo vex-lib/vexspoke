@@ -4,8 +4,7 @@
 
 #include <string.h>
 
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 #include "nio/mem.h"
 #include "oop/type.h"
 
@@ -16,7 +15,7 @@
  * ============================================================================
  * The matcher: a Pike-VM simulation of a compiled program over a subject. It
  * exists rather than a backtracking matcher because backtracking gives a
- * hostile pattern a way to hang its caller — the classic (a+)+b blow-up — and
+ * hostile pattern a way to hang its caller — the classic (a+)+b.sh blow-up — and
  * this engine is called from cold seams that must always return. The
  * simulation keeps every alternative alive at once as a thread list, advances
  * all of them one subject byte at a time. Capture-row copies also scale with

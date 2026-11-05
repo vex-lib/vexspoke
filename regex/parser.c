@@ -4,8 +4,7 @@
 
 #include <string.h>
 
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 #include "nio/mem.h"
 #include "oop/type.h"
 
