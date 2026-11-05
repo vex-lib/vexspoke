@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 2,
+  "application": {
+    "id": "org.vexgraph.vexspoke.net",
+    "name": "net",
+    "displayName": "net",
+    "version": "0.1.0",
+    "type": "lib",
+    "authors": [
+      "vexgraph"
+    ],
+    "publisher": "vexgraph",
+    "description": "vexspoke/net: C core with a platform Objective-C body",
+    "license": "MIT",
+    "homepage": "",
+    "icon": ""
+  },
+  "build": {
+    "entry": "",
+    "sources": [
+      "download.c",
+      "http.c",
+      "json.c",
+      "netfacade.c",
+      "tls_curl.c",
+      "url.c",
+      "vex_ws_source.c",
+      "websocket.c"
+    ],
+    "includes": [
+      "vexspoke",
+      "."
+    ],
+    "defines": [],
+    "options": [
+      "-Wall",
+      "-Wextra"
+    ],
+    "link": "static"
+  },
+  "payload": {
+    "files": []
+  },
+  "targets": {},
+  "formats": [
+    "portable"
+  ],
+  "statePolicy": "clean"
+}

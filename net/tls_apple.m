@@ -1,8 +1,6 @@
 #include "net/tls.h"
 
-#include "annotation/definition.h"
-#include "annotation/overview.h"
-#include "annotation/intention.h"
+#include "annotation/annotation.h"
 #include "exception/throw.h"
 
 #import <Foundation/Foundation.h>

@@ -1,9 +1,6 @@
 #include "net/tls.h"
 
-#include "annotation/draft.h"
-#include "annotation/intention.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**

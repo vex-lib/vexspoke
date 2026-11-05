@@ -1,8 +1,6 @@
 #include "net/vex_ws_source.h"
 
-#include "annotation/definition.h"
-#include "annotation/overview.h"
-#include "annotation/intention.h"
+#include "annotation/annotation.h"
 #include "exception/throw.h"
 #include "lang/str.h"
 

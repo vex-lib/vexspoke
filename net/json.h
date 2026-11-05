@@ -89,7 +89,7 @@ const char *Json_key(const JsonDoc *doc, JsonRef ref, uint32_t *lengthOut);
 // --- JS-flex helpers (defaults + paths, still zero-alloc) ---
 // Member-exists check (objects only). False on NULL/missing/wrong type.
 bool Json_has(const JsonDoc *doc, JsonRef obj, const char *key);
-// Dotted path lookup: "a.b[0].c" (~ _.get). Array suffixes repeat
+// Dotted path lookup: "a.b.sh[0].c" (~ _.get). Array suffixes repeat
 // ("m[0][1]"). Returns value ref or -1 when any hop misses.
 JsonRef Json_path(const JsonDoc *doc, JsonRef root, const char *path);
 // Value getters with JS `??` defaults: wrong-type/missing ref -> def.

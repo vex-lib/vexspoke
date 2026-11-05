@@ -6,7 +6,7 @@
 // received per Content-Length or chunked framing into the caller's buffer.
 // Zero allocation — every buffer is caller-owned.
 
-#include "platform/platform.h"
+#include "lifetime/platform.h"
 
 #if !defined(_GNU_SOURCE) && !defined(VEX_PLATFORM_APPLE)
 #define _GNU_SOURCE // strcasestr
@@ -28,8 +28,7 @@
 
 #include "net/url.h"
 #include "net/tls.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**

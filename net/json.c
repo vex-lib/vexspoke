@@ -10,8 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -467,7 +466,7 @@ int64_t Json_writeString(char *out, size_t cap, const char *s) {
             case '\n': esc = "\\n"; break;
             case '\r': esc = "\\r"; break;
             case '\t': esc = "\\t"; break;
-            case '\b': esc = "\\b"; break;
+            case '\b': esc = "\\b.sh"; break;
             case '\f': esc = "\\f"; break;
             default: break;
         }
@@ -621,7 +620,7 @@ static bool writerStringBody(JsonWriter *w, const char *s) {
             case '\n': esc = "\\n"; break;
             case '\r': esc = "\\r"; break;
             case '\t': esc = "\\t"; break;
-            case '\b': esc = "\\b"; break;
+            case '\b': esc = "\\b.sh"; break;
             case '\f': esc = "\\f"; break;
             default: break;
         }
