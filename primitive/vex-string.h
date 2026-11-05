@@ -1,11 +1,11 @@
-#ifndef PRIMITIVE_STRING_H
-#define PRIMITIVE_STRING_H
+#ifndef PRIMITIVE_VEX_STRING_H
+#define PRIMITIVE_VEX_STRING_H
 
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
-// primitive/string.h — the string class, ported from primitive/string.java.
+// primitive/vex-string.h — the string class, ported from primitive/string.java.
 //
 // A string is a memory block of type TYPE_STRING_ARRAY whose length is the
 // UTF-8 byte count + 1 (the trailing NUL lives inside the block). Content-based

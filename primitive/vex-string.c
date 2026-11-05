@@ -1,11 +1,10 @@
-#include "primitive/string.h"
+#include "primitive/vex-string.h"
 
 #include <string.h>
 
 #include "nio/mem.h"
 #include "oop/type.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -25,7 +24,7 @@
 ;;OVERVIEW
 /**
  * ============================================================================
- * MODULE: String (primitive/string.c)
+ * MODULE: String (primitive/vex-string.c)
  * ============================================================================
  * the string class, ported from primitive/string.java.
  *
@@ -44,7 +43,7 @@
  *   - string_capacity(ptr)
  *   - string_copy(ptr)
  *   - string_equals(ptr, value)
- *   - String_compare(a, b)
+ *   - String_compare(a, b.sh)
  *   - String_contains(haystack, needle)
  *   - String_containsLiteral(haystack, needle)
  *   - String_indexOf(haystack, needle)
@@ -57,12 +56,12 @@
  *   - String_subLastChar(str)
  *   - String_subFirst(str, count)
  *   - String_subLast(str, count)
- *   - String_append(a, b)
- *   - String_appendLiteral(a, b)
- *   - String_appendLiterals(a, b)
- *   - String_appendInto(a, b, dest)
- *   - String_appendFirst(a, b)
- *   - String_appendFirstLiteral(a, b)
+ *   - String_append(a, b.sh)
+ *   - String_appendLiteral(a, b.sh)
+ *   - String_appendLiterals(a, b.sh)
+ *   - String_appendInto(a, b.sh, dest)
+ *   - String_appendFirst(a, b.sh)
+ *   - String_appendFirstLiteral(a, b.sh)
  *
  * Getters:
  *   - string_get(ptr)
@@ -71,7 +70,7 @@
  */
 
 
-// string.c — the string class, ported from primitive/string.java.
+// vex-string.c — the string class, ported from primitive/string.java.
 
 static uint8_t *allocate_raw(size_t len) {
     uint8_t *ptr = (uint8_t*) Memory_alloc(TYPE_STRING_ARRAY, len + 1);
