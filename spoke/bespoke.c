@@ -1,9 +1,7 @@
-#include "spoke/bespoke.h"
+#include "bespoke.h"
 
 #include <stddef.h>
-#include "annotation/overview.h"
-#include "annotation/intention.h"
-#include "annotation/definition.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /** The Bespoke bridge hub: the one place where R3 drivers attach themselves
