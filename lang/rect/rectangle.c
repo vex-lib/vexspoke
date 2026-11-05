@@ -1,7 +1,6 @@
 #include "lang/rect/rectangle.h"
 
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 #include "nio/mem.h"
 #include "oop/type.h"
 
@@ -65,14 +64,14 @@
  *   - Rectangle_copy(src, dest)
  *   - Rectangle_translate(src, dx, dy, dest)
  *   - Rectangle_inflate(src, dx, dy, dest)
- *   - Rectangle_inset(src, l, t, r, b, dest)
- *   - Rectangle_intersection(a, b, dest)   : disjoint -> empty (0,0,0,0)
- *   - Rectangle_merge(a, b, dest)
+ *   - Rectangle_inset(src, l, t, r, b.sh, dest)
+ *   - Rectangle_intersection(a, b.sh, dest)   : disjoint -> empty (0,0,0,0)
+ *   - Rectangle_merge(a, b.sh, dest)
  *   - Rectangle_isEmpty(r)                 : bool (w <= 0 || h <= 0)
  *   - Rectangle_containsPoint(r, px, py)   : bool (touching edges count)
  *   - Rectangle_containsRect(outer, inner) : bool (touching edges count)
- *   - Rectangle_intersects(a, b)           : bool
- *   - Rectangle_equals(a, b)               : bool
+ *   - Rectangle_intersects(a, b.sh)           : bool
+ *   - Rectangle_equals(a, b.sh)               : bool
  * ============================================================================
  */
 

@@ -5,8 +5,7 @@
 #include "math/strict_math.h"
 #include "nio/mem.h"
 #include "oop/type.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -48,10 +47,10 @@
  *
  * Public Core Functions: (.h)
  *   - Vec2d_free(v)
- *   - Vec2d_add(a, b, dest)
- *   - Vec2d_sub(a, b, dest)
+ *   - Vec2d_add(a, b.sh, dest)
+ *   - Vec2d_sub(a, b.sh, dest)
  *   - Vec2d_mul(a, scalar, dest)
- *   - Vec2d_dot(a, b)
+ *   - Vec2d_dot(a, b.sh)
  *   - Vec2d_length(v)
  *
  * Public Setters: (.h)

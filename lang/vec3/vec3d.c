@@ -5,8 +5,7 @@
 #include "math/strict_math.h"
 #include "nio/mem.h"
 #include "oop/type.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -49,10 +48,10 @@
  *
  * Public Core Functions: (.h)
  *   - Vec3d_free(v)
- *   - Vec3d_add(a, b, dest)
- *   - Vec3d_sub(a, b, dest)
+ *   - Vec3d_add(a, b.sh, dest)
+ *   - Vec3d_sub(a, b.sh, dest)
  *   - Vec3d_mul(a, scalar, dest)
- *   - Vec3d_dot(a, b)
+ *   - Vec3d_dot(a, b.sh)
  *   - Vec3d_length(v)
  *   - Vec3d_normalize(src, dest)
  *

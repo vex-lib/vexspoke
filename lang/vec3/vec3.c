@@ -7,8 +7,7 @@
 #include "math/fast_math.h"
 #include "nio/mem.h"
 #include "oop/type.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -80,18 +79,18 @@
  * Public Core Functions: (.h)
  *   - Vec3_copy(src, dest)
  *   - Vec3_toFrame(src, targetFrame, dest)
- *   - Vec3_add(a, b, dest) / Vec3_sub(a, b, dest)
+ *   - Vec3_add(a, b.sh, dest) / Vec3_sub(a, b.sh, dest)
  *   - Vec3_mul(a, scalar, dest) / Vec3_div(a, scalar, dest)
- *   - Vec3_dot(a, b)
- *   - Vec3_cross(a, b, dest)
+ *   - Vec3_dot(a, b.sh)
+ *   - Vec3_cross(a, b.sh, dest)
  *   - Vec3_lengthSquared(v) / Vec3_length(v)
  *   - Vec3_normalize(src, dest) / Vec3_fastNormalize(src, dest)
- *   - Vec3_distance(a, b) / Vec3_angle(a, b)
+ *   - Vec3_distance(a, b.sh) / Vec3_angle(a, b.sh)
  *   - Vec3_project(vector, onto, dest)
  *   - Vec3_reflect(incident, normal, dest)
  *   - Vec3_clamp(src, min_val, max_val, dest)
  *   - Vec3_abs(src, dest)
- *   - Vec3_lerp(a, b, t, dest)
+ *   - Vec3_lerp(a, b.sh, t, dest)
  * ============================================================================
  */
 

@@ -5,8 +5,7 @@
 #include "math/strict_math.h"
 #include "nio/mem.h"
 #include "oop/type.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -57,10 +56,10 @@
  *   - Vec4d_getFront(v) / Vec4d_getBack(v)
  *
  * Public Core Functions: (.h)
- *   - Vec4d_add(a, b, dest)
- *   - Vec4d_sub(a, b, dest)
+ *   - Vec4d_add(a, b.sh, dest)
+ *   - Vec4d_sub(a, b.sh, dest)
  *   - Vec4d_mul(a, scalar, dest)
- *   - Vec4d_dot(a, b)
+ *   - Vec4d_dot(a, b.sh)
  *   - Vec4d_length(v)
  * ============================================================================
  */

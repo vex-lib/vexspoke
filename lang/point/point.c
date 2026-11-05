@@ -1,7 +1,6 @@
 #include "lang/point/point.h"
 
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 #include "math/strict_math.h"
 #include "nio/mem.h"
 #include "oop/type.h"
@@ -51,16 +50,16 @@
  *
  * Core Functions:
  *   - Point_copy(src, dest)
- *   - Point_add(a, b, dest)
- *   - Point_sub(a, b, dest)
+ *   - Point_add(a, b.sh, dest)
+ *   - Point_sub(a, b.sh, dest)
  *   - Point_scale(a, scalar, dest)
  *   - Point_negate(src, dest)
- *   - Point_min(a, b, dest)
- *   - Point_max(a, b, dest)
- *   - Point_distanceSquared(a, b)      : int64_t
- *   - Point_manhattanDistance(a, b)    : int64_t
- *   - Point_distance(a, b)             : double
- *   - Point_equals(a, b)               : bool
+ *   - Point_min(a, b.sh, dest)
+ *   - Point_max(a, b.sh, dest)
+ *   - Point_distanceSquared(a, b.sh)      : int64_t
+ *   - Point_manhattanDistance(a, b.sh)    : int64_t
+ *   - Point_distance(a, b.sh)             : double
+ *   - Point_equals(a, b.sh)               : bool
  * ============================================================================
  */
 

@@ -5,8 +5,7 @@
 #include "math/strict_math.h"
 #include "nio/mem.h"
 #include "oop/type.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -51,18 +50,18 @@
  *   - Vec2_free(v)
  *   - Vec2_set(v, horizontal, vertical)
  *   - Vec2_copy(src, dest)
- *   - Vec2_add(a, b, dest)
- *   - Vec2_sub(a, b, dest)
+ *   - Vec2_add(a, b.sh, dest)
+ *   - Vec2_sub(a, b.sh, dest)
  *   - Vec2_mul(a, scalar, dest)
  *   - Vec2_div(a, scalar, dest)
- *   - Vec2_dot(a, b)
+ *   - Vec2_dot(a, b.sh)
  *   - Vec2_lengthSquared(v)
  *   - Vec2_length(v)
  *   - Vec2_normalize(src, dest)
  *   - Vec2_perpendicular(src, dest)
- *   - Vec2_distance(a, b)
- *   - Vec2_angle(a, b)
- *   - Vec2_lerp(a, b, t, dest)
+ *   - Vec2_distance(a, b.sh)
+ *   - Vec2_angle(a, b.sh)
+ *   - Vec2_lerp(a, b.sh, t, dest)
  *
  * Public Setters: (.h)
  *   - Vec2_setRight(v, val) / Vec2_setLeft(v, val)

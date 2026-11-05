@@ -5,8 +5,7 @@
 #include "math/strict_math.h"
 #include "nio/mem.h"
 #include "oop/type.h"
-#include "annotation/definition.h"
-#include "annotation/overview.h"
+#include "annotation/annotation.h"
 
 ;;DEFINITION
 /**
@@ -15,7 +14,7 @@
  * ============================================================================
  * 16-byte SIMD 4D / homogeneous vector with horizontal, vertical, depth, and
  * w components, preserved as an alignas(16) union of named views (x/y/z/w,
- * right/up/front, r/g/b/a, raw data[4]). Arena-allocated via Memory_alloc
+ * right/up/front, r/g/b.sh/a, raw data[4]). Arena-allocated via Memory_alloc
  * with the ID_VEC4 identity; all math is dest-last and allocation-free.
  * Directional getters/setters (Right/Left/Up/Down/Front/Back) mirror the
  * axis with sign flips while leaving w untouched; frame-relative accessors
@@ -37,7 +36,7 @@
  *       struct { float horizontal; float vertical; float depth; float w; };
  *       struct { float x; float y; float z; float _w; };
  *       struct { float right; float up; float front; float _w2; };
- *       struct { float r; float g; float b; float a; };
+ *       struct { float r; float g; float b.sh; float a; };
  *       float data[4];
  *     };
  *   }
@@ -52,15 +51,15 @@
  *   - Vec4_free(v)
  *   - Vec4_set(v, horizontal, vertical, depth, w)
  *   - Vec4_copy(src, dest)
- *   - Vec4_add(a, b, dest)
- *   - Vec4_sub(a, b, dest)
+ *   - Vec4_add(a, b.sh, dest)
+ *   - Vec4_sub(a, b.sh, dest)
  *   - Vec4_mul(a, scalar, dest)
  *   - Vec4_div(a, scalar, dest)
- *   - Vec4_dot(a, b)
+ *   - Vec4_dot(a, b.sh)
  *   - Vec4_lengthSquared(v)
  *   - Vec4_length(v)
  *   - Vec4_normalize(src, dest)
- *   - Vec4_lerp(a, b, t, dest)
+ *   - Vec4_lerp(a, b.sh, t, dest)
  *
  * Public Setters: (.h)
  *   - Vec4_setRight(v, val) / Vec4_setLeft(v, val)
