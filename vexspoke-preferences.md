@@ -3,13 +3,13 @@
 > Universal constitution: `gist.md` is the compressed law list; `PREFERENCES.md` is its rationale.
 
 ## 0. Constitution Link (supreme)
-- [gist.md](https://gist.github.com/vex-graph/4132a6c45cb6d3797c3e8eff2e94035a#file-gist-md) — the compressed law list, mirrored in this workspace at `../../../metadata/gists/preferences/gist.md`. It is the only normative law text; `../../../metadata/gists/preferences/PREFERENCES.md` carries the rationale and is never ingested whole. Numbers are slice addresses inside one file, never law identity: cite by Title.
+- [gist.md](https://gist.github.com/vex-graph/4132a6c45cb6d3797c3e8eff2e94035a#file-gist-md) — the compressed law list, mirrored in this workspace at `../../metadata/gists/preferences/gist.md`. It is the only normative law text; `../../../metadata/gists/preferences/PREFERENCES.md` carries the rationale and is never ingested whole. Numbers are slice addresses inside one file, never law identity: cite by Title.
 - All universal laws bind this repository. Read one on demand from the workspace root: `./tools/prefs law "<title>"`, `./tools/prefs section "<section>"`, `./tools/prefs repo <name>`.
 - This document codifies **exclusive** preferences for `vexspoke` (R2 CPU computation, behavior, and network protocols). Relational Engine owns filesystem IO/NIO, the native Memory/MemoryArena/Transient allocator implementation, and the relational symbol table/spotlight runtime (`src/relational`), plus Rust storage and native C search. Vexspoke `net/` owns network protocol clients and servers, including BSD socket-backed HTTP. Existing C Memory ABI and type IDs remain compatible; this migration is not a Rust allocator rewrite.
 
 ## 1. Repo-Local Law Index (Binding Matrix)
 
-Universal laws are inherited from the compressed constitution (`../../../metadata/gists/preferences/gist.md`); this table indexes the additional laws specific to this repository.
+Universal laws are inherited from the compressed constitution (`../../metadata/gists/preferences/gist.md`); this table indexes the additional laws specific to this repository.
 
 | Law Title | Scope | Enforcement |
 | :--- | :--- | :--- |
@@ -18,7 +18,7 @@ Universal laws are inherited from the compressed constitution (`../../../metadat
 | **BitPool Slot Segregation Law** | R2 Relational memory Substrate | Mandatory for `vexspoke` |
 | **24-Byte Variable Slot Law (The 23+1 Rule)** | R2 Relational memory Substrate | Mandatory for `vexspoke` |
 | **Reactive Generics Law** | R2 behavior (the reactive engine + the generic family) | Mandatory for `vexspoke` |
-| **Pure Format Algorithm Law** | R2 CPU computation (`net/`, `search/`, `image/`) | Mandatory for `vexspoke` |
+| **Pure Format Algorithm Law** | R2 CPU computation (`net/`, `search/`) | Mandatory for `vexspoke` |
 
 ## 2. Exclusive Repo-Local Laws (FULL PROSE RESTATEMENT)
 
@@ -94,7 +94,7 @@ Conflict Triage Law.")
 
 ### Pure Format Algorithm Law
 
-**Definition.** Vexspoke owns **pure format algorithms** — byte-to-byte code with no file, path, handle, device or persistent state: the JSON parser (`net/json`), the URL parser (`net/url`), and the PNG → RGBA8 decoder (`image/png`, system zlib for DEFLATE); each takes a borrowed byte span and returns a value, none reads a file or opens a path. *Why:* decoding is computation, not storage — the *caller* owns I/O (the engine's `File`), *storage* stays with the engine, every tier above R2 borrows the same pure function, and decoding differs from image **composition** (Graphvex R3 uploads/samples, never decodes) and terminal **rasterisation** (Determinant R3).
+**Definition.** Vexspoke owns **pure format algorithms** — byte-to-byte code with no file, path, handle, device or persistent state: the JSON parser (`net/json`) and the URL parser (`net/url`); each takes a borrowed byte span and returns a value, none reads a file or opens a path. *Why:* decoding is computation, not storage — the *caller* owns I/O (the engine's `File`), *storage* stays with the engine, every tier above R2 borrows the same pure function. PNG → RGBA8 decoding moved to Graphvex (`src/decode/png`); audio moved to Samplerate (`audio/`).
 
 _Rule._
 
@@ -114,7 +114,7 @@ _Rule._
 
 `net/http.c` implements BSD socket-backed HTTP; `net/websocket.{h,c}` (the RFC 6455 client) implements handshake, frame codec with client masking, the ping/pong/close control path and continuation reassembly over its own BSD socket, routing `wss://` through the TLS seam behind `net/tls.h`. The Apple TLS backend (`net/tls_apple.m`, Network.framework, verifying against the system trust anchors) proves its refusal paths; `net/tls_curl.c` stays a fail-closed stub elsewhere; the client pushes its poll budget into the session (`Tls_setBudget`) and uses `Tls_readable` for readiness; `ws://` is unchanged and polls its socket directly.
 
-Adapter `net/vex_ws_source.{h,c}`: the same four seam signatures a host's transport table binds — no cross-repo include; R3 does not include the client — api-haven keeps the `WsSource` fn-table shape, a host seeing both layers binds it. The legacy frame inbox remains a caller-fed inbox, still not a WebSocket client. The opt-in live smoke (`tests/vexspoke/net/websocket_smoke_test.c`, targeted via `WS_SMOKE_URL='wss://gateway.discord.gg/?v=10&encoding=json'` — Discord's credential-free gateway, unprompted HELLO decodes without auth) proves a completed secure handshake, real server framing and a cheap idle session. Limit: on a TLS connection `poll` cannot yet distinguish a quiet peer from a closed one — a dropped TLS connection reports `WS_MESSAGE_NONE` until a read or write actually fails — a host needing that distinction must add it.
+Adapter `net/vex_ws_source.{h,c}`: the same four seam signatures a host's transport table binds — no cross-repo include; R3 does not include the client — api-haven keeps the `WsSource` fn-table shape, a host seeing both layers binds it. The legacy frame inbox remains a caller-fed inbox, still not a WebSocket client. The opt-in live smoke (`../../tests/vexspoke/net/websocket_smoke_test.c`, targeted via `WS_SMOKE_URL='wss://gateway.discord.gg/?v=10&encoding=json'` — Discord's credential-free gateway, unprompted HELLO decodes without auth) proves a completed secure handshake, real server framing and a cheap idle session. Limit: on a TLS connection `poll` cannot yet distinguish a quiet peer from a closed one — a dropped TLS connection reports `WS_MESSAGE_NONE` until a read or write actually fails — a host needing that distinction must add it.
 
 ---
 
