@@ -1,6 +1,6 @@
 #include "security/sha1.h"
-#include "exception/throw.h"
-#include "annotation/annotation.h"
+#include "util/throw.h"
+#include "util/annotation.h"
 
 ;;DEFINITION
 /** SHA-1 as a streaming digest. It ships for HMAC-SHA1 in TOTP and for nothing

@@ -5,9 +5,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "bit/bit.h"
+#include "re/nio/bit_pool.h"
 
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
 // primitive/int.h — Int primitive (Legacy: primitive/Int.java).
 // Delegates to Bit32 width pool (4B stride).

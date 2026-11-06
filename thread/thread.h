@@ -5,8 +5,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "c23/constructor.h"
-#include "atomic/ring.h"
+#include "util/constructor.h"
+#include "struct/ring.h"
 
 // thread/thread.h — the worker-thread engine (Legacy: the six *Thread.java
 // managers that each re-implemented the same 200 lines).

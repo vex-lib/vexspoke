@@ -1,6 +1,6 @@
 #include "lang/point/point.h"
 
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 #include "math/strict_math.h"
 #include "nio/mem.h"
 #include "oop/type.h"

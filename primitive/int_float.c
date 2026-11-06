@@ -4,7 +4,7 @@
 
 #include "nio/mem.h"
 #include "oop/type.h"
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 ;;DEFINITION
 /**
@@ -56,7 +56,7 @@ BitPool g_int_floatPool;
 
 bool IntFloat_init(void) {
     g_int_floatPool = BitPool(8, 1024);
-    return g_int_floatPool.arena != nullptr;
+    return BitPool_live(&g_int_floatPool);
 }
 
 void IntFloat_shutdown(void) {

@@ -1,7 +1,7 @@
 #ifndef LANG_VEC3_H
 #define LANG_VEC3_H
 
-// lang/vec3.h — Top-level forwarder for the Vec3 family.
+// lang/vec3.h — Top-level forwarder for the Coord3 family.
 //
 // Canonical implementation lives in lang/vec3/vec3.h (Single Class Per File Law).
 #include "lang/vec3/vec3.h"

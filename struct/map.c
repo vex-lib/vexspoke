@@ -6,7 +6,7 @@
 #include "oop/type.h"
 #include "struct/exhaustion.h"
 #include "util/hash.h"
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 ;;DEFINITION
 /**

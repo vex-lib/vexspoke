@@ -2,11 +2,11 @@
 
 #include <string.h>
 
-#include "exception/throw.h"
+#include "util/throw.h"
 #include "nio/mem.h"
 #include "oop/type.h"
 #include "util/random.h"
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 ;;DEFINITION
 /**

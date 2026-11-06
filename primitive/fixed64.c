@@ -4,7 +4,7 @@
 
 #include "nio/mem.h"
 #include "oop/type.h"
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 ;;DEFINITION
 /**
@@ -57,7 +57,7 @@ BitPool g_fixed64Pool;
 
 bool Fixed64_init(void) {
     g_fixed64Pool = BitPool(8, 1024);
-    return g_fixed64Pool.arena != nullptr;
+    return BitPool_live(&g_fixed64Pool);
 }
 
 void Fixed64_shutdown(void) {

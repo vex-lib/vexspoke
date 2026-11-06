@@ -4,7 +4,7 @@
 #include <stdatomic.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include "atomic/spin.h"
+#include "re/atomic/spin.h"
 
 // MPSC mailbox: producers post; one designated consumer drains on its own
 // thread (the UI host chooses Thread 0). No worker, wakeup or scheduler here.

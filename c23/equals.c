@@ -2,9 +2,8 @@
 
 #include <string.h>
 
-#include "annotation/annotation.h"
-#include "nio/mem.h"
-#include "relational/symbol_table.h"
+#include "util/annotation.h"
+#include "re/nio/mem.h"
 
 ;;DEFINITION
 /**
@@ -61,7 +60,7 @@ bool isEqual(const void *a, const void *b) {
 }
 
 // Resolves both names in the table and compares their referenced values.
-bool isEquallyNamed(SymbolTable *v, const char *nameA, const char *nameB) {
+bool isEquallyNamed(struct SymbolTable *v, const char *nameA, const char *nameB) {
     if (!v || !nameA || !nameB)
         return false;
     int32_t idA = SymbolTable_getId(v, nameA);

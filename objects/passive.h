@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
 // objects/passive.h — Lazy-evaluated / computed Passive object wrapper.
 // Ported from legacy objects/Passive.java.

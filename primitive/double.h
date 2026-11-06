@@ -5,9 +5,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "bit/bit.h"
+#include "re/nio/bit_pool.h"
 
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
 // primitive/double.h — Double primitive (Legacy: primitive/Double.java).
 // Delegates to Bit64 width pool (8B stride).

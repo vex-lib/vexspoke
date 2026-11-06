@@ -1,4 +1,4 @@
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -48,10 +48,10 @@ static int g_changed = 0;
 static int g_sets = 0;
 static int32_t g_old = 0;
 static int32_t g_new = 0;
-static Vec3 *g_objectValue = nullptr;
+static Coord3 *g_objectValue = nullptr;
 static int32_t g_probableValue = 0;
 
-static void onObjectChanged(Vec3 *value) { g_objectValue = value; }
+static void onObjectChanged(Coord3 *value) { g_objectValue = value; }
 static void onProbableChanged(int32_t value) { g_probableValue = value; }
 
 // Records typed integer change notifications and their old/new payloads.
@@ -197,8 +197,8 @@ static void testString(void) {
 // Checks the object-family constructor chooser, typed object rebind, and merged probable constructor.
 static void testObjectAndProbable(void) {
     printf("[6] object and probable constructor choosers\n");
-    Reactive(Vec2) *emptyVec2 = Reactive(Vec2)();
-    Reactive(Vec4) *emptyVec4 = Reactive(Vec4)();
+    Reactive(Coord2) *emptyVec2 = Reactive(Coord2)();
+    Reactive(Coord4) *emptyVec4 = Reactive(Coord4)();
     Reactive(Rectangle) *emptyRectangle = Reactive(Rectangle)();
     Reactive(IntDouble) *emptyIntDouble = Reactive(IntDouble)();
     Reactive(LongFloat) *emptyLongFloat = Reactive(LongFloat)();
@@ -209,13 +209,13 @@ static void testObjectAndProbable(void) {
     ReactiveRectangle_free(emptyRectangle); ReactiveIntDouble_free(emptyIntDouble);
     ReactiveLongFloat_free(emptyLongFloat); ReactiveLongDouble_free(emptyLongDouble);
 
-    Vec3 *first = Vec3(1.0f, 2.0f, 3.0f);
-    Vec3 *next = Vec3(4.0f, 5.0f, 6.0f);
+    Coord3 *first = Coord3(1.0f, 2.0f, 3.0f);
+    Coord3 *next = Coord3(4.0f, 5.0f, 6.0f);
     CHECK(first != nullptr && next != nullptr);
     if (!first || !next)
         return;
 
-    Reactive(Vec3) *position = Reactive(Vec3)(first);
+    Reactive(Coord3) *position = Reactive(Coord3)(first);
     CHECK(position != nullptr);
     if (position) {
         CHECK(Reactive_addOnChanged(position, onObjectChanged));
@@ -242,8 +242,8 @@ static void testObjectAndProbable(void) {
         ReactiveProbableInt_free(reward);
     }
 
-    Vec3_free(next);
-    Vec3_free(first);
+    Coord3_free(next);
+    Coord3_free(first);
 }
 
 // Exercises null-safe setters, getters, and destructors for each typed reactive.

@@ -5,9 +5,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "bit/bit.h"
+#include "re/nio/bit_pool.h"
 
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
 // primitive/byte.h — Byte primitive (Legacy: primitive/Byte.java).
 // Delegates to Bit8 width pool (1B stride).

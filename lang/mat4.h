@@ -1,4 +1,4 @@
-#include "c23/constructor.h"
+#include "util/constructor.h"
 #ifndef LANG_MAT4_H
 #define LANG_MAT4_H
 
@@ -78,10 +78,10 @@ void Mat4_lookAt(float eye_x, float eye_y, float eye_z,
                  float up_x, float up_y, float up_z, Mat4 *dest);
 
 // dest = mat * src (homogeneous 4-vector).
-void Mat4_transform(const Mat4 *m, const Vec4 *src_vec, Vec4 *dest_vec);
+void Mat4_transform(const Mat4 *m, const Coord4 *src_vec, Coord4 *dest_vec);
 
 // dest = mat * (src, 1) treating src as a 3-vector.
-void Mat4_transformVec3(const Mat4 *m, const Vec3 *src_vec, Vec3 *dest_vec);
+void Mat4_transformVec3(const Mat4 *m, const Coord3 *src_vec, Coord3 *dest_vec);
 
 #endif
 #define Mat4(...) CONSTRUCTOR_DISPATCH(Mat4, __VA_ARGS__)

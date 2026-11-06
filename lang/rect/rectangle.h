@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
 // lang/rect/rectangle.h — Pixel-Space Rectangle.
 //

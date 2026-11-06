@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include <sched.h>
 
-#include "atomic/ring.h"
+#include "struct/ring.h"
 
 static int g_failures = 0;
 

@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
 // objects/future.h — Asynchronous single-assignment Future object wrapper.
 // Ported from legacy objects/Future.java.

@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "c23/constructor.h"
+#include "util/constructor.h"
 #include "relational/variable_slot.h"
 
 // reflection/method.h — the Method metadata record.

@@ -1,6 +1,6 @@
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 #include "system/process_probe.h"
-#include "lifetime/platform.h"
+#include "util/platform.h"
 
 #include <dirent.h>
 #include <string.h>

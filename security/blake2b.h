@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
 // security/blake2b.h — BLAKE2b (RFC 7693), the hash Argon2 is built on.
 //

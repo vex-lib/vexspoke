@@ -1,7 +1,7 @@
 #include "thread/draw.h"
 #include "thread/compute.h"
 
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 #include "oop/type.h"
 

@@ -4,7 +4,7 @@
 
 #include "nio/mem.h"
 #include "oop/type.h"
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 ;;DEFINITION
 /**
@@ -60,7 +60,7 @@ BitPool g_brainPool;
 
 bool Brain_init(void) {
     g_brainPool = BitPool(2, 1024);
-    return g_brainPool.arena != nullptr;
+    return BitPool_live(&g_brainPool);
 }
 
 void Brain_shutdown(void) {

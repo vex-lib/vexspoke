@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
 // regex/nodelist.h — the RegexNodeList: the flat AST a parse produces and the
 // program builder walks. Single Class Per File Law: RegexNodeList (owning the

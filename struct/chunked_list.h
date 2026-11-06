@@ -6,7 +6,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "atomic/spin.h"
+#include "re/atomic/spin.h"
 #include "struct/collection.h"
 
 // struct/chunked_list.h — the ChunkedList class: a never-moved radix-paged list.

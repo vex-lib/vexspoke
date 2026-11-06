@@ -59,33 +59,33 @@ int main(void) {
     CHECK("Math_fast_sin uses approximation", fabsf(Math_fast_sin(FAST_MATH_HALF_PI) - 1.0f) < 0.01f);
     CHECK("Math_fast_invSqrt is fast approx", fabsf(Math_fast_invSqrt(4.0f) - 0.5f) < 0.01f);
 
-    // 4. Vec3 Spatial Semantics & Directional Inverses
-    Vec3 v = { .horizontal = 14.0f, .vertical = 5.0f, .depth = 28.0f, .frame = (uint32_t) COORD_FRAME_DEFAULT };
+    // 4. Coord3 Spatial Semantics & Directional Inverses
+    Coord3 v = { .horizontal = 14.0f, .vertical = 5.0f, .depth = 28.0f, .frame = (uint32_t) COORD_FRAME_DEFAULT };
 
     // Nuance check: if front coordinate is 28, getBack() must be -28!
-    CHECK("Vec3 getFront is 28", Vec3_getFront(&v) == 28.0f);
-    CHECK("Vec3 getBack is -28", Vec3_getBack(&v) == -28.0f);
-    CHECK("Vec3 getRight is 14", Vec3_getRight(&v) == 14.0f);
-    CHECK("Vec3 getLeft is -14", Vec3_getLeft(&v) == -14.0f);
-    CHECK("Vec3 getUp is 5", Vec3_getUp(&v) == 5.0f);
-    CHECK("Vec3 getDown is -5", Vec3_getDown(&v) == -5.0f);
+    CHECK("Coord3 getFront is 28", Coord3_getFront(&v) == 28.0f);
+    CHECK("Coord3 getBack is -28", Coord3_getBack(&v) == -28.0f);
+    CHECK("Coord3 getRight is 14", Coord3_getRight(&v) == 14.0f);
+    CHECK("Coord3 getLeft is -14", Coord3_getLeft(&v) == -14.0f);
+    CHECK("Coord3 getUp is 5", Coord3_getUp(&v) == 5.0f);
+    CHECK("Coord3 getDown is -5", Coord3_getDown(&v) == -5.0f);
 
-    Vec3_setBack(&v, 28.0f);
-    CHECK("Vec3 setBack(28) sets depth to -28", Vec3_getFront(&v) == -28.0f);
-    CHECK("Vec3 getBack is now 28", Vec3_getBack(&v) == 28.0f);
+    Coord3_setBack(&v, 28.0f);
+    CHECK("Coord3 setBack(28) sets depth to -28", Coord3_getFront(&v) == -28.0f);
+    CHECK("Coord3 getBack is now 28", Coord3_getBack(&v) == 28.0f);
 
     // One-line indexing math for coordinates
-    Vec3_setFront(&v, 28.0f);
-    CHECK("Vec3 getX in Y_UP_LEFT is horizontal", Vec3_getX(&v) == 14.0f);
-    CHECK("Vec3 getY in Y_UP_LEFT is vertical", Vec3_getY(&v) == 5.0f);
-    CHECK("Vec3 getZ in Y_UP_LEFT is depth", Vec3_getZ(&v) == 28.0f);
+    Coord3_setFront(&v, 28.0f);
+    CHECK("Coord3 getX in Y_UP_LEFT is horizontal", Coord3_getX(&v) == 14.0f);
+    CHECK("Coord3 getY in Y_UP_LEFT is vertical", Coord3_getY(&v) == 5.0f);
+    CHECK("Coord3 getZ in Y_UP_LEFT is depth", Coord3_getZ(&v) == 28.0f);
 
     // Coordinate Frame transform: to OpenGL right-handed Y_UP_RIGHT (Z is negated)
-    Vec3 v_gl;
-    Vec3_toFrame(&v, COORD_FRAME_Y_UP_RIGHT, &v_gl);
-    CHECK("v_gl getX is 14", Vec3_getX(&v_gl) == 14.0f);
-    CHECK("v_gl getY is 5", Vec3_getY(&v_gl) == 5.0f);
-    CHECK("v_gl getZ is -28 (negated depth)", Vec3_getZ(&v_gl) == -28.0f);
+    Coord3 v_gl;
+    Coord3_toFrame(&v, COORD_FRAME_Y_UP_RIGHT, &v_gl);
+    CHECK("v_gl getX is 14", Coord3_getX(&v_gl) == 14.0f);
+    CHECK("v_gl getY is 5", Coord3_getY(&v_gl) == 5.0f);
+    CHECK("v_gl getZ is -28 (negated depth)", Coord3_getZ(&v_gl) == -28.0f);
 
     // 5. Vec3d Double Precision
     Vec3d vd = { .horizontal = 100.0, .vertical = 200.0, .depth = 300.0, .frame = (uint64_t) COORD_FRAME_DEFAULT };
@@ -107,19 +107,19 @@ int main(void) {
     CHECK("vif depth sector rebalanced to 2", vif.depth.sector == 2);
     CHECK("vif depth local rebalanced to 50", vif.depth.local == 50.0f);
 
-    // 7. Vec2 & Vec4 Spatial Inverses
-    Vec2 v2 = { .horizontal = 10.0f, .vertical = 20.0f };
-    CHECK("Vec2 getRight is 10", Vec2_getRight(&v2) == 10.0f);
-    CHECK("Vec2 getLeft is -10", Vec2_getLeft(&v2) == -10.0f);
-    CHECK("Vec2 getUp is 20", Vec2_getUp(&v2) == 20.0f);
-    CHECK("Vec2 getDown is -20", Vec2_getDown(&v2) == -20.0f);
+    // 7. Coord2 & Coord4 Spatial Inverses
+    Coord2 v2 = { .horizontal = 10.0f, .vertical = 20.0f };
+    CHECK("Coord2 getRight is 10", Coord2_getRight(&v2) == 10.0f);
+    CHECK("Coord2 getLeft is -10", Coord2_getLeft(&v2) == -10.0f);
+    CHECK("Coord2 getUp is 20", Coord2_getUp(&v2) == 20.0f);
+    CHECK("Coord2 getDown is -20", Coord2_getDown(&v2) == -20.0f);
 
-    Vec4 v4 = { .horizontal = 1.0f, .vertical = 2.0f, .depth = 3.0f, .w = 1.0f };
-    CHECK("Vec4 getRight is 1", Vec4_getRight(&v4) == 1.0f);
-    CHECK("Vec4 getLeft is -1", Vec4_getLeft(&v4) == -1.0f);
-    CHECK("Vec4 getFront is 3", Vec4_getFront(&v4) == 3.0f);
-    CHECK("Vec4 getBack is -3", Vec4_getBack(&v4) == -3.0f);
-    CHECK("Vec4 w preserved", v4.w == 1.0f);
+    Coord4 v4 = { .horizontal = 1.0f, .vertical = 2.0f, .depth = 3.0f, .w = 1.0f };
+    CHECK("Coord4 getRight is 1", Coord4_getRight(&v4) == 1.0f);
+    CHECK("Coord4 getLeft is -1", Coord4_getLeft(&v4) == -1.0f);
+    CHECK("Coord4 getFront is 3", Coord4_getFront(&v4) == 3.0f);
+    CHECK("Coord4 getBack is -3", Coord4_getBack(&v4) == -3.0f);
+    CHECK("Coord4 w preserved", v4.w == 1.0f);
 
     printf("\n=== 12-Frame Math & Vector Test Summary: %d failures ===\n", g_failures);
     return g_failures > 0 ? 1 : 0;

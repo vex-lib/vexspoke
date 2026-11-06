@@ -1,5 +1,5 @@
 #include "util/random.h"
-#include "lifetime/platform.h"
+#include "util/platform.h"
 
 #include <stdlib.h>
 #include <time.h>
@@ -11,7 +11,7 @@
 #include "nio/mem.h"
 #include "oop/type.h"
 #include "util/hash.h"
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 ;;DEFINITION
 /**

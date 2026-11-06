@@ -1,7 +1,7 @@
 #ifndef REACTIVE_REACTIVE_OBJECT_H
 #define REACTIVE_REACTIVE_OBJECT_H
 
-#include "c23/constructor.h"
+#include "util/constructor.h"
 #include "lang/rect/rectangle.h"
 #include "lang/vec2/vec2.h"
 #include "lang/vec3/vec3.h"
@@ -14,16 +14,16 @@
 // reactive/reactive_object.h — the standard OBJECT reactives in one file.
 //
 // ;;INTENTION("these are the same one-line TYPEDEF_REACTIVE stamp applied to the
-// standard object types (Vec2/3/4, Rectangle, and the 16-byte pairs). Mechanical
+// standard object types (Coord2/3/4, Rectangle, and the 16-byte pairs). Mechanical
 // stamps, not hand-authored classes — the Single Class Per File Law is waived BY
 // INTENT here, one file pair instead of seven. Per the Conflict Triage Law.")
 //
-// Each word holds a NAME* (a published object); a rebind is a change. Reactive(Vec4),
+// Each word holds a NAME* (a published object); a rebind is a change. Reactive(Coord4),
 // Reactive(Rectangle), Reactive(IntDouble), ... resolve here.
 
-TYPEDEF_REACTIVE(Vec2);
-TYPEDEF_REACTIVE(Vec3);
-TYPEDEF_REACTIVE(Vec4);
+TYPEDEF_REACTIVE(Coord2);
+TYPEDEF_REACTIVE(Coord3);
+TYPEDEF_REACTIVE(Coord4);
 TYPEDEF_REACTIVE(Rectangle);
 TYPEDEF_REACTIVE(IntDouble);
 TYPEDEF_REACTIVE(LongFloat);

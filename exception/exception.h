@@ -6,7 +6,7 @@
 #include <stddef.h>
 #include <stdarg.h>
 
-#include "c23/constructor.h"
+#include "util/constructor.h"
 #include "oop/type.h"
 
 // Categories of runtime exceptions

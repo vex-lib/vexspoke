@@ -1,6 +1,6 @@
 #include "lang/vec2.h"
 
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 ;;DEFINITION
 /**

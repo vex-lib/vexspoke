@@ -1,6 +1,6 @@
 #include "math/vex-math.h"
 
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 ;;DEFINITION
 /**

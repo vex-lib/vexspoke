@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdatomic.h>
-#include "lifetime/platform.h"
+#include "util/platform.h"
 
 #include "system/display_info.h"
 #include "system/display_monitor.h"
@@ -14,7 +14,7 @@
 #if defined(VEX_PLATFORM_APPLE)
 #include <sys/sysctl.h>
 #include <CoreGraphics/CoreGraphics.h>
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 ;;DEFINITION
 /**

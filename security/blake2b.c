@@ -2,8 +2,8 @@
 
 #include <string.h>
 
-#include "annotation/annotation.h"
-#include "exception/throw.h"
+#include "util/annotation.h"
+#include "util/throw.h"
 
 ;;DEFINITION
 /** BLAKE2b is the hash Argon2 is built from, so it is the first stone of a

@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stddef.h>
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
 // objects/choice.h — Immutable deterministic choice / branch dispatcher.
 // Ported from legacy objects/Choice.java.

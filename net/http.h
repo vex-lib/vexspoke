@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <pthread.h>
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
 // net/http.h — HTTP/1.1 client & micro server over BSD sockets
 // (Legacy: net/HTTPClient.java, net/HTTPServer.java, net/PollRequest.java).

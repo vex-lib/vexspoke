@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
 // lang/vec2/vec2d.h — 2D Double-Precision Vector.
 //

@@ -2,8 +2,8 @@
 
 #include <string.h>
 
-#include "annotation/annotation.h"
-#include "exception/throw.h"
+#include "util/annotation.h"
+#include "util/throw.h"
 
 ;;DEFINITION
 /** ChaCha20 is the stream cipher the AEAD is built from: a 4-word constant, an

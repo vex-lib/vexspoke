@@ -3,7 +3,7 @@
 #include "math/fast_math.h"
 #include "nio/mem.h"
 #include "oop/type.h"
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 ;;DEFINITION
 /**
@@ -368,7 +368,7 @@ void Mat4_lookAt(float eye_x, float eye_y, float eye_z,
     Mat4_set(dest, 3, 3, 1.0f);
 }
 
-void Mat4_transform(const Mat4 *m, const Vec4 *src_vec, Vec4 *dest_vec) {
+void Mat4_transform(const Mat4 *m, const Coord4 *src_vec, Coord4 *dest_vec) {
     float x = (*src_vec).x;
     float y = (*src_vec).y;
     float z = (*src_vec).z;
@@ -385,7 +385,7 @@ void Mat4_transform(const Mat4 *m, const Vec4 *src_vec, Vec4 *dest_vec) {
     (*dest_vec).w = rw;
 }
 
-void Mat4_transformVec3(const Mat4 *m, const Vec3 *src_vec, Vec3 *dest_vec) {
+void Mat4_transformVec3(const Mat4 *m, const Coord3 *src_vec, Coord3 *dest_vec) {
     float x = (*src_vec).x;
     float y = (*src_vec).y;
     float z = (*src_vec).z;
@@ -394,7 +394,10 @@ void Mat4_transformVec3(const Mat4 *m, const Vec3 *src_vec, Vec3 *dest_vec) {
     float ry = Mat4_get(m, 1, 0) * x + Mat4_get(m, 1, 1) * y + Mat4_get(m, 1, 2) * z + Mat4_get(m, 1, 3);
     float rz = Mat4_get(m, 2, 0) * x + Mat4_get(m, 2, 1) * y + Mat4_get(m, 2, 2) * z + Mat4_get(m, 2, 3);
 
-    (*dest_vec).x = rx;
-    (*dest_vec).y = ry;
-    (*dest_vec).z = rz;
+    if (dest_vec) {
+        (*dest_vec).x = rx;
+        (*dest_vec).y = ry;
+        (*dest_vec).z = rz;
+        (*dest_vec).frame = (*src_vec).frame;   // a transform does not change the frame
+    }
 }

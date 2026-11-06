@@ -1,8 +1,8 @@
 #include "net/websocket.h"
 #include "oop/type.h"
 
-#include "annotation/annotation.h"
-#include "exception/throw.h"
+#include "util/annotation.h"
+#include "util/throw.h"
 #include "lang/str.h"
 #include "net/url.h"
 #include "re/nio/mem.h"

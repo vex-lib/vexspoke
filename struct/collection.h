@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 // struct/collection.h — the Collection metadata struct, ported from
 // struct/Collection.java.

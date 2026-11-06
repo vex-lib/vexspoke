@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "c23/constructor.h"
+#include "util/constructor.h"
 #include "net/tls.h"
 
 // net/websocket.h — RFC 6455 WebSocket client over BSD sockets

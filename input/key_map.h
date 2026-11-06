@@ -2,10 +2,10 @@
 #define INPUT_KEY_MAP_H
 
 #include <stdint.h>
-#include "c23/constructor.h"
+#include "util/constructor.h"
 #include <stdbool.h>
 
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 // input/key_map.h — input binding registry (combo → fn pointer).
 //

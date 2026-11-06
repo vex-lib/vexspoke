@@ -11,8 +11,8 @@
 #include <stdio.h>
 #include <time.h>
 
-#include "atomic/registry.h"
-#include "atomic/spin.h"
+#include "re/atomic/registry.h"
+#include "re/atomic/spin.h"
 
 static int g_failures = 0;
 

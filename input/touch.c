@@ -12,11 +12,11 @@
 #include <string.h>
 
 #include "input/focus.h"
-#include "atomic/ring.h"
+#include "struct/ring.h"
 #include "time/nanotime.h"
 #include "nio/mem.h"
 #include "oop/type.h"
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 ;;DEFINITION
 /**

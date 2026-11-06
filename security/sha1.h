@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
 // security/sha1.h — SHA-1 (FIPS 180-4), the same `Crypto` module family as
 // crypto.h, split out per the Single Class Per File Law.

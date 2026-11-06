@@ -6,8 +6,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "annotation/annotation.h"
-#include "exception/throw.h"
+#include "util/annotation.h"
+#include "util/throw.h"
 #include "nio/mem.h"
 #include "oop/type.h"
 #include "regex/parser.h"

@@ -59,7 +59,7 @@ bool string_equals(const uint8_t *ptr, const char *value);
 
 // — Capital String class — vex reserved word String() — file stays string.h lowercase per prefs
 // String("hello"), String(uint8_t*), String() → ""
-#include "c23/constructor.h"
+#include "util/constructor.h"
 #define String_0(...) string_allocate("")
 #define String_1(value) _Generic((value), const char*: string_allocate, char*: string_allocate, uint8_t*: string_copy, const uint8_t*: string_copy, default: string_allocate)(value)
 #define String(...) CONSTRUCTOR_DISPATCH(String, __VA_ARGS__)

@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
 // primitive/char_sequence.h — a non-owning view of text: bytes plus a length.
 //

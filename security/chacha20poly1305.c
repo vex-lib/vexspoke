@@ -2,8 +2,8 @@
 
 #include <string.h>
 
-#include "annotation/annotation.h"
-#include "exception/throw.h"
+#include "util/annotation.h"
+#include "util/throw.h"
 #include "security/chacha20.h"
 #include "security/crypto.h"
 #include "security/poly1305.h"

@@ -5,9 +5,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 // primitive/buffer.h — one contiguous byte block with length + capacity.
 //

@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 #include "nio/mem.h"
 #include "oop/type.h"
 
@@ -15,7 +15,7 @@
  * ============================================================================
  * DEFINITION: ReactiveObject (the standard object family)
  * ============================================================================
- * The standard object typed reactives (Vec2, Vec3, Vec4, Rectangle, IntDouble,
+ * The standard object typed reactives (Coord2, Coord3, Coord4, Rectangle, IntDouble,
  * LongFloat, LongDouble), each stamped by TYPEDEF_REACTIVE / IMPLEMENT_REACTIVE.
  * The word holds the object pointer; a rebind is a change. They share this file
  * by intent (see the header).
@@ -40,17 +40,17 @@
 
 // The standard objects' valueOf(): render the FIELDS, not the pointer. A null
 // value (the word is the object pointer) prints "null".
-static void vec2_str(const Vec2 *v, char *out, size_t cap) {
+static void vec2_str(const Coord2 *v, char *out, size_t cap) {
     if (v == nullptr) { snprintf(out, cap, "null"); return; }
     snprintf(out, cap, "(%.3g, %.3g)", (double) (*v).x, (double) (*v).y);
 }
 
-static void vec3_str(const Vec3 *v, char *out, size_t cap) {
+static void vec3_str(const Coord3 *v, char *out, size_t cap) {
     if (v == nullptr) { snprintf(out, cap, "null"); return; }
     snprintf(out, cap, "(%.3g, %.3g, %.3g)", (double) (*v).x, (double) (*v).y, (double) (*v).z);
 }
 
-static void vec4_str(const Vec4 *v, char *out, size_t cap) {
+static void vec4_str(const Coord4 *v, char *out, size_t cap) {
     if (v == nullptr) { snprintf(out, cap, "null"); return; }
     snprintf(out, cap, "(%.3g, %.3g, %.3g, %.3g)",
              (double) (*v).x, (double) (*v).y, (double) (*v).z, (double) (*v).w);
@@ -62,9 +62,9 @@ static void rectangle_str(const Rectangle *r, char *out, size_t cap) {
              (double) (*r).x, (double) (*r).y, (double) (*r).width, (double) (*r).height);
 }
 
-IMPLEMENT_REACTIVE_STR(Vec2, vec2_str);
-IMPLEMENT_REACTIVE_STR(Vec3, vec3_str);
-IMPLEMENT_REACTIVE_STR(Vec4, vec4_str);
+IMPLEMENT_REACTIVE_STR(Coord2, vec2_str);
+IMPLEMENT_REACTIVE_STR(Coord3, vec3_str);
+IMPLEMENT_REACTIVE_STR(Coord4, vec4_str);
 IMPLEMENT_REACTIVE_STR(Rectangle, rectangle_str);
 IMPLEMENT_REACTIVE(IntDouble);
 IMPLEMENT_REACTIVE(LongFloat);

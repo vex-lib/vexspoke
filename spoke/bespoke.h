@@ -3,8 +3,8 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "lifetime/platform.h"
-#include "c23/constructor.h"
+#include "util/platform.h"
+#include "util/constructor.h"
 
 // spoke/bespoke.h — R2 Behavior: Unified Bespoke Bridge Hub.
 //

@@ -1,7 +1,7 @@
 #include "cli/console.h"
 #include "primitive/vex-string.h"
-#include "exception/throw.h"
-#include "annotation/annotation.h"
+#include "util/throw.h"
+#include "util/annotation.h"
 #include <stdio.h>
 
 ;;DEFINITION

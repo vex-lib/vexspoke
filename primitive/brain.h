@@ -5,9 +5,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "bit/bit.h"
+#include "re/nio/bit_pool.h"
 
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
 // primitive/brain.h — Brain primitive (Legacy: primitive/Brain.java).
 // Delegates to Bit16 width pool (2B stride).

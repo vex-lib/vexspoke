@@ -5,11 +5,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
 // lang/vec2/vec2.h — 2D Spatial Vector.
 //
-// Single Class Per File Law: Vec2.
+// Single Class Per File Law: Coord2.
 //
 // 2D spatial vector with horizontal and vertical dimensions.
 //   - horizontal (x): Right (+), Left (-)
@@ -24,55 +24,55 @@ typedef enum CoordFrame2D {
     COORD_FRAME_2D_Y_DOWN = 1  // UI / Canvas / Screen (+Y Down, +X Right)
 } CoordFrame2D;
 
-typedef struct Vec2 {
+typedef struct Coord2 {
     union {
         struct { float horizontal; float vertical; };
         struct { float x; float y; };
         struct { float right; float up; };
         float data[2];
     };
-} Vec2;
+} Coord2;
 
 #define VEC2_BYTES 8u
 
-Vec2 *Vec2_0(void);
-Vec2 *Vec2_2(float horizontal, float vertical);
-#define Vec2(...) CONSTRUCTOR_DISPATCH(Vec2, __VA_ARGS__)
-void Vec2_free(Vec2 *v);
+Coord2 *Coord2_0(void);
+Coord2 *Coord2_2(float horizontal, float vertical);
+#define Coord2(...) CONSTRUCTOR_DISPATCH(Coord2, __VA_ARGS__)
+void Coord2_free(Coord2 *v);
 
 // Directional Getters & Setters
-float Vec2_getRight(const Vec2 *v);
-void  Vec2_setRight(Vec2 *v, float val);
-float Vec2_getLeft(const Vec2 *v);
-void  Vec2_setLeft(Vec2 *v, float val);
+float Coord2_getRight(const Coord2 *v);
+void  Coord2_setRight(Coord2 *v, float val);
+float Coord2_getLeft(const Coord2 *v);
+void  Coord2_setLeft(Coord2 *v, float val);
 
-float Vec2_getUp(const Vec2 *v);
-void  Vec2_setUp(Vec2 *v, float val);
-float Vec2_getDown(const Vec2 *v);
-void  Vec2_setDown(Vec2 *v, float val);
+float Coord2_getUp(const Coord2 *v);
+void  Coord2_setUp(Coord2 *v, float val);
+float Coord2_getDown(const Coord2 *v);
+void  Coord2_setDown(Coord2 *v, float val);
 
-float Vec2_getX(const Vec2 *v);
-void  Vec2_setX(Vec2 *v, float x);
-float Vec2_getY(const Vec2 *v);
-void  Vec2_setY(Vec2 *v, float y);
+float Coord2_getX(const Coord2 *v);
+void  Coord2_setX(Coord2 *v, float x);
+float Coord2_getY(const Coord2 *v);
+void  Coord2_setY(Coord2 *v, float y);
 
-float Vec2_getYInFrame(const Vec2 *v, CoordFrame2D frame);
+float Coord2_getYInFrame(const Coord2 *v, CoordFrame2D frame);
 
-void Vec2_set(Vec2 *v, float horizontal, float vertical);
-void Vec2_copy(const Vec2 *src, Vec2 *dest);
+void Coord2_set(Coord2 *v, float horizontal, float vertical);
+void Coord2_copy(const Coord2 *src, Coord2 *dest);
 
-void Vec2_add(const Vec2 *a, const Vec2 *b, Vec2 *dest);
-void Vec2_sub(const Vec2 *a, const Vec2 *b, Vec2 *dest);
-void Vec2_mul(const Vec2 *a, float scalar, Vec2 *dest);
-void Vec2_div(const Vec2 *a, float scalar, Vec2 *dest);
+void Coord2_add(const Coord2 *a, const Coord2 *b, Coord2 *dest);
+void Coord2_sub(const Coord2 *a, const Coord2 *b, Coord2 *dest);
+void Coord2_mul(const Coord2 *a, float scalar, Coord2 *dest);
+void Coord2_div(const Coord2 *a, float scalar, Coord2 *dest);
 
-float Vec2_dot(const Vec2 *a, const Vec2 *b);
-float Vec2_lengthSquared(const Vec2 *v);
-float Vec2_length(const Vec2 *v);
-void  Vec2_normalize(const Vec2 *src, Vec2 *dest);
-void  Vec2_perpendicular(const Vec2 *src, Vec2 *dest);
-float Vec2_distance(const Vec2 *a, const Vec2 *b);
-float Vec2_angle(const Vec2 *a, const Vec2 *b);
-void  Vec2_lerp(const Vec2 *a, const Vec2 *b, float t, Vec2 *dest);
+float Coord2_dot(const Coord2 *a, const Coord2 *b);
+float Coord2_lengthSquared(const Coord2 *v);
+float Coord2_length(const Coord2 *v);
+void  Coord2_normalize(const Coord2 *src, Coord2 *dest);
+void  Coord2_perpendicular(const Coord2 *src, Coord2 *dest);
+float Coord2_distance(const Coord2 *a, const Coord2 *b);
+float Coord2_angle(const Coord2 *a, const Coord2 *b);
+void  Coord2_lerp(const Coord2 *a, const Coord2 *b, float t, Coord2 *dest);
 
 #endif

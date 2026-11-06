@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "c23/constructor.h"
+#include "util/constructor.h"
 #include "lang/vec2.h"
 
 // input/gamepad.h — Game Controller & Joystick Hardware Model.
@@ -35,8 +35,8 @@ enum {
 
 typedef struct GamepadState {
     uint32_t buttons;       // Bitmask of active pressed buttons
-    Vec2     leftStick;     // Filtered deadzone vector [-1.0, +1.0]
-    Vec2     rightStick;    // Filtered deadzone vector [-1.0, +1.0]
+    Coord2     leftStick;     // Filtered deadzone vector [-1.0, +1.0]
+    Coord2     rightStick;    // Filtered deadzone vector [-1.0, +1.0]
     float    leftTrigger;   // Normalized trigger squeeze [0.0, 1.0]
     float    rightTrigger;  // Normalized trigger squeeze [0.0, 1.0]
     float    rumbleLowFreq; // Low frequency heavy rumble [0.0, 1.0]
@@ -52,6 +52,6 @@ static inline void GamepadState_setButtons(GamepadState *state, uint32_t buttons
 }
 
 // Circular deadzone math; returns the filtered vector by value.
-Vec2 Gamepad_applyCircularDeadzone(Vec2 rawStick, float deadzone);
+Coord2 Gamepad_applyCircularDeadzone(Coord2 rawStick, float deadzone);
 
 #endif

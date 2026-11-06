@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "c23/constructor.h"
+#include "util/constructor.h"
 #include "struct/collection.h"
 
 // struct/circle_array.h — 2D Circular Matrix evaluated via the Pythagorean Theorem.

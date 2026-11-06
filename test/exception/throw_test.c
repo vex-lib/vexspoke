@@ -7,7 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "exception/throw.h"
+#include "util/throw.h"
 
 static int failures = 0;
 

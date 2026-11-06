@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 // struct/exhaustion.h — the shared loud-refusal seam (the Exhaustion Loudness
 // Law) for owners that own finite storage but do not embed a Collection.

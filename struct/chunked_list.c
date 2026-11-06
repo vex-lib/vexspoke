@@ -9,9 +9,9 @@
 #include <stdatomic.h>
 #include <string.h>
 
-#include "atomic/spin.h"
+#include "re/atomic/spin.h"
 #include "struct/exhaustion.h"
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 #include "nio/mem.h"
 #include "oop/stride.h"
 #include "oop/type.h"

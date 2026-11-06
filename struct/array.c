@@ -7,9 +7,9 @@
 #include "oop/stride.h"
 #include "oop/type.h"
 #include "struct/exhaustion.h"
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 #include "exception/try_value.h"
-#include "exception/throw.h"
+#include "util/throw.h"
 
 ;;DEFINITION
 /**

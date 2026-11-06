@@ -1,6 +1,6 @@
 #include "math/coord_frame.h"
 
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 ;;DEFINITION
 /**

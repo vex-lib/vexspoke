@@ -5,9 +5,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "bit/bit.h"
+#include "re/nio/bit_pool.h"
 
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
 // primitive/long_float.h — LongFloat primitive (Legacy: primitive/LongFloat.java).
 // Delegates to Bit128 width pool (16B stride).

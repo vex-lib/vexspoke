@@ -1,8 +1,6 @@
 #ifndef C23_EQUALS_H
 #define C23_EQUALS_H
 
-#include <stdbool.h>
-
 // c23/equals.h — Relational Equality.
 //
 // Java `.equals()` compares content; C `==` compares addresses. These close the

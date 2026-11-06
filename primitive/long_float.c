@@ -4,7 +4,7 @@
 
 #include "nio/mem.h"
 #include "oop/type.h"
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 ;;DEFINITION
 /**
@@ -59,7 +59,7 @@ BitPool g_long_floatPool;
 
 bool LongFloat_init(void) {
     g_long_floatPool = BitPool(16, 1024);
-    return g_long_floatPool.arena != nullptr;
+    return BitPool_live(&g_long_floatPool);
 }
 
 void LongFloat_shutdown(void) {

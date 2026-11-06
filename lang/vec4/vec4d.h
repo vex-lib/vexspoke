@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
 // lang/vec4/vec4d.h — 32-byte SIMD 4D Double-Precision Vector.
 //

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
 // objects/local.h — Thread-local variable slot table object wrapper.
 // Ported from legacy objects/Local.java. The slot table is arena-backed

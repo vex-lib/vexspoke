@@ -2,7 +2,7 @@
 
 #include "regex/charclass.h"
 
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 ;;DEFINITION
 /**

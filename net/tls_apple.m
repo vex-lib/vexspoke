@@ -1,7 +1,7 @@
 #include "net/tls.h"
 
-#include "annotation/annotation.h"
-#include "exception/throw.h"
+#include "util/annotation.h"
+#include "util/throw.h"
 
 #import <Foundation/Foundation.h>
 #import <Network/Network.h>

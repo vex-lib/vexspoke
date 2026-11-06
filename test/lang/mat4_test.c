@@ -161,19 +161,19 @@ static void test_transforms(void) {
     CHECK(Mat4_get(&trans, 3, 3) == 1.0f);
 
     // Transform a homogeneous point.
-    Vec4 p = { 0 }, out = { 0 };
-    Vec4_set(&p, 1.0f, 1.0f, 1.0f, 1.0f);
+    Coord4 p = { 0 }, out = { 0 };
+    Coord4_set(&p, 1.0f, 1.0f, 1.0f, 1.0f);
     Mat4_transform(&trans, &p, &out);
-    CHECK(CLOSE(Vec4_getX(&out), 11.0f));
-    CHECK(CLOSE(Vec4_getY(&out), 21.0f));
-    CHECK(CLOSE(Vec4_getZ(&out), 31.0f));
-    CHECK(CLOSE(Vec4_getW(&out), 1.0f));
+    CHECK(CLOSE(Coord4_getX(&out), 11.0f));
+    CHECK(CLOSE(Coord4_getY(&out), 21.0f));
+    CHECK(CLOSE(Coord4_getZ(&out), 31.0f));
+    CHECK(CLOSE(Coord4_getW(&out), 1.0f));
 
     // transformVec3 (implicit w=1).
-    Vec3 p3 = { 0 }, o3 = { 0 };
-    Vec3_set(&p3, 1.0f, 1.0f, 1.0f);
+    Coord3 p3 = { 0 }, o3 = { 0 };
+    Coord3_set(&p3, 1.0f, 1.0f, 1.0f);
     Mat4_transformVec3(&trans, &p3, &o3);
-    CHECK(CLOSE(Vec3_getX(&o3), 11.0f) && CLOSE(Vec3_getZ(&o3), 31.0f));
+    CHECK(CLOSE(Coord3_getX(&o3), 11.0f) && CLOSE(Coord3_getZ(&o3), 31.0f));
 
     // 2D TRS identity.
     Mat4 t2d;
@@ -185,11 +185,11 @@ static void test_transforms(void) {
     // Rotation about Z by +90 degrees: (1,0,0) -> (0,1,0).
     Mat4 rot;
     Mat4_createTransformationMatrix(0, 0, 0, 0, 0, 90, 1, 1, 1, &rot);
-    Vec4 xaxis = { 0 }, rout = { 0 };
-    Vec4_set(&xaxis, 1.0f, 0.0f, 0.0f, 1.0f);
+    Coord4 xaxis = { 0 }, rout = { 0 };
+    Coord4_set(&xaxis, 1.0f, 0.0f, 0.0f, 1.0f);
     Mat4_transform(&rot, &xaxis, &rout);
-    CHECK(CLOSE(Vec4_getX(&rout), 0.0f));
-    CHECK(CLOSE(Vec4_getY(&rout), 1.0f));
+    CHECK(CLOSE(Coord4_getX(&rout), 0.0f));
+    CHECK(CLOSE(Coord4_getY(&rout), 1.0f));
 }
 
 // Checks axis rotation, zero-axis rejection, and transform chaining.
@@ -199,11 +199,11 @@ static void test_rotate_axis(void) {
     Mat4 r;
     Mat4_identity(&r);
     Mat4_rotate(&r, 1.5707963f, 0, 0, 1, &r);       // +90 deg about Z, in place
-    Vec4 x = { 0 }, out = { 0 };
-    Vec4_set(&x, 1.0f, 0.0f, 0.0f, 1.0f);
+    Coord4 x = { 0 }, out = { 0 };
+    Coord4_set(&x, 1.0f, 0.0f, 0.0f, 1.0f);
     Mat4_transform(&r, &x, &out);
-    CHECK(fabsf(Vec4_getX(&out)) < 0.01f);          // fast invSqrt tolerance
-    CHECK(fabsf(Vec4_getY(&out) - 1.0f) < 0.01f);
+    CHECK(fabsf(Coord4_getX(&out)) < 0.01f);          // fast invSqrt tolerance
+    CHECK(fabsf(Coord4_getY(&out) - 1.0f) < 0.01f);
 
     // A rotation carries src's translation column (3) into a non-aliased dest.
     Mat4 srcTranslated;
@@ -238,50 +238,50 @@ static void test_projections(void) {
     CHECK(CLOSE(Mat4_get(&p, 0, 0), 1.0f));
     CHECK(CLOSE(Mat4_get(&p, 1, 1), 1.0f));
 
-    Vec4 near = { 0 }, out = { 0 };
-    Vec4_set(&near, 0, 0, -1, 1);
+    Coord4 near = { 0 }, out = { 0 };
+    Coord4_set(&near, 0, 0, -1, 1);
     Mat4_transform(&p, &near, &out);
-    CHECK(CLOSE(Vec4_getZ(&out) / Vec4_getW(&out), -1.0f));    // near plane -> -1
-    Vec4 far = { 0 };
-    Vec4_set(&far, 0, 0, -100, 1);
+    CHECK(CLOSE(Coord4_getZ(&out) / Coord4_getW(&out), -1.0f));    // near plane -> -1
+    Coord4 far = { 0 };
+    Coord4_set(&far, 0, 0, -100, 1);
     Mat4_transform(&p, &far, &out);
-    CHECK(CLOSE(Vec4_getZ(&out) / Vec4_getW(&out), 1.0f));     // far plane -> +1
+    CHECK(CLOSE(Coord4_getZ(&out) / Coord4_getW(&out), 1.0f));     // far plane -> +1
 
     // Vulkan variant: Y flipped, depth in [0,1].
     Mat4 pv;
     Mat4_perspectiveVulkan(1.5707963f, 1.0f, 1.0f, 100.0f, &pv);
     CHECK(CLOSE(Mat4_get(&pv, 1, 1), -1.0f));
-    Vec4_set(&near, 0, 0, -1, 1);
+    Coord4_set(&near, 0, 0, -1, 1);
     Mat4_transform(&pv, &near, &out);
-    CHECK(CLOSE(Vec4_getZ(&out) / Vec4_getW(&out), 0.0f));
-    Vec4_set(&far, 0, 0, -100, 1);
+    CHECK(CLOSE(Coord4_getZ(&out) / Coord4_getW(&out), 0.0f));
+    Coord4_set(&far, 0, 0, -100, 1);
     Mat4_transform(&pv, &far, &out);
-    CHECK(CLOSE(Vec4_getZ(&out) / Vec4_getW(&out), 1.0f));
+    CHECK(CLOSE(Coord4_getZ(&out) / Coord4_getW(&out), 1.0f));
 
     // Orthographic near/far mapping.
     Mat4 o;
     Mat4_orthographic(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 100.0f, &o);
     CHECK(CLOSE(Mat4_get(&o, 0, 0), 1.0f));
     CHECK(CLOSE(Mat4_get(&o, 1, 1), 1.0f));
-    Vec4_set(&near, 0, 0, -1, 1);
+    Coord4_set(&near, 0, 0, -1, 1);
     Mat4_transform(&o, &near, &out);
-    CHECK(CLOSE(Vec4_getZ(&out), -1.0f));
-    Vec4_set(&far, 0, 0, -100, 1);
+    CHECK(CLOSE(Coord4_getZ(&out), -1.0f));
+    Coord4_set(&far, 0, 0, -100, 1);
     Mat4_transform(&o, &far, &out);
-    CHECK(CLOSE(Vec4_getZ(&out), 1.0f));
+    CHECK(CLOSE(Coord4_getZ(&out), 1.0f));
 }
 
 // Checks that look-at maps the world origin into the expected view position.
 static void test_look_at(void) {
     Mat4 v;
     Mat4_lookAt(0, 0, 5, 0, 0, 0, 0, 1, 0, &v);
-    Vec4 origin = { 0 }, out = { 0 };
-    Vec4_set(&origin, 0, 0, 0, 1);
+    Coord4 origin = { 0 }, out = { 0 };
+    Coord4_set(&origin, 0, 0, 0, 1);
     Mat4_transform(&v, &origin, &out);
-    CHECK(CLOSE(Vec4_getX(&out), 0.0f));
-    CHECK(CLOSE(Vec4_getY(&out), 0.0f));
-    CHECK(fabsf(Vec4_getZ(&out) + 5.0f) < 0.02f);   // fast invSqrt tolerance
-    CHECK(CLOSE(Vec4_getW(&out), 1.0f));
+    CHECK(CLOSE(Coord4_getX(&out), 0.0f));
+    CHECK(CLOSE(Coord4_getY(&out), 0.0f));
+    CHECK(fabsf(Coord4_getZ(&out) + 5.0f) < 0.02f);   // fast invSqrt tolerance
+    CHECK(CLOSE(Coord4_getW(&out), 1.0f));
 }
 
 // Runs the Mat4 owner cases after initializing the memory substrate.

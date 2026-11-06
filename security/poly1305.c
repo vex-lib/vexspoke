@@ -2,8 +2,8 @@
 
 #include <string.h>
 
-#include "annotation/annotation.h"
-#include "exception/throw.h"
+#include "util/annotation.h"
+#include "util/throw.h"
 
 ;;DEFINITION
 /** Poly1305 is a one-time message authenticator over the prime 2^130 - 5. The

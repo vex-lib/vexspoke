@@ -5,9 +5,9 @@
 #include "nio/mem.h"
 #include "oop/stride.h"
 #include "oop/type.h"
-#include "exception/throw.h"
+#include "util/throw.h"
 #include "struct/exhaustion.h"
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 ;;DEFINITION
 /**

@@ -1,7 +1,7 @@
 #include "net/vex_ws_source.h"
 
-#include "annotation/annotation.h"
-#include "exception/throw.h"
+#include "util/annotation.h"
+#include "util/throw.h"
 #include "lang/str.h"
 
 #include <string.h>

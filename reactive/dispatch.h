@@ -22,7 +22,7 @@
 
 #define VEX_REACTIVE_FAMILY(X) \
     X(Bool) X(Byte) X(Short) X(Char) X(Int) X(Long) X(Float) X(Double) X(String) \
-    X(Vec2) X(Vec3) X(Vec4) X(Rectangle) \
+    X(Coord2) X(Coord3) X(Coord4) X(Rectangle) \
     X(IntFloat) X(IntDouble) X(LongFloat) X(LongDouble)
 
 #define VEX_CHAN_ARM(T, SUF) VEX_CAT(Reactive, T) *: VEX_CAT(VEX_CAT(Reactive, T), SUF),

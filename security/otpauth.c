@@ -1,7 +1,7 @@
 #include "security/otpauth.h"
 #include "security/base32.h"
-#include "exception/throw.h"
-#include "annotation/annotation.h"
+#include "util/throw.h"
+#include "util/annotation.h"
 #include <stdio.h>
 
 ;;DEFINITION

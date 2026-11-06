@@ -1,8 +1,8 @@
 #include "security/totp.h"
 #include "security/hmac.h"
 #include "security/crypto.h"
-#include "exception/throw.h"
-#include "annotation/annotation.h"
+#include "util/throw.h"
+#include "util/annotation.h"
 
 ;;DEFINITION
 /** TOTP: a shared per-user secret plus a counter derived from the clock. The code

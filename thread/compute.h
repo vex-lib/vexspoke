@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #include "thread/thread.h"
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
 // thread/compute.h — the heavy-work job system (the parking lot).
 //

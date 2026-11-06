@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "security/keychain.h"
-#include "test_support.h"
+#include "util/test_support.h"
 
 #define TEST_SERVICE "com.vexgraph.darkbase.owner-test"
 #define TEST_ACCOUNT "keychain-owner"

@@ -8,7 +8,7 @@
 #include <spawn.h>
 #include <sys/wait.h>
 
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 extern char **environ;
 

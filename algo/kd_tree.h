@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
 // algo/kd_tree.h — 3-Dimensional K-D Tree for Spatial Search.
 //

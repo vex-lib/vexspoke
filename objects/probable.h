@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include "annotation/annotation.h"
-#include "c23/constructor.h"
+#include "util/annotation.h"
+#include "util/constructor.h"
 
 typedef struct Probable {
     uintptr_t object;

@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
-#include "c23/constructor.h"
+#include "util/constructor.h"
 
 // objects/global.h — Atomic global pointer/variable object wrapper.
 // Ported from legacy objects/Global.java.

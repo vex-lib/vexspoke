@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "annotation/annotation.h"
-#include "exception/throw.h"
+#include "util/annotation.h"
+#include "util/throw.h"
 #include "security/blake2b.h"
 
 ;;DEFINITION

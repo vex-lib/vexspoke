@@ -2,7 +2,7 @@
 
 #include <math.h>
 #include <string.h>
-#include "annotation/annotation.h"
+#include "util/annotation.h"
 
 ;;DEFINITION
 /**
@@ -32,18 +32,18 @@
  * ----------------------------------------------------------------------------
  *   GestureEvent {
  *     GesturePhase phase;            // BEGAN / CHANGED / ENDED / CANCELLED / MOMENTUM
- *     Vec2 focalPoint;               // gesture origin (normalized or pixel coords)
+ *     Coord2 focalPoint;               // gesture origin (normalized or pixel coords)
  *     float magnificationDelta;      // pinch scale delta (+ zoom in, - zoom out)
  *     float rotationDeltaRad;        // two-finger rotation (+ CW, - CCW)
- *     Vec2 scrollDelta;              // smooth scroll delta (horizontal & vertical)
+ *     Coord2 scrollDelta;              // smooth scroll delta (horizontal & vertical)
  *     SwipeDirection swipe;          // discrete multi-finger swipe if detected
  *     uint64_t timestampUs;          // event timestamp
  *   }
  *   GestureState {
  *     float currentScale;            // absolute accumulated zoom scale (default 1.0)
  *     float currentRotationRad;      // absolute accumulated rotation
- *     Vec2 focalPoint;               // gesture origin
- *     Vec2 scrollVelocity;           // inertia velocity decay
+ *     Coord2 focalPoint;               // gesture origin
+ *     Coord2 scrollVelocity;           // inertia velocity decay
  *     bool isPinching;               // pinch in progress
  *     bool isRotating;               // rotation in progress
  *   }
@@ -68,8 +68,8 @@ void GestureState_processEvent(GestureState *state, GestureEvent event) {
     if (state == nullptr) return;
 
     (*state).focalPoint = event.focalPoint;
-    Vec2 *velocity = &(*state).scrollVelocity;
-    Vec2 delta = event.scrollDelta;
+    Coord2 *velocity = &(*state).scrollVelocity;
+    Coord2 delta = event.scrollDelta;
 
     switch (event.phase) {
         case GESTURE_PHASE_BEGAN:
@@ -117,7 +117,7 @@ void GestureState_tick(GestureState *state, float deltaSeconds) {
 
     // Decay momentum velocity with smooth exponential friction
     float friction = powf(0.1f, deltaSeconds);
-    Vec2 *velocity = &(*state).scrollVelocity;
+    Coord2 *velocity = &(*state).scrollVelocity;
     (*velocity).horizontal *= friction;
     (*velocity).vertical   *= friction;
 

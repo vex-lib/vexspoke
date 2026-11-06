@@ -84,7 +84,7 @@ and implementation. Workspace indexing does not prove standalone runtime readine
 * **`src/c23/constructor.h`** — Java-style arity constructor overloading (`Class(...)` $\rightarrow$ `Class_0`, `Class_1`) via pure preprocessor dispatch.
 * **Engine `src/nio/mem.h/.c`** — Production `Memory_*` ABI and self-describing header, implemented and linked from Relational Engine. No Vexspoke IO/NIO source remains.
 * **Engine `src/nio/relational_memory.h`** — Separate Rust byte/string ABI include, not a silent replacement for native arena semantics.
-* **`src/bit/bit.h/.c`** — The lockless width pool (`BitPool`). ABA-tagged freelists recycle slots; freed slots return at the *exact same address*.
+* **Engine `re/nio/bit_pool.h/.c`** — The engine-owned fixed-stride slot pool (`BitPool`). Index freelist with a per-slot generation, arena-backed chunks, automatic growth; lifetime and alignment are stated in the Relational Engine lawbook, not here.
 * **`src/oop/type.h`** — the vexspoke class registry plus the shared 64-bit type-id algebra (Relational Engine `type/type.h`); one 64-bit id encodes project, form, modifier, wrappers, sugar and class.
 * **`src/reflection`** — the reflection hierarchy (`Variable`/`Field`/`Struct`/`Class`/`Method`); `src/oop/stride.h` holds the class → byte-width table.
 * **`src/atomic/ring.h/.c`** — Lockless MPMC ring buffer (`RingBuffer`), the inter-thread messaging highway.

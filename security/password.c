@@ -4,8 +4,8 @@
 #include "security/hmac.h"
 #include "security/crypto.h"
 #include "security/secure_random.h"
-#include "exception/throw.h"
-#include "annotation/annotation.h"
+#include "util/throw.h"
+#include "util/annotation.h"
 
 ;;DEFINITION
 /** Password owns the cold password-verifier boundary. Its legacy raw path is

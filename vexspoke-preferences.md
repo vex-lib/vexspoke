@@ -50,12 +50,15 @@ _Rule._
 
 ### BitPool Slot Segregation Law
 
-**Definition.** Equal-stride data structures (primitives, relational rows, ring buffer cells, tokens) carve their backing once from the engine arena (`MemoryArena_alloc`) and vend slots from a parameterized `BitPool`: ABA-safe generational bitmasks give $O(1)$ claim/return with no per-object allocator call. *Why:* slab locality keeps the R2 core predictable, linear and cache-aligned while the engine stays the single owner — a `BitPool` is a layout over engine bytes, never a second heap (the `calloc`/`free` in `src/bit/bit.c` today is a Relational Memory Law defect to retire).
+**Definition.** Equal-stride data structures (primitives, relational rows, ring buffer cells, tokens) carve their backing once from the engine arena (`MemoryArena_alloc`) and vend slots from the engine-owned `BitPool` (`re/nio/bit_pool.h`, included with its repo prefix): O(1) index claim/return with a per-slot generation, no per-object allocator call. *Why:* slab locality keeps the R2 core predictable, linear and cache-aligned while the engine stays the single owner — a `BitPool` is a layout over engine bytes, never a second heap. The old `vexspoke/bit/bit.c` (`calloc` arena, 48-bit tagged freelist, 8-byte stride, range-only containment) is deleted, not moved: its defect is retired by the engine owner.
 
 _Rule._
 
 1. Objects of identical size belong in a dedicated `BitPool`.
-2. Freelist indices carry generational counters to prevent ABA hazards in lockless access.
+2. Slots are handed out by index; each slot carries a 32-bit generation that bumps on release, so a stale pointer is refused instead of aliased. Freelist link words are indices with an explicit end sentinel, never truncated pointers.
+3. The slot header is one 32-byte floor unit and the stride rounds to the same floor, so every pool payload is 32-byte aligned exactly like a `Memory_alloc` payload.
+4. Growth is automatic: a full pool appends one arena-backed chunk, and live payloads never move. Initial capacity is a starting point, not a ceiling.
+5. Alloc/free are serialized by one embedded `SpinLock` per pool. This deliberately replaces the lock-free tagged list, which could not be made generation-safe without pointer surgery.
 
 ### 24-Byte Variable Slot Law (The 23+1 Rule)
 
