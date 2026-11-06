@@ -1,5 +1,4 @@
 #include "net/download.h"
-#include "io/cache.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -181,44 +180,7 @@ bool Download_fetch_cached(
     char *cached_path_out,
     size_t path_cap
 ) {
-    if (!url || !cached_path_out || path_cap == 0) {
-        return false;
-    }
-
-    Cache *cache = nullptr;
-    if (!Cache_open(subsystem, &cache)) {
-        return false;
-    }
-
-    if (Cache_has(cache, url)) {
-        bool ok = Cache_get_path(cache, url, cached_path_out, path_cap);
-        Cache_close(cache);
-        return ok;
-    }
-
-    char temp_download[] = "/tmp/vex_cachedl_XXXXXX";
-    int fd = mkstemp(temp_download);
-    if (fd < 0) {
-        Cache_close(cache);
-        return false;
-    }
-    close(fd);
-
-    if (!Download_to_file(url, temp_download, opts)) {
-        unlink(temp_download);
-        Cache_close(cache);
-        return false;
-    }
-
-    bool stored = Cache_put_file(cache, url, temp_download, ttl_sec);
-    unlink(temp_download);
-
-    if (!stored) {
-        Cache_close(cache);
-        return false;
-    }
-
-    bool ok = Cache_get_path(cache, url, cached_path_out, path_cap);
-    Cache_close(cache);
-    return ok;
+    (void) url; (void) subsystem; (void) ttl_sec; (void) opts;
+    (void) cached_path_out; (void) path_cap;
+    return false;
 }
