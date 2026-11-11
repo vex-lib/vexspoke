@@ -69,11 +69,11 @@ void *Bool_alloc(void) {
     return BitPool_alloc(&g_boolPool, ID_BOOL);
 }
 
-void *Bool_allocArray(size_t count) {
+void *Bool_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
-    size_t Bytes = count * sizeof(bool);
+    bytes Bytes = count * sizeof(bool);
     // For compound types, elem_size 1 already accounts for stride, but sizeof(bool) is placeholder
     // Use elem_size for true stride where c_type is int64 placeholder
     if (count > 1 && 1 != sizeof(bool))
@@ -107,14 +107,14 @@ bool Bool_compareAndSet(void *ptr, bool expected, bool value) {
     return __atomic_compare_exchange_n((bool*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
-uint64_t Bool_type(void *ptr) {
+u64 Bool_type(void *ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_boolPool, ptr)) return BitPool_type(&g_boolPool, ptr);
     return Memory_type(ptr);
 }
 
-size_t Bool_length(void *ptr) {
+bytes Bool_length(void *ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_boolPool, ptr)) return BitPool_length(&g_boolPool, ptr);

@@ -39,11 +39,11 @@
  *   Field {
  *     Variable variable; // the embedded name + reader + target
  *     FieldSetFn set;    // the setter
- *     uint64_t typeId;   // physical: value's project|form|class id
- *     uint32_t offset;   // physical: byte offset within the entity row
- *     uint32_t size;     // physical: value byte width
- *     uint32_t flags;    // physical: REFLECT_FIELD_* bits
- *     uint32_t pad;      // explicit padding
+ *     u64 typeId;   // physical: value's project|form|class id
+ *     u32 offset;   // physical: byte offset within the entity row
+ *     u32 size;     // physical: value byte width
+ *     u32 flags;    // physical: REFLECT_FIELD_* bits
+ *     u32 pad;      // explicit padding
  *   }
  *
  * PRIVATE HELPERS (kept file-local, pure logic, no behavior of their own): none.
@@ -116,13 +116,13 @@ void Field_free(Field *self) {
 
 // CORE FUNCTIONS
 
-uint64_t Field_kind(const Field *self) {
+u64 Field_kind(const Field *self) {
     if (self == nullptr)
         return 0u;
     return Memory_type((void*) self);
 }
 
-bool Field_check(const Field *self, uint64_t typeId) {
+bool Field_check(const Field *self, u64 typeId) {
     if (self == nullptr)
         return false;
     return Memory_type((void*) self) == typeId;
@@ -207,42 +207,42 @@ void *Field_getTarget(const Field *self) {
 
 // PHYSICAL LAYOUT (the entity-field half)
 
-void Field_setTypeId(Field *self, uint64_t typeId) {
+void Field_setTypeId(Field *self, u64 typeId) {
     if (self == nullptr)
         return;
     (*self).typeId = typeId;
     if ((*self).size == 0u && typeId != 0u)
-        (*self).size = (uint32_t) Stride_get((uint32_t) Type_class(typeId));
+        (*self).size = (u32) Stride_get((u32) Type_class(typeId));
 }
 
-uint64_t Field_getTypeId(const Field *self) {
+u64 Field_getTypeId(const Field *self) {
     return self ? (*self).typeId : 0u;
 }
 
-void Field_setOffset(Field *self, uint32_t offset) {
+void Field_setOffset(Field *self, u32 offset) {
     if (self != nullptr)
         (*self).offset = offset;
 }
 
-uint32_t Field_getOffset(const Field *self) {
+u32 Field_getOffset(const Field *self) {
     return self ? (*self).offset : 0u;
 }
 
-void Field_setSize(Field *self, uint32_t size) {
+void Field_setSize(Field *self, u32 size) {
     if (self != nullptr)
         (*self).size = size;
 }
 
-uint32_t Field_getSize(const Field *self) {
+u32 Field_getSize(const Field *self) {
     return self ? (*self).size : 0u;
 }
 
-void Field_setFlags(Field *self, uint32_t flags) {
+void Field_setFlags(Field *self, u32 flags) {
     if (self != nullptr)
         (*self).flags = flags;
 }
 
-uint32_t Field_getFlags(const Field *self) {
+u32 Field_getFlags(const Field *self) {
     return self ? (*self).flags : REFLECT_FIELD_NONE;
 }
 
@@ -260,7 +260,7 @@ bool Field_isIndexed(const Field *self) {
 
 // STRING PROJECTIONS (the toString Law)
 
-void Field_toString(const Field *self, char *dest, size_t cap, bool *outTruncated) {
+void Field_toString(const Field *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (dest == nullptr || cap == 0u)
@@ -271,13 +271,13 @@ void Field_toString(const Field *self, char *dest, size_t cap, bool *outTruncate
     }
     const Variable *variable = &(*self).variable;
     int written = snprintf(dest, cap, "Field(%s)", (*variable).name[0] == '\0' ? "?" : (*variable).name);
-    if (written < 0 || (size_t) written >= cap) {
+    if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
     }
 }
 
-void Field_toStringStruct(const Field *self, char *dest, size_t cap, bool *outTruncated) {
+void Field_toStringStruct(const Field *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (dest == nullptr || cap == 0u)
@@ -295,7 +295,7 @@ void Field_toStringStruct(const Field *self, char *dest, size_t cap, bool *outTr
                            inner, (unsigned long long) (uintptr_t) (*self).set,
                            (unsigned long long) (*self).typeId, (*self).offset,
                            (*self).size, (*self).flags);
-    if (written < 0 || (size_t) written >= cap || innerTruncated) {
+    if (written < 0 || (bytes) written >= cap || innerTruncated) {
         if (outTruncated)
             *outTruncated = true;
     }

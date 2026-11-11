@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "util/constructor.h"
+#include "lang/constructor.h"
 #include "reflection/field.h"
 #include "struct/chunked_list.h"
 
@@ -25,8 +25,8 @@
 
 typedef struct Struct {
     char name[REFLECT_STRUCT_NAME_BYTES]; // folded name (atom grammar)
-    uint32_t count;                       // live fields (== row count)
-    uint32_t size;                        // entity row byte stride (0 = unknown)
+    u32 count;                       // live fields (== row count)
+    u32 size;                        // entity row byte stride (0 = unknown)
     ChunkedList *fields;                  // never-moved Field rows
 } Struct;
 
@@ -38,26 +38,26 @@ Struct *Struct_1(const char *name);
 #define Struct(...) CONSTRUCTOR_DISPATCH(Struct, __VA_ARGS__)
 void Struct_free(Struct *self);
 
-uint64_t Struct_kind(const Struct *self);
-bool Struct_check(const Struct *self, uint64_t typeId);
+u64 Struct_kind(const Struct *self);
+bool Struct_check(const Struct *self, u64 typeId);
 // Append a copy of a field. Returns its index, or REFLECT_STRUCT_INDEX_NONE.
-uint32_t Struct_add(Struct *self, const Field *field);
+u32 Struct_add(Struct *self, const Field *field);
 // The field row at `index` (mutable, stable), or null.
-Field *Struct_get(const Struct *self, uint32_t index);
+Field *Struct_get(const Struct *self, u32 index);
 // Visit every field row in order (cold). Must not mutate the Struct.
-typedef void (*StructVisitFn)(Field *field, uint32_t index, void *userdata);
+typedef void (*StructVisitFn)(Field *field, u32 index, void *userdata);
 void Struct_forEach(Struct *self, StructVisitFn fn, void *userdata);
 
 bool Struct_setName(Struct *self, const char *name);
 // The entity row byte stride (0 = unknown). Struct_add does not lay out
 // offsets; a caller setting physical Fields also sets the row size.
-void Struct_setSize(Struct *self, uint32_t size);
-uint32_t Struct_getSize(const Struct *self);
+void Struct_setSize(Struct *self, u32 size);
+u32 Struct_getSize(const Struct *self);
 const char *Struct_getName(const Struct *self);
-uint32_t Struct_count(const Struct *self);
+u32 Struct_count(const Struct *self);
 bool Struct_isEmpty(const Struct *self);
 
-void Struct_toString(const Struct *self, char *dest, size_t cap, bool *outTruncated);
-void Struct_toStringStruct(const Struct *self, char *dest, size_t cap, bool *outTruncated);
+void Struct_toString(const Struct *self, char *dest, bytes cap, bool *outTruncated);
+void Struct_toStringStruct(const Struct *self, char *dest, bytes cap, bool *outTruncated);
 
 #endif

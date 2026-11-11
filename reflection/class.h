@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "util/constructor.h"
+#include "lang/constructor.h"
 #include "reflection/method.h"
 #include "reflection/struct.h"
 #include "struct/chunked_list.h"
@@ -30,8 +30,8 @@ typedef struct Class {
     ClassConstructFn construct;          // the constructor
     Struct *layout;                      // the class's field layout (borrowed)
     ChunkedList *methods;                // never-moved Method rows
-    uint32_t methodCount;                // live methods (== row count)
-    uint32_t pad;                        // explicit padding
+    u32 methodCount;                // live methods (== row count)
+    u32 pad;                        // explicit padding
 } Class;
 
 _Static_assert(sizeof(Class) == 56u, "Class must stay 56 Bytes");
@@ -44,8 +44,8 @@ Class *Class_3(const char *name, Struct *layout, ClassConstructFn construct);
 #define Class(...) CONSTRUCTOR_DISPATCH(Class, __VA_ARGS__)
 void Class_free(Class *self);
 
-uint64_t Class_kind(const Class *self);
-bool Class_check(const Class *self, uint64_t typeId);
+u64 Class_kind(const Class *self);
+bool Class_check(const Class *self, u64 typeId);
 void *Class_construct(Class *self, void *arg);
 
 // The class's field layout (borrowed; may be null).
@@ -55,16 +55,16 @@ ClassConstructFn Class_getConstruct(const Class *self);
 void Class_setConstruct(Class *self, ClassConstructFn construct);
 
 // Append a copy of a method. Returns its index, or REFLECT_CLASS_METHOD_NONE.
-uint32_t Class_addMethod(Class *self, const Method *method);
-Method *Class_getMethod(const Class *self, uint32_t index);
-uint32_t Class_methodCount(const Class *self);
-typedef void (*ClassMethodVisitFn)(Method *method, uint32_t index, void *userdata);
+u32 Class_addMethod(Class *self, const Method *method);
+Method *Class_getMethod(const Class *self, u32 index);
+u32 Class_methodCount(const Class *self);
+typedef void (*ClassMethodVisitFn)(Method *method, u32 index, void *userdata);
 void Class_forEachMethod(Class *self, ClassMethodVisitFn fn, void *userdata);
 
 bool Class_setName(Class *self, const char *name);
 const char *Class_getName(const Class *self);
 
-void Class_toString(const Class *self, char *dest, size_t cap, bool *outTruncated);
-void Class_toStringStruct(const Class *self, char *dest, size_t cap, bool *outTruncated);
+void Class_toString(const Class *self, char *dest, bytes cap, bool *outTruncated);
+void Class_toStringStruct(const Class *self, char *dest, bytes cap, bool *outTruncated);
 
 #endif

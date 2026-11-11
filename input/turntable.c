@@ -31,15 +31,15 @@
  * STRUCT FIELDS (Mirroring input/turntable.h):
  * ----------------------------------------------------------------------------
  *   TurntableState {
- *     uint8_t deckIndex;                      // 0 = Deck A, 1 = Deck B, etc.
+ *     u8 deckIndex;                      // 0 = Deck A, 1 = Deck B, etc.
  *     bool platterTouched;                    // in scratch mode when touched
  *     bool isPlaying;                         // motor active
  *     TurntableRpm targetRpm;                 // 33 or 45 RPM target
- *     float currentAngularVelocityRadPerSec;  // platter angular velocity
- *     float pitchFader;                       // current tempo slider
- *     float playheadSeconds;                  // track position
- *     float cuePositionSeconds;               // saved cue point
- *     float hotCues[8];                       // saved hot cue positions (-1 = unset)
+ *     f32 currentAngularVelocityRadPerSec;  // platter angular velocity
+ *     f32 pitchFader;                       // current tempo slider
+ *     f32 playheadSeconds;                  // track position
+ *     f32 cuePositionSeconds;               // saved cue point
+ *     f32 hotCues[8];                       // saved hot cue positions (-1 = unset)
  *   }
  *
  * FUNCTION REGISTRY:
@@ -52,7 +52,7 @@
  * ============================================================================
  */
 
-TurntableState TurntableState_1(uint8_t deckIndex) {
+TurntableState TurntableState_1(u8 deckIndex) {
     TurntableState state;
     memset(&state, 0, sizeof state);
     state.deckIndex = deckIndex;
@@ -106,7 +106,7 @@ void TurntableState_processEvent(TurntableState *state, TurntableEvent event) {
         // e.g. 1 revolution = 2*PI radians. Time delta ~16ms (60fps)
         (*state).currentAngularVelocityRadPerSec = event.angularDeltaRad / 0.01667f;
         // 33.33 RPM = 0.5555 rev/sec = ~3.4906 rad/sec
-        float speedRatio = (*state).currentAngularVelocityRadPerSec / 3.49066f;
+        f32 speedRatio = (*state).currentAngularVelocityRadPerSec / 3.49066f;
         (*state).playheadSeconds += speedRatio * 0.01667f;
     } else if (event.rimTouched) {
         // Nudge pitch momentarily
@@ -114,24 +114,24 @@ void TurntableState_processEvent(TurntableState *state, TurntableEvent event) {
     }
 }
 
-void TurntableState_tick(TurntableState *state, float deltaSeconds) {
+void TurntableState_tick(TurntableState *state, f32 deltaSeconds) {
     if (state == nullptr || deltaSeconds <= 0.0f) return;
 
     if (!(*state).platterTouched && (*state).isPlaying) {
         // Base nominal velocity
-        float baseRpm = ((*state).targetRpm == TURNTABLE_RPM_45) ? 45.0f : 33.333f;
-        float baseRadPerSec = baseRpm * (2.0f * 3.14159265f / 60.0f);
+        f32 baseRpm = ((*state).targetRpm == TURNTABLE_RPM_45) ? 45.0f : 33.333f;
+        f32 baseRadPerSec = baseRpm * (2.0f * 3.14159265f / 60.0f);
 
         // Pitch scale: 0.0 = 100%, +0.08 = 108% (8% pitch range standard)
-        float pitchMultiplier = 1.0f + ((*state).pitchFader * 0.08f);
-        float targetVelocity = baseRadPerSec * pitchMultiplier;
+        f32 pitchMultiplier = 1.0f + ((*state).pitchFader * 0.08f);
+        f32 targetVelocity = baseRadPerSec * pitchMultiplier;
 
         // Smooth motor inertia acceleration
-        float diff = targetVelocity - (*state).currentAngularVelocityRadPerSec;
+        f32 diff = targetVelocity - (*state).currentAngularVelocityRadPerSec;
         (*state).currentAngularVelocityRadPerSec += diff * (deltaSeconds * 8.0f);
 
         // Advance playhead
-        float speedRatio = (*state).currentAngularVelocityRadPerSec / baseRadPerSec;
+        f32 speedRatio = (*state).currentAngularVelocityRadPerSec / baseRadPerSec;
         (*state).playheadSeconds += speedRatio * deltaSeconds;
     } else if (!(*state).isPlaying && !(*state).platterTouched) {
         // Motor deceleration friction
@@ -146,13 +146,13 @@ void TurntableState_tick(TurntableState *state, float deltaSeconds) {
     }
 }
 
-TurntableCrossfade Turntable_calculateCrossfade(float position, CrossfaderCurve curve) {
+TurntableCrossfade Turntable_calculateCrossfade(f32 position, CrossfaderCurve curve) {
     // Clamp position to [-1.0, 1.0] (Left to Right)
     if (position < -1.0f) position = -1.0f;
     if (position > 1.0f) position = 1.0f;
 
     // Normalized [0.0, 1.0]
-    float t = (position + 1.0f) * 0.5f;
+    f32 t = (position + 1.0f) * 0.5f;
     TurntableCrossfade volumes;
 
     switch (curve) {
@@ -170,7 +170,7 @@ TurntableCrossfade Turntable_calculateCrossfade(float position, CrossfaderCurve 
         case CROSSFADER_SMOOTH_DIP:
         default: {
             // Equal-power crossfade (-3dB at center)
-            float angle = t * (3.14159265f * 0.5f);
+            f32 angle = t * (3.14159265f * 0.5f);
             volumes.left = cosf(angle);
             volumes.right = sinf(angle);
             break;

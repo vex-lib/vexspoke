@@ -40,8 +40,8 @@
  *     ClassConstructFn construct; // the constructor
  *     Struct *layout;        // the class's field layout (borrowed)
  *     ChunkedList *methods;  // never-moved Method rows
- *     uint32_t methodCount;  // live methods (== row count)
- *     uint32_t pad;          // explicit padding
+ *     u32 methodCount;  // live methods (== row count)
+ *     u32 pad;          // explicit padding
  *   }
  *
  * PRIVATE HELPERS (kept file-local, pure logic, no behavior of their own):
@@ -60,7 +60,7 @@
 static bool ensureMethods(Class *self) {
     if ((*self).methods)
         return true;
-    ChunkedList *methods = ChunkedList(ID_REFLECT_METHOD, (uint32_t) sizeof(Method), CHUNKED_LIST_TWO_LAYER_DEFAULT);
+    ChunkedList *methods = ChunkedList(ID_REFLECT_METHOD, (u32) sizeof(Method), CHUNKED_LIST_TWO_LAYER_DEFAULT);
     if (!methods)
         return false;
     (*self).methods = methods;
@@ -123,13 +123,13 @@ void Class_free(Class *self) {
 
 // CORE FUNCTIONS
 
-uint64_t Class_kind(const Class *self) {
+u64 Class_kind(const Class *self) {
     if (self == nullptr)
         return 0u;
     return Memory_type((void*) self);
 }
 
-bool Class_check(const Class *self, uint64_t typeId) {
+bool Class_check(const Class *self, u64 typeId) {
     if (self == nullptr)
         return false;
     return Memory_type((void*) self) == typeId;
@@ -141,19 +141,19 @@ void *Class_construct(Class *self, void *arg) {
     return (*self).construct(arg);
 }
 
-uint32_t Class_addMethod(Class *self, const Method *method) {
+u32 Class_addMethod(Class *self, const Method *method) {
     if (self == nullptr || method == nullptr || (*self).methods == nullptr)
         return REFLECT_CLASS_METHOD_NONE;
     Method *row = (Method*) ChunkedList_addSlot((*self).methods);
     if (row == nullptr)
         return REFLECT_CLASS_METHOD_NONE;
     memcpy(row, method, sizeof(Method));
-    uint32_t index = ChunkedList_size((*self).methods) - 1u;
+    u32 index = ChunkedList_size((*self).methods) - 1u;
     (*self).methodCount = index + 1u;
     return index;
 }
 
-Method *Class_getMethod(const Class *self, uint32_t index) {
+Method *Class_getMethod(const Class *self, u32 index) {
     if (self == nullptr || (*self).methods == nullptr)
         return nullptr;
     if (index >= (*self).methodCount)
@@ -164,8 +164,8 @@ Method *Class_getMethod(const Class *self, uint32_t index) {
 void Class_forEachMethod(Class *self, ClassMethodVisitFn fn, void *userdata) {
     if (self == nullptr || fn == nullptr || (*self).methods == nullptr)
         return;
-    uint32_t n = (*self).methodCount;
-    for (uint32_t i = 0u; i < n; i++) {
+    u32 n = (*self).methodCount;
+    for (u32 i = 0u; i < n; i++) {
         Method *row = (Method*) ChunkedList_slot((*self).methods, i);
         if (row)
             fn(row, i, userdata);
@@ -215,13 +215,13 @@ const char *Class_getName(const Class *self) {
     return self ? (*self).name : nullptr;
 }
 
-uint32_t Class_methodCount(const Class *self) {
+u32 Class_methodCount(const Class *self) {
     return self ? (*self).methodCount : 0u;
 }
 
 // STRING PROJECTIONS (the toString Law)
 
-void Class_toString(const Class *self, char *dest, size_t cap, bool *outTruncated) {
+void Class_toString(const Class *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (dest == nullptr || cap == 0u)
@@ -232,13 +232,13 @@ void Class_toString(const Class *self, char *dest, size_t cap, bool *outTruncate
     }
     int written = snprintf(dest, cap, "Class(%s, methods=%u)",
                            (*self).name[0] == '\0' ? "?" : (*self).name, (*self).methodCount);
-    if (written < 0 || (size_t) written >= cap) {
+    if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
     }
 }
 
-void Class_toStringStruct(const Class *self, char *dest, size_t cap, bool *outTruncated) {
+void Class_toStringStruct(const Class *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (dest == nullptr || cap == 0u)
@@ -253,7 +253,7 @@ void Class_toStringStruct(const Class *self, char *dest, size_t cap, bool *outTr
                            (unsigned long long) (uintptr_t) (*self).layout,
                            (unsigned long long) (uintptr_t) (*self).methods,
                            (*self).methodCount);
-    if (written < 0 || (size_t) written >= cap) {
+    if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
     }

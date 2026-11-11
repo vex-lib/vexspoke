@@ -41,7 +41,7 @@ static int g_failures = 0;
     for (Regex *re = Regex_2((pattern), (flags)); re != nullptr; Regex_free(re), re = nullptr)
 
 // Redirects stderr into a scratch file so a THROW diagnostic can be asserted.
-static int captureStart(char *path, size_t pathCap) {
+static int captureStart(char *path, bytes pathCap) {
     snprintf(path, pathCap, "%s/regex_stderr_%d.txt", "/tmp", (int) getpid());
     int saved = dup(STDERR_FILENO);
     int fd = open(path, O_WRONLY | O_CREAT | O_TRUNC, 0600);
@@ -53,14 +53,14 @@ static int captureStart(char *path, size_t pathCap) {
 }
 
 // Restores stderr and reads back what was captured.
-static size_t captureStop(int saved, const char *path, char *out, size_t outCap) {
+static bytes captureStop(int saved, const char *path, char *out, bytes outCap) {
     fflush(stderr);
     dup2(saved, STDERR_FILENO);
     close(saved);
     FILE *f = fopen(path, "r");
     if (!f)
         return 0;
-    size_t n = fread(out, 1, outCap - 1u, f);
+    bytes n = fread(out, 1, outCap - 1u, f);
     out[n] = '\0';
     fclose(f);
     unlink(path);
@@ -335,7 +335,7 @@ static void testRejection(void) {
     CHECK(Regex_1("\\x1") == nullptr);     // malformed hex escape
 
     if (saved >= 0) {
-        size_t n = captureStop(saved, path, captured, sizeof(captured));
+        bytes n = captureStop(saved, path, captured, sizeof(captured));
         CHECK(n > 0);
         CHECK(strstr(captured, "[vex]") != nullptr);
         CHECK(strstr(captured, "regex compile") != nullptr);
@@ -359,7 +359,7 @@ static void testBoundedProgress(void) {
 
     // A long subject with a real match stays linear too.
     char longSubject[4097];
-    for (size_t i = 0; i < 4000; i++)
+    for (bytes i = 0; i < 4000; i++)
         longSubject[i] = 'a';
     longSubject[4000] = 'b';
     longSubject[4001] = '\0';
@@ -408,7 +408,7 @@ static void testSafetyBounds(void) {
     CHECK(Regex_1("a{1001}") == nullptr);
     CHECK(Regex_1("a{1,1001}") == nullptr);
     static char thousand[1001];
-    for (size_t i = 0; i < 1000; i++)
+    for (bytes i = 0; i < 1000; i++)
         thousand[i] = 'a';
     thousand[1000] = '\0';
     Regex *maxRepeat = Regex_1("a{1000}");
@@ -418,7 +418,7 @@ static void testSafetyBounds(void) {
 
     // Group nesting bound.
     char deep[512];
-    size_t d = 0;
+    bytes d = 0;
     for (int i = 0; i < 200; i++)
         deep[d++] = '(';
     deep[d++] = 'a';
@@ -429,14 +429,14 @@ static void testSafetyBounds(void) {
 
     // AST node ceiling: a long flat literal blows past the node budget.
     static char flat[9001];
-    for (size_t i = 0; i < 9000; i++)
+    for (bytes i = 0; i < 9000; i++)
         flat[i] = 'a';
     flat[9000] = '\0';
     CHECK(Regex_1(flat) == nullptr);
 
     // ...but a comfortably sized literal still compiles and matches.
     static char midsize[2001];
-    for (size_t i = 0; i < 2000; i++)
+    for (bytes i = 0; i < 2000; i++)
         midsize[i] = 'a';
     midsize[2000] = '\0';
     Regex *fine = Regex_1(midsize);
@@ -446,14 +446,14 @@ static void testSafetyBounds(void) {
 
     // Program ceiling: repetition expansion past the instruction budget.
     char blown[512];
-    size_t b = 0;
+    bytes b = 0;
     for (int i = 0; i < 40; i++)
-        b += (size_t) snprintf(blown + b, sizeof(blown) - b, "a{1000}");
+        b += (bytes) snprintf(blown + b, sizeof(blown) - b, "a{1000}");
     CHECK(Regex_1(blown) == nullptr);
 
     // A near-ceiling class run still compiles (the bound is not hair-trigger).
     static char classes[12001];
-    size_t c = 0;
+    bytes c = 0;
     for (int i = 0; i < 4000; i++) {
         classes[c++] = '[';
         classes[c++] = 'a';
@@ -466,7 +466,7 @@ static void testSafetyBounds(void) {
     Regex_free(many);
 
     if (saved >= 0) {
-        size_t n = captureStop(saved, path, captured, sizeof(captured));
+        bytes n = captureStop(saved, path, captured, sizeof(captured));
         CHECK(n > 0);
         CHECK(strstr(captured, "repetition count too large") != nullptr);
         CHECK(strstr(captured, "pattern nesting too deep") != nullptr);
@@ -478,7 +478,7 @@ static void testSafetyBounds(void) {
 // Runs the regex owner cases.
 static void testFullAlternatives(void) {
     const char *patterns[] = {"a|ab", "|ab", "(a|ab)", "a?|ab", "a*|ab"};
-    for (size_t i = 0; i < sizeof patterns / sizeof patterns[0]; i++) {
+    for (bytes i = 0; i < sizeof patterns / sizeof patterns[0]; i++) {
         Regex *re = Regex(patterns[i]);
         CHECK(re != nullptr);
         CHECK(Regex_isFullMatch(re, "ab"));
@@ -498,7 +498,7 @@ static void testFullAlternatives(void) {
 static void testStrictSyntax(void) {
     const char *patterns[] = {"a+?", "a++", "a**", "a{2}{3}", "a{2,3}?",
                               "\\b.sh", "\\B", "\\1", "\\q", "[\\b.sh]"};
-    for (size_t i = 0; i < sizeof patterns / sizeof patterns[0]; i++) {
+    for (bytes i = 0; i < sizeof patterns / sizeof patterns[0]; i++) {
         char path[256], captured[512];
         int saved = captureStart(path, sizeof(path));
         CHECK(saved >= 0);

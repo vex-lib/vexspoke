@@ -52,10 +52,10 @@ int main(void) {
     // --- 1. The buffer is self-describing: identity and byte size are in-band.
     CHECK("buffer carries the array type", Memory_type(Stack_dataBuffer(s)) == TYPE_INT_ARRAY);
     CHECK("buffer length == capacity * stride",
-          Memory_length(Stack_dataBuffer(s)) == (size_t) Stack_capacity(s) * Stack_stride(s));
+          Memory_length(Stack_dataBuffer(s)) == (bytes) Stack_capacity(s) * Stack_stride(s));
 
     // The header tracks every growth, and a good push returns TRY_OK + value.
-    for (uint64_t i = 0; i < 4000u; ++i) {
+    for (u64 i = 0; i < 4000u; ++i) {
         TryValue r = Stack_pushTry(s, i);
         if (!TryValue_isOk(&r)) { CHECK("4000 pushes admitted", false); break; }
     }
@@ -64,14 +64,14 @@ int main(void) {
     CHECK("ok push is TRY_OK", TryValue_isOk(&okPush));
     CHECK("ok push returns the value", TryValue_getValue(&okPush) == 12345);
     CHECK("buffer descriptor tracked growth",
-          Memory_length(Stack_dataBuffer(s)) == (size_t) Stack_capacity(s) * Stack_stride(s));
+          Memory_length(Stack_dataBuffer(s)) == (bytes) Stack_capacity(s) * Stack_stride(s));
 
     // --- 2. Exhaust the arena; the fault must be NAMED, not just detected.
-    size_t beforeExhaust = Stack_size(s);
+    bytes beforeExhaust = Stack_size(s);
     TryCode fault = TRY_OK;
-    uint64_t attempted = 0;
-    uint64_t lastGood = 12345;   // the value admitted by the okPush above
-    for (uint64_t i = 4000u; i < PUSH_LIMIT; ++i) {
+    u64 attempted = 0;
+    u64 lastGood = 12345;   // the value admitted by the okPush above
+    for (u64 i = 4000u; i < PUSH_LIMIT; ++i) {
         TryValue r = Stack_pushTry(s, i);
         attempted++;
         if (!TryValue_isOk(&r)) { fault = TryValue_getCode(&r); break; }
@@ -82,10 +82,10 @@ int main(void) {
     CHECK("fault names the cause", strcmp(TryCode_name(fault), "TRY_NO_MEMORY") == 0);
     CHECK("rejected push left size unchanged", Stack_size(s) == beforeExhaust + attempted - 1);
     CHECK("capacity descriptor still consistent",
-          Memory_length(Stack_dataBuffer(s)) == (size_t) Stack_capacity(s) * Stack_stride(s));
+          Memory_length(Stack_dataBuffer(s)) == (bytes) Stack_capacity(s) * Stack_stride(s));
 
     // --- 3. The stack is still coherent after the named fault.
-    size_t top = Stack_size(s);
+    bytes top = Stack_size(s);
     CHECK("top element intact", Stack_peek(s) == lastGood);
     CHECK("pop returns the top", Stack_pop(s) == lastGood);
     CHECK("size decrements on pop", Stack_size(s) == top - 1);

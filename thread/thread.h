@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "util/constructor.h"
+#include "lang/constructor.h"
 #include "struct/ring.h"
 
 // thread/thread.h — the worker-thread engine (Legacy: the six *Thread.java
@@ -22,6 +22,26 @@
 // Loop semantics mirror legacy: drain queue → run job; sleep 1ms when idle
 // unless tickWhenIdle; exit when state leaves RUNNING.
 
+// ThreadRole — the host's thread roles. Policy, not mechanism: re's thread
+// table stores the value as an opaque u32 tag (re/thread/thread.h).
+
+// Role tags. 0 = untagged.
+typedef enum ThreadRole {
+    THREAD_ROLE_NONE       = 0,
+    THREAD_ROLE_MAIN       = 1, // Thread 0: owns AppKit / the OS event pump
+    THREAD_ROLE_ENGINE     = 2, // the fixed-timestep engine Loop
+    THREAD_ROLE_DRAW       = 3, // render loop owner
+    THREAD_ROLE_PRESENT    = 4, // swapchain blit cadence owner
+    THREAD_ROLE_NETWORKING = 5,
+    THREAD_ROLE_SCRIPTING  = 6,
+    THREAD_ROLE_CONSOLE    = 7,
+    THREAD_ROLE_UI         = 8, // darling layout/draw when it lands
+    THREAD_ROLE_USER       = 9, // user-generated threads
+} ThreadRole;
+
+// Stable symbolic name, e.g. "draw". Unknown and untagged roles read "none".
+const char *ThreadRole_name(ThreadRole role);
+
 typedef struct Thread Thread;
 
 // Per-pass body. Runs on the worker platform thread.
@@ -30,7 +50,7 @@ typedef void (*Thread_Job)(Thread *self, void *task);
 // Create a stopped handle. typeId stamps the block header (one of the
 // ID_THREAD_* classes); queueCapacity holds void* tasks. Core handles reject
 // stop/free like legacy ROLE_CORE. nullptr on OOM/bad args.
-Thread *Thread_5(uint64_t typeId, Thread_Job job, size_t queueCapacity,
+Thread *Thread_5(u64 typeId, Thread_Job job, bytes queueCapacity,
                  bool tickWhenIdle, bool core);
 #define Thread(...) CONSTRUCTOR_DISPATCH(Thread, __VA_ARGS__)
 
@@ -49,7 +69,7 @@ void Thread_free(Thread *self);
 
 bool Thread_isRunning(Thread *self);
 RingBuffer *Thread_queue(Thread *self);
-uint64_t Thread_purpose(Thread *self);
+u64 Thread_purpose(Thread *self);
 
 // Pool-wide walkers over the central registry (legacy runAll/stopAll/freeAll).
 void Thread_runAll(void);
@@ -59,6 +79,6 @@ void Thread_freeAll(void);
 // Shutdown-only: frees even core handles. Nothing survives this call.
 void Thread_freeAllSystem(void);
 
-size_t Thread_count(void);
+bytes Thread_count(void);
 
 #endif

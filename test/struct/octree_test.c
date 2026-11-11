@@ -32,7 +32,7 @@ static int g_failures = 0;
     } while (0)
 
 /** Builds a cube-shaped axis-aligned box from its minimum and side length. */
-static OctreeAABB box(float a, float b) {
+static OctreeAABB box(f32 a, f32 b) {
     return OctreeAABB(a, a, a, b, b, b);
 }
 
@@ -59,7 +59,7 @@ static void test_aabb_helpers(void) {
 
 /** Checks null trees and output buffers are safely refused by the public query operations. */
 static void test_null_safety(void) {
-    uint64_t out;
+    u64 out;
     CHECK(!Octree_insert(nullptr, OctreePoint(0, 0, 0), 1));
     CHECK(Octree_count(nullptr) == 0);
     CHECK(Octree_queryRange(nullptr, box(0, 1), &out, 1) == 0);
@@ -87,8 +87,8 @@ static void test_bounds_and_queries(void) {
     CHECK(Octree_insert(t, OctreePoint(0, 0, 0), 102));
     CHECK(Octree_count(t) == 3);
 
-    uint64_t out[8];
-    size_t n = Octree_queryRange(t, box(-10.0f, 10.0f), out, 8);
+    u64 out[8];
+    bytes n = Octree_queryRange(t, box(-10.0f, 10.0f), out, 8);
     CHECK(n == 3);
 
     // Query only around the origin.
@@ -132,15 +132,15 @@ static void test_bulk(void) {
     CHECK(t != nullptr);
 
     OctreePoint pts[OCT_POINTS];
-    uint64_t seen[OCT_POINTS + 1] = { 0 };
+    u64 seen[OCT_POINTS + 1] = { 0 };
     int k = 0;
     for (int i = 0; i < 10; i++)
         for (int j = 0; j < 10; j++)
             for (int l = 0; l < 5; l++) {
-                OctreePoint p = OctreePoint((float) i * 10.0f + 0.5f,
-                                            (float) j * 10.0f + 0.5f,
-                                            (float) l * 20.0f + 0.5f);
-                CHECK(Octree_insert(t, p, (uint64_t) (k + 1)));
+                OctreePoint p = OctreePoint((f32) i * 10.0f + 0.5f,
+                                            (f32) j * 10.0f + 0.5f,
+                                            (f32) l * 20.0f + 0.5f);
+                CHECK(Octree_insert(t, p, (u64) (k + 1)));
                 pts[k] = p;
                 k++;
             }
@@ -148,10 +148,10 @@ static void test_bulk(void) {
     CHECK(Octree_count(t) == OCT_POINTS);
 
     // Full-range query sees every point exactly once.
-    uint64_t out[OCT_POINTS];
-    size_t n = Octree_queryRange(t, box(0.0f, 100.0f), out, OCT_POINTS);
+    u64 out[OCT_POINTS];
+    bytes n = Octree_queryRange(t, box(0.0f, 100.0f), out, OCT_POINTS);
     CHECK(n == OCT_POINTS);
-    for (size_t i = 0; i < n; i++) {
+    for (bytes i = 0; i < n; i++) {
         CHECK(out[i] >= 1 && out[i] <= OCT_POINTS);
         seen[out[i]]++;
     }
@@ -161,7 +161,7 @@ static void test_bulk(void) {
     // A sub-box query returns exactly the points inside it.
     OctreeAABB sub = OctreeAABB(20.5f, 30.5f, 40.5f, 30.5f, 40.5f, 60.5f);
     n = Octree_queryRange(t, sub, out, OCT_POINTS);
-    size_t expected = 0;
+    bytes expected = 0;
     for (int i = 0; i < OCT_POINTS; i++)
         if (OctreeAABB_containsPoint(sub, pts[i]))
             expected++;
@@ -169,11 +169,11 @@ static void test_bulk(void) {
 
     // Sphere query agrees with a brute-force count.
     OctreePoint c = OctreePoint(55.0f, 55.0f, 45.0f);
-    float rad = 12.0f;
+    f32 rad = 12.0f;
     n = Octree_querySphere(t, c, rad, out, OCT_POINTS);
-    size_t brute = 0;
+    bytes brute = 0;
     for (int i = 0; i < OCT_POINTS; i++) {
-        float dx = pts[i].x - c.x, dy = pts[i].y - c.y, dz = pts[i].z - c.z;
+        f32 dx = pts[i].x - c.x, dy = pts[i].y - c.y, dz = pts[i].z - c.z;
         if (dx * dx + dy * dy + dz * dz <= rad * rad)
             brute++;
     }

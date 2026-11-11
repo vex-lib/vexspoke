@@ -83,7 +83,7 @@ bool VexWsSource_open(VexWsSource *self, const char *url, WebSocketConfig config
         THROW("VexWsSource_open: null argument");
         return false;
     }
-    size_t length = strlen(url);
+    bytes length = strlen(url);
     if (length + 1u > sizeof((*self).url)) {
         THROW("VexWsSource_open: target URL does not fit");
         return false;
@@ -115,10 +115,10 @@ bool VexWsSource_connect(void *handle) {
         (*last).kind = WS_MESSAGE_ERROR;
         (*last).payload = nullptr;
         (*last).length = 0u;
-        size_t cap = sizeof((*last).error);
+        bytes cap = sizeof((*last).error);
         const char *reason = WebSocket_lastError(&(*self).socket);
-        size_t reasonLength = strlen(reason);
-        size_t copy = reasonLength < cap - 1u ? reasonLength : cap - 1u;
+        bytes reasonLength = strlen(reason);
+        bytes copy = reasonLength < cap - 1u ? reasonLength : cap - 1u;
         memcpy((*last).error, reason, copy);
         (*last).error[copy] = '\0';
         return false;
@@ -127,11 +127,11 @@ bool VexWsSource_connect(void *handle) {
 }
 
 /** Deliver at most one complete message; never consume one we do not hand over. */
-uint32_t VexWsSource_poll(void *handle, uint64_t budgetMs) {
+u32 VexWsSource_poll(void *handle, u64 budgetMs) {
     VexWsSource *self = (VexWsSource*) handle;
     if (self == nullptr)
         return 0u;
-    uint32_t budget = budgetMs > UINT32_MAX ? UINT32_MAX : (uint32_t) budgetMs;
+    u32 budget = budgetMs > UINT32_MAX ? UINT32_MAX : (u32) budgetMs;
     WebSocketMessage delivered = WebSocket_poll(&(*self).socket, budget);
     (*self).last = delivered;
     return (delivered.kind == WS_MESSAGE_TEXT ||
@@ -139,11 +139,11 @@ uint32_t VexWsSource_poll(void *handle, uint64_t budgetMs) {
 }
 
 /** Send one TEXT frame; a non-UTF-8 payload is refused, not re-typed. */
-bool VexWsSource_send(void *handle, const uint8_t *bytes, uint32_t length) {
+bool VexWsSource_send(void *handle, const u8 *bytes, u32 length) {
     VexWsSource *self = (VexWsSource*) handle;
     if (self == nullptr || (bytes == nullptr && length != 0u))
         return false;
-    if (!WebSocket_writeText(&(*self).socket, (const char*) bytes, (size_t) length))
+    if (!WebSocket_writeText(&(*self).socket, (const char*) bytes, (bytes) length))
         return false;
     return true;
 }
@@ -183,7 +183,7 @@ bool VexWsSource_isOpen(const VexWsSource *self) {
 // STRING PROJECTIONS (the toString Law)
 
 /** The VALUE string: the seam-facing summary. */
-void VexWsSource_toString(const VexWsSource *self, char *dest, size_t cap,
+void VexWsSource_toString(const VexWsSource *self, char *dest, bytes cap,
                           bool *outTruncated) {
     Str out = Str(dest, cap);
     if (self == nullptr) {
@@ -199,7 +199,7 @@ void VexWsSource_toString(const VexWsSource *self, char *dest, size_t cap,
 }
 
 /** The STRUCTURE string: this class's own fields, one layer, no recursion. */
-void VexWsSource_toStringStruct(const VexWsSource *self, char *dest, size_t cap,
+void VexWsSource_toStringStruct(const VexWsSource *self, char *dest, bytes cap,
                                 bool *outTruncated) {
     Str out = Str(dest, cap);
     if (self == nullptr) {

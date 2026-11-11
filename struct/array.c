@@ -71,8 +71,8 @@ static Collection *asCollection(Array *array) {
     return (Collection*) array;
 }
 
-Array *Array_2(uint32_t elementClass, size_t length) {
-    size_t stride = Stride_get(elementClass);
+Array *Array_2(u32 elementClass, bytes length) {
+    bytes stride = Stride_get(elementClass);
     Array *array = (Array*) Memory_alloc(TYPE_ARRAY, sizeof(Array));
     if (!array) {
         (void) Struct_reportConstructionExhaustion("array", sizeof(Array));
@@ -81,17 +81,17 @@ Array *Array_2(uint32_t elementClass, size_t length) {
 
     Collection *c = asCollection(array);
     (*c).typeId = TYPE_ARRAY;
-    (*c).activeCount = (uint32_t)length;
+    (*c).activeCount = (u32)length;
     (*c).elementClass = elementClass;
-    (*c).stride = (uint32_t)stride;
-    (*c).capacity = (uint32_t)length;
+    (*c).stride = (u32)stride;
+    (*c).capacity = (u32)length;
     (*c).head = 0;
     (*c).exhaustionCount = 0;
     (*c).exhaustionReported = false;
 
-    size_t Bytes = length * stride;
-    uint64_t bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, elementClass);
-    (*c).data = (uint8_t*) Memory_alloc(bufType, Bytes);
+    bytes Bytes = length * stride;
+    u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, elementClass);
+    (*c).data = (u8*) Memory_alloc(bufType, Bytes);
     if (!(*c).data) {
         (void) Struct_reportConstructionExhaustion("array", Bytes);
         Memory_free(array);
@@ -110,7 +110,7 @@ void Array_free(Array *array) {
 }
 
 ;;HOTCODE
-uint64_t Array_get(Array *array, size_t index) {
+u64 Array_get(Array *array, bytes index) {
     if (!array) return 0;
     Collection *c = asCollection(array);
     if (index >= (*c).activeCount)
@@ -119,7 +119,7 @@ uint64_t Array_get(Array *array, size_t index) {
 }
 
 ;;CHECKER
-TryValue Array_getTry(Array *array, size_t index) {
+TryValue Array_getTry(Array *array, bytes index) {
     if (array == nullptr) {
         THROW("array getTry: null array");
         return TryValue_error(TRY_NULL_ARG);
@@ -132,7 +132,7 @@ TryValue Array_getTry(Array *array, size_t index) {
     return TryValue_ok(Collection_readSlot(c, index));
 }
 
-void Array_set(Array *array, size_t index, uint64_t value) {
+void Array_set(Array *array, bytes index, u64 value) {
     if (!array) return;
     Collection *c = asCollection(array);
     if (index >= (*c).activeCount)
@@ -140,7 +140,7 @@ void Array_set(Array *array, size_t index, uint64_t value) {
     Collection_writeSlot(c, index, value);
 }
 
-uint8_t *Array_slot(Array *array, size_t index) {
+u8 *Array_slot(Array *array, bytes index) {
     if (!array) return nullptr;
     Collection *c = asCollection(array);
     if (index >= (*c).activeCount)
@@ -152,26 +152,26 @@ bool Array_isEmpty(Array *array) {
     return Collection_isEmpty(asCollection(array));
 }
 
-size_t Array_size(Array *array) {
+bytes Array_size(Array *array) {
     return Collection_size(asCollection(array));
 }
 
-size_t Array_length(Array *array) {
+bytes Array_length(Array *array) {
     return Collection_length(asCollection(array));
 }
 
-size_t Array_capacity(Array *array) {
+bytes Array_capacity(Array *array) {
     return Collection_capacity(asCollection(array));
 }
 
-uint32_t Array_elementClassId(Array *array) {
+u32 Array_elementClassId(Array *array) {
     return Collection_elementClassId(asCollection(array));
 }
 
-size_t Array_stride(Array *array) {
+bytes Array_stride(Array *array) {
     return Collection_stride(asCollection(array));
 }
 
-uint8_t *Array_dataBuffer(Array *array) {
+u8 *Array_dataBuffer(Array *array) {
     return Collection_dataBuffer(asCollection(array));
 }

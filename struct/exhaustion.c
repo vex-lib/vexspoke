@@ -40,8 +40,8 @@
 
 /** Count a refusal and emit the epoch's single diagnostic. Always false. */
 ;;VALIDATOR
-bool Struct_reportExhaustion(uint64_t *count, bool *reported, const char *owner,
-                             size_t requestedBytes, size_t boundBytes) {
+bool Struct_reportExhaustion(u64 *count, bool *reported, const char *owner,
+                             bytes requestedBytes, bytes boundBytes) {
     if (count == nullptr || reported == nullptr) {
         THROW("struct exhaustion: null counter (%s, %zu bytes)",
               owner ? owner : "?", requestedBytes);
@@ -61,13 +61,13 @@ bool Struct_reportExhaustion(uint64_t *count, bool *reported, const char *owner,
 
 /** Return the owner's refusal count for the current epoch. */
 ;;TEST
-uint64_t Struct_exhaustionCount(const uint64_t *count) {
+u64 Struct_exhaustionCount(const u64 *count) {
     return count ? (*count) : 0;
 }
 
 /** Start a fresh epoch for the owner. */
 ;;TEST
-void Struct_resetExhaustion(uint64_t *count, bool *reported) {
+void Struct_resetExhaustion(u64 *count, bool *reported) {
     if (count) (*count) = 0;
     if (reported) (*reported) = false;
 }
@@ -76,12 +76,12 @@ void Struct_resetExhaustion(uint64_t *count, bool *reported) {
 
 // The epoch's construction accounting. Process-wide because a failed
 // construction has no owner instance to carry a counter.
-static uint64_t s_constructionCount = 0;
+static u64 s_constructionCount = 0;
 static bool s_constructionReported = false;
 
 /** Count a construction refusal and report the epoch's first one. Always false. */
 ;;VALIDATOR
-bool Struct_reportConstructionExhaustion(const char *owner, size_t requestedBytes) {
+bool Struct_reportConstructionExhaustion(const char *owner, bytes requestedBytes) {
     s_constructionCount++;
     if (!s_constructionReported) {
         s_constructionReported = true;
@@ -93,7 +93,7 @@ bool Struct_reportConstructionExhaustion(const char *owner, size_t requestedByte
 
 /** Return the process-wide construction-refusal count for the current epoch. */
 ;;TEST
-uint64_t Struct_constructionExhaustionCount(void) {
+u64 Struct_constructionExhaustionCount(void) {
     return s_constructionCount;
 }
 

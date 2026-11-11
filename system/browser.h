@@ -13,7 +13,7 @@
 // Pure POSIX / OS API, zero shell invocation, zero allocation.
 
 typedef struct Browser {
-    uint32_t reserved;
+    u32 reserved;
 } Browser;
 
 // --- Constructor ---

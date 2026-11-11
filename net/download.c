@@ -152,14 +152,14 @@ bool Download_to_memory(const char *url, const DownloadOptions *opts, DownloadRe
         return false;
     }
 
-    char *buf = (char*) malloc((size_t) sz + 1);
+    char *buf = (char*) malloc((bytes) sz + 1);
     if (!buf) {
         fclose(f);
         unlink(temp_path);
         return false;
     }
 
-    size_t read_bytes = fread(buf, 1, (size_t) sz, f);
+    bytes read_bytes = fread(buf, 1, (bytes) sz, f);
     buf[read_bytes] = '\0';
     fclose(f);
     unlink(temp_path);
@@ -175,10 +175,10 @@ bool Download_to_memory(const char *url, const DownloadOptions *opts, DownloadRe
 bool Download_fetch_cached(
     const char *url,
     const char *subsystem,
-    uint64_t ttl_sec,
+    u64 ttl_sec,
     const DownloadOptions *opts,
     char *cached_path_out,
-    size_t path_cap
+    bytes path_cap
 ) {
     (void) url; (void) subsystem; (void) ttl_sec; (void) opts;
     (void) cached_path_out; (void) path_cap;

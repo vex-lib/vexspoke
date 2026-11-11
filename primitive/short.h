@@ -7,7 +7,7 @@
 
 #include "re/nio/bit_pool.h"
 
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 // primitive/short.h — Short primitive (Legacy: primitive/Short.java).
 // Delegates to Bit16 width pool (2B stride).
@@ -17,17 +17,17 @@ extern BitPool g_shortPool;
 bool Short_init(void);
 void Short_shutdown(void);
 void *Short_alloc(void);
-void *Short_allocArray(size_t count);
+void *Short_allocArray(bytes count);
 void Short_free(void *ptr);
-int16_t Short_get(void *ptr);
-void Short_set(void *ptr, int16_t value);
-bool Short_compareAndSet(void *ptr, int16_t expected, int16_t value);
-uint64_t Short_type(void *ptr);
-size_t Short_length(void *ptr);
+ Short_get(void *ptr);
+void Short_set(void *ptr,  value);
+bool Short_compareAndSet(void *ptr,  expected,  value);
+u64 Short_type(void *ptr);
+bytes Short_length(void *ptr);
 
 
 // Ergonomic constructors — Short() and Short(value)
-void *Short_allocWithValue(int16_t value);
+void *Short_allocWithValue( value);
 #define Short_0(...) Short_alloc()
 #define Short_1(value) Short_allocWithValue(value)
 #define Short(...) CONSTRUCTOR_DISPATCH(Short, __VA_ARGS__)

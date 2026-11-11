@@ -17,8 +17,8 @@
 ;;OVERVIEW
 /**
  * CLASS: Dispatch — L2 Behavior, MPSC mailbox with one consumer.
- * FIELDS: SpinLock lock; DispatchItem *items; size_t count, cap;
- * DispatchItem *batch; size_t batchCap; atomic_bool draining;
+ * FIELDS: SpinLock lock; DispatchItem *items; bytes count, cap;
+ * DispatchItem *batch; bytes batchCap; atomic_bool draining;
  * atomic_size_t pendingCount; _Atomic unsigned long drainedCount.
  * SLOT: DispatchItem { DispatchFn fn; void *context; } (behaviorless).
  * CONSTRUCTOR: Dispatch() / Dispatch_0().
@@ -54,7 +54,7 @@ bool Dispatch_post(Dispatch *self, DispatchFn fn, void *context) {
             SpinLock_unlock(&(*self).lock);
             return false;
         }
-        size_t cap = (*self).cap ? (*self).cap * 2 : 8;
+        bytes cap = (*self).cap ? (*self).cap * 2 : 8;
         DispatchItem *items = (DispatchItem*) realloc((*self).items, cap * sizeof(DispatchItem));
         if (!items) {
             SpinLock_unlock(&(*self).lock);
@@ -83,10 +83,10 @@ bool Dispatch_drain(Dispatch *self) {
         atomic_store_explicit(&(*self).draining, false, memory_order_release);
         return false;
     }
-    size_t n = (*self).count;
+    bytes n = (*self).count;
     if (n != 0) {
         DispatchItem *batch = (*self).items;
-        size_t cap = (*self).cap;
+        bytes cap = (*self).cap;
         (*self).items = (*self).batch;
         (*self).cap = (*self).batchCap;
         (*self).batch = batch;
@@ -95,7 +95,7 @@ bool Dispatch_drain(Dispatch *self) {
         atomic_store_explicit(&(*self).pendingCount, 0, memory_order_relaxed);
     }
     SpinLock_unlock(&(*self).lock);
-    for (size_t i = 0; i < n; i++) {
+    for (bytes i = 0; i < n; i++) {
         DispatchItem *item = &(*self).batch[i];
         (*item).fn((*item).context);
         atomic_fetch_add_explicit(&(*self).drainedCount, 1, memory_order_relaxed);
@@ -117,7 +117,7 @@ bool Dispatch_free(Dispatch *self) {
     return true;
 }
 
-size_t Dispatch_pending(const Dispatch *self) {
+bytes Dispatch_pending(const Dispatch *self) {
     return self ? atomic_load_explicit(&(*self).pendingCount, memory_order_relaxed) : 0;
 }
 

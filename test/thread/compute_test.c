@@ -73,7 +73,7 @@ static void test_recognize(void) {
     CHECK(ComputeJob_isJob(&job));
     CHECK(!ComputeJob_isJob(nullptr));
 
-    struct Foreign { uint64_t tag; } foreign = { 0xdeadbeef };
+    struct Foreign { u64 tag; } foreign = { 0xdeadbeef };
     CHECK(!ComputeJob_isJob(&foreign));
 
     CHECK(!ComputeJob_run(&foreign));

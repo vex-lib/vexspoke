@@ -23,7 +23,7 @@ static int g_failures = 0;
 
 // Verifies counting, the single-diagnostic epoch, reset and null-safety.
 int main(void) {
-    uint64_t count = 0;
+    u64 count = 0;
     bool reported = false;
 
     CHECK(Struct_exhaustionCount(&count) == 0);

@@ -24,10 +24,10 @@
 #define CHACHA20_BLOCK_SIZE 64u
 
 // One 64-byte keystream block. out, key and nonce are borrowed.
-void ChaCha20_block(uint8_t out[CHACHA20_BLOCK_SIZE], const uint8_t key[CHACHA20_KEY_SIZE],
-                    uint32_t counter, const uint8_t nonce[CHACHA20_NONCE_SIZE]);
+void ChaCha20_block(u8 out[CHACHA20_BLOCK_SIZE], const u8 key[CHACHA20_KEY_SIZE],
+                    u32 counter, const u8 nonce[CHACHA20_NONCE_SIZE]);
 // XOR the keystream over `len` bytes of data in place, starting at `counter`.
-void ChaCha20_xor(uint8_t *data, size_t len, const uint8_t key[CHACHA20_KEY_SIZE],
-                  uint32_t counter, const uint8_t nonce[CHACHA20_NONCE_SIZE]);
+void ChaCha20_xor(u8 *data, bytes len, const u8 key[CHACHA20_KEY_SIZE],
+                  u32 counter, const u8 nonce[CHACHA20_NONCE_SIZE]);
 
 #endif

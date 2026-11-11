@@ -1,9 +1,9 @@
-// vexspoke/test/primitive/double_test.c — the Double class _test.
+// vexspoke/test/primitive/f64_test.c — the d64 class _test.
 
 #include <math.h>
 #include <stdio.h>
 
-#include "primitive/double.h"
+#include "primitive/d64.h"
 #include "oop/type.h"
 
 static int g_failures = 0;
@@ -16,59 +16,59 @@ static int g_failures = 0;
         }                                                                  \
     } while (0)
 
-// Exercises Double values including signed zero, CAS, arrays, metadata, and null safety.
+// Exercises d64 values including signed zero, CAS, arrays, metadata, and null safety.
 int main(void) {
-    CHECK(Double_init());
+    CHECK(f64_init());
 
-    void *p = Double_alloc();
+    void *p = f64_alloc();
     CHECK(p != nullptr);
-    CHECK(Double_get(p) == 0.0);
-    CHECK(Double_type(p) == ID_DOUBLE);
-    CHECK(Double_length(p) == 8);
+    CHECK(f64_get(p) == 0.0);
+    CHECK(f64_type(p) == ID_f64);
+    CHECK(f64_length(p) == 8);
 
-    const double values[] = { 0.0, 1.0, -1.0, 3.14159265358979, -0.0 };
-    for (size_t i = 0; i < sizeof values / sizeof values[0]; i++) {
-        Double_set(p, values[i]);
-        CHECK(Double_get(p) == values[i]);
+    const d64 values[] = { 0.0, 1.0, -1.0, 3.14159265358979, -0.0 };
+    for (bytes i = 0; i < sizeof values / sizeof values[0]; i++) {
+        f64_set(p, values[i]);
+        CHECK(f64_get(p) == values[i]);
     }
 
-    void *q = Double_allocWithValue(2.5);
-    CHECK(q != nullptr && Double_get(q) == 2.5);
-    void *r = Double(-1.25);
-    CHECK(r != nullptr && Double_get(r) == -1.25);
-    void *s = Double_0();
-    CHECK(s != nullptr && Double_type(s) == ID_DOUBLE);
+    void *q = f64_allocWithValue(2.5);
+    CHECK(q != nullptr && f64_get(q) == 2.5);
+    void *r = d64(-1.25);
+    CHECK(r != nullptr && f64_get(r) == -1.25);
+    void *s = f64_0();
+    CHECK(s != nullptr && f64_type(s) == ID_f64);
 
-    Double_set(p, 1.0);
-    CHECK(Double_compareAndSet(p, 1.0, 9.0));
-    CHECK(Double_get(p) == 9.0);
-    CHECK(!Double_compareAndSet(p, 1.0, 4.0));
-    CHECK(Double_get(p) == 9.0);
+    f64_set(p, 1.0);
+    CHECK(f64_compareAndSet(p, 1.0, 9.0));
+    CHECK(f64_get(p) == 9.0);
+    CHECK(!f64_compareAndSet(p, 1.0, 4.0));
+    CHECK(f64_get(p) == 9.0);
 
-    CHECK(Double_allocArray(0) == nullptr);
-    void *arr = Double_array(8);
+    CHECK(f64_allocArray(0) == nullptr);
+    void *arr = f64_array(8);
     CHECK(arr != nullptr);
-    CHECK((Double_type(arr) & MASK_CLASS) == ID_DOUBLE);
-    CHECK(Double_length(arr) >= 8);
+    CHECK((f64_type(arr) & MASK_CLASS) == ID_f64);
+    CHECK(f64_length(arr) >= 8);
 
-    CHECK(Double_get(nullptr) == 0.0);
-    Double_set(nullptr, 1.0);
-    CHECK(!Double_compareAndSet(nullptr, 0.0, 1.0));
-    CHECK(Double_type(nullptr) == 0);
-    CHECK(Double_length(nullptr) == 0);
-    Double_free(nullptr);
+    CHECK(f64_get(nullptr) == 0.0);
+    f64_set(nullptr, 1.0);
+    CHECK(!f64_compareAndSet(nullptr, 0.0, 1.0));
+    CHECK(f64_type(nullptr) == 0);
+    CHECK(f64_length(nullptr) == 0);
+    f64_free(nullptr);
 
-    Double_free(p);
-    Double_free(q);
-    Double_free(r);
-    Double_free(s);
-    Double_free(arr);
-    Double_shutdown();
+    f64_free(p);
+    f64_free(q);
+    f64_free(r);
+    f64_free(s);
+    f64_free(arr);
+    f64_shutdown();
 
     if (g_failures == 0) {
-        printf("double_test: all assertions held\n");
+        printf("f64_test: all assertions held\n");
         return 0;
     }
-    printf("double_test: %d FAILURES\n", g_failures);
+    printf("f64_test: %d FAILURES\n", g_failures);
     return 1;
 }

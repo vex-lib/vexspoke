@@ -16,7 +16,7 @@
  * Input binding registry: maps composable int64_t combo IDs to function
  * pointers. A combo packs gesture kind, modifier nibbles, and a key/mouse
  * code into 14 hex digits, so bindings are exact-match lookups over a flat
- * arena-backed array that doubles on growth. Pure behavior — zero UI, zero
+ * arena-backed array that f64s on growth. Pure behavior — zero UI, zero
  * GPU, zero steady-state allocation. Multi-tap resolution is settle-based
  * (pending windows never fire; the most specific settled KMODE binding fires
  * exactly once and consumes the tap counters), rhythm mode resolves every
@@ -43,11 +43,11 @@
  * STRUCT FIELDS (Mirroring input/key_map.h):
  * ----------------------------------------------------------------------------
  *   KeyBinding *bindings;       flat array of registered combos (arena-allocated)
- *   uint32_t    count;          active binding count
- *   uint32_t    capacity;       allocated slots (doubling growth on bind)
+ *   u32    count;          active binding count
+ *   u32    capacity;       allocated slots (doubling growth on bind)
  *   void       *arena;          opaque MemoryArena handle for allocations
- *   bool        multiTapEnabled;  false = rhythm mode (instant singles, no doubles/triples)
- *   uint64_t    longPressNanos;   LONG_PRESS hold threshold (0 = disabled on this map)
+ *   bool        multiTapEnabled;  false = rhythm mode (instant singles, no f64s/triples)
+ *   u64    longPressNanos;   LONG_PRESS hold threshold (0 = disabled on this map)
  *
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
@@ -83,14 +83,14 @@
 // ── Gesture resolution (KeyMap_resolve) ───────────────────
 // Multi-tap recognition is windowed (settle-based): taps are OFFERED while the
 // per-key pending window (tapWindowNanos, 250ms on the platform drivers) is
-// still open and settle into SINGLE/DOUBLE/TRIPLE once it closes. Resolve
+// still open and settle into SINGLE/d64/TRIPLE once it closes. Resolve
 // therefore fires nothing while a gesture is pending; at settlement the most
 // specific KMODE binding aware of the settled count fires exactly once (tap
 // counters are consumed on hit). Modifier-state changes between presses break
 // the sequence (different mods => fresh sequence).
 //
 // Rhythm-game mode (KeyMap_setMultiTapEnabled(false)): every press-release is
-// a single tap resolved immediately — zero window latency; DOUBLE/TRIPLE
+// a single tap resolved immediately — zero window latency; d64/TRIPLE
 // bindings never resolve on this map.
 //
 // LONG_PRESS fires once per hold (one-shot latch in the driver slot, cleared
@@ -130,7 +130,7 @@ static int64_t gestureFromTaps(int taps)
     if (taps >= 3)
         return KMODE_TRIPLE_TAP;
     if (taps == 2)
-        return KMODE_DOUBLE_TAP;
+        return KMODE_f64_TAP;
     return KMODE_TAP;
 }
 
@@ -140,12 +140,12 @@ static int64_t mouseGestureFromTaps(int taps)
     if (taps >= 3)
         return KMODE_TRIPLE_TAP;
     if (taps == 2)
-        return KMODE_DOUBLE_TAP;
+        return KMODE_f64_TAP;
     return KMODE_TAP;
 }
 
 // Gesture type from hold duration (nanoseconds).
-static int64_t gestureFromHoldDuration(uint64_t holdNanos, uint64_t longPressThresholdNanos)
+static int64_t gestureFromHoldDuration(u64 holdNanos, u64 longPressThresholdNanos)
 {
     if (longPressThresholdNanos > 0 && holdNanos >= longPressThresholdNanos)
         return KMODE_LONG_PRESS;
@@ -164,7 +164,7 @@ static int64_t gestureFromHoldDuration(uint64_t holdNanos, uint64_t longPressThr
 static bool gestureMatches(const KeyMap *map, int64_t combo)
 {
     bool multiTap = (map == nullptr) || (*map).multiTapEnabled;
-    uint64_t longPressNanos = (map == nullptr) ? KEYMAP_LONG_PRESS_NANOS : (*map).longPressNanos;
+    u64 longPressNanos = (map == nullptr) ? KEYMAP_LONG_PRESS_NANOS : (*map).longPressNanos;
     int64_t code = (combo & KEY_CODE_MASK);
     int64_t kmode = (combo & KMODE_MASK);
 
@@ -187,8 +187,8 @@ static bool gestureMatches(const KeyMap *map, int64_t combo)
             return false; // window still open — nothing settles yet
         if (kmode == KMODE_TAP)
             return phase == MOUSE_TAP_SINGLE && !Mouse_isDown(button);
-        if (kmode == KMODE_DOUBLE_TAP)
-            return phase == MOUSE_TAP_DOUBLE;
+        if (kmode == KMODE_f64_TAP)
+            return phase == MOUSE_TAP_f64;
         if (kmode == KMODE_TRIPLE_TAP)
             return phase == MOUSE_TAP_TRIPLE;
         return false;
@@ -212,8 +212,8 @@ static bool gestureMatches(const KeyMap *map, int64_t combo)
         return false; // window still open — nothing settles yet
     if (kmode == KMODE_TAP)
         return phase == KEY_TAP_SINGLE && !Key_isDown(key);
-    if (kmode == KMODE_DOUBLE_TAP)
-        return phase == KEY_TAP_DOUBLE;
+    if (kmode == KMODE_f64_TAP)
+        return phase == KEY_TAP_f64;
     if (kmode == KMODE_TRIPLE_TAP)
         return phase == KEY_TAP_TRIPLE;
     return false;
@@ -312,9 +312,9 @@ int64_t KeyMap_buildComboForMouse(int button, int64_t gestureType)
     return gesture | (int64_t) button | modifierState();
 }
 
-int64_t KeyMap_buildComboForHold(int key, uint64_t longPressThresholdNanos)
+int64_t KeyMap_buildComboForHold(int key, u64 longPressThresholdNanos)
 {
-    uint64_t hold = Key_currentHoldDurationNanos(key);
+    u64 hold = Key_currentHoldDurationNanos(key);
     int64_t gesture = gestureFromHoldDuration(hold, longPressThresholdNanos);
     return gesture | (int64_t) key | modifierState();
 }
@@ -328,7 +328,7 @@ bool KeyMap_resolve(const KeyMap *map, int64_t *outCombo)
     const KeyBinding *best = nullptr;
     int64_t bestKm = -1;
 
-    for (uint32_t i = 0; i < (*map).count; i++) {
+    for (u32 i = 0; i < (*map).count; i++) {
         const KeyBinding *b = &(*map).bindings[i];
         if ((*b).fn == nullptr)
             continue;
@@ -354,8 +354,8 @@ bool KeyMap_resolve(const KeyMap *map, int64_t *outCombo)
     // lingering until Cmd+A arrives later. Pending (window still open)
     // sequences are never consumed here — they may still upgrade. Only the
     // losing modifier-space is expired; gesture-kind upgrades (a settled
-    // DOUBLE against a TAP binding) are preserved by phase semantics.
-    for (uint32_t i = 0; i < (*map).count; i++) {
+    // d64 against a TAP binding) are preserved by phase semantics.
+    for (u32 i = 0; i < (*map).count; i++) {
         const KeyBinding *b = &(*map).bindings[i];
         if ((*b).fn == nullptr)
             continue;
@@ -389,7 +389,7 @@ bool KeyMap_bind(KeyMap *map, int64_t combo, KeyBindingFn fn, void *userdata)
         return false;
 
     // Check if this combo is already bound — replace in-place.
-    for (uint32_t i = 0; i < (*map).count; i++) {
+    for (u32 i = 0; i < (*map).count; i++) {
         if ((*map).bindings[i].combo == combo && (*map).bindings[i].fn == fn) {
             (*map).bindings[i].userdata = userdata;
             return true;
@@ -398,7 +398,7 @@ bool KeyMap_bind(KeyMap *map, int64_t combo, KeyBindingFn fn, void *userdata)
 
     // Grow if full (doubling).
     if ((*map).count >= (*map).capacity) {
-        uint32_t newCap = (*map).capacity * 2;
+        u32 newCap = (*map).capacity * 2;
         MemoryArena *a = (MemoryArena*) (*map).arena;
         KeyBinding *newBindings = (KeyBinding*) MemoryArena_alloc(
             a, TYPE_KEY_MAP_ARRAY, sizeof(KeyBinding) * newCap
@@ -411,7 +411,7 @@ bool KeyMap_bind(KeyMap *map, int64_t combo, KeyBindingFn fn, void *userdata)
     }
 
     // Append.
-    uint32_t slot = (*map).count;
+    u32 slot = (*map).count;
     (*map).bindings[slot].combo    = combo;
     (*map).bindings[slot].fn       = fn;
     (*map).bindings[slot].userdata = userdata;
@@ -425,10 +425,10 @@ bool KeyMap_unbind(KeyMap *map, int64_t combo, KeyBindingFn fn)
     if (map == nullptr || fn == nullptr)
         return false;
 
-    for (uint32_t i = 0; i < (*map).count; i++) {
+    for (u32 i = 0; i < (*map).count; i++) {
         if ((*map).bindings[i].combo == combo && (*map).bindings[i].fn == fn) {
             // Swap-remove: move last entry into this slot (O(1)).
-            uint32_t last = (*map).count - 1;
+            u32 last = (*map).count - 1;
             if (i != last)
                 (*map).bindings[i] = (*map).bindings[last];
             (*map).count = last;
@@ -445,7 +445,7 @@ void KeyMap_setMultiTapEnabled(KeyMap *map, bool enabled)
     (*map).multiTapEnabled = enabled;
 }
 
-void KeyMap_setLongPressNanos(KeyMap *map, uint64_t nanos)
+void KeyMap_setLongPressNanos(KeyMap *map, u64 nanos)
 {
     if (map == nullptr)
         return;
@@ -462,14 +462,14 @@ const KeyBinding *KeyMap_match(const KeyMap *map, int64_t liveCombo)
     if (map == nullptr)
         return nullptr;
 
-    for (uint32_t i = 0; i < (*map).count; i++) {
+    for (u32 i = 0; i < (*map).count; i++) {
         if ((*map).bindings[i].combo == liveCombo)
             return &(*map).bindings[i];
     }
     return nullptr;
 }
 
-uint32_t KeyMap_count(const KeyMap *map)
+u32 KeyMap_count(const KeyMap *map)
 {
     if (map == nullptr)
         return 0;
@@ -490,7 +490,7 @@ bool KeyMap_isMultiTapEnabled(const KeyMap *map)
     return (*map).multiTapEnabled;
 }
 
-uint64_t KeyMap_getLongPressNanos(const KeyMap *map)
+u64 KeyMap_getLongPressNanos(const KeyMap *map)
 {
     if (map == nullptr)
         return 0;

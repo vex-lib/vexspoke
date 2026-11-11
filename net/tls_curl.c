@@ -49,7 +49,7 @@ bool Tls_connect(const char *host, int port, TlsConn **connOut) {
     return false;
 }
 
-bool Tls_send(TlsConn *conn, const char *buf, size_t len) {
+bool Tls_send(TlsConn *conn, const char *buf, bytes len) {
     if (!conn || !buf)
         return false;
     if (len == 0)
@@ -57,7 +57,7 @@ bool Tls_send(TlsConn *conn, const char *buf, size_t len) {
     return false;
 }
 
-bool Tls_recv(TlsConn *conn, char *buf, size_t cap, size_t *gotOut) {
+bool Tls_recv(TlsConn *conn, char *buf, bytes cap, bytes *gotOut) {
     if (!conn || !buf || !gotOut)
         return false;
     if (cap == 0)
@@ -69,18 +69,18 @@ bool Tls_recv(TlsConn *conn, char *buf, size_t cap, size_t *gotOut) {
 // Nothing is ever readable from a backend that produces no connection, so the
 // accessors exist only so a host compiles and links identically on every
 // platform and can see for itself that this backend answered nothing.
-bool Tls_readable(TlsConn *conn, uint32_t budgetMs) {
+bool Tls_readable(TlsConn *conn, u32 budgetMs) {
     (void) conn;
     (void) budgetMs;
     return false;
 }
 
-void Tls_setBudget(TlsConn *conn, uint32_t timeoutMs) {
+void Tls_setBudget(TlsConn *conn, u32 timeoutMs) {
     (void) conn;
     (void) timeoutMs;
 }
 
-uint32_t Tls_getBudget(const TlsConn *conn) {
+u32 Tls_getBudget(const TlsConn *conn) {
     (void) conn;
     return 0u;
 }

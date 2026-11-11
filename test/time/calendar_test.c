@@ -29,7 +29,7 @@ static int g_failures = 0;
 // Converts epoch milliseconds and checks the expected calendar fields.
 // Converts epoch milliseconds and asserts the expected date and optional weekday.
 // Checks a timestamp's calendar fields and optionally its ISO weekday.
-static void expect_date(int64_t ms, int32_t y, int32_t mo, int32_t d, int32_t dow) {
+static void expect_date(int64_t ms, i32 y, i32 mo, i32 d, i32 dow) {
     DateTime dt;
     setEpochMillis(&dt, ms);
     CHECK(DateTime_year(&dt) == y);

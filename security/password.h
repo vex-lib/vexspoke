@@ -40,27 +40,27 @@ typedef enum PasswordCode {
 } PasswordCode;
 
 typedef struct PasswordVerifier {
-    uint32_t code;
-    uint32_t kdf;
-    uint32_t iterations;
-    uint32_t memoryKiB;
-    uint32_t lanes;
-    uint8_t salt[PASSWORD_SALT_MAX];
-    uint32_t saltLength;
-    uint8_t hash[32];
-    uint32_t hashLength;
+    u32 code;
+    u32 kdf;
+    u32 iterations;
+    u32 memoryKiB;
+    u32 lanes;
+    u8 salt[PASSWORD_SALT_MAX];
+    u32 saltLength;
+    u8 hash[32];
+    u32 hashLength;
 } PasswordVerifier;
 
 // Raw derivation. `prfDigest` selects the MAC width (20 for SHA-1, 32 for SHA-256).
-bool Password_deriveSha1(const char *password, const uint8_t *salt, size_t saltLen,
-                         uint32_t iterations, uint8_t *outKey, size_t keyLen);
-bool Password_deriveSha256(const char *password, const uint8_t *salt, size_t saltLen,
-                           uint32_t iterations, uint8_t *outKey, size_t keyLen);
+bool Password_deriveSha1(const char *password, const u8 *salt, bytes saltLen,
+                         u32 iterations, u8 *outKey, bytes keyLen);
+bool Password_deriveSha256(const char *password, const u8 *salt, bytes saltLen,
+                           u32 iterations, u8 *outKey, bytes keyLen);
 // Constant-time comparison against a stored key.
-bool Password_verifySha256(const char *password, const uint8_t *salt, size_t saltLen,
-                           uint32_t iterations, const uint8_t *expected, size_t expectedLen);
+bool Password_verifySha256(const char *password, const u8 *salt, bytes saltLen,
+                           u32 iterations, const u8 *expected, bytes expectedLen);
 // A fresh salt from the OS CSPRNG (never from the deterministic Crypto_prng*).
-bool Password_generateSalt(uint8_t *dest, size_t len);
+bool Password_generateSalt(u8 *dest, bytes len);
 
 // Versioned verifier record. Creation generates a fresh OS-backed salt and
 // dispatches to the selected KDF; verification dispatches only on the stored

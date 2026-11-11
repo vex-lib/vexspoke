@@ -40,7 +40,7 @@ static int sFailures = 0;
 int main(int argc, const char **argv) {
     CaptureTool *tools = CaptureTool_shared();
     CHECK(tools != nullptr);
-    const uint32_t total = CaptureTool_count(tools);
+    const u32 total = CaptureTool_count(tools);
     printf("CaptureTool_count = %u\n", total);
     CHECK(total == 15);
     CHECK(CaptureTool_at(tools, 0) != nullptr);
@@ -77,7 +77,7 @@ int main(int argc, const char **argv) {
     CHECK(soundflower && CaptureTool_getProcKey(tools, soundflower) == nullptr);
     CHECK(soundflower && CaptureTool_getDriverDir(tools, soundflower) != nullptr);
 
-    for (uint32_t i = 0; i < total; i++) {
+    for (u32 i = 0; i < total; i++) {
         const CaptureSlot *row = CaptureTool_at(tools, i);
         CHECK(row != nullptr);
         CHECK(row && CaptureTool_getSlug(tools, row) != nullptr);

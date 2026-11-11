@@ -9,7 +9,7 @@
 //   +37 longPressFired latch       +38 pad
 //
 // pendingUntil is the tap-sequence settlement instant: taps are OFFERED while
-// `now < pendingUntil` and settle (SINGLE/DOUBLE/TRIPLE) once it passes.
+// `now < pendingUntil` and settle (SINGLE/d64/TRIPLE) once it passes.
 // lastTapMods breaks the sequence when the modifier state changes between
 // presses. longPressFired is the one-shot hold latch, cleared on release.
 //
@@ -53,30 +53,30 @@
  * listener registries grow exponentially (the Dynamic Scalability &
  * Anti-Hardcoding Law): window scope is a row keyed by the opaque OS window
  * id (never a slot index), and every segment starts at zero allocations and
- * doubles on demand, arena-backed.
+ * f64s on demand, arena-backed.
  *
  * STRUCT FIELDS (local to this file):
  * ----------------------------------------------------------------------------
  *   InputEvent {
- *     uint64_t packed;           // legacy 64-bit key event packing
- *     uint32_t windowId;         // target window (0 = broadcast)
- *     uint32_t pad;              // alignment padding
+ *     u64 packed;           // legacy 64-bit key event packing
+ *     u32 windowId;         // target window (0 = broadcast)
+ *     u32 pad;              // alignment padding
  *   }
  *   KeySlot {
- *     uint64_t pressTime;        // last press timestamp
- *     uint64_t lastReleaseTime;  // last release timestamp
- *     uint64_t pendingUntil;     // tap window close; taps settle once now >= pendingUntil
- *     uint64_t lastHoldDuration; // hold length accumulator
- *     int32_t taps;              // tap count for multi-tap
- *     uint8_t lastTapMods;       // wire modifier mask at last press (change breaks sequence)
- *     uint8_t longPressFired;    // one-shot LONG_PRESS latch, cleared on release
- *     uint8_t pad[2];            // alignment padding
+ *     u64 pressTime;        // last press timestamp
+ *     u64 lastReleaseTime;  // last release timestamp
+ *     u64 pendingUntil;     // tap window close; taps settle once now >= pendingUntil
+ *     u64 lastHoldDuration; // hold length accumulator
+ *     i32 taps;              // tap count for multi-tap
+ *     u8 lastTapMods;       // wire modifier mask at last press (change breaks sequence)
+ *     u8 longPressFired;    // one-shot LONG_PRESS latch, cleared on release
+ *     u8 pad[2];            // alignment padding
  *   }
  *
  * PRIVATE HELPERS (kept file-local pure-data only, each with full fields):
  * ----------------------------------------------------------------------------
  *   WinRow {
- *     uint32_t windowId;         // opaque OS window tag (0 never attached)
+ *     u32 windowId;         // opaque OS window tag (0 never attached)
  *     const KeyHandler **items;  // arena-allocated listener segment, doubling
  *     int count;                 // live listener count
  *     int cap;                   // allocated segment capacity
@@ -130,22 +130,22 @@
 
 // One queued event: the legacy 64-bit packing plus the window it belongs to.
 typedef struct {
-    uint64_t packed;
-    uint32_t windowId;
-    uint32_t pad;
+    u64 packed;
+    u32 windowId;
+    u32 pad;
 } InputEvent;
 
 _Static_assert(sizeof(InputEvent) == 16, "input event must stay 16 Bytes");
 
 typedef struct {
-    uint64_t pressTime;
-    uint64_t lastReleaseTime;
-    uint64_t pendingUntil;     // tap window close; taps settle once now >= pendingUntil
-    uint64_t lastHoldDuration;
-    int32_t taps;
-    uint8_t lastTapMods;       // wire modifier mask at last press (change breaks sequence)
-    uint8_t longPressFired;    // one-shot LONG_PRESS latch, cleared on release
-    uint8_t pad[2];            // alignment padding
+    u64 pressTime;
+    u64 lastReleaseTime;
+    u64 pendingUntil;     // tap window close; taps settle once now >= pendingUntil
+    u64 lastHoldDuration;
+    i32 taps;
+    u8 lastTapMods;       // wire modifier mask at last press (change breaks sequence)
+    u8 longPressFired;    // one-shot LONG_PRESS latch, cleared on release
+    u8 pad[2];            // alignment padding
 } KeySlot;
 
 _Static_assert(sizeof(KeySlot) == 40, "key slot must stay 40 Bytes");
@@ -158,11 +158,11 @@ static bool s_ready = false;
 
 // --- PRIVATE HELPERS: growable listener registries ---
 // The Dynamic Scalability & Anti-Hardcoding Law: registries start at zero
-// allocations and double exponentially, arena-backed. windowId is an opaque
+// allocations and d64 exponentially, arena-backed. windowId is an opaque
 // OS tag (0 = FOCUS_BROADCAST, reserved, never attached); broadcast events
 // fan _out to every attached row.
 typedef struct WinRow {
-    uint32_t windowId;
+    u32 windowId;
     const KeyHandler **items;  // arena-allocated segment, doubling
     int count;
     int cap;
@@ -186,10 +186,10 @@ static bool growSegment(const KeyHandler ***items, int *cap, int needed) {
     int newCap = (*cap == 0) ? 16 : *cap * 2;
     while (newCap < needed) newCap *= 2;
     const KeyHandler **nb = (const KeyHandler**) Memory_alloc(
-        TYPE_INT_POINTER, (size_t) newCap * sizeof(KeyHandler*));
+        TYPE_INT_POINTER, (bytes) newCap * sizeof(KeyHandler*));
     if (nb == nullptr) return false;
     if (*items != nullptr && *cap > 0)
-        memcpy(nb, *items, (size_t) *cap * sizeof(KeyHandler*));
+        memcpy(nb, *items, (bytes) *cap * sizeof(KeyHandler*));
     *items = nb;
     *cap = newCap;
     return true;
@@ -201,17 +201,17 @@ static bool growRows(int needed) {
     int newCap = (s_rowCap == 0) ? 8 : s_rowCap * 2;
     while (newCap < needed) newCap *= 2;
     WinRow *nb = (WinRow*) Memory_alloc(TYPE_INT_POINTER,
-        (size_t) newCap * sizeof(WinRow));
+        (bytes) newCap * sizeof(WinRow));
     if (nb == nullptr) return false;
     if (s_rows != nullptr && s_rowCap > 0)
-        memcpy(nb, s_rows, (size_t) s_rowCap * sizeof(WinRow));
+        memcpy(nb, s_rows, (bytes) s_rowCap * sizeof(WinRow));
     s_rows = nb;
     s_rowCap = newCap;
     return true;
 }
 
 // Find the row for an opaque OS window id, or NULL when not attached.
-static WinRow *rowFor(uint32_t windowId) {
+static WinRow *rowFor(u32 windowId) {
     for (int i = 0; i < s_rowCount; i++)
         if (s_rows[i].windowId == windowId)
             return &s_rows[i];
@@ -261,7 +261,7 @@ static const char *const s_names[KEY_COUNT] = {
     [KEY_F9] = "F9",                  [KEY_F10] = "F10",
     [KEY_F11] = "F11",                [KEY_F12] = "F12",
     [KEY_F13] = "F13",                [KEY_F14] = "F14",
-    [KEY_F15] = "F15",                [KEY_F16] = "F16",
+    [KEY_F15] = "F15",                [KEY_F16] = "b16",
     [KEY_F17] = "F17",                [KEY_F18] = "F18",
     [KEY_F19] = "F19",                [KEY_F20] = "F20",
     [KEY_F21] = "F21",                [KEY_F22] = "F22",
@@ -307,7 +307,7 @@ bool Key_removeListener(const KeyHandler *listener) {
     return false;
 }
 
-void Key_attachWindow(uint32_t windowId, const KeyHandler *listener) {
+void Key_attachWindow(u32 windowId, const KeyHandler *listener) {
     if (listener == nullptr || windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) {
@@ -322,7 +322,7 @@ void Key_attachWindow(uint32_t windowId, const KeyHandler *listener) {
     (*row).items[(*row).count++] = listener;
 }
 
-bool Key_detachWindow(uint32_t windowId, const KeyHandler *listener) {
+bool Key_detachWindow(u32 windowId, const KeyHandler *listener) {
     if (listener == nullptr || windowId == 0) return false;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return false;
@@ -336,7 +336,7 @@ bool Key_detachWindow(uint32_t windowId, const KeyHandler *listener) {
     return false;
 }
 
-void Key_detachWindowAll(uint32_t windowId) {
+void Key_detachWindowAll(u32 windowId) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row != nullptr)
@@ -354,33 +354,33 @@ static int modifierMask(void) {
 }
 
 // Engine-epoch micros truncated to the 46-bit carrier field.
-static uint64_t epochMicros(void) {
+static u64 epochMicros(void) {
     return (NanoTime_elapsedNanos() / 1000ULL) & 0x3FFFFFFFFFFFULL;
 }
 
-void Key_pushEvent(uint32_t windowId, int keyCode, int action, uint64_t tapWindowNanos) {
+void Key_pushEvent(u32 windowId, int keyCode, int action, u64 tapWindowNanos) {
     if (keyCode < 0 || keyCode >= KEY_COUNT) return;
     if (!s_ready) Key_init();
     if (!s_ready) return;
 
     KeySlot *slot = &s_slots[keyCode];
-    uint64_t now = NanoTime_now();
+    u64 now = NanoTime_now();
 
     if (action == KEY_ACTION_DOWN) {
         if ((*slot).pressTime != 0) {
             // Already down: OS auto-repeat. Forward as repeat, state untouched.
             InputEvent ev = { .packed = (epochMicros() << 18)
-                                       | (((uint64_t)modifierMask() & 0xF) << 14)
-                                       | (((uint64_t)keyCode & 0xFFF) << 2)
+                                       | (((u64)modifierMask() & 0xF) << 14)
+                                       | (((u64)keyCode & 0xFFF) << 2)
                                        | KEY_ACTION_REPEAT,
                               .windowId = windowId, .pad = 0 };
             RingBuffer_push(&s_queue, &ev);
             return;
         }
-        uint64_t lastRelease = (*slot).lastReleaseTime;
+        u64 lastRelease = (*slot).lastReleaseTime;
         // A modifier-state change since the last press breaks the sequence:
-        // different modifiers => a fresh tap, never an upgrade to double/triple.
-        uint8_t modsNow = (uint8_t)(modifierMask() & 0xF);
+        // different modifiers => a fresh tap, never an upgrade to d64/triple.
+        u8 modsNow = (u8)(modifierMask() & 0xF);
         if (lastRelease != 0 && (now - lastRelease) < tapWindowNanos
             && (*slot).lastTapMods == modsNow)
             (*slot).taps++;
@@ -398,24 +398,24 @@ void Key_pushEvent(uint32_t windowId, int keyCode, int action, uint64_t tapWindo
     }
 
     InputEvent ev = { .packed = (epochMicros() << 18)
-                               | (((uint64_t)modifierMask() & 0xF) << 14)
-                               | (((uint64_t)keyCode & 0xFFF) << 2)
-                               | ((uint64_t)action & 0x3),
+                               | (((u64)modifierMask() & 0xF) << 14)
+                               | (((u64)keyCode & 0xFFF) << 2)
+                               | ((u64)action & 0x3),
                       .windowId = windowId, .pad = 0 };
     RingBuffer_push(&s_queue, &ev);
 }
 
-void Key_pushCharEvent(uint32_t windowId, uint32_t c) {
+void Key_pushCharEvent(u32 windowId, u32 c) {
     if (!s_ready) Key_init();
     if (!s_ready) return;
-    InputEvent ev = { .packed = (epochMicros() << 18) | (((uint64_t)c & 0xFFFF) << 2) | 3ULL,
+    InputEvent ev = { .packed = (epochMicros() << 18) | (((u64)c & 0xFFFF) << 2) | 3ULL,
                       .windowId = windowId, .pad = 0 };
     RingBuffer_push(&s_queue, &ev);
 }
 
 // Deliver one event to a scoped listener list. windowId 0 (FOCUS_BROADCAST)
 // is reserved and never attached; broadcast events fan _out to every row.
-static void deliverToWindow(uint32_t windowId, int action, int keyEvent, uint64_t exactNanos) {
+static void deliverToWindow(u32 windowId, int action, int keyEvent, u64 exactNanos) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return;
@@ -432,7 +432,7 @@ static void deliverToWindow(uint32_t windowId, int action, int keyEvent, uint64_
 }
 
 // Deliver a typed character to one window's scoped list.
-static void deliverChar(uint32_t windowId, uint32_t c) {
+static void deliverChar(u32 windowId, u32 c) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return;
@@ -448,13 +448,13 @@ void Key_dispatchEvents(void) {
 
     InputEvent ev;
     while (RingBuffer_pop(&s_queue, &ev)) {
-        uint64_t packed = ev.packed;
+        u64 packed = ev.packed;
         int action = (int)(packed & 0x3);
-        uint64_t exactNanos = NanoTime_startNanos()
+        u64 exactNanos = NanoTime_startNanos()
                             + (((packed >> 18) & 0x3FFFFFFFFFFFULL) * 1000ULL);
 
         if (action == 3) { // char event
-            uint32_t c = (uint32_t)((packed >> 2) & 0xFFFF);
+            u32 c = (u32)((packed >> 2) & 0xFFFF);
             for (int i = 0; i < s_listenerCount; i++)
                 if ((*s_listeners[i]).onCharTyped)
                     (*s_listeners[i]).onCharTyped((*s_listeners[i]).self, c);
@@ -502,33 +502,33 @@ bool Key_isDown(int keyCode) {
     return s_slots[keyCode].pressTime != 0;
 }
 
-uint64_t Key_pressTime(int keyCode) {
+u64 Key_pressTime(int keyCode) {
     if (keyCode < 0 || keyCode >= KEY_COUNT) return 0;
     return s_slots[keyCode].pressTime;
 }
 
-uint64_t Key_lastReleaseTime(int keyCode) {
+u64 Key_lastReleaseTime(int keyCode) {
     if (keyCode < 0 || keyCode >= KEY_COUNT) return 0;
     return s_slots[keyCode].lastReleaseTime;
 }
 
-uint64_t Key_lastHoldDurationNanos(int keyCode) {
+u64 Key_lastHoldDurationNanos(int keyCode) {
     if (keyCode < 0 || keyCode >= KEY_COUNT) return 0;
     return s_slots[keyCode].lastHoldDuration;
 }
 
-uint64_t Key_currentHoldDurationNanos(int keyCode) {
-    uint64_t p = Key_pressTime(keyCode);
+u64 Key_currentHoldDurationNanos(int keyCode) {
+    u64 p = Key_pressTime(keyCode);
     return p == 0 ? 0 : NanoTime_now() - p;
 }
 
-uint64_t Key_holdDurationNanos(int keyCode) {
-    uint64_t p = Key_pressTime(keyCode);
+u64 Key_holdDurationNanos(int keyCode) {
+    u64 p = Key_pressTime(keyCode);
     return p != 0 ? NanoTime_now() - p : Key_lastHoldDurationNanos(keyCode);
 }
 
-uint64_t Key_durationSinceReleaseNanos(int keyCode) {
-    uint64_t r = Key_lastReleaseTime(keyCode);
+u64 Key_durationSinceReleaseNanos(int keyCode) {
+    u64 r = Key_lastReleaseTime(keyCode);
     return r == 0 ? 0 : NanoTime_now() - r;
 }
 
@@ -552,7 +552,7 @@ KeyTapPhase Key_tapPhase(int keyCode) {
     if ((*slot).taps >= 3)
         return KEY_TAP_TRIPLE;
     if ((*slot).taps == 2)
-        return KEY_TAP_DOUBLE;
+        return KEY_TAP_f64;
     return KEY_TAP_SINGLE;
 }
 
@@ -563,7 +563,7 @@ bool Key_isLongPressFired(int keyCode) {
 
 void Key_setLongPressFired(int keyCode, bool fired) {
     if (keyCode < 0 || keyCode >= KEY_COUNT) return;
-    s_slots[keyCode].longPressFired = (uint8_t)(fired ? 1 : 0);
+    s_slots[keyCode].longPressFired = (u8)(fired ? 1 : 0);
 }
 
 int Key_code(int keyEvent) {

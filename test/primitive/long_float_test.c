@@ -1,11 +1,11 @@
-// vexspoke/test/primitive/long_float_test.c — the LongFloat class _test.
+// vexspoke/test/primitive/long_f32_test.c — the LongFloat class _test.
 //
-// Composite: int64 (offset 0) + float (offset 8); the API reads/writes int64.
+// Composite: int64 (offset 0) + f32 (offset 8); the API reads/writes int64.
 
 #include <stdint.h>
 #include <stdio.h>
 
-#include "primitive/long_float.h"
+#include "primitive/long_f32.h"
 #include "oop/type.h"
 
 static int g_failures = 0;
@@ -69,9 +69,9 @@ int main(void) {
     LongFloat_shutdown();
 
     if (g_failures == 0) {
-        printf("long_float_test: all assertions held\n");
+        printf("long_f32_test: all assertions held\n");
         return 0;
     }
-    printf("long_float_test: %d FAILURES\n", g_failures);
+    printf("long_f32_test: %d FAILURES\n", g_failures);
     return 1;
 }

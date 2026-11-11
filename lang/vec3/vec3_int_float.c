@@ -1,4 +1,4 @@
-#include "lang/vec3/vec3_int_float.h"
+#include "lang/vec3/vec3_int_f32.h"
 
 #include <math.h>
 
@@ -11,9 +11,9 @@
  * ============================================================================
  * DEFINITION: Vec3IntFloat
  * ============================================================================
- * Large-world 3D vector that eliminates 32-bit floating-point jitter at
+ * Large-world 3D vector that eliminates 32-bit f32ing-point jitter at
  * great distances by pairing an integer grid sector with a normalized local
- * float offset on each of the three axes (horizontal/vertical/depth). A
+ * f32 offset on each of the three axes (horizontal/vertical/depth). A
  * CoordFrame id records which spatial convention the components are stated
  * in. Vec3IntFloat_rebalance normalizes sector overflow: when |local| passes
  * sectorSize the sector bumps and the local offset wraps back into range, so
@@ -25,21 +25,21 @@
 ;;OVERVIEW
 /**
  * ============================================================================
- * CLASS: Vec3IntFloat (lang/vec3/vec3_int_float.c — defined in lang/vec3/vec3_int_float.h)
+ * CLASS: Vec3IntFloat (lang/vec3/vec3_int_f32.c — defined in lang/vec3/vec3_int_f32.h)
  * ============================================================================
  * Represents coordinates across massive open worlds without precision loss.
  *
- * STRUCT FIELDS (Mirroring lang/vec3/vec3_int_float.h):
+ * STRUCT FIELDS (Mirroring lang/vec3/vec3_int_f32.h):
  * ----------------------------------------------------------------------------
  *   CoordIntFloat {
- *     int32_t sector; // integer grid tile index
- *     float local;    // normalized offset within the sector
+ *     i32 sector; // integer grid tile index
+ *     f32 local;    // normalized offset within the sector
  *   }
  *   Vec3IntFloat {
  *     CoordIntFloat horizontal; // right/left axis (sector + local)
  *     CoordIntFloat vertical;   // up/down axis (sector + local)
  *     CoordIntFloat depth;      // front/back axis (sector + local)
- *     uint32_t frame;           // CoordFrame id (COORD_FRAME_DEFAULT when unset)
+ *     u32 frame;           // CoordFrame id (COORD_FRAME_DEFAULT when unset)
  *   }
  *
  * FUNCTION REGISTRY:
@@ -74,12 +74,12 @@ Vec3IntFloat *Vec3IntFloat_0(void) {
     (*v).vertical.local = 0.0f;
     (*v).depth.sector = 0;
     (*v).depth.local = 0.0f;
-    (*v).frame = (uint32_t) COORD_FRAME_DEFAULT;
+    (*v).frame = (u32) COORD_FRAME_DEFAULT;
     return v;
 }
 
-Vec3IntFloat *Vec3IntFloat_7(int32_t sectorH, float localH, int32_t sectorV, float localV,
-                             int32_t sectorD, float localD, CoordFrame frame) {
+Vec3IntFloat *Vec3IntFloat_7(i32 sectorH, f32 localH, i32 sectorV, f32 localV,
+                             i32 sectorD, f32 localD, CoordFrame frame) {
     Vec3IntFloat *v = (Vec3IntFloat*) Memory_alloc(ID_VEC3, sizeof(Vec3IntFloat));
     if (!v) return nullptr;
     (*v).horizontal.sector = sectorH;
@@ -88,7 +88,7 @@ Vec3IntFloat *Vec3IntFloat_7(int32_t sectorH, float localH, int32_t sectorV, flo
     (*v).vertical.local = localV;
     (*v).depth.sector = sectorD;
     (*v).depth.local = localD;
-    (*v).frame = CoordFrame_isValid(frame) ? (uint32_t) frame : (uint32_t) COORD_FRAME_DEFAULT;
+    (*v).frame = CoordFrame_isValid(frame) ? (u32) frame : (u32) COORD_FRAME_DEFAULT;
     return v;
 }
 
@@ -96,7 +96,7 @@ void Vec3IntFloat_free(Vec3IntFloat *v) {
     if (v) Memory_free(v);
 }
 
-static void rebalance_axis(CoordIntFloat *axis, float sectorSize) {
+static void rebalance_axis(CoordIntFloat *axis, f32 sectorSize) {
     if (sectorSize <= 0.0f) return;
     while ((*axis).local >= sectorSize) {
         (*axis).local -= sectorSize;
@@ -108,16 +108,16 @@ static void rebalance_axis(CoordIntFloat *axis, float sectorSize) {
     }
 }
 
-void Vec3IntFloat_rebalance(Vec3IntFloat *v, float sectorSize) {
+void Vec3IntFloat_rebalance(Vec3IntFloat *v, f32 sectorSize) {
     if (!v) return;
     rebalance_axis(&(*v).horizontal, sectorSize);
     rebalance_axis(&(*v).vertical, sectorSize);
     rebalance_axis(&(*v).depth, sectorSize);
 }
 
-float Vec3IntFloat_getRightLocal(const Vec3IntFloat *v) { return v ? (*v).horizontal.local : 0.0f; }
-float Vec3IntFloat_getLeftLocal(const Vec3IntFloat *v)  { return v ? -(*v).horizontal.local : 0.0f; }
-float Vec3IntFloat_getUpLocal(const Vec3IntFloat *v)    { return v ? (*v).vertical.local : 0.0f; }
-float Vec3IntFloat_getDownLocal(const Vec3IntFloat *v)  { return v ? -(*v).vertical.local : 0.0f; }
-float Vec3IntFloat_getFrontLocal(const Vec3IntFloat *v) { return v ? (*v).depth.local : 0.0f; }
-float Vec3IntFloat_getBackLocal(const Vec3IntFloat *v)  { return v ? -(*v).depth.local : 0.0f; }
+f32 Vec3IntFloat_getRightLocal(const Vec3IntFloat *v) { return v ? (*v).horizontal.local : 0.0f; }
+f32 Vec3IntFloat_getLeftLocal(const Vec3IntFloat *v)  { return v ? -(*v).horizontal.local : 0.0f; }
+f32 Vec3IntFloat_getUpLocal(const Vec3IntFloat *v)    { return v ? (*v).vertical.local : 0.0f; }
+f32 Vec3IntFloat_getDownLocal(const Vec3IntFloat *v)  { return v ? -(*v).vertical.local : 0.0f; }
+f32 Vec3IntFloat_getFrontLocal(const Vec3IntFloat *v) { return v ? (*v).depth.local : 0.0f; }
+f32 Vec3IntFloat_getBackLocal(const Vec3IntFloat *v)  { return v ? -(*v).depth.local : 0.0f; }

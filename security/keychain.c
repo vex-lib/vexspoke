@@ -51,8 +51,8 @@ const char *Keychain_codeName(KeychainCode code) {
 static bool keysValid(const char *service, const char *account) {
     if (service == nullptr || account == nullptr)
         return false;
-    size_t serviceLen = strlen(service);
-    size_t accountLen = strlen(account);
+    bytes serviceLen = strlen(service);
+    bytes accountLen = strlen(account);
     if (serviceLen == 0u || serviceLen >= KEYCHAIN_SERVICE_MAX)
         return false;
     if (accountLen == 0u || accountLen >= KEYCHAIN_ACCOUNT_MAX)
@@ -76,7 +76,7 @@ static KeychainCode codeFor(OSStatus status) {
 bool Keychain_isAvailable(void) { return true; }
 
 KeychainCode Keychain_store(const char *service, const char *account,
-                            const uint8_t *secret, size_t len) {
+                            const u8 *secret, bytes len) {
     if (!keysValid(service, account) || (secret == nullptr && len != 0u) || len > KEYCHAIN_SECRET_MAX) {
         THROW("Keychain_store: invalid argument");
         return KEYCHAIN_INVALID;
@@ -113,7 +113,7 @@ KeychainCode Keychain_store(const char *service, const char *account,
 }
 
 KeychainCode Keychain_load(const char *service, const char *account,
-                           uint8_t *dest, size_t cap, size_t *outLen) {
+                           u8 *dest, bytes cap, bytes *outLen) {
     if (outLen != nullptr)
         *outLen = 0u;
     if (!keysValid(service, account) || dest == nullptr || cap == 0u) {
@@ -138,7 +138,7 @@ KeychainCode Keychain_load(const char *service, const char *account,
         OSStatus status = SecItemCopyMatching(query, &item);
         result = codeFor(status);
         if (result == KEYCHAIN_OK && item != nullptr) {
-            size_t length = (size_t) CFDataGetLength((CFDataRef) item);
+            bytes length = (bytes) CFDataGetLength((CFDataRef) item);
             if (length > cap) {
                 result = KEYCHAIN_TOO_SMALL;   // dest untouched
             } else {
@@ -190,14 +190,14 @@ KeychainCode Keychain_remove(const char *service, const char *account) {
 bool Keychain_isAvailable(void) { return false; }
 
 KeychainCode Keychain_store(const char *service, const char *account,
-                            const uint8_t *secret, size_t len) {
+                            const u8 *secret, bytes len) {
     (void) service; (void) account; (void) secret; (void) len;
     THROW("Keychain_store: no keychain backend on this host");
     return KEYCHAIN_UNSUPPORTED;
 }
 
 KeychainCode Keychain_load(const char *service, const char *account,
-                           uint8_t *dest, size_t cap, size_t *outLen) {
+                           u8 *dest, bytes cap, bytes *outLen) {
     (void) service; (void) account; (void) dest; (void) cap;
     if (outLen != nullptr)
         *outLen = 0u;

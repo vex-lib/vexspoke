@@ -34,20 +34,20 @@
  * STRUCT FIELDS (Mirroring input/piano_key.h):
  * ----------------------------------------------------------------------------
  *   PianoKeyEvent {
- *     uint8_t  note;        // 0..127 (MIDI standard; 60 = Middle C / C4)
- *     uint8_t  channel;     // 0..15 MIDI channel
+ *     u8  note;        // 0..127 (MIDI standard; 60 = Middle C / C4)
+ *     u8  channel;     // 0..15 MIDI channel
  *     bool     isDown;      // true = Note On, false = Note Off
- *     float    velocity;    // normalized strike velocity [0.0, 1.0]
- *     float    pressure;    // polyphonic aftertouch [0.0, 1.0]
- *     float    pitchBend;   // [-1.0, +1.0]
- *     uint64_t timestampUs; // microsecond timestamp
+ *     f32    velocity;    // normalized strike velocity [0.0, 1.0]
+ *     f32    pressure;    // polyphonic aftertouch [0.0, 1.0]
+ *     f32    pitchBend;   // [-1.0, +1.0]
+ *     u64 timestampUs; // microsecond timestamp
  *   }
  *   PianoState {
- *     float    velocities[PIANO_MAX_NOTES]; // 0.0 if not pressed
- *     float    pressures[PIANO_MAX_NOTES];  // aftertouch per key
- *     uint32_t activeNotesCount;
- *     float    pitchBend;                   // current pitch wheel bend [-1.0, 1.0]
- *     float    modWheel;                    // CC 1 modulation [0.0, 1.0]
+ *     f32    velocities[PIANO_MAX_NOTES]; // 0.0 if not pressed
+ *     f32    pressures[PIANO_MAX_NOTES];  // aftertouch per key
+ *     u32 activeNotesCount;
+ *     f32    pitchBend;                   // current pitch wheel bend [-1.0, 1.0]
+ *     f32    modWheel;                    // CC 1 modulation [0.0, 1.0]
  *     bool     sustainPedal;                // CC 64 damper pedal
  *   }
  *
@@ -69,28 +69,28 @@ static const char *const PITCH_NAMES[12] = {
     "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"
 };
 
-float PianoKey_frequency(uint8_t note) {
+f32 PianoKey_frequency(u8 note) {
     if (note >= PIANO_MAX_NOTES) {
         note = 127;
     }
     // Equal temperament formula: f = 440 * 2^((note - 69) / 12)
-    float semitoneOffset = (float) ((int32_t) note - PIANO_A4_NOTE);
+    f32 semitoneOffset = (f32) ((i32) note - PIANO_A4_NOTE);
     return PIANO_A4_FREQ * powf(2.0f, semitoneOffset / 12.0f);
 }
 
-PianoPitchClass PianoKey_pitchClass(uint8_t note) {
+PianoPitchClass PianoKey_pitchClass(u8 note) {
     return (PianoPitchClass) (note % 12);
 }
 
-int32_t PianoKey_octave(uint8_t note) {
+i32 PianoKey_octave(u8 note) {
     // MIDI 60 (Middle C) is C4. 60 / 12 = 5, minus 1 = 4.
-    return ((int32_t) note / 12) - 1;
+    return ((i32) note / 12) - 1;
 }
 
-void PianoKey_noteName(uint8_t note, char *dest, size_t maxLen) {
+void PianoKey_noteName(u8 note, char *dest, bytes maxLen) {
     if (dest == nullptr || maxLen == 0) return;
     PianoPitchClass pc = PianoKey_pitchClass(note);
-    int32_t oct = PianoKey_octave(note);
+    i32 oct = PianoKey_octave(note);
     snprintf(dest, maxLen, "%s%d", PITCH_NAMES[pc], oct);
 }
 
@@ -105,7 +105,7 @@ void PianoState_processEvent(PianoState *state, PianoKeyEvent event) {
         return;
     }
 
-    uint8_t n = event.note;
+    u8 n = event.note;
     bool wasDown = ((*state).velocities[n] > 0.0f);
 
     if (event.isDown) {
@@ -125,12 +125,12 @@ void PianoState_processEvent(PianoState *state, PianoKeyEvent event) {
     (*state).pitchBend = event.pitchBend;
 }
 
-bool PianoState_isNoteOn(const PianoState *state, uint8_t note) {
+bool PianoState_isNoteOn(const PianoState *state, u8 note) {
     if (state == nullptr || note >= PIANO_MAX_NOTES) return false;
     return (*state).velocities[note] > 0.0f;
 }
 
-float PianoState_noteVelocity(const PianoState *state, uint8_t note) {
+f32 PianoState_noteVelocity(const PianoState *state, u8 note) {
     if (state == nullptr || note >= PIANO_MAX_NOTES) return 0.0f;
     return (*state).velocities[note];
 }

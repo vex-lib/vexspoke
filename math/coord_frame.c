@@ -36,8 +36,8 @@
  * STRUCT FIELDS (Mirroring math/coord_frame.h):
  * ----------------------------------------------------------------------------
  *   CoordBasis {
- *     int8_t axis[3]; // spatial component per XYZ (0=horizontal, 1=vertical, 2=depth)
- *     int8_t sign[3]; // +1 or -1 multiplier per component
+ *      axis[3]; // spatial component per XYZ (0=horizontal, 1=vertical, 2=depth)
+ *      sign[3]; // +1 or -1 multiplier per component
  *   }
  *
  * FUNCTION REGISTRY:
@@ -105,32 +105,32 @@ static const char *s_names[COORD_FRAME_COUNT] = {
 };
 
 CoordBasis CoordFrame_getBasis(CoordFrame frame) {
-    if ((uint32_t) frame >= COORD_FRAME_COUNT) {
+    if ((u32) frame >= COORD_FRAME_COUNT) {
         return s_bases[COORD_FRAME_DEFAULT];
     }
     return s_bases[frame];
 }
 
-int8_t CoordFrame_getAxisIndex(CoordFrame frame, int xyzIndex) {
-    if ((uint32_t) frame >= COORD_FRAME_COUNT || (uint32_t) xyzIndex >= 3) {
+ CoordFrame_getAxisIndex(CoordFrame frame, int xyzIndex) {
+    if ((u32) frame >= COORD_FRAME_COUNT || (u32) xyzIndex >= 3) {
         return 0;
     }
     return s_bases[frame].axis[xyzIndex];
 }
 
-float CoordFrame_getAxisSign(CoordFrame frame, int xyzIndex) {
-    if ((uint32_t) frame >= COORD_FRAME_COUNT || (uint32_t) xyzIndex >= 3) {
+f32 CoordFrame_getAxisSign(CoordFrame frame, int xyzIndex) {
+    if ((u32) frame >= COORD_FRAME_COUNT || (u32) xyzIndex >= 3) {
         return 1.0f;
     }
-    return (float) s_bases[frame].sign[xyzIndex];
+    return (f32) s_bases[frame].sign[xyzIndex];
 }
 
-bool CoordFrame_isValid(uint32_t frame) {
+bool CoordFrame_isValid(u32 frame) {
     return frame < COORD_FRAME_COUNT;
 }
 
 const char *CoordFrame_name(CoordFrame frame) {
-    if ((uint32_t) frame >= COORD_FRAME_COUNT) {
+    if ((u32) frame >= COORD_FRAME_COUNT) {
         return "UNKNOWN";
     }
     return s_names[frame];

@@ -34,10 +34,10 @@ typedef struct TlsConn {
 bool Tls_connect(const char *host, int port, TlsConn **connOut);
 
 // Send Bytes over an established TLS connection.
-bool Tls_send(TlsConn *conn, const char *buf, size_t len);
+bool Tls_send(TlsConn *conn, const char *buf, bytes len);
 
 // Receive up to cap Bytes. gotOut receives the count.
-bool Tls_recv(TlsConn *conn, char *buf, size_t cap, size_t *gotOut);
+bool Tls_recv(TlsConn *conn, char *buf, bytes cap, bytes *gotOut);
 
 // Close and release a connection Tls_connect produced. Null-safe. NEVER call it
 // on a caller-owned TlsConn: the record is owned by the backend that created it,
@@ -48,7 +48,7 @@ void Tls_close(TlsConn *conn);
 // budget, false on a quiet budget or a broken connection. A poll loop uses it so
 // a quiet transport is not read as a failure — which is why `wss://` needs it,
 // since a TLS connection has no descriptor to poll.
-bool Tls_readable(TlsConn *conn, uint32_t budgetMs);
+bool Tls_readable(TlsConn *conn, u32 budgetMs);
 
 // The per-connection IO budget: every send and receive waits at most this long.
 // A caller driving a bounded poll loop sets it so the transport honours the same
@@ -56,8 +56,8 @@ bool Tls_readable(TlsConn *conn, uint32_t budgetMs);
 // carry SO_RCVTIMEO and would outlive the caller's budget. Zero restores the
 // backend default; the getter proves the budget believed in is the budget in
 // force.
-void Tls_setBudget(TlsConn *conn, uint32_t timeoutMs);
-uint32_t Tls_getBudget(const TlsConn *conn);
+void Tls_setBudget(TlsConn *conn, u32 timeoutMs);
+u32 Tls_getBudget(const TlsConn *conn);
 
 // Which backend answered the last successful connect; TLS_BACKEND_NONE until
 // one does. A host reports the transport it actually got, never the one it

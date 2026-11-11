@@ -21,11 +21,11 @@
 /** ========================================================================
  * MODULE: Poly1305 (security/poly1305.c)
  * STRUCT FIELDS (Mirroring security/poly1305.h)
- *   uint32_t r[5]     clamped multiplier, 26-bit limbs
- *   uint32_t h[5]     accumulator, 26-bit limbs
- *   uint32_t pad[4]   additive pad s, four little-endian words
- *   uint8_t  buffer[16] pending block
- *   size_t   leftover bytes buffered
+ *   u32 r[5]     clamped multiplier, 26-bit limbs
+ *   u32 h[5]     accumulator, 26-bit limbs
+ *   u32 pad[4]   additive pad s, four little-endian words
+ *   u8  buffer[16] pending block
+ *   bytes   leftover bytes buffered
  *   bool     final    the padded final block has been formed
  * PRIVATE HELPERS
  *   load32le(p) / store32le(p, v)   little-endian word access
@@ -39,19 +39,19 @@
  * no allocation; the state is zeroed on final.
  * ======================================================================== */
 
-static uint32_t load32le(const uint8_t *p) {
-    return (uint32_t) p[0] | ((uint32_t) p[1] << 8) |
-           ((uint32_t) p[2] << 16) | ((uint32_t) p[3] << 24);
+static u32 load32le(const u8 *p) {
+    return (u32) p[0] | ((u32) p[1] << 8) |
+           ((u32) p[2] << 16) | ((u32) p[3] << 24);
 }
 
-static void store32le(uint8_t *p, uint32_t v) {
-    p[0] = (uint8_t) v;
-    p[1] = (uint8_t) (v >> 8);
-    p[2] = (uint8_t) (v >> 16);
-    p[3] = (uint8_t) (v >> 24);
+static void store32le(u8 *p, u32 v) {
+    p[0] = (u8) v;
+    p[1] = (u8) (v >> 8);
+    p[2] = (u8) (v >> 16);
+    p[3] = (u8) (v >> 24);
 }
 
-void Poly1305_init(Poly1305 *self, const uint8_t key[POLY1305_KEY_SIZE]) {
+void Poly1305_init(Poly1305 *self, const u8 key[POLY1305_KEY_SIZE]) {
     if (self == nullptr || key == nullptr) {
         THROW("Poly1305_init: null state or key");
         return;
@@ -66,13 +66,13 @@ void Poly1305_init(Poly1305 *self, const uint8_t key[POLY1305_KEY_SIZE]) {
         (*self).pad[i] = load32le(key + 16u + 4u * i);
 }
 
-static void blocks(Poly1305 *self, const uint8_t *m, size_t bytes) {
-    uint32_t r0 = (*self).r[0], r1 = (*self).r[1], r2 = (*self).r[2];
-    uint32_t r3 = (*self).r[3], r4 = (*self).r[4];
-    uint32_t s1 = r1 * 5u, s2 = r2 * 5u, s3 = r3 * 5u, s4 = r4 * 5u;
-    uint32_t h0 = (*self).h[0], h1 = (*self).h[1], h2 = (*self).h[2];
-    uint32_t h3 = (*self).h[3], h4 = (*self).h[4];
-    uint32_t hibit = (*self).final ? 0u : (1u << 24);
+static void blocks(Poly1305 *self, const u8 *m, bytes bytes) {
+    u32 r0 = (*self).r[0], r1 = (*self).r[1], r2 = (*self).r[2];
+    u32 r3 = (*self).r[3], r4 = (*self).r[4];
+    u32 s1 = r1 * 5u, s2 = r2 * 5u, s3 = r3 * 5u, s4 = r4 * 5u;
+    u32 h0 = (*self).h[0], h1 = (*self).h[1], h2 = (*self).h[2];
+    u32 h3 = (*self).h[3], h4 = (*self).h[4];
+    u32 hibit = (*self).final ? 0u : (1u << 24);
 
     while (bytes >= POLY1305_BLOCK_SIZE) {
         h0 += load32le(m) & 0x3ffffffu;
@@ -81,23 +81,23 @@ static void blocks(Poly1305 *self, const uint8_t *m, size_t bytes) {
         h3 += (load32le(m + 9) >> 6) & 0x3ffffffu;
         h4 += (load32le(m + 12) >> 8) | hibit;
 
-        uint64_t d0 = (uint64_t) h0 * r0 + (uint64_t) h1 * s4 + (uint64_t) h2 * s3 +
-                      (uint64_t) h3 * s2 + (uint64_t) h4 * s1;
-        uint64_t d1 = (uint64_t) h0 * r1 + (uint64_t) h1 * r0 + (uint64_t) h2 * s4 +
-                      (uint64_t) h3 * s3 + (uint64_t) h4 * s2;
-        uint64_t d2 = (uint64_t) h0 * r2 + (uint64_t) h1 * r1 + (uint64_t) h2 * r0 +
-                      (uint64_t) h3 * s4 + (uint64_t) h4 * s3;
-        uint64_t d3 = (uint64_t) h0 * r3 + (uint64_t) h1 * r2 + (uint64_t) h2 * r1 +
-                      (uint64_t) h3 * r0 + (uint64_t) h4 * s4;
-        uint64_t d4 = (uint64_t) h0 * r4 + (uint64_t) h1 * r3 + (uint64_t) h2 * r2 +
-                      (uint64_t) h3 * r1 + (uint64_t) h4 * r0;
+        u64 d0 = (u64) h0 * r0 + (u64) h1 * s4 + (u64) h2 * s3 +
+                      (u64) h3 * s2 + (u64) h4 * s1;
+        u64 d1 = (u64) h0 * r1 + (u64) h1 * r0 + (u64) h2 * s4 +
+                      (u64) h3 * s3 + (u64) h4 * s2;
+        u64 d2 = (u64) h0 * r2 + (u64) h1 * r1 + (u64) h2 * r0 +
+                      (u64) h3 * s4 + (u64) h4 * s3;
+        u64 d3 = (u64) h0 * r3 + (u64) h1 * r2 + (u64) h2 * r1 +
+                      (u64) h3 * r0 + (u64) h4 * s4;
+        u64 d4 = (u64) h0 * r4 + (u64) h1 * r3 + (u64) h2 * r2 +
+                      (u64) h3 * r1 + (u64) h4 * r0;
 
-        uint32_t c = (uint32_t) (d0 >> 26);
-        h0 = (uint32_t) d0 & 0x3ffffffu;
-        d1 += c; c = (uint32_t) (d1 >> 26); h1 = (uint32_t) d1 & 0x3ffffffu;
-        d2 += c; c = (uint32_t) (d2 >> 26); h2 = (uint32_t) d2 & 0x3ffffffu;
-        d3 += c; c = (uint32_t) (d3 >> 26); h3 = (uint32_t) d3 & 0x3ffffffu;
-        d4 += c; c = (uint32_t) (d4 >> 26); h4 = (uint32_t) d4 & 0x3ffffffu;
+        u32 c = (u32) (d0 >> 26);
+        h0 = (u32) d0 & 0x3ffffffu;
+        d1 += c; c = (u32) (d1 >> 26); h1 = (u32) d1 & 0x3ffffffu;
+        d2 += c; c = (u32) (d2 >> 26); h2 = (u32) d2 & 0x3ffffffu;
+        d3 += c; c = (u32) (d3 >> 26); h3 = (u32) d3 & 0x3ffffffu;
+        d4 += c; c = (u32) (d4 >> 26); h4 = (u32) d4 & 0x3ffffffu;
         h0 += c * 5u; c = h0 >> 26; h0 &= 0x3ffffffu;
         h1 += c;
 
@@ -112,7 +112,7 @@ static void blocks(Poly1305 *self, const uint8_t *m, size_t bytes) {
     (*self).h[4] = h4;
 }
 
-void Poly1305_update(Poly1305 *self, const uint8_t *data, size_t len) {
+void Poly1305_update(Poly1305 *self, const u8 *data, bytes len) {
     if (self == nullptr)
         return;
     if (len == 0u)
@@ -122,7 +122,7 @@ void Poly1305_update(Poly1305 *self, const uint8_t *data, size_t len) {
         return;
     }
     if ((*self).leftover > 0u) {
-        size_t want = POLY1305_BLOCK_SIZE - (*self).leftover;
+        bytes want = POLY1305_BLOCK_SIZE - (*self).leftover;
         if (want > len)
             want = len;
         memcpy((*self).buffer + (*self).leftover, data, want);
@@ -135,7 +135,7 @@ void Poly1305_update(Poly1305 *self, const uint8_t *data, size_t len) {
         (*self).leftover = 0u;
     }
     if (len >= POLY1305_BLOCK_SIZE) {
-        size_t whole = len & ~(size_t) (POLY1305_BLOCK_SIZE - 1u);
+        bytes whole = len & ~(bytes) (POLY1305_BLOCK_SIZE - 1u);
         blocks(self, data, whole);
         data += whole;
         len -= whole;
@@ -146,22 +146,22 @@ void Poly1305_update(Poly1305 *self, const uint8_t *data, size_t len) {
     }
 }
 
-bool Poly1305_final(Poly1305 *self, uint8_t tag[POLY1305_TAG_SIZE]) {
+bool Poly1305_final(Poly1305 *self, u8 tag[POLY1305_TAG_SIZE]) {
     if (self == nullptr || tag == nullptr) {
         THROW("Poly1305_final: null state or tag");
         return false;
     }
     if ((*self).leftover > 0u) {
         (*self).buffer[(*self).leftover] = 1u;
-        for (size_t i = (*self).leftover + 1u; i < POLY1305_BLOCK_SIZE; ++i)
+        for (bytes i = (*self).leftover + 1u; i < POLY1305_BLOCK_SIZE; ++i)
             (*self).buffer[i] = 0u;
         (*self).final = true;
         blocks(self, (*self).buffer, POLY1305_BLOCK_SIZE);
     }
 
-    uint32_t h0 = (*self).h[0], h1 = (*self).h[1], h2 = (*self).h[2];
-    uint32_t h3 = (*self).h[3], h4 = (*self).h[4];
-    uint32_t c;
+    u32 h0 = (*self).h[0], h1 = (*self).h[1], h2 = (*self).h[2];
+    u32 h3 = (*self).h[3], h4 = (*self).h[4];
+    u32 c;
     c = h1 >> 26; h1 &= 0x3ffffffu;
     h2 += c; c = h2 >> 26; h2 &= 0x3ffffffu;
     h3 += c; c = h3 >> 26; h3 &= 0x3ffffffu;
@@ -169,13 +169,13 @@ bool Poly1305_final(Poly1305 *self, uint8_t tag[POLY1305_TAG_SIZE]) {
     h0 += c * 5u; c = h0 >> 26; h0 &= 0x3ffffffu;
     h1 += c;
 
-    uint32_t g0 = h0 + 5u; c = g0 >> 26; g0 &= 0x3ffffffu;
-    uint32_t g1 = h1 + c; c = g1 >> 26; g1 &= 0x3ffffffu;
-    uint32_t g2 = h2 + c; c = g2 >> 26; g2 &= 0x3ffffffu;
-    uint32_t g3 = h3 + c; c = g3 >> 26; g3 &= 0x3ffffffu;
-    uint32_t g4 = h4 + c - (1u << 26);
+    u32 g0 = h0 + 5u; c = g0 >> 26; g0 &= 0x3ffffffu;
+    u32 g1 = h1 + c; c = g1 >> 26; g1 &= 0x3ffffffu;
+    u32 g2 = h2 + c; c = g2 >> 26; g2 &= 0x3ffffffu;
+    u32 g3 = h3 + c; c = g3 >> 26; g3 &= 0x3ffffffu;
+    u32 g4 = h4 + c - (1u << 26);
 
-    uint32_t mask = (uint32_t) (g4 >> 31) - 1u;
+    u32 mask = (u32) (g4 >> 31) - 1u;
     g0 &= mask; g1 &= mask; g2 &= mask; g3 &= mask; g4 &= mask;
     mask = ~mask;
     h0 = (h0 & mask) | g0;
@@ -189,10 +189,10 @@ bool Poly1305_final(Poly1305 *self, uint8_t tag[POLY1305_TAG_SIZE]) {
     h2 = ((h2 >> 12) | (h3 << 14)) & 0xffffffffu;
     h3 = ((h3 >> 18) | (h4 << 8)) & 0xffffffffu;
 
-    uint64_t f = (uint64_t) h0 + (*self).pad[0]; h0 = (uint32_t) f;
-    f = (uint64_t) h1 + (*self).pad[1] + (f >> 32); h1 = (uint32_t) f;
-    f = (uint64_t) h2 + (*self).pad[2] + (f >> 32); h2 = (uint32_t) f;
-    f = (uint64_t) h3 + (*self).pad[3] + (f >> 32); h3 = (uint32_t) f;
+    u64 f = (u64) h0 + (*self).pad[0]; h0 = (u32) f;
+    f = (u64) h1 + (*self).pad[1] + (f >> 32); h1 = (u32) f;
+    f = (u64) h2 + (*self).pad[2] + (f >> 32); h2 = (u32) f;
+    f = (u64) h3 + (*self).pad[3] + (f >> 32); h3 = (u32) f;
 
     store32le(tag, h0);
     store32le(tag + 4, h1);
@@ -202,8 +202,8 @@ bool Poly1305_final(Poly1305 *self, uint8_t tag[POLY1305_TAG_SIZE]) {
     return true;
 }
 
-bool Poly1305_tag(const uint8_t key[POLY1305_KEY_SIZE], const uint8_t *data, size_t len,
-                  uint8_t tag[POLY1305_TAG_SIZE]) {
+bool Poly1305_tag(const u8 key[POLY1305_KEY_SIZE], const u8 *data, bytes len,
+                  u8 tag[POLY1305_TAG_SIZE]) {
     Poly1305 ctx = {0};
     Poly1305_init(&ctx, key);
     Poly1305_update(&ctx, data, len);

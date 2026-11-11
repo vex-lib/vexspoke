@@ -24,7 +24,7 @@ static int g_failures = 0;
     } while (0)
 
 // Parses a pattern with a fresh parser and reports the root and status.
-static uint32_t parse(const char *pattern, bool ignoreCase, RegexParser *parser) {
+static u32 parse(const char *pattern, bool ignoreCase, RegexParser *parser) {
     *parser = RegexParser(pattern, strlen(pattern), ignoreCase);
     return RegexParser_parse(parser);
 }
@@ -44,14 +44,14 @@ static void testShapes(void) {
     const RegexNode *root = RegexNodeList_at(nodes, 0);
     CHECK(root != nullptr);
     CHECK((*root).kind == REGEX_NODE_CHAR);
-    CHECK((*root).byte == (uint8_t) 'a');
+    CHECK((*root).byte == (u8) 'a');
     RegexParser_free(&parser);
 
     // ignoreCase folds the literal at parse time.
     CHECK(parse("A", true, &parser) != REGEX_NODE_NONE);
     const RegexNode *folded = RegexNodeList_at(RegexParser_nodes(&parser), 0);
     CHECK(folded != nullptr);
-    CHECK((*folded).byte == (uint8_t) 'a');
+    CHECK((*folded).byte == (u8) 'a');
     RegexParser_free(&parser);
 
     // Concatenation nests left and keeps the operands as indices.
@@ -64,8 +64,8 @@ static void testShapes(void) {
     const RegexNode *left = RegexNodeList_at(cat, (*top).a);
     const RegexNode *right = RegexNodeList_at(cat, (*top).b);
     CHECK(left != nullptr && right != nullptr);
-    CHECK((*left).byte == (uint8_t) 'a');
-    CHECK((*right).byte == (uint8_t) 'b');
+    CHECK((*left).byte == (u8) 'a');
+    CHECK((*right).byte == (u8) 'b');
     RegexParser_free(&parser);
 
     // A capturing group counts; a non-capturing group does not.
@@ -109,15 +109,15 @@ static void testClasses(void) {
     CHECK(node != nullptr);
     CHECK((*node).kind == REGEX_NODE_CLASS);
 
-    uint32_t classCount = 0;
+    u32 classCount = 0;
     RegexCharClass *classes = RegexParser_releaseClasses(&parser, &classCount);
     CHECK(classes != nullptr);
     CHECK(classCount == 1);
-    CHECK(RegexCharClass_test(&classes[(*node).clsIndex], (uint8_t) 'm'));
-    CHECK(!RegexCharClass_test(&classes[(*node).clsIndex], (uint8_t) 'M'));
+    CHECK(RegexCharClass_test(&classes[(*node).clsIndex], (u8) 'm'));
+    CHECK(!RegexCharClass_test(&classes[(*node).clsIndex], (u8) 'M'));
 
     // The transfer is one-shot: a second call yields nothing.
-    uint32_t again = 7;
+    u32 again = 7;
     CHECK(RegexParser_releaseClasses(&parser, &again) == nullptr);
     CHECK(again == 0);
 
@@ -148,7 +148,7 @@ static void testRejections(void) {
         { "a{2", "malformed repetition" },
         { "\\x1", "malformed \\x escape" },
     };
-    for (size_t i = 0; i < sizeof cases / sizeof cases[0]; i++) {
+    for (bytes i = 0; i < sizeof cases / sizeof cases[0]; i++) {
         CHECK(parse(cases[i].pattern, false, &parser) == REGEX_NODE_NONE);
         CHECK(!RegexParser_ok(&parser));
         const char *error = RegexParser_error(&parser);
@@ -170,7 +170,7 @@ static void testCeilings(void) {
     RegexParser_free(&parser);
 
     char deep[512];
-    size_t d = 0;
+    bytes d = 0;
     for (int i = 0; i < 200; i++) deep[d++] = '(';
     deep[d++] = 'a';
     for (int i = 0; i < 200; i++) deep[d++] = ')';
@@ -181,7 +181,7 @@ static void testCeilings(void) {
     RegexParser_free(&parser);
 
     static char flat[9001];
-    for (size_t i = 0; i < 9000; i++) flat[i] = 'a';
+    for (bytes i = 0; i < 9000; i++) flat[i] = 'a';
     flat[9000] = '\0';
     parser = RegexParser(flat, 9000u, false);
     CHECK(RegexParser_parse(&parser) == REGEX_NODE_NONE);
@@ -190,7 +190,7 @@ static void testCeilings(void) {
 
     // A near-ceiling class run still parses.
     static char classes[12001];
-    size_t c = 0;
+    bytes c = 0;
     for (int i = 0; i < 4000; i++) {
         classes[c++] = '[';
         classes[c++] = 'a';
@@ -199,7 +199,7 @@ static void testCeilings(void) {
     classes[c] = '\0';
     parser = RegexParser(classes, c, false);
     CHECK(RegexParser_parse(&parser) != REGEX_NODE_NONE);
-    uint32_t count = 0;
+    u32 count = 0;
     RegexCharClass *released = RegexParser_releaseClasses(&parser, &count);
     CHECK(released != nullptr);
     CHECK(count == 4000);

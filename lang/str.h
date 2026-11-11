@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 // lang/str.h — the bounded string builder (the toString Law's engine).
 //
@@ -16,15 +16,15 @@
 
 typedef struct Str {
     char  *dest;       // borrowed destination buffer
-    size_t cap;        // total capacity (including the terminator)
-    size_t len;        // Bytes written so far (excluding the terminator)
+    bytes cap;        // total capacity (including the terminator)
+    bytes len;        // Bytes written so far (excluding the terminator)
     bool   truncated;  // a write was cut
 } Str;
 
 // --- Constructors ---
 // Bind a destination. cap 0 (or a null dest) makes every write a no-op that
 // flags truncated.
-Str Str_2(char *dest, size_t cap);
+Str Str_2(char *dest, bytes cap);
 #define Str(...) CONSTRUCTOR_DISPATCH(Str, __VA_ARGS__)
 
 // --- Core functions (all bounded) ---
@@ -35,7 +35,7 @@ void Str_printf(Str *s, const char *fmt, ...); // bounded printf (cold path)
 
 // --- Getters (the Symmetric Getter/Setter Completeness Law: null-safe) ---
 bool   Str_isTruncated(const Str *s);
-size_t Str_length(const Str *s);
+bytes Str_length(const Str *s);
 const char *Str_cstr(const Str *s);           // the written buffer (null-safe)
 
 #endif // LANG_STR_H

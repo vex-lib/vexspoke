@@ -129,7 +129,7 @@ static void testRanking(void) {
     bool truncated = true;
 
     // "b.sh.c": exact "b.sh.c"; suffix "a.b.sh.c","x.b.sh.c" (start 1, len 5, lex); contains "b.sh.c.d".
-    size_t n = SegmentIndex_query(index, "b.sh.c", out, 8u, &truncated);
+    bytes n = SegmentIndex_query(index, "b.sh.c", out, 8u, &truncated);
     CHECK(n == 4u && truncated == false);
     CHECK(strcmp(matchName(index, &out[0]), "b.sh.c") == 0 && out[0].tier == SEGMENT_MATCH_EXACT);
     CHECK(strcmp(matchName(index, &out[1]), "a.b.sh.c") == 0 && out[1].tier == SEGMENT_MATCH_SUFFIX);
@@ -208,7 +208,7 @@ static void testBridge(void) {
 
     SegmentMatch out[4];
     bool truncated = true;
-    size_t n = SegmentIndex_query(index, "position.x", out, 4u, &truncated);
+    bytes n = SegmentIndex_query(index, "position.x", out, 4u, &truncated);
     CHECK(n == 2u && truncated == false);
     // Exact first (payload = its slot), then the suffix.
     VariableSlot *first = (VariableSlot*) out[0].payload;

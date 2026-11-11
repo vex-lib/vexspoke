@@ -14,11 +14,11 @@
 #define FOCUS_BROADCAST 0u
 
 // Mirror the OS's current focus. Thread 0 calls this after each pump pass.
-void Focus_set(uint32_t windowId);
+void Focus_set(u32 windowId);
 
 // The currently focused window id (FOCUS_BROADCAST if none).
-uint32_t Focus_id(void);
+u32 Focus_id(void);
 
-bool Focus_isFocused(uint32_t windowId);
+bool Focus_isFocused(u32 windowId);
 
 #endif

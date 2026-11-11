@@ -4,7 +4,7 @@
 
 #include "nio/mem.h"
 #include "oop/type.h"
-#include "util/annotation.h"
+#include "lang/annotation.h"
 
 ;;DEFINITION
 /**
@@ -12,7 +12,7 @@
  * DEFINITION: String
  * ============================================================================
  * The string class, ported from primitive/string.java: NUL-terminated
- * uint8_t payloads allocated from the memory arena with a trailing byte
+ * u8 payloads allocated from the memory arena with a trailing byte
  * reserved for the terminator. Provides allocate/free, length/type/capacity
  * introspection, copy/equals, and the String_* family of compare, contains,
  * indexOf, substring, and append operations. Appends are dest-last where a
@@ -42,7 +42,7 @@
  *   - string_classId(void)
  *   - string_capacity(ptr)
  *   - string_copy(ptr)
- *   - string_equals(ptr, value)
+ *   - string_equalsCString(ptr, value)
  *   - String_compare(a, b.sh)
  *   - String_contains(haystack, needle)
  *   - String_containsLiteral(haystack, needle)
@@ -72,23 +72,23 @@
 
 // vex-string.c — the string class, ported from primitive/string.java.
 
-static uint8_t *allocate_raw(size_t len) {
-    uint8_t *ptr = (uint8_t*) Memory_alloc(TYPE_STRING_ARRAY, len + 1);
+static u8 *allocate_raw(bytes len) {
+    u8 *ptr = (u8*) Memory_alloc(TYPE_STRING_ARRAY, len + 1);
     if (ptr)
         memset(ptr, 0, len + 1);
     return ptr;
 }
 
-uint8_t *string_allocate(const char *value) {
+u8 *string_allocate(const char *value) {
     if (!value)
         return nullptr;
-    return string_allocateBytes((const uint8_t*) value, strlen(value));
+    return string_allocateBytes((const u8*) value, strlen(value));
 }
 
-uint8_t *string_allocateBytes(const uint8_t *Bytes, size_t len) {
+u8 *string_allocateBytes(const u8 *Bytes, bytes len) {
     if (!Bytes && len > 0)
         return nullptr;
-    uint8_t *ptr = allocate_raw(len);
+    u8 *ptr = allocate_raw(len);
     if (!ptr)
         return nullptr;
     if (len > 0)
@@ -97,67 +97,67 @@ uint8_t *string_allocateBytes(const uint8_t *Bytes, size_t len) {
     return ptr;
 }
 
-uint8_t *string_allocateUninitialized(size_t len) {
+u8 *string_allocateUninitialized(bytes len) {
     return allocate_raw(len);
 }
 
-void string_free(uint8_t *ptr) {
+void string_free(u8 *ptr) {
     if (ptr)
         Memory_free(ptr);
 }
 
-const char *string_get(const uint8_t *ptr) {
+const char *string_get(const u8 *ptr) {
     if (!ptr)
         return nullptr;
     return (const char*) ptr;
 }
 
-size_t string_length(const uint8_t *ptr) {
+bytes string_length(const u8 *ptr) {
     if (!ptr)
         return 0;
-    size_t n = Memory_length((void*) (uintptr_t)ptr);
+    bytes n = Memory_length((void*) (uintptr_t)ptr);
     return n > 0 ? n - 1 : 0;
 }
 
-uint64_t string_type(const uint8_t *ptr) {
+u64 string_type(const u8 *ptr) {
     if (!ptr)
         return 0;
     return Memory_type((void*) (uintptr_t)ptr);
 }
 
-bool string_isArray(const uint8_t *ptr) {
-    uint64_t t = string_type(ptr);
+bool string_isArray(const u8 *ptr) {
+    u64 t = string_type(ptr);
     return t != 0 && (t & FORM_ARRAY) == FORM_ARRAY;
 }
 
-uint32_t string_classId(void) {
+u32 string_classId(void) {
     return ID_STRING;
 }
 
-size_t string_capacity(const uint8_t *ptr) {
+bytes string_capacity(const u8 *ptr) {
     if (!ptr)
         return 0;
     return Memory_length((void*) (uintptr_t)ptr);
 }
 
-uint8_t *string_copy(const uint8_t *ptr) {
+u8 *string_copy(const u8 *ptr) {
     if (!ptr)
         return nullptr;
-    size_t len = string_length(ptr);
-    uint8_t *dup = string_allocateBytes(ptr, len);
+    bytes len = string_length(ptr);
+    u8 *dup = string_allocateBytes(ptr, len);
     return dup;
 }
 
-bool string_equals(const uint8_t *ptr, const char *value) {
+bool string_equalsCString(const u8 *ptr, const char *value) {
     if (!ptr || !value)
         return false;
-    size_t len = string_length(ptr);
+    bytes len = string_length(ptr);
     if (strlen(value) != len)
         return false;
     return memcmp(ptr, value, len) == 0;
 }
 
-int String_compare(const uint8_t *a, const uint8_t *b) {
+int String_compare(const u8 *a, const u8 *b) {
     if (!a && !b)
         return 0;
     if (!a)
@@ -169,7 +169,7 @@ int String_compare(const uint8_t *a, const uint8_t *b) {
     return strcmp(sa, sb);
 }
 
-bool String_contains(const uint8_t *haystack, const uint8_t *needle) {
+bool String_contains(const u8 *haystack, const u8 *needle) {
     if (!haystack || !needle)
         return false;
     const char *h = (const char*) haystack;
@@ -177,56 +177,56 @@ bool String_contains(const uint8_t *haystack, const uint8_t *needle) {
     return strstr(h, n) != nullptr;
 }
 
-bool String_containsLiteral(const uint8_t *haystack, const char *needle) {
+bool String_containsLiteral(const u8 *haystack, const char *needle) {
     if (!haystack || !needle)
         return false;
     const char *h = (const char*) haystack;
     return strstr(h, needle) != nullptr;
 }
 
-size_t String_indexOf(const uint8_t *haystack, const uint8_t *needle) {
+bytes String_indexOf(const u8 *haystack, const u8 *needle) {
     if (!haystack || !needle)
-        return (size_t) -1;
+        return (bytes) -1;
     const char *h = (const char*) haystack;
     const char *n = (const char*) needle;
     const char *p = strstr(h, n);
     if (!p)
-        return (size_t) -1;
-    return (size_t)(p - h);
+        return (bytes) -1;
+    return (bytes)(p - h);
 }
 
-size_t String_indexOfLiteral(const uint8_t *haystack, const char *needle) {
+bytes String_indexOfLiteral(const u8 *haystack, const char *needle) {
     if (!haystack || !needle)
-        return (size_t) -1;
+        return (bytes) -1;
     const char *h = (const char*) haystack;
     const char *p = strstr(h, needle);
     if (!p)
-        return (size_t) -1;
-    return (size_t)(p - h);
+        return (bytes) -1;
+    return (bytes)(p - h);
 }
 
-bool String_instring(size_t index, const uint8_t *haystack, const uint8_t *needle) {
+bool String_instring(bytes index, const u8 *haystack, const u8 *needle) {
     if (!haystack || !needle)
         return false;
-    size_t pos = String_indexOf(haystack, needle);
-    if (pos == (size_t) -1)
+    bytes pos = String_indexOf(haystack, needle);
+    if (pos == (bytes) -1)
         return false;
     return pos == index;
 }
 
-bool String_instringLiteral(size_t index, const uint8_t *haystack, const char *needle) {
+bool String_instringLiteral(bytes index, const u8 *haystack, const char *needle) {
     if (!haystack || !needle)
         return false;
-    size_t pos = String_indexOfLiteral(haystack, needle);
-    if (pos == (size_t) -1)
+    bytes pos = String_indexOfLiteral(haystack, needle);
+    if (pos == (bytes) -1)
         return false;
     return pos == index;
 }
 
-uint8_t *String_substring(const uint8_t *str, size_t start, size_t len) {
+u8 *String_substring(const u8 *str, bytes start, bytes len) {
     if (!str)
         return nullptr;
-    size_t sLen = string_length(str);
+    bytes sLen = string_length(str);
     if (start >= sLen)
         return String("");
     if (start + len > sLen)
@@ -234,53 +234,53 @@ uint8_t *String_substring(const uint8_t *str, size_t start, size_t len) {
     return string_allocateBytes(str + start, len);
 }
 
-uint8_t *String_substringLiteral(const char *str, size_t start, size_t len) {
+u8 *String_substringLiteral(const char *str, bytes start, bytes len) {
     if (!str)
         return nullptr;
-    size_t sLen = strlen(str);
+    bytes sLen = strlen(str);
     if (start >= sLen)
         return String("");
     if (start + len > sLen)
         len = sLen - start;
-    return string_allocateBytes((const uint8_t*) str + start, len);
+    return string_allocateBytes((const u8*) str + start, len);
 }
 
-uint8_t *String_subFirstChar(const uint8_t *str) {
+u8 *String_subFirstChar(const u8 *str) {
     return String_substring(str, 0, 1);
 }
 
-uint8_t *String_subLastChar(const uint8_t *str) {
+u8 *String_subLastChar(const u8 *str) {
     if (!str)
         return nullptr;
-    size_t sLen = string_length(str);
+    bytes sLen = string_length(str);
     if (sLen == 0)
         return String("");
     return String_substring(str, sLen - 1, 1);
 }
 
-uint8_t *String_subFirst(const uint8_t *str, size_t count) {
+u8 *String_subFirst(const u8 *str, bytes count) {
     return String_substring(str, 0, count);
 }
 
-uint8_t *String_subLast(const uint8_t *str, size_t count) {
+u8 *String_subLast(const u8 *str, bytes count) {
     if (!str)
         return nullptr;
-    size_t sLen = string_length(str);
+    bytes sLen = string_length(str);
     if (count >= sLen)
         return string_copy(str);
     return String_substring(str, sLen - count, count);
 }
 
-uint8_t *String_append(const uint8_t *a, const uint8_t *b) {
+u8 *String_append(const u8 *a, const u8 *b) {
     if (!a && !b)
         return String("");
     if (!a)
         return string_copy(b);
     if (!b)
         return string_copy(a);
-    size_t aLen = string_length(a);
-    size_t bLen = string_length(b);
-    uint8_t *out = string_allocateUninitialized(aLen + bLen);
+    bytes aLen = string_length(a);
+    bytes bLen = string_length(b);
+    u8 *out = string_allocateUninitialized(aLen + bLen);
     if (!out)
         return nullptr;
     memcpy(out, a, aLen);
@@ -289,16 +289,16 @@ uint8_t *String_append(const uint8_t *a, const uint8_t *b) {
     return out;
 }
 
-uint8_t *String_appendLiteral(const uint8_t *a, const char *b) {
+u8 *String_appendLiteral(const u8 *a, const char *b) {
     if (!a && !b)
         return String("");
     if (!a)
         return string_allocate(b);
     if (!b)
         return string_copy(a);
-    size_t aLen = string_length(a);
-    size_t bLen = strlen(b);
-    uint8_t *out = string_allocateUninitialized(aLen + bLen);
+    bytes aLen = string_length(a);
+    bytes bLen = strlen(b);
+    u8 *out = string_allocateUninitialized(aLen + bLen);
     if (!out)
         return nullptr;
     memcpy(out, a, aLen);
@@ -307,16 +307,16 @@ uint8_t *String_appendLiteral(const uint8_t *a, const char *b) {
     return out;
 }
 
-uint8_t *String_appendLiterals(const char *a, const char *b) {
+u8 *String_appendLiterals(const char *a, const char *b) {
     if (!a && !b)
         return String("");
     if (!a)
         return string_allocate(b);
     if (!b)
         return string_allocate(a);
-    size_t aLen = strlen(a);
-    size_t bLen = strlen(b);
-    uint8_t *out = string_allocateUninitialized(aLen + bLen);
+    bytes aLen = strlen(a);
+    bytes bLen = strlen(b);
+    u8 *out = string_allocateUninitialized(aLen + bLen);
     if (!out)
         return nullptr;
     memcpy(out, a, aLen);
@@ -325,13 +325,13 @@ uint8_t *String_appendLiterals(const char *a, const char *b) {
     return out;
 }
 
-void String_appendInto(const uint8_t *a, const uint8_t *b, uint8_t *dest) {
+void String_appendInto(const u8 *a, const u8 *b, u8 *dest) {
     if (!a || !b || !dest)
         return;
-    size_t aLen = string_length(a);
-    size_t bLen = string_length(b);
-    size_t cap = string_capacity(dest);
-    size_t need = aLen + bLen + 1;
+    bytes aLen = string_length(a);
+    bytes bLen = string_length(b);
+    bytes cap = string_capacity(dest);
+    bytes need = aLen + bLen + 1;
     if (cap < need)
         return;
     memmove(dest, a, aLen);
@@ -339,16 +339,16 @@ void String_appendInto(const uint8_t *a, const uint8_t *b, uint8_t *dest) {
     dest[aLen + bLen] = '\0';
 }
 
-uint8_t *String_appendFirst(uint8_t *a, const uint8_t *b) {
+u8 *String_appendFirst(u8 *a, const u8 *b) {
     if (!a)
         return b ? string_copy(b) : nullptr;
     if (!b || b[0] == '\0')
         return a;
-    size_t aLen = string_length(a);
-    size_t bLen = string_length(b);
-    size_t need = aLen + bLen + 1;
+    bytes aLen = string_length(a);
+    bytes bLen = string_length(b);
+    bytes need = aLen + bLen + 1;
     if (string_capacity(a) < need) {
-        uint8_t *grown = Memory_realloc(a, need);
+        u8 *grown = Memory_realloc(a, need);
         if (!grown)
             return a;
         a = grown;
@@ -357,16 +357,16 @@ uint8_t *String_appendFirst(uint8_t *a, const uint8_t *b) {
     return a;
 }
 
-uint8_t *String_appendFirstLiteral(uint8_t *a, const char *b) {
+u8 *String_appendFirstLiteral(u8 *a, const char *b) {
     if (!a)
         return b ? string_allocate(b) : nullptr;
     if (!b || b[0] == '\0')
         return a;
-    size_t aLen = string_length(a);
-    size_t bLen = strlen(b);
-    size_t need = aLen + bLen + 1;
+    bytes aLen = string_length(a);
+    bytes bLen = strlen(b);
+    bytes need = aLen + bLen + 1;
     if (string_capacity(a) < need) {
-        uint8_t *grown = Memory_realloc(a, need);
+        u8 *grown = Memory_realloc(a, need);
         if (!grown)
             return a;
         a = grown;

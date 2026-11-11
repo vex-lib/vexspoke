@@ -40,10 +40,10 @@ static int g_checks = 0;
     } while (0)
 
 typedef struct Row16 {
-    uint32_t a;
-    uint32_t b;
-    uint32_t c;
-    uint32_t d;
+    u32 a;
+    u32 b;
+    u32 c;
+    u32 d;
 } Row16;
 
 // Confirms the public sentinel values used by paged chunk traversal.
@@ -53,8 +53,8 @@ static void testSentinels(void) {
     // INTENTIONAL(vex): the values are the FourCCs with the high bit set.
     CHECK(CHUNKED_LIST_TWO_LAYER_DEFAULT < 0);
     CHECK(CHUNKED_LIST_THREE_LAYER_DEFAULT < 0);
-    CHECK((uint32_t) CHUNKED_LIST_TWO_LAYER_DEFAULT == 0xD4574F21u);
-    CHECK((uint32_t) CHUNKED_LIST_THREE_LAYER_DEFAULT == 0xD4485245u);
+    CHECK((u32) CHUNKED_LIST_TWO_LAYER_DEFAULT == 0xD4574F21u);
+    CHECK((u32) CHUNKED_LIST_THREE_LAYER_DEFAULT == 0xD4485245u);
 }
 
 // Checks page geometry and index-to-page calculations at their boundaries.
@@ -132,17 +132,17 @@ static void testDeepGrowth(void) {
     }
 
     // 1100 rows: crosses the initial 64-slot root (needs 69 slots) so the COW
-    // root doubles, and crosses many leaves/internal nodes.
-    const uint32_t total = 1100u;
-    uint8_t *first = nullptr;
-    for (uint32_t i = 0u; i < total; i++) {
+    // root f64s, and crosses many leaves/internal nodes.
+    const u32 total = 1100u;
+    u8 *first = nullptr;
+    for (u32 i = 0u; i < total; i++) {
         Row16 *r = (Row16*) ChunkedList_addSlot(list);
         if (!r) {
             CHECK(false);
             break;
         }
         if (i == 0u)
-            first = (uint8_t*) r;
+            first = (u8*) r;
         (*r).a = i;
         (*r).b = i + 1u;
         (*r).c = i + 2u;
@@ -163,7 +163,7 @@ static void testDeepGrowth(void) {
 
     // Every row resolves at its original contents (no holes below size).
     bool intact = true;
-    for (uint32_t i = 0u; i < total; i++) {
+    for (u32 i = 0u; i < total; i++) {
         Row16 *r = (Row16*) ChunkedList_slot(list, i);
         if (!r || (*r).a != i || (*r).d != i + 3u) {
             intact = false;
@@ -181,10 +181,10 @@ static void testDeepGrowth(void) {
 
     // packInto still works over the deep table.
     Row16 flat[8];
-    uint32_t rows = 0u;
+    u32 rows = 0u;
     bool truncated = true;
     memset(flat, 0, sizeof(flat));
-    CHECK(ChunkedList_packInto(list, (uint8_t*) flat, sizeof(flat), &rows, &truncated) == false);
+    CHECK(ChunkedList_packInto(list, (u8*) flat, sizeof(flat), &rows, &truncated) == false);
     CHECK(rows == 8u && truncated == true);
     CHECK(flat[0].a == 0u && flat[4].a == 4u && flat[7].a == 7u);
 
@@ -192,12 +192,12 @@ static void testDeepGrowth(void) {
 }
 
 typedef struct ChainProbe {
-    uint32_t chunks;
+    u32 chunks;
     bool ok;
 } ChainProbe;
 
 // Records each chunk and index visited by the chain traversal callback.
-static void chainFn(uint8_t *chunk, uint32_t index, void *userdata) {
+static void chainFn(u8 *chunk, u32 index, void *userdata) {
     ChainProbe *p = (ChainProbe*) userdata;
     if (!chunk || index != (*p).chunks)
         (*p).ok = false;
@@ -214,8 +214,8 @@ static void testChain(void) {
         return;
     }
 
-    const uint32_t total = 30u; // -> 8 leaves, last partially filled
-    for (uint32_t i = 0u; i < total; i++) {
+    const u32 total = 30u; // -> 8 leaves, last partially filled
+    for (u32 i = 0u; i < total; i++) {
         Row16 *r = (Row16*) ChunkedList_addSlot(list);
         if (!r) {
             CHECK(false);
@@ -224,13 +224,13 @@ static void testChain(void) {
         (*r).a = i;
     }
 
-    uint32_t chunks = ChunkedList_getChunkCount(list);
+    u32 chunks = ChunkedList_getChunkCount(list);
     CHECK(chunks == 8u);
 
     // The chain visits exactly the indexed leaves, in order.
-    uint8_t *chunk = ChunkedList_getChunk(list, 0u);
+    u8 *chunk = ChunkedList_getChunk(list, 0u);
     CHECK(chunk != nullptr);
-    uint32_t walked = 0u;
+    u32 walked = 0u;
     bool matches = true;
     while (chunk != nullptr) {
         if (chunk != ChunkedList_getChunk(list, walked))
@@ -246,7 +246,7 @@ static void testChain(void) {
     CHECK(walked == chunks);
 
     // The tail has no next; a null leaf has no next.
-    uint8_t *tail = ChunkedList_getChunk(list, chunks - 1u);
+    u8 *tail = ChunkedList_getChunk(list, chunks - 1u);
     CHECK(ChunkedList_nextChunk(list, tail) == nullptr);
     CHECK(ChunkedList_nextChunk(list, nullptr) == nullptr);
     CHECK(ChunkedList_nextChunk(nullptr, tail) == nullptr);

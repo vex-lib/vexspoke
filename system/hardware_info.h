@@ -19,29 +19,29 @@ void        HardwareInfo_setDeviceModel(const char *val);
 const char *HardwareInfo_getCpuBrand(void);
 void        HardwareInfo_setCpuBrand(const char *val);
 
-int32_t     HardwareInfo_getCpuCoreCount(void);
-void        HardwareInfo_setCpuCoreCount(int32_t val);
+i32     HardwareInfo_getCpuCoreCount(void);
+void        HardwareInfo_setCpuCoreCount(i32 val);
 
-int32_t     HardwareInfo_getCpuThreadCount(void);
-void        HardwareInfo_setCpuThreadCount(int32_t val);
+i32     HardwareInfo_getCpuThreadCount(void);
+void        HardwareInfo_setCpuThreadCount(i32 val);
 
-uint64_t    HardwareInfo_getRamTotal(void);
-void        HardwareInfo_setRamTotal(uint64_t val);
+u64    HardwareInfo_getRamTotal(void);
+void        HardwareInfo_setRamTotal(u64 val);
 
-uint64_t    HardwareInfo_getRamAvailable(void);
-void        HardwareInfo_setRamAvailable(uint64_t val);
+u64    HardwareInfo_getRamAvailable(void);
+void        HardwareInfo_setRamAvailable(u64 val);
 
-uint64_t    HardwareInfo_getStorageTotalSpace(void);
-void        HardwareInfo_setStorageTotalSpace(uint64_t val);
+u64    HardwareInfo_getStorageTotalSpace(void);
+void        HardwareInfo_setStorageTotalSpace(u64 val);
 
-uint64_t    HardwareInfo_getStorageAvailableSpace(void);
-void        HardwareInfo_setStorageAvailableSpace(uint64_t val);
+u64    HardwareInfo_getStorageAvailableSpace(void);
+void        HardwareInfo_setStorageAvailableSpace(u64 val);
 
 bool        HardwareInfo_hasBattery(void);
 void        HardwareInfo_setHasBattery(bool val);
 
-float       HardwareInfo_getBatteryLevel(void);
-void        HardwareInfo_setBatteryLevel(float val);
+f32       HardwareInfo_getBatteryLevel(void);
+void        HardwareInfo_setBatteryLevel(f32 val);
 
 const char *HardwareInfo_getBatteryStatus(void);
 void        HardwareInfo_setBatteryStatus(const char *val);

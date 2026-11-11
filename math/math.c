@@ -25,7 +25,7 @@
  *   - No fast prefix: strictly IEEE 754 precision via StrictMath.
  *   - "fast_" prefix: relaxed polynomial / bitwise approximations via FastMath.
  *
- * STRUCT FIELDS: none — procedural (operates on scalar float/double operands;
+ * STRUCT FIELDS: none — procedural (operates on scalar f32/d64 operands;
  * no state)
  *
  * FUNCTION REGISTRY:
@@ -48,146 +48,146 @@
  * ============================================================================
  */
 
-float Math_sin(float x) {
+f32 Math_sin(f32 x) {
     return StrictMath_sin(x);
 }
 
-float Math_cos(float x) {
+f32 Math_cos(f32 x) {
     return StrictMath_cos(x);
 }
 
-float Math_tan(float x) {
+f32 Math_tan(f32 x) {
     return StrictMath_tan(x);
 }
 
-float Math_asin(float x) {
+f32 Math_asin(f32 x) {
     return StrictMath_asin(x);
 }
 
-float Math_acos(float x) {
+f32 Math_acos(f32 x) {
     return StrictMath_acos(x);
 }
 
-float Math_atan(float x) {
+f32 Math_atan(f32 x) {
     return StrictMath_atan(x);
 }
 
-float Math_atan2(float y, float x) {
+f32 Math_atan2(f32 y, f32 x) {
     return StrictMath_atan2(y, x);
 }
 
-float Math_sqrt(float x) {
+f32 Math_sqrt(f32 x) {
     return StrictMath_sqrt(x);
 }
 
-float Math_invSqrt(float x) {
+f32 Math_invSqrt(f32 x) {
     return StrictMath_invSqrt(x);
 }
 
-float Math_pow(float base, float exp) {
+f32 Math_pow(f32 base, f32 exp) {
     return StrictMath_pow(base, exp);
 }
 
-float Math_exp(float x) {
+f32 Math_exp(f32 x) {
     return StrictMath_exp(x);
 }
 
-float Math_log(float x) {
+f32 Math_log(f32 x) {
     return StrictMath_log(x);
 }
 
-float Math_abs(float x) {
+f32 Math_abs(f32 x) {
     return StrictMath_abs(x);
 }
 
-float Math_floor(float x) {
+f32 Math_floor(f32 x) {
     return StrictMath_floor(x);
 }
 
-float Math_ceil(float x) {
+f32 Math_ceil(f32 x) {
     return StrictMath_ceil(x);
 }
 
-float Math_round(float x) {
+f32 Math_round(f32 x) {
     return StrictMath_round(x);
 }
 
-float Math_clamp(float val, float min, float max) {
+f32 Math_clamp(f32 val, f32 min, f32 max) {
     return StrictMath_clamp(val, min, max);
 }
 
-float Math_lerp(float a, float b, float t) {
+f32 Math_lerp(f32 a, f32 b, f32 t) {
     return StrictMath_lerp(a, b, t);
 }
 
-float Math_toRadians(float deg) {
+f32 Math_toRadians(f32 deg) {
     return StrictMath_toRadians(deg);
 }
 
-float Math_toDegrees(float rad) {
+f32 Math_toDegrees(f32 rad) {
     return StrictMath_toDegrees(rad);
 }
 
-double Math_sinD(double x) {
+d64 Math_sinD(d64 x) {
     return StrictMath_sinD(x);
 }
 
-double Math_cosD(double x) {
+d64 Math_cosD(d64 x) {
     return StrictMath_cosD(x);
 }
 
-double Math_sqrtD(double x) {
+d64 Math_sqrtD(d64 x) {
     return StrictMath_sqrtD(x);
 }
 
-double Math_atan2D(double y, double x) {
+d64 Math_atan2D(d64 y, d64 x) {
     return StrictMath_atan2D(y, x);
 }
 
-float Math_fast_sin(float x) {
+f32 Math_fast_sin(f32 x) {
     return FastMath_sin(x);
 }
 
-float Math_fast_cos(float x) {
+f32 Math_fast_cos(f32 x) {
     return FastMath_cos(x);
 }
 
-float Math_fast_tan(float x) {
+f32 Math_fast_tan(f32 x) {
     return FastMath_tan(x);
 }
 
-float Math_fast_atan(float x) {
+f32 Math_fast_atan(f32 x) {
     return FastMath_atan(x);
 }
 
-float Math_fast_atan2(float y, float x) {
+f32 Math_fast_atan2(f32 y, f32 x) {
     return FastMath_atan2(y, x);
 }
 
-float Math_fast_invSqrt(float x) {
+f32 Math_fast_invSqrt(f32 x) {
     return FastMath_invSqrt(x);
 }
 
-float Math_fast_inv(float x) {
+f32 Math_fast_inv(f32 x) {
     return FastMath_inv(x);
 }
 
-float Math_fast_abs(float x) {
+f32 Math_fast_abs(f32 x) {
     return FastMath_abs(x);
 }
 
-float Math_fast_round(float x) {
+f32 Math_fast_round(f32 x) {
     return FastMath_round(x);
 }
 
-float Math_fast_clamp(float val, float min, float max) {
+f32 Math_fast_clamp(f32 val, f32 min, f32 max) {
     return FastMath_clamp(val, min, max);
 }
 
-float Math_fast_lerp(float a, float b, float t) {
+f32 Math_fast_lerp(f32 a, f32 b, f32 t) {
     return FastMath_lerp(a, b, t);
 }
 
-bool Math_fast_approxEqual(float a, float b, float epsilon) {
+bool Math_fast_approxEqual(f32 a, f32 b, f32 epsilon) {
     return FastMath_approxEqual(a, b, epsilon);
 }

@@ -10,15 +10,15 @@
 #include <stdio.h>
 #include <string.h>
 
-static void toHex(const uint8_t *bytes, size_t len, char *out) {
-    for (size_t i = 0; i < len; ++i)
+static void toHex(const u8 *bytes, bytes len, char *out) {
+    for (bytes i = 0; i < len; ++i)
         snprintf(out + i * 2u, 3u, "%02x", bytes[i]);
     out[len * 2u] = '\0';
 }
 
 int main(void) {
     // RFC 9106 Section 5.3: Argon2id, p=4, T=32, m=32, t=3, v=0x13.
-    uint8_t password[32], salt[16], secret[8], associated[12];
+    u8 password[32], salt[16], secret[8], associated[12];
     memset(password, 0x01, sizeof password);
     memset(salt, 0x02, sizeof salt);
     memset(secret, 0x03, sizeof secret);
@@ -31,7 +31,7 @@ int main(void) {
         .tagBytes = 32u,
     };
 
-    uint8_t tag[ARGON2_TAG_MAX];
+    u8 tag[ARGON2_TAG_MAX];
     assert(Argon2id_derive(&params, password, sizeof password, salt, sizeof salt,
                            secret, sizeof secret, associated, sizeof associated,
                            tag, sizeof tag));
@@ -42,14 +42,14 @@ int main(void) {
     assert(strcmp(hex, expected) == 0);
 
     // Deterministic: same inputs, same tag.
-    uint8_t again[ARGON2_TAG_MAX];
+    u8 again[ARGON2_TAG_MAX];
     assert(Argon2id_derive(&params, password, sizeof password, salt, sizeof salt,
                            secret, sizeof secret, associated, sizeof associated,
                            again, sizeof again));
     assert(memcmp(tag, again, 32u) == 0);
 
     // A changed salt changes the tag.
-    uint8_t otherSalt[16];
+    u8 otherSalt[16];
     memset(otherSalt, 0x2a, sizeof otherSalt);
     assert(Argon2id_derive(&params, password, sizeof password, otherSalt, sizeof otherSalt,
                            secret, sizeof secret, associated, sizeof associated,

@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 // security/blake2b.h — BLAKE2b (RFC 7693), the hash Argon2 is built on.
 //
@@ -26,28 +26,28 @@
 #define BLAKE2B_KEY_MAX          64u
 
 typedef struct Blake2b {
-    uint64_t h[8];                     // working hash words
-    uint64_t t[2];                     // 128-bit byte counter
-    uint8_t  buf[BLAKE2B_BLOCK_SIZE];  // pending block
-    size_t   used;                     // bytes buffered
-    size_t   outlen;                   // digest length chosen at init
+    u64 h[8];                     // working hash words
+    u64 t[2];                     // 128-bit byte counter
+    u8  buf[BLAKE2B_BLOCK_SIZE];  // pending block
+    bytes   used;                     // bytes buffered
+    bytes   outlen;                   // digest length chosen at init
 } Blake2b;
 
 static inline Blake2b Blake2b_0(void) { return (Blake2b) {0}; }
 #define Blake2b(...) CONSTRUCTOR_DISPATCH(Blake2b, __VA_ARGS__)
 
 // Init unkeyed. outlen in [1,64]. False (with THROW) on a null self or bad outlen.
-bool Blake2b_init(Blake2b *self, size_t outlen);
+bool Blake2b_init(Blake2b *self, bytes outlen);
 // Init keyed (a MAC). keylen 0 is the same as init; key may be null only then.
-bool Blake2b_initKeyed(Blake2b *self, size_t outlen, const uint8_t *key, size_t keylen);
+bool Blake2b_initKeyed(Blake2b *self, bytes outlen, const u8 *key, bytes keylen);
 
 // Absorb `len` bytes. A null self is a no-op; null data with a nonzero len rejects.
-void Blake2b_update(Blake2b *self, const void *data, size_t len);
+void Blake2b_update(Blake2b *self, const void *data, bytes len);
 // Write (*self).outlen bytes into out. False (with THROW) when out is null or
 // outCap is shorter than outlen. Zeroes the context on success.
-bool Blake2b_final(Blake2b *self, uint8_t *out, size_t outCap);
+bool Blake2b_final(Blake2b *self, u8 *out, bytes outCap);
 
 // One-shot unkeyed digest of `data` (outCap must be >= outlen).
-bool Blake2b_digest(const void *data, size_t len, size_t outlen, uint8_t *out, size_t outCap);
+bool Blake2b_digest(const void *data, bytes len, bytes outlen, u8 *out, bytes outCap);
 
 #endif

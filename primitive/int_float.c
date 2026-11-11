@@ -1,4 +1,4 @@
-#include "primitive/int_float.h"
+#include "primitive/int_f32.h"
 
 #include <string.h>
 
@@ -12,7 +12,7 @@
  * DEFINITION: IntFloat
  * ============================================================================
  * IntFloat primitive (Legacy: primitive/IntFloat.java): a 64-bit payload
- * holding an int32/float pair, backed by a fixed 1024-slot BitPool for
+ * holding an int32/f32 pair, backed by a fixed 1024-slot BitPool for
  * singletons and the memory arena for arrays. Provides alloc/free,
  * get/set, compare-and-set, type/length introspection, and
  * alloc-with-values convenience. Lives at R2 as a leaf primitive behavior.
@@ -22,11 +22,11 @@
 ;;OVERVIEW
 /**
  * ============================================================================
- * MODULE: Int_float (primitive/int_float.c)
+ * MODULE: Int_f32 (primitive/int_f32.c)
  * ============================================================================
  * IntFloat primitive (Legacy: primitive/IntFloat.java).
  *
- * STRUCT FIELDS: none — procedural (operates on BitPool/memory blocks of int_float payloads)
+ * STRUCT FIELDS: none — procedural (operates on BitPool/memory blocks of int_f32 payloads)
  *
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
@@ -52,26 +52,26 @@
  */
 
 
-BitPool g_int_floatPool;
+BitPool g_int_f32Pool;
 
 bool IntFloat_init(void) {
-    g_int_floatPool = BitPool(8, 1024);
-    return BitPool_live(&g_int_floatPool);
+    g_int_f32Pool = BitPool(8, 1024);
+    return BitPool_live(&g_int_f32Pool);
 }
 
 void IntFloat_shutdown(void) {
-    BitPool_shutdown(&g_int_floatPool);
+    BitPool_shutdown(&g_int_f32Pool);
 }
 
 void *IntFloat_alloc(void) {
-    return BitPool_alloc(&g_int_floatPool, ID_INT_FLOAT);
+    return BitPool_alloc(&g_int_f32Pool, ID_INT_FLOAT);
 }
 
-void *IntFloat_allocArray(size_t count) {
+void *IntFloat_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
-    size_t Bytes = count * sizeof(int64_t);
+    bytes Bytes = count * sizeof(int64_t);
     // For compound types, elem_size 8 already accounts for stride, but sizeof(int64_t) is placeholder
     // Use elem_size for true stride where c_type is int64 placeholder
     if (count > 1 && 8 != sizeof(int64_t))
@@ -82,7 +82,7 @@ void *IntFloat_allocArray(size_t count) {
 void IntFloat_free(void *ptr) {
     if (!ptr)
         return;
-    if (BitPool_contains(&g_int_floatPool, ptr)) BitPool_free(&g_int_floatPool, ptr);
+    if (BitPool_contains(&g_int_f32Pool, ptr)) BitPool_free(&g_int_f32Pool, ptr);
     else Memory_free(ptr);
 }
 
@@ -105,24 +105,24 @@ bool IntFloat_compareAndSet(void *ptr, int64_t expected, int64_t value) {
     return __atomic_compare_exchange_n((int64_t*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
-uint64_t IntFloat_type(void *ptr) {
+u64 IntFloat_type(void *ptr) {
     if (!ptr)
         return 0;
-    if (BitPool_contains(&g_int_floatPool, ptr)) return BitPool_type(&g_int_floatPool, ptr);
+    if (BitPool_contains(&g_int_f32Pool, ptr)) return BitPool_type(&g_int_f32Pool, ptr);
     return Memory_type(ptr);
 }
 
-size_t IntFloat_length(void *ptr) {
+bytes IntFloat_length(void *ptr) {
     if (!ptr)
         return 0;
-    if (BitPool_contains(&g_int_floatPool, ptr)) return BitPool_length(&g_int_floatPool, ptr);
+    if (BitPool_contains(&g_int_f32Pool, ptr)) return BitPool_length(&g_int_f32Pool, ptr);
     return Memory_length(ptr);
 }
 
-void *IntFloat_allocWithValues(int32_t v1, float v2) {
+void *IntFloat_allocWithValues(i32 v1, f32 v2) {
     void *ptr = IntFloat_alloc();
     if (!ptr) return nullptr;
-    *(int32_t*) ptr = v1;
-    *(float*) ((uint8_t*) ptr + sizeof(int32_t)) = v2;
+    *(i32*) ptr = v1;
+    *(f32*) ((u8*) ptr + sizeof(i32)) = v2;
     return ptr;
 }

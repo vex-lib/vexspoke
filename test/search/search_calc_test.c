@@ -21,13 +21,13 @@ int main(void) {
     printf("=== Running String Calc & Search Subsystem Test Suite ===\n");
 
     // 1. String Math Expression Calculator (Exact user expression!)
-    double userVal = 0.0;
+    d64 userVal = 0.0;
     bool okUser = Calc_eval("sin(rad(90)) * atan(34) * pi", &userVal);
     CHECK("evaluate 'sin(rad(90)) * atan(34) * pi'", okUser);
-    double expectedUser = sin(90.0 * STRICT_MATH_DEG_TO_RAD) * atan(34.0) * STRICT_MATH_PI;
+    d64 expectedUser = sin(90.0 * STRICT_MATH_DEG_TO_RAD) * atan(34.0) * STRICT_MATH_PI;
     CHECK("user expression value is exact", fabs(userVal - expectedUser) < 1e-6);
 
-    double val = 0.0;
+    d64 val = 0.0;
     CHECK("precedence '2 + 3 * 4' = 14", Calc_eval("2 + 3 * 4", &val) && val == 14.0);
     CHECK("parentheses '(2 + 3) * 4' = 20", Calc_eval("(2 + 3) * 4", &val) && val == 20.0);
     CHECK("power '2 ^ 3 + 1' = 9", Calc_eval("2 ^ 3 + 1", &val) && val == 9.0);
@@ -36,7 +36,7 @@ int main(void) {
     CHECK("constants 'pi * 2' = tau", Calc_eval("pi * 2", &val) && fabs(val - STRICT_MATH_TWO_PI) < 1e-6);
 
     // Negative tests for calculator
-    double dummy = 0.0;
+    d64 dummy = 0.0;
     CHECK("invalid syntax fails closed", !Calc_eval("2 + * 4", &dummy));
     CHECK("empty string fails closed", !Calc_eval("", &dummy));
     CHECK("unclosed paren fails closed", !Calc_eval("(2 + 3", &dummy));
@@ -66,15 +66,15 @@ int main(void) {
         "player_health",
         "heavy_armor_stealth"
     };
-    uint32_t ids[] = {10, 20, 30, 40};
+    u32 ids[] = {10, 20, 30, 40};
     SpotlightMatch matches[4];
-    size_t count = Spotlight_rank("health", candidates, ids, 4, matches, 4);
+    bytes count = Spotlight_rank("health", candidates, ids, 4, matches, 4);
     CHECK("spotlight found 4 matches", count == 4);
     CHECK("rank #1 is exact match 'health'", matches[0].id == 10 && matches[0].score == 1000);
     CHECK("rank #2 is prefix match 'health_bar'", matches[1].id == 20);
 
     // Spotlight calculation detection
-    double spotlightCalc = 0.0;
+    d64 spotlightCalc = 0.0;
     CHECK("spotlight evaluates calculation query",
           Spotlight_tryCalculate("sin(rad(90)) * atan(34) * pi", &spotlightCalc) && fabs(spotlightCalc - expectedUser) < 1e-6);
 

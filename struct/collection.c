@@ -34,13 +34,13 @@
  * STRUCT FIELDS (Mirroring struct/collection.h):
  * ----------------------------------------------------------------------------
  *   Collection {
- *     uint64_t typeId; // mirror of the block-header type (for debug)
- *     uint32_t activeCount; // number of live elements
- *     uint32_t elementClass; // class of elements (Map: key class)
- *     uint32_t stride; // Bytes per element (Map: val class)
- *     uint32_t capacity; // element capacity (or slot capacity)
- *     uint32_t head; // circular head index (Deque/Queue); else 0
- *     uint8_t *data; // element / slot buffer
+ *     u64 typeId; // mirror of the block-header type (for debug)
+ *     u32 activeCount; // number of live elements
+ *     u32 elementClass; // class of elements (Map: key class)
+ *     u32 stride; // Bytes per element (Map: val class)
+ *     u32 capacity; // element capacity (or slot capacity)
+ *     u32 head; // circular head index (Deque/Queue); else 0
+ *     u8 *data; // element / slot buffer
  *   }
  *
  * FUNCTION REGISTRY:
@@ -72,35 +72,35 @@
 
 // collection.c — Collection port (Legacy: struct/Collection.java).
 
-static uint64_t readSlotAt(const uint8_t *data, size_t stride) {
+static u64 readSlotAt(const u8 *data, bytes stride) {
     switch (stride) {
-        case 1:  return (uint64_t)(*(const uint8_t*) data);
-        case 2:  return (uint64_t)(*(const uint16_t*) data);
-        case 4:  return (uint64_t)(*(const uint32_t*) data);
-        default: return *(const uint64_t*) data;
+        case 1:  return (u64)(*(const u8*) data);
+        case 2:  return (u64)(*(const u16*) data);
+        case 4:  return (u64)(*(const u32*) data);
+        default: return *(const u64*) data;
     }
 }
 
-static void writeSlotAt(uint8_t *data, size_t stride, uint64_t value) {
+static void writeSlotAt(u8 *data, bytes stride, u64 value) {
     switch (stride) {
-        case 1:  *(uint8_t*) data = (uint8_t)value;   break;
-        case 2:  *(uint16_t*) data = (uint16_t)value; break;
-        case 4:  *(uint32_t*) data = (uint32_t)value; break;
-        default: *(uint64_t*) data = value;           break;
+        case 1:  *(u8*) data = (u8)value;   break;
+        case 2:  *(u16*) data = (u16)value; break;
+        case 4:  *(u32*) data = (u32)value; break;
+        default: *(u64*) data = value;           break;
     }
 }
 
-uint64_t Collection_type(Collection *c) {
+u64 Collection_type(Collection *c) {
     if (!c) return 0;
     return Memory_type(c);
 }
 
-uint32_t Collection_size(Collection *c) {
+u32 Collection_size(Collection *c) {
     if (!c) return 0;
     return (*c).activeCount;
 }
 
-uint32_t Collection_length(Collection *c) {
+u32 Collection_length(Collection *c) {
     return Collection_size(c);
 }
 
@@ -108,25 +108,25 @@ bool Collection_isEmpty(Collection *c) {
     return Collection_size(c) == 0;
 }
 
-uint32_t Collection_elementClassId(Collection *c) {
+u32 Collection_elementClassId(Collection *c) {
     if (!c) return 0;
     return (*c).elementClass;
 }
 
-uint32_t Collection_keyClassId(Collection *c) {
+u32 Collection_keyClassId(Collection *c) {
     return Collection_elementClassId(c);
 }
 
-uint32_t Collection_stride(Collection *c) {
+u32 Collection_stride(Collection *c) {
     if (!c) return 0;
     return (*c).stride;
 }
 
-uint32_t Collection_valClassId(Collection *c) {
+u32 Collection_valClassId(Collection *c) {
     return Collection_stride(c);
 }
 
-uint32_t Collection_capacity(Collection *c) {
+u32 Collection_capacity(Collection *c) {
     if (!c) return 0;
     return (*c).capacity;
 }
@@ -135,20 +135,20 @@ uint32_t Collection_capacity(Collection *c) {
 
 /** Count a refused grow and emit the epoch's single diagnostic. Always false. */
 ;;VALIDATOR
-bool Collection_reportExhaustion(Collection *c, size_t requestedBytes) {
+bool Collection_reportExhaustion(Collection *c, bytes requestedBytes) {
     if (!c) {
         THROW("collection: grow refused on a null collection (%zu bytes)", requestedBytes);
         return false;
     }
-    // One implementation for the whole vexgraph-ecosystem-gitrepo: the shared owner-agnostic seam.
+    // One implementation for the whole ecosystem: the shared owner-agnostic seam.
     return Struct_reportExhaustion(&(*c).exhaustionCount, &(*c).exhaustionReported,
                                    "collection", requestedBytes,
-                                   (size_t) (*c).capacity * (*c).stride);
+                                   (bytes) (*c).capacity * (*c).stride);
 }
 
 /** Return the refused-grow count since construction or the last reset. */
 ;;TEST
-uint64_t Collection_exhaustionCount(const Collection *c) {
+u64 Collection_exhaustionCount(const Collection *c) {
     return c ? (*c).exhaustionCount : 0;
 }
 
@@ -159,12 +159,12 @@ void Collection_resetExhaustion(Collection *c) {
     Struct_resetExhaustion(&(*c).exhaustionCount, &(*c).exhaustionReported);
 }
 
-uint32_t Collection_head(Collection *c) {
+u32 Collection_head(Collection *c) {
     if (!c) return 0;
     return (*c).head;
 }
 
-uint8_t *Collection_dataBuffer(Collection *c) {
+u8 *Collection_dataBuffer(Collection *c) {
     if (!c) return nullptr;
     return (*c).data;
 }
@@ -173,7 +173,7 @@ uint8_t *Collection_dataBuffer(Collection *c) {
 // default AND reported on stderr (the Failure Observability Law) — never a
 // silent out-of-bounds dereference. index * stride is checked for overflow
 // (the Overflow Guard Law) so a hostile index cannot wrap the pointer.
-uint64_t Collection_readSlot(Collection *c, size_t index) {
+u64 Collection_readSlot(Collection *c, bytes index) {
     if (!c)
         return 0;
     // Bound by CAPACITY (the physical memory bound), not activeCount: a
@@ -184,15 +184,15 @@ uint64_t Collection_readSlot(Collection *c, size_t index) {
               index, (*c).capacity);
         return 0;
     }
-    size_t offset = 0;
-    if (ckd_mul(&offset, index, (size_t) (*c).stride)) {
+    bytes offset = 0;
+    if (ckd_mul(&offset, index, (bytes) (*c).stride)) {
         THROW("collection readSlot: index %zu * stride %u overflows", index, (*c).stride);
         return 0;
     }
     return readSlotAt((*c).data + offset, (*c).stride);
 }
 
-void Collection_writeSlot(Collection *c, size_t index, uint64_t value) {
+void Collection_writeSlot(Collection *c, bytes index, u64 value) {
     if (!c)
         return;
     // Bound by CAPACITY, not activeCount: an append (List_add) writes the slot
@@ -203,8 +203,8 @@ void Collection_writeSlot(Collection *c, size_t index, uint64_t value) {
               index, (*c).capacity);
         return;
     }
-    size_t offset = 0;
-    if (ckd_mul(&offset, index, (size_t) (*c).stride)) {
+    bytes offset = 0;
+    if (ckd_mul(&offset, index, (bytes) (*c).stride)) {
         THROW("collection writeSlot: index %zu * stride %u overflows", index, (*c).stride);
         return;
     }
@@ -214,13 +214,13 @@ void Collection_writeSlot(Collection *c, size_t index, uint64_t value) {
 // Deliberately unchecked (trust-the-handle): NO bounds check on index — the
 // caller has validated it. Null-guarded so a hostile handle degrades instead of
 // crashing (the Cold-Strict, Hot-Minimal Validation Law).
-uint64_t Collection_readSlotUnsafe(Collection *c, size_t index) {
+u64 Collection_readSlotUnsafe(Collection *c, bytes index) {
     if (!c)
         return 0;
     return readSlotAt((*c).data + index * (*c).stride, (*c).stride);
 }
 
-void Collection_writeSlotUnsafe(Collection *c, size_t index, uint64_t value) {
+void Collection_writeSlotUnsafe(Collection *c, bytes index, u64 value) {
     if (!c)
         return;
     writeSlotAt((*c).data + index * (*c).stride, (*c).stride, value);

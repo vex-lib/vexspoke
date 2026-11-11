@@ -41,7 +41,7 @@ static void wait_ms(long ms) {
 // Waits with a deadline until the virtual clock reaches the requested duration.
 // Ticks the clock until virtual time reaches the target or the bounded poll expires.
 // Ticks until virtual time reaches a target or the finite polling budget expires.
-static bool accrue_at_least(Clock *c, uint64_t target) {
+static bool accrue_at_least(Clock *c, u64 target) {
     for (int i = 0; i < 2000; i++) {          // bounded: <= ~2s
         Clock_tick(c);
         if (Clock_virtualTimeMillis(c) >= target)
@@ -80,7 +80,7 @@ static void test_settings(void) {
 static void test_accrual(void) {
     Clock c = Clock();
     CHECK(accrue_at_least(&c, 1));
-    uint64_t afterFirst = Clock_virtualTimeMillis(&c);
+    u64 afterFirst = Clock_virtualTimeMillis(&c);
     CHECK(afterFirst >= 1);
 
     // Accrual is cumulative and monotonic.
@@ -94,7 +94,7 @@ static void test_accrual(void) {
 static void test_pause_freezes_virtual(void) {
     Clock c = Clock();
     CHECK(accrue_at_least(&c, 1));
-    uint64_t v = Clock_virtualTimeMillis(&c);
+    u64 v = Clock_virtualTimeMillis(&c);
 
     Clock_setPaused(&c, true);
     wait_ms(5);

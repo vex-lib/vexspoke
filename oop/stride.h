@@ -12,6 +12,6 @@
 
 // Byte width of one element of the given class. Returns 8 for anything it does
 // not know (pointer-sized default, matching legacy).
-size_t Stride_get(uint32_t class_id);
+bytes Stride_get(u32 class_id);
 
 #endif

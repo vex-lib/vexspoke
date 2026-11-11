@@ -23,14 +23,14 @@ static int g_failures = 0;
 static void testBytes(void) {
     RegexCharClass cls;
     RegexCharClass_clear(&cls);
-    CHECK(!RegexCharClass_test(&cls, (uint8_t) 'a'));
+    CHECK(!RegexCharClass_test(&cls, (u8) 'a'));
     CHECK(!RegexCharClass_test(&cls, 0));
     CHECK(!RegexCharClass_test(&cls, 255));
 
-    RegexCharClass_addByte(&cls, (uint8_t) 'a', false);
-    CHECK(RegexCharClass_test(&cls, (uint8_t) 'a'));
-    CHECK(!RegexCharClass_test(&cls, (uint8_t) 'b'));
-    CHECK(!RegexCharClass_test(&cls, (uint8_t) 'A')); // case folding is opt-in
+    RegexCharClass_addByte(&cls, (u8) 'a', false);
+    CHECK(RegexCharClass_test(&cls, (u8) 'a'));
+    CHECK(!RegexCharClass_test(&cls, (u8) 'b'));
+    CHECK(!RegexCharClass_test(&cls, (u8) 'A')); // case folding is opt-in
 
     // Boundary bytes live at both ends of the bitmap.
     RegexCharClass edge;
@@ -47,32 +47,32 @@ static void testBytes(void) {
 static void testRanges(void) {
     RegexCharClass cls;
     RegexCharClass_clear(&cls);
-    RegexCharClass_addRange(&cls, (uint8_t) 'a', (uint8_t) 'z', false);
-    CHECK(RegexCharClass_test(&cls, (uint8_t) 'a'));
-    CHECK(RegexCharClass_test(&cls, (uint8_t) 'm'));
-    CHECK(RegexCharClass_test(&cls, (uint8_t) 'z'));
-    CHECK(!RegexCharClass_test(&cls, (uint8_t) 'A'));
-    CHECK(!RegexCharClass_test(&cls, (uint8_t) '{'));
+    RegexCharClass_addRange(&cls, (u8) 'a', (u8) 'z', false);
+    CHECK(RegexCharClass_test(&cls, (u8) 'a'));
+    CHECK(RegexCharClass_test(&cls, (u8) 'm'));
+    CHECK(RegexCharClass_test(&cls, (u8) 'z'));
+    CHECK(!RegexCharClass_test(&cls, (u8) 'A'));
+    CHECK(!RegexCharClass_test(&cls, (u8) '{'));
 
     // An inverted range adds nothing rather than looping.
     RegexCharClass inverted;
     RegexCharClass_clear(&inverted);
-    RegexCharClass_addRange(&inverted, (uint8_t) 'z', (uint8_t) 'a', false);
-    CHECK(!RegexCharClass_test(&inverted, (uint8_t) 'z'));
-    CHECK(!RegexCharClass_test(&inverted, (uint8_t) 'a'));
+    RegexCharClass_addRange(&inverted, (u8) 'z', (u8) 'a', false);
+    CHECK(!RegexCharClass_test(&inverted, (u8) 'z'));
+    CHECK(!RegexCharClass_test(&inverted, (u8) 'a'));
 
     // Folding brings the opposite case in for letters only.
     RegexCharClass folded;
     RegexCharClass_clear(&folded);
-    RegexCharClass_addByte(&folded, (uint8_t) 'A', true);
-    CHECK(RegexCharClass_test(&folded, (uint8_t) 'A'));
-    CHECK(RegexCharClass_test(&folded, (uint8_t) 'a'));
+    RegexCharClass_addByte(&folded, (u8) 'A', true);
+    CHECK(RegexCharClass_test(&folded, (u8) 'A'));
+    CHECK(RegexCharClass_test(&folded, (u8) 'a'));
 
     RegexCharClass digit;
     RegexCharClass_clear(&digit);
-    RegexCharClass_addByte(&digit, (uint8_t) '5', true); // not a letter: no fold
-    CHECK(RegexCharClass_test(&digit, (uint8_t) '5'));
-    CHECK(!RegexCharClass_test(&digit, (uint8_t) 'a'));
+    RegexCharClass_addByte(&digit, (u8) '5', true); // not a letter: no fold
+    CHECK(RegexCharClass_test(&digit, (u8) '5'));
+    CHECK(!RegexCharClass_test(&digit, (u8) 'a'));
 }
 
 // Checks the \d \D \w \W \s \S families and the letter predicate.
@@ -86,66 +86,66 @@ static void testPredefined(void) {
     RegexCharClass digits;
     RegexCharClass_clear(&digits);
     RegexCharClass_addPredefined(&digits, 'd');
-    CHECK(RegexCharClass_test(&digits, (uint8_t) '0'));
-    CHECK(RegexCharClass_test(&digits, (uint8_t) '9'));
-    CHECK(!RegexCharClass_test(&digits, (uint8_t) 'a'));
+    CHECK(RegexCharClass_test(&digits, (u8) '0'));
+    CHECK(RegexCharClass_test(&digits, (u8) '9'));
+    CHECK(!RegexCharClass_test(&digits, (u8) 'a'));
 
     RegexCharClass notDigits;
     RegexCharClass_clear(&notDigits);
     RegexCharClass_addPredefined(&notDigits, 'D');
-    CHECK(!RegexCharClass_test(&notDigits, (uint8_t) '0'));
-    CHECK(RegexCharClass_test(&notDigits, (uint8_t) 'a'));
+    CHECK(!RegexCharClass_test(&notDigits, (u8) '0'));
+    CHECK(RegexCharClass_test(&notDigits, (u8) 'a'));
 
     RegexCharClass word;
     RegexCharClass_clear(&word);
     RegexCharClass_addPredefined(&word, 'w');
-    CHECK(RegexCharClass_test(&word, (uint8_t) 'a'));
-    CHECK(RegexCharClass_test(&word, (uint8_t) 'Z'));
-    CHECK(RegexCharClass_test(&word, (uint8_t) '7'));
-    CHECK(RegexCharClass_test(&word, (uint8_t) '_'));
-    CHECK(!RegexCharClass_test(&word, (uint8_t) '-'));
+    CHECK(RegexCharClass_test(&word, (u8) 'a'));
+    CHECK(RegexCharClass_test(&word, (u8) 'Z'));
+    CHECK(RegexCharClass_test(&word, (u8) '7'));
+    CHECK(RegexCharClass_test(&word, (u8) '_'));
+    CHECK(!RegexCharClass_test(&word, (u8) '-'));
 
     RegexCharClass notWord;
     RegexCharClass_clear(&notWord);
     RegexCharClass_addPredefined(&notWord, 'W');
-    CHECK(!RegexCharClass_test(&notWord, (uint8_t) 'a'));
-    CHECK(RegexCharClass_test(&notWord, (uint8_t) '-'));
+    CHECK(!RegexCharClass_test(&notWord, (u8) 'a'));
+    CHECK(RegexCharClass_test(&notWord, (u8) '-'));
 
     RegexCharClass space;
     RegexCharClass_clear(&space);
     RegexCharClass_addPredefined(&space, 's');
-    CHECK(RegexCharClass_test(&space, (uint8_t) ' '));
-    CHECK(RegexCharClass_test(&space, (uint8_t) '\t'));
-    CHECK(RegexCharClass_test(&space, (uint8_t) '\n'));
-    CHECK(!RegexCharClass_test(&space, (uint8_t) 'x'));
+    CHECK(RegexCharClass_test(&space, (u8) ' '));
+    CHECK(RegexCharClass_test(&space, (u8) '\t'));
+    CHECK(RegexCharClass_test(&space, (u8) '\n'));
+    CHECK(!RegexCharClass_test(&space, (u8) 'x'));
 
     RegexCharClass notSpace;
     RegexCharClass_clear(&notSpace);
     RegexCharClass_addPredefined(&notSpace, 'S');
-    CHECK(!RegexCharClass_test(&notSpace, (uint8_t) ' '));
-    CHECK(RegexCharClass_test(&notSpace, (uint8_t) 'x'));
+    CHECK(!RegexCharClass_test(&notSpace, (u8) ' '));
+    CHECK(RegexCharClass_test(&notSpace, (u8) 'x'));
 
     // An unknown letter is a no-op, not a wildcard.
     RegexCharClass unknown;
     RegexCharClass_clear(&unknown);
     RegexCharClass_addPredefined(&unknown, 'q');
-    CHECK(!RegexCharClass_test(&unknown, (uint8_t) 'q'));
+    CHECK(!RegexCharClass_test(&unknown, (u8) 'q'));
 }
 
 // Checks negation over the whole 256-bit space.
 static void testNegate(void) {
     RegexCharClass cls;
     RegexCharClass_clear(&cls);
-    RegexCharClass_addByte(&cls, (uint8_t) 'a', false);
+    RegexCharClass_addByte(&cls, (u8) 'a', false);
     RegexCharClass_negate(&cls);
-    CHECK(!RegexCharClass_test(&cls, (uint8_t) 'a'));
-    CHECK(RegexCharClass_test(&cls, (uint8_t) 'b'));
+    CHECK(!RegexCharClass_test(&cls, (u8) 'a'));
+    CHECK(RegexCharClass_test(&cls, (u8) 'b'));
     CHECK(RegexCharClass_test(&cls, 0));
     CHECK(RegexCharClass_test(&cls, 255));
 
     RegexCharClass_negate(&cls);
-    CHECK(RegexCharClass_test(&cls, (uint8_t) 'a'));
-    CHECK(!RegexCharClass_test(&cls, (uint8_t) 'b'));
+    CHECK(RegexCharClass_test(&cls, (u8) 'a'));
+    CHECK(!RegexCharClass_test(&cls, (u8) 'b'));
 }
 
 int main(void) {

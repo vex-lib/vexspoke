@@ -33,31 +33,31 @@
  * STRUCT FIELDS (Mirroring struct/octree.h):
  * ----------------------------------------------------------------------------
  *   OctreePoint {
- *     float x;
- *     float y;
- *     float z;
+ *     f32 x;
+ *     f32 y;
+ *     f32 z;
  *   }
  *   OctreeAABB {
- *     float minX; float minY; float minZ;
- *     float maxX; float maxY; float maxZ;
+ *     f32 minX; f32 minY; f32 minZ;
+ *     f32 maxX; f32 maxY; f32 maxZ;
  *   }
  *   OctreeItem {
  *     OctreePoint point;
- *     uint64_t    payload;
+ *     u64    payload;
  *   }
  *   OctreeNode {
  *     OctreeAABB         bounds;
  *     OctreeItem        *items;
- *     uint32_t           itemCount;
- *     uint32_t           itemCapacity;
+ *     u32           itemCount;
+ *     u32           itemCapacity;
  *     bool               isLeaf;
  *     struct OctreeNode *children[8];
  *   }
  *   Octree {
  *     OctreeNode *root;
- *     uint32_t    maxDepth;
- *     uint32_t    maxItemsPerNode;
- *     size_t      totalItems;
+ *     u32    maxDepth;
+ *     u32    maxItemsPerNode;
+ *     bytes      totalItems;
  *   }
  *
  * FUNCTION REGISTRY:
@@ -98,26 +98,26 @@ bool OctreeAABB_intersects(OctreeAABB a, OctreeAABB b) {
             a.minZ <= b.maxZ && a.maxZ >= b.minZ);
 }
 
-bool OctreeAABB_intersectsSphere(OctreeAABB box, OctreePoint center, float radius) {
-    float closestX = center.x;
+bool OctreeAABB_intersectsSphere(OctreeAABB box, OctreePoint center, f32 radius) {
+    f32 closestX = center.x;
     if (closestX < box.minX) closestX = box.minX;
     else if (closestX > box.maxX) closestX = box.maxX;
 
-    float closestY = center.y;
+    f32 closestY = center.y;
     if (closestY < box.minY) closestY = box.minY;
     else if (closestY > box.maxY) closestY = box.maxY;
 
-    float closestZ = center.z;
+    f32 closestZ = center.z;
     if (closestZ < box.minZ) closestZ = box.minZ;
     else if (closestZ > box.maxZ) closestZ = box.maxZ;
 
-    float dx = center.x - closestX;
-    float dy = center.y - closestY;
-    float dz = center.z - closestZ;
+    f32 dx = center.x - closestX;
+    f32 dy = center.y - closestY;
+    f32 dz = center.z - closestZ;
     return (dx * dx + dy * dy + dz * dz) <= (radius * radius);
 }
 
-static OctreeNode *OctreeNode_2(OctreeAABB bounds, uint32_t capacity) {
+static OctreeNode *OctreeNode_2(OctreeAABB bounds, u32 capacity) {
     OctreeNode *node = (OctreeNode*) Memory_alloc(TYPE_OCTREE, sizeof(OctreeNode));
     if (node == nullptr) {
         return nullptr;
@@ -129,7 +129,7 @@ static OctreeNode *OctreeNode_2(OctreeAABB bounds, uint32_t capacity) {
     for (int i = 0; i < 8; i++) {
         (*node).children[i] = nullptr;
     }
-    (*node).items = (OctreeItem*) Memory_alloc(TYPE_BYTE_ARRAY, (size_t) capacity * sizeof(OctreeItem));
+    (*node).items = (OctreeItem*) Memory_alloc(TYPE_BYTE_ARRAY, (bytes) capacity * sizeof(OctreeItem));
     if ((*node).items == nullptr) {
         Memory_free(node);
         return nullptr;
@@ -156,11 +156,11 @@ static void OctreeNode_free(OctreeNode *node) {
     Memory_free(node);
 }
 
-static void OctreeNode_subdivide(OctreeNode *node, uint32_t childCapacity) {
+static void OctreeNode_subdivide(OctreeNode *node, u32 childCapacity) {
     OctreeAABB bounds = (*node).bounds;
-    float midX = (bounds.minX + bounds.maxX) * 0.5f;
-    float midY = (bounds.minY + bounds.maxY) * 0.5f;
-    float midZ = (bounds.minZ + bounds.maxZ) * 0.5f;
+    f32 midX = (bounds.minX + bounds.maxX) * 0.5f;
+    f32 midY = (bounds.minY + bounds.maxY) * 0.5f;
+    f32 midZ = (bounds.minZ + bounds.maxZ) * 0.5f;
 
     OctreeAABB subBounds[8];
     // 0: ---
@@ -186,7 +186,7 @@ static void OctreeNode_subdivide(OctreeNode *node, uint32_t childCapacity) {
     (*node).isLeaf = false;
 }
 
-static bool OctreeNode_insert(Octree *owner, OctreeNode *node, OctreeItem item, uint32_t depth, uint32_t maxDepth, uint32_t maxItems) {
+static bool OctreeNode_insert(Octree *owner, OctreeNode *node, OctreeItem item, u32 depth, u32 maxDepth, u32 maxItems) {
     if (!OctreeAABB_containsPoint((*node).bounds, item.point)) {
         return false;
     }
@@ -196,18 +196,18 @@ static bool OctreeNode_insert(Octree *owner, OctreeNode *node, OctreeItem item, 
             // Can add directly to this leaf
             if ((*node).itemCount >= (*node).itemCapacity) {
                 // Grow leaf capacity
-                uint32_t newCap = (*node).itemCapacity * 2;
+                u32 newCap = (*node).itemCapacity * 2;
                 if (newCap == 0) newCap = 8;
-                OctreeItem *newItems = (OctreeItem*) Memory_alloc(TYPE_BYTE_ARRAY, (size_t) newCap * sizeof(OctreeItem));
+                OctreeItem *newItems = (OctreeItem*) Memory_alloc(TYPE_BYTE_ARRAY, (bytes) newCap * sizeof(OctreeItem));
                 if (newItems == nullptr) {
                     // A refused leaf growth is reported at the owner level.
                     (void) Struct_reportExhaustion(&(*owner).exhaustionCount, &(*owner).exhaustionReported,
-                                                   "octree", (size_t) newCap * sizeof(OctreeItem),
-                                                   (size_t) (*node).itemCapacity * sizeof(OctreeItem));
+                                                   "octree", (bytes) newCap * sizeof(OctreeItem),
+                                                   (bytes) (*node).itemCapacity * sizeof(OctreeItem));
                     return false;
                 }
                 if ((*node).items != nullptr) {
-                    memcpy(newItems, (*node).items, (size_t) (*node).itemCount * sizeof(OctreeItem));
+                    memcpy(newItems, (*node).items, (bytes) (*node).itemCount * sizeof(OctreeItem));
                     Memory_free((*node).items);
                 }
                 (*node).items = newItems;
@@ -222,7 +222,7 @@ static bool OctreeNode_insert(Octree *owner, OctreeNode *node, OctreeItem item, 
         OctreeNode_subdivide(node, maxItems);
 
         // Re-insert existing items into children
-        for (uint32_t i = 0; i < (*node).itemCount; i++) {
+        for (u32 i = 0; i < (*node).itemCount; i++) {
             OctreeItem existing = (*node).items[i];
             for (int c = 0; c < 8; c++) {
                 if (OctreeNode_insert(owner, (*node).children[c], existing, depth + 1, maxDepth, maxItems)) {
@@ -243,7 +243,7 @@ static bool OctreeNode_insert(Octree *owner, OctreeNode *node, OctreeItem item, 
     return false;
 }
 
-Octree *Octree_3(OctreeAABB bounds, uint32_t maxDepth, uint32_t maxItemsPerNode) {
+Octree *Octree_3(OctreeAABB bounds, u32 maxDepth, u32 maxItemsPerNode) {
     if (maxDepth == 0) maxDepth = OCTREE_DEFAULT_MAX_DEPTH;
     if (maxItemsPerNode == 0) maxItemsPerNode = OCTREE_DEFAULT_NODE_CAPACITY;
 
@@ -279,7 +279,7 @@ void Octree_free(Octree *self) {
     Memory_free(self);
 }
 
-bool Octree_insert(Octree *self, OctreePoint point, uint64_t payload) {
+bool Octree_insert(Octree *self, OctreePoint point, u64 payload) {
     if (self == nullptr || (*self).root == nullptr) {
         return false;
     }
@@ -294,7 +294,7 @@ bool Octree_insert(Octree *self, OctreePoint point, uint64_t payload) {
     return ok;
 }
 
-static size_t OctreeNode_queryRange(const OctreeNode *node, OctreeAABB range, uint64_t *outPayloads, size_t maxCount, size_t count) {
+static bytes OctreeNode_queryRange(const OctreeNode *node, OctreeAABB range, u64 *outPayloads, bytes maxCount, bytes count) {
     if (node == nullptr || count >= maxCount) {
         return count;
     }
@@ -303,7 +303,7 @@ static size_t OctreeNode_queryRange(const OctreeNode *node, OctreeAABB range, ui
     }
 
     if ((*node).isLeaf) {
-        for (uint32_t i = 0; i < (*node).itemCount && count < maxCount; i++) {
+        for (u32 i = 0; i < (*node).itemCount && count < maxCount; i++) {
             if (OctreeAABB_containsPoint(range, (*node).items[i].point)) {
                 outPayloads[count++] = (*node).items[i].payload;
             }
@@ -317,14 +317,14 @@ static size_t OctreeNode_queryRange(const OctreeNode *node, OctreeAABB range, ui
     return count;
 }
 
-size_t Octree_queryRange(const Octree *self, OctreeAABB range, uint64_t *outPayloads, size_t maxCount) {
+bytes Octree_queryRange(const Octree *self, OctreeAABB range, u64 *outPayloads, bytes maxCount) {
     if (self == nullptr || (*self).root == nullptr || outPayloads == nullptr || maxCount == 0) {
         return 0;
     }
     return OctreeNode_queryRange((*self).root, range, outPayloads, maxCount, 0);
 }
 
-static size_t OctreeNode_querySphere(const OctreeNode *node, OctreePoint center, float radius, uint64_t *outPayloads, size_t maxCount, size_t count) {
+static bytes OctreeNode_querySphere(const OctreeNode *node, OctreePoint center, f32 radius, u64 *outPayloads, bytes maxCount, bytes count) {
     if (node == nullptr || count >= maxCount) {
         return count;
     }
@@ -332,12 +332,12 @@ static size_t OctreeNode_querySphere(const OctreeNode *node, OctreePoint center,
         return count;
     }
 
-    float rSq = radius * radius;
+    f32 rSq = radius * radius;
     if ((*node).isLeaf) {
-        for (uint32_t i = 0; i < (*node).itemCount && count < maxCount; i++) {
-            float dx = (*node).items[i].point.x - center.x;
-            float dy = (*node).items[i].point.y - center.y;
-            float dz = (*node).items[i].point.z - center.z;
+        for (u32 i = 0; i < (*node).itemCount && count < maxCount; i++) {
+            f32 dx = (*node).items[i].point.x - center.x;
+            f32 dy = (*node).items[i].point.y - center.y;
+            f32 dz = (*node).items[i].point.z - center.z;
             if (dx * dx + dy * dy + dz * dz <= rSq) {
                 outPayloads[count++] = (*node).items[i].payload;
             }
@@ -351,20 +351,20 @@ static size_t OctreeNode_querySphere(const OctreeNode *node, OctreePoint center,
     return count;
 }
 
-size_t Octree_querySphere(const Octree *self, OctreePoint center, float radius, uint64_t *outPayloads, size_t maxCount) {
+bytes Octree_querySphere(const Octree *self, OctreePoint center, f32 radius, u64 *outPayloads, bytes maxCount) {
     if (self == nullptr || (*self).root == nullptr || outPayloads == nullptr || maxCount == 0) {
         return 0;
     }
     return OctreeNode_querySphere((*self).root, center, radius, outPayloads, maxCount, 0);
 }
 
-size_t Octree_count(const Octree *self) {
+bytes Octree_count(const Octree *self) {
     if (self == nullptr) return 0;
     return (*self).totalItems;
 }
 
 ;;TEST
-uint64_t Octree_exhaustionCount(const Octree *self) {
+u64 Octree_exhaustionCount(const Octree *self) {
     return self ? Struct_exhaustionCount(&(*self).exhaustionCount) : 0;
 }
 

@@ -26,8 +26,8 @@ static void testAdd(void) {
     CHECK(list.count == 0);
     CHECK(list.nodes == nullptr);
 
-    uint32_t a = RegexNodeList_add(&list, REGEX_NODE_CHAR);
-    uint32_t b = RegexNodeList_add(&list, REGEX_NODE_CONCAT);
+    u32 a = RegexNodeList_add(&list, REGEX_NODE_CHAR);
+    u32 b = RegexNodeList_add(&list, REGEX_NODE_CONCAT);
     CHECK(a == 0);
     CHECK(b == 1);
     CHECK(list.count == 2);
@@ -54,21 +54,21 @@ static void testGrowth(void) {
 
     // Past the 64-node seed capacity so the block is reallocated at least twice.
     enum { TOTAL = 300 };
-    for (uint32_t i = 0; i < TOTAL; i++) {
-        uint32_t index = RegexNodeList_add(&list, REGEX_NODE_CHAR);
+    for (u32 i = 0; i < TOTAL; i++) {
+        u32 index = RegexNodeList_add(&list, REGEX_NODE_CHAR);
         CHECK(index == i);
         RegexNode *node = RegexNodeList_get(&list, index);
         CHECK(node != nullptr);
-        (*node).byte = (uint8_t) (i & 0xFFu);
+        (*node).byte = (u8) (i & 0xFFu);
     }
     CHECK(list.count == TOTAL);
     CHECK(list.capacity >= TOTAL);
 
     // Index-addressed access still finds the right node after reallocation.
-    for (uint32_t i = 0; i < TOTAL; i++) {
+    for (u32 i = 0; i < TOTAL; i++) {
         const RegexNode *node = RegexNodeList_at(&list, i);
         CHECK(node != nullptr);
-        CHECK((*node).byte == (uint8_t) (i & 0xFFu));
+        CHECK((*node).byte == (u8) (i & 0xFFu));
     }
 
     CHECK(RegexNodeList_get(&list, TOTAL) == nullptr);
@@ -90,7 +90,7 @@ static void testFreeAndReuse(void) {
     // A freed list is reusable from empty.
     CHECK(RegexNodeList_add(&list, REGEX_NODE_BOL) == 0);
     RegexNodeList_free(&list);
-    RegexNodeList_free(&list); // double free must be a no-op
+    RegexNodeList_free(&list); // d64 free must be a no-op
     CHECK(list.nodes == nullptr);
 }
 

@@ -6,7 +6,7 @@
 // Canonical implementation lives in lang/vec3/vec3.h (Single Class Per File Law).
 #include "lang/vec3/vec3.h"
 #include "lang/vec3/vec3d.h"
-#include "lang/vec3/vec3_int_float.h"
-#include "lang/vec3/vec3_long_double.h"
+#include "lang/vec3/vec3_int_f32.h"
+#include "lang/vec3/vec3_long_f64.h"
 
 #endif

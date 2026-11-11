@@ -28,9 +28,9 @@ static int g_failures = 0;
 // Compiles a pattern with the real parser and program builder so the VM is
 // driven by an honest instruction stream rather than a hand-written one.
 static bool compile(const char *pattern, bool ignoreCase, RegexProgram *program,
-                    RegexCharClass **classes, uint32_t *classCount, uint32_t *groupCount) {
+                    RegexCharClass **classes, u32 *classCount, u32 *groupCount) {
     RegexParser parser = RegexParser(pattern, strlen(pattern), ignoreCase);
-    uint32_t root = RegexParser_parse(&parser);
+    u32 root = RegexParser_parse(&parser);
     bool ok = root != REGEX_NODE_NONE && RegexParser_ok(&parser);
     if (ok) {
         *groupCount = RegexParser_groupCount(&parser);
@@ -49,8 +49,8 @@ static bool search(const char *pattern, const char *subject, bool anchored,
                    RegexOptions options, RegexSpan *outWhole) {
     RegexProgram program = RegexProgram();
     RegexCharClass *classes = nullptr;
-    uint32_t classCount = 0;
-    uint32_t groupCount = 0;
+    u32 classCount = 0;
+    u32 groupCount = 0;
     if (!compile(pattern, options.ignoreCase, &program, &classes, &classCount, &groupCount)) {
         RegexProgram_free(&program);
         return false;
@@ -123,8 +123,8 @@ static void testOptions(void) {
 static void testCaptures(void) {
     RegexProgram program = RegexProgram();
     RegexCharClass *classes = nullptr;
-    uint32_t classCount = 0;
-    uint32_t groupCount = 0;
+    u32 classCount = 0;
+    u32 groupCount = 0;
     CHECK(compile("(a)(b.sh)", false, &program, &classes, &classCount, &groupCount));
     CHECK(groupCount == 2);
 
@@ -168,7 +168,7 @@ static void testBoundedProgress(void) {
 
     // A long subject with a real match stays linear.
     char longSubject[4097];
-    for (size_t i = 0; i < 4000; i++)
+    for (bytes i = 0; i < 4000; i++)
         longSubject[i] = 'a';
     longSubject[4000] = 'b';
     longSubject[4001] = '\0';
@@ -185,8 +185,8 @@ static void testBoundedProgress(void) {
 static void testLifecycle(void) {
     RegexProgram program = RegexProgram();
     RegexCharClass *classes = nullptr;
-    uint32_t classCount = 0;
-    uint32_t groupCount = 0;
+    u32 classCount = 0;
+    u32 groupCount = 0;
     CHECK(compile("ab", false, &program, &classes, &classCount, &groupCount));
 
     RegexVm vm = RegexVm(&program, groupCount);
@@ -197,7 +197,7 @@ static void testLifecycle(void) {
     }
     RegexVm_free(&vm);
     CHECK(vm.caps == nullptr && vm.program == nullptr);
-    RegexVm_free(&vm); // double free is a no-op
+    RegexVm_free(&vm); // d64 free is a no-op
 
     RegexProgram_free(&program);
     if (classes)
@@ -207,10 +207,10 @@ static void testLifecycle(void) {
 // Full admission must keep alternatives alive after a premature MATCH.
 static void testFullAdmission(void) {
     const char *patterns[] = {"a|ab", "|ab", "(a|ab)", "a?|ab", "a*|ab"};
-    for (size_t i = 0; i < sizeof patterns / sizeof patterns[0]; i++) {
+    for (bytes i = 0; i < sizeof patterns / sizeof patterns[0]; i++) {
         RegexProgram program = RegexProgram();
         RegexCharClass *classes = nullptr;
-        uint32_t classCount = 0, groupCount = 0;
+        u32 classCount = 0, groupCount = 0;
         CHECK(compile(patterns[i], false, &program, &classes, &classCount, &groupCount));
         RegexVm vm = RegexVm(&program, groupCount);
         CHECK(vm.best != nullptr);

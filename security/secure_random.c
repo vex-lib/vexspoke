@@ -33,7 +33,7 @@
  * STRUCT FIELDS (Mirroring security/secure_random.h):
  * ----------------------------------------------------------------------------
  *   SecureRandom {
- *     uint64_t draws; // count of draws issued (telemetry)
+ *     u64 draws; // count of draws issued (telemetry)
  *   }
  *
  * PRIVATE HELPERS:
@@ -78,26 +78,26 @@
 
 #if defined(SR_BACKEND_GETRANDOM) || defined(SR_BACKEND_URANDOM)
 // POSIX fallback: bounded read loop over /dev/urandom.
-static bool fillFromUrandom(void *dest, size_t len) {
+static bool fillFromUrandom(void *dest, bytes len) {
     int fd = open("/dev/urandom", O_RDONLY);
     if (fd < 0)
         return false;
-    uint8_t *p = (uint8_t*) dest;
-    size_t got = 0;
+    u8 *p = (u8*) dest;
+    bytes got = 0;
     while (got < len) {
         ssize_t n = read(fd, p + got, len - got);
         if (n <= 0) {
             close(fd);
             return false;
         }
-        got += (size_t) n;
+        got += (bytes) n;
     }
     close(fd);
     return true;
 }
 #endif
 
-static bool osFill(void *dest, size_t len) {
+static bool osFill(void *dest, bytes len) {
     if (len == 0)
         return true;
     if (dest == nullptr)
@@ -107,8 +107,8 @@ static bool osFill(void *dest, size_t len) {
     arc4random_buf(dest, len);
     return true;
 #elif defined(SR_BACKEND_GETRANDOM)
-    uint8_t *p = (uint8_t*) dest;
-    size_t got = 0;
+    u8 *p = (u8*) dest;
+    bytes got = 0;
     while (got < len) {
         ssize_t n = getrandom(p + got, len - got, 0);
         if (n < 0) {
@@ -116,7 +116,7 @@ static bool osFill(void *dest, size_t len) {
                 continue;
             return fillFromUrandom(p + got, len - got);
         }
-        got += (size_t) n;
+        got += (bytes) n;
     }
     return true;
 #elif defined(SR_BACKEND_BCRYPT)
@@ -130,7 +130,7 @@ static bool osFill(void *dest, size_t len) {
 
 // --- Public API -------------------------------------------------------------
 struct SecureRandom {
-    uint64_t draws; // count of draws issued (telemetry)
+    u64 draws; // count of draws issued (telemetry)
 };
 
 SecureRandom *SecureRandom_0(void) {
@@ -142,7 +142,7 @@ void SecureRandom_free(SecureRandom *self) {
     free(self);
 }
 
-bool SecureRandom_bytes(SecureRandom *self, void *dest, size_t len) {
+bool SecureRandom_bytes(SecureRandom *self, void *dest, bytes len) {
     if (self == nullptr)
         return false;
     if (!osFill(dest, len))
@@ -151,20 +151,20 @@ bool SecureRandom_bytes(SecureRandom *self, void *dest, size_t len) {
     return true;
 }
 
-uint64_t SecureRandom_u64(SecureRandom *self) {
-    uint64_t value = 0;
+u64 SecureRandom_u64(SecureRandom *self) {
+    u64 value = 0;
     if (!SecureRandom_bytes(self, &value, sizeof value))
         return 0;
     return value;
 }
 
-uint32_t SecureRandom_u32(SecureRandom *self) {
-    uint32_t value = 0;
+u32 SecureRandom_u32(SecureRandom *self) {
+    u32 value = 0;
     if (!SecureRandom_bytes(self, &value, sizeof value))
         return 0;
     return value;
 }
 
-uint64_t SecureRandom_draws(const SecureRandom *self) {
+u64 SecureRandom_draws(const SecureRandom *self) {
     return self ? (*self).draws : 0;
 }

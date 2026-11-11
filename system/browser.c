@@ -34,7 +34,7 @@ extern char **environ;
  * ============================================================================
  * STRUCT FIELDS (Mirroring system/browser.h):
  * ----------------------------------------------------------------------------
- *   uint32_t reserved;  // singleton marker; no mutable state
+ *   u32 reserved;  // singleton marker; no mutable state
  *
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------

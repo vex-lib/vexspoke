@@ -67,13 +67,13 @@ static char     s_operatingSystem[64] = "macOS";
 static char     s_systemArchitecture[64] = "arm64";
 static char     s_deviceModel[64] = "";
 static char     s_cpuBrand[128] = "";
-static int32_t  s_cpuCoreCount = 0;
-static int32_t  s_cpuThreadCount = 0;
-static uint64_t s_ramTotal = 0;
-static uint64_t s_ramAvailable = 0;
-static uint64_t s_storageTotalSpace = 0;
-static uint64_t s_storageAvailableSpace = 0;
-static float    s_batteryLevel = -1.0f;
+static i32  s_cpuCoreCount = 0;
+static i32  s_cpuThreadCount = 0;
+static u64 s_ramTotal = 0;
+static u64 s_ramAvailable = 0;
+static u64 s_storageTotalSpace = 0;
+static u64 s_storageAvailableSpace = 0;
+static f32    s_batteryLevel = -1.0f;
 static bool     s_hasBattery = false;
 static char     s_batteryStatus[32] = "None";
 
@@ -138,66 +138,66 @@ void HardwareInfo_setCpuBrand(const char *val) {
     }
 }
 
-int32_t HardwareInfo_getCpuCoreCount(void) {
+i32 HardwareInfo_getCpuCoreCount(void) {
     ensureDiscovered();
     return s_cpuCoreCount;
 }
 
-void HardwareInfo_setCpuCoreCount(int32_t val) {
+void HardwareInfo_setCpuCoreCount(i32 val) {
     s_cpuCoreCount = val;
 }
 
-int32_t HardwareInfo_getCpuThreadCount(void) {
+i32 HardwareInfo_getCpuThreadCount(void) {
     ensureDiscovered();
     return s_cpuThreadCount;
 }
 
-void HardwareInfo_setCpuThreadCount(int32_t val) {
+void HardwareInfo_setCpuThreadCount(i32 val) {
     s_cpuThreadCount = val;
 }
 
-uint64_t HardwareInfo_getRamTotal(void) {
+u64 HardwareInfo_getRamTotal(void) {
     ensureDiscovered();
     return s_ramTotal;
 }
 
-void HardwareInfo_setRamTotal(uint64_t val) {
+void HardwareInfo_setRamTotal(u64 val) {
     s_ramTotal = val;
 }
 
-uint64_t HardwareInfo_getRamAvailable(void) {
+u64 HardwareInfo_getRamAvailable(void) {
     ensureDiscovered();
     return s_ramAvailable;
 }
 
-void HardwareInfo_setRamAvailable(uint64_t val) {
+void HardwareInfo_setRamAvailable(u64 val) {
     s_ramAvailable = val;
 }
 
-uint64_t HardwareInfo_getStorageTotalSpace(void) {
+u64 HardwareInfo_getStorageTotalSpace(void) {
     ensureDiscovered();
     return s_storageTotalSpace;
 }
 
-void HardwareInfo_setStorageTotalSpace(uint64_t val) {
+void HardwareInfo_setStorageTotalSpace(u64 val) {
     s_storageTotalSpace = val;
 }
 
-uint64_t HardwareInfo_getStorageAvailableSpace(void) {
+u64 HardwareInfo_getStorageAvailableSpace(void) {
     ensureDiscovered();
     return s_storageAvailableSpace;
 }
 
-void HardwareInfo_setStorageAvailableSpace(uint64_t val) {
+void HardwareInfo_setStorageAvailableSpace(u64 val) {
     s_storageAvailableSpace = val;
 }
 
-float HardwareInfo_getBatteryLevel(void) {
+f32 HardwareInfo_getBatteryLevel(void) {
     ensureDiscovered();
     return s_batteryLevel;
 }
 
-void HardwareInfo_setBatteryLevel(float val) {
+void HardwareInfo_setBatteryLevel(f32 val) {
     s_batteryLevel = val;
 }
 

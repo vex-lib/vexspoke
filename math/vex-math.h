@@ -27,45 +27,45 @@
 #define MATH_RAD_TO_DEG STRICT_MATH_RAD_TO_DEG
 
 // Strict by default (Exact IEEE 754 precision)
-float Math_sin(float x);
-float Math_cos(float x);
-float Math_tan(float x);
-float Math_asin(float x);
-float Math_acos(float x);
-float Math_atan(float x);
-float Math_atan2(float y, float x);
-float Math_sqrt(float x);
-float Math_invSqrt(float x);
-float Math_pow(float base, float exp);
-float Math_exp(float x);
-float Math_log(float x);
-float Math_abs(float x);
-float Math_floor(float x);
-float Math_ceil(float x);
-float Math_round(float x);
-float Math_clamp(float val, float min, float max);
-float Math_lerp(float a, float b, float t);
-float Math_toRadians(float deg);
-float Math_toDegrees(float rad);
+f32 Math_sin(f32 x);
+f32 Math_cos(f32 x);
+f32 Math_tan(f32 x);
+f32 Math_asin(f32 x);
+f32 Math_acos(f32 x);
+f32 Math_atan(f32 x);
+f32 Math_atan2(f32 y, f32 x);
+f32 Math_sqrt(f32 x);
+f32 Math_invSqrt(f32 x);
+f32 Math_pow(f32 base, f32 exp);
+f32 Math_exp(f32 x);
+f32 Math_log(f32 x);
+f32 Math_abs(f32 x);
+f32 Math_floor(f32 x);
+f32 Math_ceil(f32 x);
+f32 Math_round(f32 x);
+f32 Math_clamp(f32 val, f32 min, f32 max);
+f32 Math_lerp(f32 a, f32 b, f32 t);
+f32 Math_toRadians(f32 deg);
+f32 Math_toDegrees(f32 rad);
 
-// Double precision strict
-double Math_sinD(double x);
-double Math_cosD(double x);
-double Math_sqrtD(double x);
-double Math_atan2D(double y, double x);
+// d64 precision strict
+d64 Math_sinD(d64 x);
+d64 Math_cosD(d64 x);
+d64 Math_sqrtD(d64 x);
+d64 Math_atan2D(d64 y, d64 x);
 
 // Fast approximations (deliberately relaxes IEEE 754 for real-time 3D/graphics)
-float Math_fast_sin(float x);
-float Math_fast_cos(float x);
-float Math_fast_tan(float x);
-float Math_fast_atan(float x);
-float Math_fast_atan2(float y, float x);
-float Math_fast_invSqrt(float x);
-float Math_fast_inv(float x);
-float Math_fast_abs(float x);
-float Math_fast_round(float x);
-float Math_fast_clamp(float val, float min, float max);
-float Math_fast_lerp(float a, float b, float t);
-bool  Math_fast_approxEqual(float a, float b, float epsilon);
+f32 Math_fast_sin(f32 x);
+f32 Math_fast_cos(f32 x);
+f32 Math_fast_tan(f32 x);
+f32 Math_fast_atan(f32 x);
+f32 Math_fast_atan2(f32 y, f32 x);
+f32 Math_fast_invSqrt(f32 x);
+f32 Math_fast_inv(f32 x);
+f32 Math_fast_abs(f32 x);
+f32 Math_fast_round(f32 x);
+f32 Math_fast_clamp(f32 val, f32 min, f32 max);
+f32 Math_fast_lerp(f32 a, f32 b, f32 t);
+bool  Math_fast_approxEqual(f32 a, f32 b, f32 epsilon);
 
 #endif

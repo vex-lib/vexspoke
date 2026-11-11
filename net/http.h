@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <pthread.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 // net/http.h — HTTP/1.1 client & micro server over BSD sockets
 // (Legacy: net/HTTPClient.java, net/HTTPServer.java, net/PollRequest.java).
@@ -29,10 +29,10 @@ typedef struct HttpRequest {
     int port;             // 0 => 80
     const char *path;     // default "/"
     const HttpHeader *headers;
-    uint32_t headerCount;
+    u32 headerCount;
     const char *body;     // nullptr = no body
-    size_t bodyLen;
-    uint32_t timeoutMs;   // connect+read budget, default 5000
+    bytes bodyLen;
+    u32 timeoutMs;   // connect+read budget, default 5000
 } HttpRequest;
 
 static inline HttpRequest HttpRequest_3(const char *host, int port, const char *path) {
@@ -47,13 +47,13 @@ static inline void HttpRequest_setMethod(HttpRequest *request, const char *metho
     if (request) (*request).method = method;
 }
 static inline void HttpRequest_setHeaders(HttpRequest *request,
-                                          const HttpHeader *headers, uint32_t count) {
+                                          const HttpHeader *headers, u32 count) {
     if (request) { (*request).headers = headers; (*request).headerCount = count; }
 }
-static inline void HttpRequest_setBody(HttpRequest *request, const char *body, size_t length) {
+static inline void HttpRequest_setBody(HttpRequest *request, const char *body, bytes length) {
     if (request) { (*request).body = body; (*request).bodyLen = length; }
 }
-static inline void HttpRequest_setTimeout(HttpRequest *request, uint32_t timeoutMilliseconds) {
+static inline void HttpRequest_setTimeout(HttpRequest *request, u32 timeoutMilliseconds) {
     if (request) (*request).timeoutMs = timeoutMilliseconds;
 }
 
@@ -62,11 +62,11 @@ typedef struct HttpResponse {
     int status;
     char contentType[128];
     char *body;           // caller-owned receive buffer
-    size_t bodyCap;
-    size_t bodyLen;
+    bytes bodyCap;
+    bytes bodyLen;
 } HttpResponse;
 
-static inline HttpResponse HttpResponse_2(char *body, size_t capacity) {
+static inline HttpResponse HttpResponse_2(char *body, bytes capacity) {
     return (HttpResponse) { .status = -1, .body = body, .bodyCap = capacity };
 }
 #define HttpResponse(...) CONSTRUCTOR_DISPATCH(HttpResponse, __VA_ARGS__)
@@ -83,7 +83,7 @@ typedef struct HttpExchange {
     char method[16];
     char path[1024];
     const char *body;
-    size_t bodyLen;
+    bytes bodyLen;
 } HttpExchange;
 
 typedef void (*HttpHandler)(const HttpExchange *exchange, int clientFd, void *userdata);
@@ -106,6 +106,6 @@ void HttpServer_stop(HttpServer *server);
 
 // Handler-side responder: writes a full response on the open connection.
 void Http_respond(int clientFd, int status, const char *contentType,
-                  const char *body, size_t bodyLen);
+                  const char *body, bytes bodyLen);
 
 #endif

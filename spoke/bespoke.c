@@ -26,8 +26,8 @@
  *   BespokeState graphicsState;
  *   BespokeState networkingState;
  *   BespokeState smthState;
- *   uint64_t runs;
- *   uint64_t checks;
+ *   u64 runs;
+ *   u64 checks;
  *
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------

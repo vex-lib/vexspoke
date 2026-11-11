@@ -20,10 +20,10 @@
 #define FIND_LIKE_WILDCARD   (1u << 2)
 
 // Returns true if text matches pattern under the specified flags.
-bool Search_match(const char *text, const char *pattern, uint32_t flags);
+bool Search_match(const char *text, const char *pattern, u32 flags);
 
 // Finds the 0-indexed offset of pattern within text, or -1 if not found.
-int Search_findFirst(const char *text, const char *pattern, uint32_t flags);
+int Search_findFirst(const char *text, const char *pattern, u32 flags);
 
 // Convenience SQL LIKE matcher (supports '%' and '_')
 bool Search_like(const char *text, const char *pattern, bool caseSensitive);

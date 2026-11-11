@@ -61,63 +61,63 @@ typedef enum Scenario {
 
 // --- Byte-level peer helpers (deliberately independent of the library) ---
 
-static bool peerWrite(int fd, const void *bytes, size_t length) {
-    const uint8_t *p = (const uint8_t*) bytes;
-    size_t sent = 0u;
+static bool peerWrite(int fd, const void *bytes, bytes length) {
+    const u8 *p = (const u8*) bytes;
+    bytes sent = 0u;
     while (sent < length) {
         ssize_t n = send(fd, p + sent, length - sent, 0);
         if (n <= 0)
             return false;
-        sent += (size_t) n;
+        sent += (bytes) n;
     }
     return true;
 }
 
 /** Server-side frame: never masked, which is what the RFC demands. */
-static bool peerFrame(int fd, bool fin, uint8_t opcode,
-                      const uint8_t *payload, size_t length) {
-    uint8_t header[10];
-    size_t used = 0u;
-    header[used++] = (uint8_t) ((fin ? 0x80u : 0x00u) | opcode);
+static bool peerFrame(int fd, bool fin, u8 opcode,
+                      const u8 *payload, bytes length) {
+    u8 header[10];
+    bytes used = 0u;
+    header[used++] = (u8) ((fin ? 0x80u : 0x00u) | opcode);
     if (length <= 125u) {
-        header[used++] = (uint8_t) length;
+        header[used++] = (u8) length;
     } else if (length <= 0xFFFFu) {
         header[used++] = 126u;
-        header[used++] = (uint8_t) (length >> 8);
-        header[used++] = (uint8_t) (length & 0xFFu);
+        header[used++] = (u8) (length >> 8);
+        header[used++] = (u8) (length & 0xFFu);
     } else {
         header[used++] = 127u;
-        uint64_t value = (uint64_t) length;
+        u64 value = (u64) length;
         for (int shift = 56; shift >= 0; shift -= 8)
-            header[used++] = (uint8_t) ((value >> shift) & 0xFFu);
+            header[used++] = (u8) ((value >> shift) & 0xFFu);
     }
     return peerWrite(fd, header, used) &&
            (length == 0u || peerWrite(fd, payload, length));
 }
 
 /** Hostile frame: a server must not mask, so this is a protocol error. */
-static bool peerMaskedFrame(int fd, bool fin, uint8_t opcode,
-                            const uint8_t *payload, size_t length) {
-    uint8_t mask[4] = { 0xA5u, 0x5Au, 0x0Fu, 0xF0u };
-    uint8_t buffer[64];
-    size_t used = 0u;
-    buffer[used++] = (uint8_t) ((fin ? 0x80u : 0x00u) | opcode);
-    buffer[used++] = (uint8_t) (0x80u | length);
+static bool peerMaskedFrame(int fd, bool fin, u8 opcode,
+                            const u8 *payload, bytes length) {
+    u8 mask[4] = { 0xA5u, 0x5Au, 0x0Fu, 0xF0u };
+    u8 buffer[64];
+    bytes used = 0u;
+    buffer[used++] = (u8) ((fin ? 0x80u : 0x00u) | opcode);
+    buffer[used++] = (u8) (0x80u | length);
     memcpy(buffer + used, mask, sizeof(mask));
     used += sizeof(mask);
-    for (size_t i = 0u; i < length && used < sizeof(buffer); i++)
-        buffer[used++] = (uint8_t) (payload[i] ^ mask[i & 3u]);
+    for (bytes i = 0u; i < length && used < sizeof(buffer); i++)
+        buffer[used++] = (u8) (payload[i] ^ mask[i & 3u]);
     return peerWrite(fd, buffer, used);
 }
 
 /** Read until the request's blank line, capturing it for shape assertions. */
-static size_t peerReadRequest(int fd, char *dest, size_t cap) {
-    size_t used = 0u;
+static bytes peerReadRequest(int fd, char *dest, bytes cap) {
+    bytes used = 0u;
     while (used + 1u < cap) {
         ssize_t n = recv(fd, dest + used, cap - 1u - used, 0);
         if (n <= 0)
             break;
-        used += (size_t) n;
+        used += (bytes) n;
         dest[used] = '\0';
         if (strstr(dest, "\r\n\r\n") != nullptr)
             break;
@@ -130,7 +130,7 @@ static bool peerContains(const char *haystack, const char *needle) {
 }
 
 /** The accept hash the client must verify: base64(SHA1(key || GUID)). */
-static bool peerAcceptHash(const char *request, char *out, size_t cap) {
+static bool peerAcceptHash(const char *request, char *out, bytes cap) {
     const char *key = strstr(request, "Sec-WebSocket-Key: ");
     if (key == nullptr)
         return false;
@@ -139,7 +139,7 @@ static bool peerAcceptHash(const char *request, char *out, size_t cap) {
     if (end == nullptr)
         return false;
     char value[64];
-    size_t length = (size_t) (end - key);
+    bytes length = (bytes) (end - key);
     if (length + 1u > sizeof(value))
         return false;
     memcpy(value, key, length);
@@ -149,7 +149,7 @@ static bool peerAcceptHash(const char *request, char *out, size_t cap) {
     Crypto_sha1Init(&digest);
     Crypto_sha1Update(&digest, value, strlen(value));
     Crypto_sha1Update(&digest, WS_HANDSHAKE_GUID, strlen(WS_HANDSHAKE_GUID));
-    uint8_t hash[CRYPTO_SHA1_DIGEST_SIZE];
+    u8 hash[CRYPTO_SHA1_DIGEST_SIZE];
     Crypto_sha1Final(&digest, hash);
     return Url_base64(hash, CRYPTO_SHA1_DIGEST_SIZE, out, cap) > 0;
 }
@@ -172,8 +172,8 @@ static bool peerRespond(int fd, int status, const char *accept, bool upgrade,
         written = snprintf(response, sizeof(response),
             "HTTP/1.1 %d Nope\r\nContent-Length: 0\r\n\r\n", status);
     }
-    return written > 0 && (size_t) written < sizeof(response) &&
-           peerWrite(fd, response, (size_t) written);
+    return written > 0 && (bytes) written < sizeof(response) &&
+           peerWrite(fd, response, (bytes) written);
 }
 
 // --- The forked peer: bind, accept, play one scenario, report request shape ---
@@ -257,44 +257,44 @@ static int peerRun(Scenario scenario, int readyWriteFd) {
     switch (scenario) {
         case SCENARIO_ECHO_TEXT:
             if (!peerFrame(peer, true, WEBSOCKET_TEXT,
-                           (const uint8_t*) greeting, strlen(greeting)))
+                           (const u8*) greeting, strlen(greeting)))
                 return 13;
             break;
         case SCENARIO_PING_THEN_TEXT:
-            if (!peerFrame(peer, true, WEBSOCKET_PING, (const uint8_t*) "p", 1u))
+            if (!peerFrame(peer, true, WEBSOCKET_PING, (const u8*) "p", 1u))
                 return 13;
             if (!peerFrame(peer, true, WEBSOCKET_TEXT,
-                           (const uint8_t*) greeting, strlen(greeting)))
+                           (const u8*) greeting, strlen(greeting)))
                 return 13;
             break;
         case SCENARIO_FRAGMENTS:
-            if (!peerFrame(peer, false, WEBSOCKET_TEXT, (const uint8_t*) "he", 2u))
+            if (!peerFrame(peer, false, WEBSOCKET_TEXT, (const u8*) "he", 2u))
                 return 13;
-            if (!peerFrame(peer, false, WEBSOCKET_CONTINUATION, (const uint8_t*) "llo ", 4u))
+            if (!peerFrame(peer, false, WEBSOCKET_CONTINUATION, (const u8*) "llo ", 4u))
                 return 13;
             if (!peerFrame(peer, true, WEBSOCKET_CONTINUATION,
-                           (const uint8_t*) "web", 3u))
+                           (const u8*) "web", 3u))
                 return 13;
             break;
         case SCENARIO_BINARY: {
-            const uint8_t payload[4] = { 0x00u, 0xFFu, 0x10u, 0x00u };
+            const u8 payload[4] = { 0x00u, 0xFFu, 0x10u, 0x00u };
             if (!peerFrame(peer, true, WEBSOCKET_BINARY, payload, sizeof(payload)))
                 return 13;
             break;
         }
         case SCENARIO_CLOSE: {
-            const uint8_t payload[4] = { 0x03u, 0xE8u, 'b', 'y' }; // 1000 "by"
+            const u8 payload[4] = { 0x03u, 0xE8u, 'b', 'y' }; // 1000 "by"
             if (!peerFrame(peer, true, WEBSOCKET_CLOSE, payload, sizeof(payload)))
                 return 13;
             break;
         }
         case SCENARIO_MASKED_FRAME:
             if (!peerMaskedFrame(peer, true, WEBSOCKET_TEXT,
-                                 (const uint8_t*) "hi", 2u))
+                                 (const u8*) "hi", 2u))
                 return 13;
             break;
         case SCENARIO_CONTROL_TOO_LONG: {
-            uint8_t big[126];
+            u8 big[126];
             memset(big, 'x', sizeof(big));
             if (!peerFrame(peer, true, WEBSOCKET_PING, big, sizeof(big)))
                 return 13;
@@ -302,19 +302,19 @@ static int peerRun(Scenario scenario, int readyWriteFd) {
         }
         case SCENARIO_STRAY_CONTINUATION:
             if (!peerFrame(peer, true, WEBSOCKET_CONTINUATION,
-                           (const uint8_t*) "lost", 4u))
+                           (const u8*) "lost", 4u))
                 return 13;
             break;
         case SCENARIO_LENGTH_HIGH_BIT: {
             // Deliberately UNMASKED: this case isolates the 64-bit length rule,
             // so the mask guard must not swallow the refusal first.
-            uint8_t header[10] = { 0x81u, 0x7Fu, 0x80u, 0u, 0u, 0u, 0u, 0u, 0u, 0u };
+            u8 header[10] = { 0x81u, 0x7Fu, 0x80u, 0u, 0u, 0u, 0u, 0u, 0u, 0u };
             if (!peerWrite(peer, header, sizeof(header)))
                 return 13;
             break;
         }
         case SCENARIO_BAD_UTF8: {
-            const uint8_t broken[3] = { 0xC3u, 0x28u, 0x41u }; // truncated sequence
+            const u8 broken[3] = { 0xC3u, 0x28u, 0x41u }; // truncated sequence
             if (!peerFrame(peer, true, WEBSOCKET_TEXT, broken, sizeof(broken)))
                 return 13;
             break;
@@ -323,7 +323,7 @@ static int peerRun(Scenario scenario, int readyWriteFd) {
             // Announce 8192 Bytes — twice the client's 4096 cap — and send none
             // of it: the length must be refused from the header alone, so the
             // client never blocks waiting for a payload it will not read.
-            uint8_t header[10] = { 0x82u, 127u, 0u, 0u, 0u, 0u, 0u, 0x20u, 0u };
+            u8 header[10] = { 0x82u, 127u, 0u, 0u, 0u, 0u, 0u, 0x20u, 0u };
             if (!peerWrite(peer, header, sizeof(header)))
                 return 13;
             break;
@@ -336,7 +336,7 @@ static int peerRun(Scenario scenario, int readyWriteFd) {
     // client must produce a mask key of its own for every frame it sends.
     if (scenario == SCENARIO_PING_THEN_TEXT || scenario == SCENARIO_ECHO_TEXT ||
         scenario == SCENARIO_FRAGMENTS) {
-        uint8_t clientFrame[64];
+        u8 clientFrame[64];
         ssize_t got = recv(peer, clientFrame, sizeof(clientFrame), 0);
         if (scenario == SCENARIO_PING_THEN_TEXT) {
             if (got < 6 || (clientFrame[0] & 0x0Fu) != WEBSOCKET_PONG ||
@@ -356,7 +356,7 @@ typedef struct PeerContext {
     int readFd;
 } PeerContext;
 
-static bool peerStart(PeerContext *context, Scenario scenario, char *url, size_t urlCap) {
+static bool peerStart(PeerContext *context, Scenario scenario, char *url, bytes urlCap) {
     int fds[2];
     if (pipe(fds) != 0)
         return false;
@@ -513,7 +513,7 @@ static void testHandshakeRefusals(void) {
         { SCENARIO_NOT_101, "status 200" },
         { SCENARIO_NO_UPGRADE, "missing Upgrade" },
     };
-    for (size_t i = 0u; i < sizeof(cases) / sizeof(cases[0]); i++) {
+    for (bytes i = 0u; i < sizeof(cases) / sizeof(cases[0]); i++) {
         char url[128];
         PeerContext peer;
         if (!peerStart(&peer, cases[i].scenario, url, sizeof(url))) {
@@ -612,7 +612,7 @@ static void testHostileFrames(void) {
         { SCENARIO_OVERSIZE, "frame past the message cap",
           "frame length exceeds the configured cap" },
     };
-    for (size_t i = 0u; i < sizeof(cases) / sizeof(cases[0]); i++) {
+    for (bytes i = 0u; i < sizeof(cases) / sizeof(cases[0]); i++) {
         char url[128];
         PeerContext peer;
         if (!peerStart(&peer, cases[i].scenario, url, sizeof(url))) {
@@ -650,10 +650,10 @@ static void testOutboundRefusals(void) {
     CHECK(openClient(&client, url));
     const char broken[2] = { (char) 0xC3u, (char) 0x28u };
     CHECK(!WebSocket_writeText(&client, broken, 2u)); // not UTF-8
-    uint8_t big[126];
+    u8 big[126];
     memset(big, 0, sizeof(big));
     CHECK(!WebSocket_writePing(&client, big, sizeof(big))); // over 125
-    CHECK(WebSocket_writePing(&client, (const uint8_t*) "abc", 3u));
+    CHECK(WebSocket_writePing(&client, (const u8*) "abc", 3u));
 
     char text[256];
     bool truncated = true;

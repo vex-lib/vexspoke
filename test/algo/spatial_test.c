@@ -15,7 +15,7 @@ static int g_failures = 0;
         }                                                                    \
     } while (0)
 
-static unsigned countBits(uint64_t value) {
+static unsigned countBits(u64 value) {
     unsigned count = 0u;
     while (value != 0u) {
         count += (unsigned) (value & 1u);
@@ -26,9 +26,9 @@ static unsigned countBits(uint64_t value) {
 
 int main(void) {
     CHECK(Spatial_morton3D(0u, 0u, 0u) == 0u);
-    uint64_t xBit = Spatial_morton3D(1u, 0u, 0u);
-    uint64_t yBit = Spatial_morton3D(0u, 1u, 0u);
-    uint64_t zBit = Spatial_morton3D(0u, 0u, 1u);
+    u64 xBit = Spatial_morton3D(1u, 0u, 0u);
+    u64 yBit = Spatial_morton3D(0u, 1u, 0u);
+    u64 zBit = Spatial_morton3D(0u, 0u, 1u);
     CHECK(countBits(xBit) == 1u && countBits(yBit) == 1u && countBits(zBit) == 1u);
     CHECK(xBit != yBit && yBit != zBit && xBit != zBit);
     CHECK(Spatial_morton3D(0x1FFFFFu, 0x1FFFFFu, 0x1FFFFFu)

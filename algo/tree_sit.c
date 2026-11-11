@@ -15,7 +15,7 @@
  * byte/row-col span, enabling pre-order, post-order, and span-based queries
  * without pointer chasing. Exists because language grammars (R3) and editors
  * (R4/R5) need a stable, allocation-friendly syntax tree that hot-reloadable
- * modules can build and walk. memory: the node array doubles exponentially
+ * modules can build and walk. memory: the node array f64s exponentially
  * (the Dynamic Scalability & Anti-Hardcoding Law); the root is a signed index
  * (-1 when empty). Lifetime: the TreeSitTree(...)/TreeSitTree_destroy pair;
  * symbol names are borrowed, never owned.
@@ -56,10 +56,10 @@ TreeSitTree TreeSitTree_0(void) {
     return TreeSitTree_1(16u);
 }
 
-TreeSitTree TreeSitTree_1(uint32_t initial_capacity) {
+TreeSitTree TreeSitTree_1(u32 initial_capacity) {
     TreeSitTree tree;
     memset(&tree, 0, sizeof tree);
-    uint32_t cap = (initial_capacity < 16) ? 16 : initial_capacity;
+    u32 cap = (initial_capacity < 16) ? 16 : initial_capacity;
     tree.root = -1;
     tree.nodes = (TreeSitNode*) malloc(cap * sizeof(TreeSitNode));
     if (tree.nodes != nullptr)
@@ -80,9 +80,9 @@ void TreeSitTree_destroy(TreeSitTree *tree) {
     (*tree).root = -1;
 }
 
-int32_t TreeSitTree_add_node(
-    int32_t parent_idx,
-    uint16_t kind,
+i32 TreeSitTree_add_node(
+    i32 parent_idx,
+    u16 kind,
     const char *symbol_name,
     TreeSitSpan span,
     TreeSitTree *tree
@@ -92,7 +92,7 @@ int32_t TreeSitTree_add_node(
     }
 
     if ((*tree).node_count >= (*tree).node_capacity) {
-        uint32_t new_cap = (*tree).node_capacity * 2;
+        u32 new_cap = (*tree).node_capacity * 2;
         TreeSitNode *new_nodes = (TreeSitNode*) realloc((*tree).nodes, new_cap * sizeof(TreeSitNode));
         if (!new_nodes) {
             return -1;
@@ -101,10 +101,10 @@ int32_t TreeSitTree_add_node(
         (*tree).node_capacity = new_cap;
     }
 
-    int32_t new_idx = (int32_t) (*tree).node_count++;
+    i32 new_idx = (i32) (*tree).node_count++;
     TreeSitNode *node = &(*tree).nodes[new_idx];
 
-    (*node).id = (uint32_t) new_idx;
+    (*node).id = (u32) new_idx;
     (*node).kind = kind;
     (*node).symbol_name = symbol_name;
     (*node).span = span;
@@ -119,12 +119,12 @@ int32_t TreeSitTree_add_node(
         if ((*tree).root < 0) {
             (*tree).root = new_idx;
         }
-    } else if ((uint32_t) parent_idx < (*tree).node_count - 1) {
+    } else if ((u32) parent_idx < (*tree).node_count - 1) {
         TreeSitNode *parent = &(*tree).nodes[parent_idx];
         if ((*parent).first_child < 0) {
             (*parent).first_child = new_idx;
         } else {
-            int32_t curr = (*parent).first_child;
+            i32 curr = (*parent).first_child;
             while ((*tree).nodes[curr].next_sibling >= 0) {
                 curr = (*tree).nodes[curr].next_sibling;
             }
@@ -139,12 +139,12 @@ int32_t TreeSitTree_add_node(
 
 static bool walk_preorder_rec(
     const TreeSitTree *tree,
-    int32_t node_idx,
+    i32 node_idx,
     int depth,
     TreeSitVisitorFn visitor,
     void *user_data
 ) {
-    if (node_idx < 0 || (uint32_t) node_idx >= (*tree).node_count) {
+    if (node_idx < 0 || (u32) node_idx >= (*tree).node_count) {
         return true;
     }
 
@@ -152,7 +152,7 @@ static bool walk_preorder_rec(
         return false;
     }
 
-    int32_t child = (*tree).nodes[node_idx].first_child;
+    i32 child = (*tree).nodes[node_idx].first_child;
     while (child >= 0) {
         if (!walk_preorder_rec(tree, child, depth + 1, visitor, user_data)) {
             return false;
@@ -171,16 +171,16 @@ bool TreeSitTree_walk_preorder(const TreeSitTree *tree, TreeSitVisitorFn visitor
 
 static bool walk_postorder_rec(
     const TreeSitTree *tree,
-    int32_t node_idx,
+    i32 node_idx,
     int depth,
     TreeSitVisitorFn visitor,
     void *user_data
 ) {
-    if (node_idx < 0 || (uint32_t) node_idx >= (*tree).node_count) {
+    if (node_idx < 0 || (u32) node_idx >= (*tree).node_count) {
         return true;
     }
 
-    int32_t child = (*tree).nodes[node_idx].first_child;
+    i32 child = (*tree).nodes[node_idx].first_child;
     while (child >= 0) {
         if (!walk_postorder_rec(tree, child, depth + 1, visitor, user_data)) {
             return false;
@@ -198,13 +198,13 @@ bool TreeSitTree_walk_postorder(const TreeSitTree *tree, TreeSitVisitorFn visito
     return walk_postorder_rec(tree, (*tree).root, 0, visitor, user_data);
 }
 
-int32_t TreeSitTree_find_by_byte(const TreeSitTree *tree, uint32_t byte_offset) {
+i32 TreeSitTree_find_by_byte(const TreeSitTree *tree, u32 byte_offset) {
     if (!tree || (*tree).root < 0) {
         return -1;
     }
 
-    int32_t curr = (*tree).root;
-    int32_t best_match = -1;
+    i32 curr = (*tree).root;
+    i32 best_match = -1;
 
     while (curr >= 0) {
         const TreeSitNode *node = &(*tree).nodes[curr];
@@ -220,12 +220,12 @@ int32_t TreeSitTree_find_by_byte(const TreeSitTree *tree, uint32_t byte_offset) 
     return best_match;
 }
 
-uint32_t TreeSitTree_count_kind(const TreeSitTree *tree, uint16_t kind) {
+u32 TreeSitTree_count_kind(const TreeSitTree *tree, u16 kind) {
     if (!tree) {
         return 0;
     }
-    uint32_t count = 0;
-    for (uint32_t i = 0; i < (*tree).node_count; i++) {
+    u32 count = 0;
+    for (u32 i = 0; i < (*tree).node_count; i++) {
         if ((*tree).nodes[i].kind == kind) {
             count++;
         }

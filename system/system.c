@@ -85,14 +85,14 @@ void System_initializeAll(void) {
 ;;INTENTION("environment is explicit session context, not an ambient global; both paths are caller-supplied strings per the Conflict Triage Law managed-argument rule")
 
 static char **sEntries = nullptr;     // owned "NAME=VALUE" snapshot
-static size_t sEntryCount = 0;        // entries in sEntries
+static bytes sEntryCount = 0;        // entries in sEntries
 static char *sDebugPath = nullptr;    // owned debug / current-workflow path
 static char *sExportPath = nullptr;   // owned manifest-derived export path
 
 static char *duplicateText(const char *text) {
     if (text == nullptr)
         return nullptr;
-    size_t length = strlen(text);
+    bytes length = strlen(text);
     char *copy = malloc(length + 1);
     if (copy != nullptr)
         memcpy(copy, text, length + 1);
@@ -100,7 +100,7 @@ static char *duplicateText(const char *text) {
 }
 
 static void releaseEnvState(void) {
-    for (size_t i = 0; i < sEntryCount; ++i)
+    for (bytes i = 0; i < sEntryCount; ++i)
         free(sEntries[i]);
     free(sEntries);
     free(sDebugPath);
@@ -115,16 +115,16 @@ bool System_getEnvironment(const char *debugpath, const char *exportpath) {
     if (debugpath == nullptr || debugpath[0] == '\0' ||
         exportpath == nullptr || exportpath[0] == '\0')
         return false;
-    size_t count = 0;
+    bytes count = 0;
     while (environ != nullptr && environ[count] != nullptr)
         ++count;
     char **entries = count == 0 ? nullptr : calloc(count, sizeof(char*));
     if (count != 0 && entries == nullptr)
         return false;
-    for (size_t i = 0; i < count; ++i) {
+    for (bytes i = 0; i < count; ++i) {
         entries[i] = duplicateText(environ[i]);
         if (entries[i] == nullptr) {
-            for (size_t j = 0; j < i; ++j)
+            for (bytes j = 0; j < i; ++j)
                 free(entries[j]);
             free(entries);
             return false;
@@ -133,7 +133,7 @@ bool System_getEnvironment(const char *debugpath, const char *exportpath) {
     char *debug = duplicateText(debugpath);
     char *exported = duplicateText(exportpath);
     if (debug == nullptr || exported == nullptr) {
-        for (size_t i = 0; i < count; ++i)
+        for (bytes i = 0; i < count; ++i)
             free(entries[i]);
         free(entries);
         free(debug);
@@ -151,8 +151,8 @@ bool System_getEnvironment(const char *debugpath, const char *exportpath) {
 const char *System_getEnvValue(const char *name) {
     if (name == nullptr || name[0] == '\0')
         return nullptr;
-    size_t length = strlen(name);
-    for (size_t i = 0; i < sEntryCount; ++i) {
+    bytes length = strlen(name);
+    for (bytes i = 0; i < sEntryCount; ++i) {
         const char *entry = sEntries[i];
         if (strncmp(entry, name, length) == 0 && entry[length] == '=')
             return entry + length + 1;

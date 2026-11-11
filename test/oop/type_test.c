@@ -23,14 +23,14 @@ static int g_failures = 0;
     } while (0)
 
 // A project byte with no stray bits: the field occupies bits 52..59.
-static uint64_t projByte(uint64_t byte) {
+static u64 projByte(u64 byte) {
     return (byte << 52) & MASK_PROJECT;
 }
 
 // Checks type bit fields, predicates, parent registration, and project isolation.
 int main(void) {
     // --- Bit field isolation: make then read each field back exactly.
-    uint64_t id = Type_make(PROJ_VEXSPOKE, FORM_SINGLETON, ID_INT);
+    u64 id = Type_make(PROJ_VEXSPOKE, FORM_SINGLETON, ID_INT);
     CHECK(id == TYPE_INT_SINGLETON);
     CHECK(Type_class(id) == ID_INT);
     CHECK(Type_form(id) == FORM_SINGLETON);
@@ -83,7 +83,7 @@ int main(void) {
 
     // --- vexspoke's own legacy chain: buffer family rolls up to ID_BUFFER. The
     // resolver is now Relational Engine's; the owner grants the bare chain once.
-    static const uint32_t bareChain[0x64] = { [0x50 ... 0x63] = ID_BUFFER };
+    static const u32 bareChain[0x64] = { [0x50 ... 0x63] = ID_BUFFER };
     CHECK(Type_registerBareParents(bareChain, 0x64u));
     CHECK(Type_getParentClass(ID_ACCUMULUATION_BUFFER) == ID_BUFFER);
     CHECK(Type_getParentClass(ID_VISIBILITY_BUFFER) == ID_BUFFER);
@@ -91,7 +91,7 @@ int main(void) {
     CHECK(Type_getParentClass(ID_INT) == ID_INT);            // bare root
 
     // --- Registry seam: ADVERSARIAL rejections are atomic (false, no state).
-    static const uint32_t chain[4] = { 0, 0, 1, 2 };
+    static const u32 chain[4] = { 0, 0, 1, 2 };
     CHECK(!Type_registerParents(0u, chain, 4));                         // zero project
     CHECK(!Type_registerParents(0x1ull, chain, 4));                     // stray bits
     CHECK(!Type_registerParents(PROJ_VEXSPOKE, chain, 4));              // vexspoke itself
@@ -111,18 +111,18 @@ int main(void) {
     CHECK(!Type_isA(projByte(0x21) | 1, projByte(0x21) | 3));           // ancestor is not descendant
 
     // --- Idempotence: re-registering a project replaces its table.
-    static const uint32_t chain2[4] = { 0, 0, 0, 1 };
+    static const u32 chain2[4] = { 0, 0, 0, 1 };
     CHECK(Type_registerParents(projByte(0x21), chain2, 4));
     CHECK(Type_getParentClass(projByte(0x21) | 3) == 1u);               // new table won
 
     // --- Cyclic parent tables are rejected; prior state is preserved.
-    static const uint32_t cyclic[4] = { 0, 2, 1, 2 };  // 1->2->1 never roots
+    static const u32 cyclic[4] = { 0, 2, 1, 2 };  // 1->2->1 never roots
     CHECK(!Type_registerParents(projByte(0x22), cyclic, 4));
     CHECK(Type_getParentClass(projByte(0x22) | 1) == 1u);              // nothing stored
     CHECK(!Type_isA(projByte(0x22) | 1, projByte(0x22) | 2));
 
     // A self-parent is a root, not a cycle (0 = the class is its own parent).
-    static const uint32_t selfRoot[3] = { 0, 1, 0 };
+    static const u32 selfRoot[3] = { 0, 1, 0 };
     CHECK(Type_registerParents(projByte(0x23), selfRoot, 3));
     CHECK(Type_getParentClass(projByte(0x23) | 1) == 1u);
     CHECK(Type_isA(projByte(0x23) | 1, projByte(0x23) | 1));
@@ -130,9 +130,9 @@ int main(void) {
 
     // --- A long legal chain resolves end to end (walk bounded by the table,
     // never capped below it).
-    static uint32_t longChain[300];
+    static u32 longChain[300];
     longChain[0] = 0u;
-    for (uint32_t i = 1u; i < 300u; i++)
+    for (u32 i = 1u; i < 300u; i++)
         longChain[i] = i - 1u;
     CHECK(Type_registerParents(projByte(0x24), longChain, 300));
     CHECK(Type_isA(projByte(0x24) | 299, projByte(0x24) | 1));
@@ -141,8 +141,8 @@ int main(void) {
 
     // --- Cross-project class-number collision: chains never bleed across
     // projects; the ancestor target stays project-invariant (masked to class).
-    static const uint32_t chainA[4] = { 0, 0, 1, 2 };  // A: 3->2->1
-    static const uint32_t chainB[4] = { 0, 0, 0, 1 };  // B: 3->1, 2 root
+    static const u32 chainA[4] = { 0, 0, 1, 2 };  // A: 3->2->1
+    static const u32 chainB[4] = { 0, 0, 0, 1 };  // B: 3->1, 2 root
     CHECK(Type_registerParents(projByte(0x40), chainA, 4));
     CHECK(Type_registerParents(projByte(0x41), chainB, 4));
     CHECK(Type_isA(projByte(0x40) | 3, projByte(0x40) | 1));
@@ -153,10 +153,10 @@ int main(void) {
     CHECK(Type_isA(projByte(0x40) | 3, projByte(0x41) | 1));           // target resolves in A's project
 
     // --- Exponential slate growth: many projects must all resolve.
-    static const uint32_t flat[4] = { 0, 0, 0, 0 };
-    for (uint64_t b = 0x30; b < 0x30 + 24; b++)
+    static const u32 flat[4] = { 0, 0, 0, 0 };
+    for (u64 b = 0x30; b < 0x30 + 24; b++)
         CHECK(Type_registerParents(projByte(b), flat, 4));
-    for (uint64_t b = 0x30; b < 0x30 + 24; b++) {
+    for (u64 b = 0x30; b < 0x30 + 24; b++) {
         CHECK(Type_getParentClass(projByte(b) | 1) == 1u);              // flat → root
         CHECK(Type_getParentClass(projByte(b) | 2) == 2u);
     }

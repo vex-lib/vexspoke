@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "util/constructor.h"
+#include "lang/constructor.h"
 #include "regex/charclass.h"
 #include "regex/nodelist.h"
 
@@ -32,26 +32,26 @@
 
 typedef struct RegexParser {
     const char     *pattern;       // borrowed pattern text (not owned)
-    size_t          length;        // pattern byte length
-    size_t          pos;           // parse cursor
+    bytes          length;        // pattern byte length
+    bytes          pos;           // parse cursor
     bool            ignoreCase;    // fold ASCII case while building the AST
     RegexNodeList   nodes;         // the AST being built (owned)
     RegexCharClass *classes;       // growable class bitmaps (owned)
-    uint32_t        classCount;    // classes in use
-    uint32_t        classCapacity; // classes allocated
-    uint32_t        groupCount;    // capturing groups seen
-    uint32_t        depth;         // current group nesting depth
+    u32        classCount;    // classes in use
+    u32        classCapacity; // classes allocated
+    u32        groupCount;    // capturing groups seen
+    u32        depth;         // current group nesting depth
     bool            failed;        // a rejection was recorded
     const char     *error;         // first rejection reason (static text)
 } RegexParser;
 
 // Create a parser over a borrowed pattern. Allocates nothing.
-RegexParser RegexParser_3(const char *pattern, size_t length, bool ignoreCase);
+RegexParser RegexParser_3(const char *pattern, bytes length, bool ignoreCase);
 #define RegexParser(...) CONSTRUCTOR_DISPATCH(RegexParser, __VA_ARGS__)
 
 // Parse the whole pattern. Returns the root node index, or REGEX_NODE_NONE
 // when the pattern is malformed or a ceiling was reached.
-uint32_t RegexParser_parse(RegexParser *parser);
+u32 RegexParser_parse(RegexParser *parser);
 
 // True when the last parse completed without a rejection.
 bool RegexParser_ok(const RegexParser *parser);
@@ -63,11 +63,11 @@ const char *RegexParser_error(const RegexParser *parser);
 RegexNodeList *RegexParser_nodes(RegexParser *parser);
 
 // Capturing groups found (group 0 is the implicit whole match).
-uint32_t RegexParser_groupCount(const RegexParser *parser);
+u32 RegexParser_groupCount(const RegexParser *parser);
 
 // Transfer the class-bitmap array to the caller and write its count. The
 // parser forgets it, so RegexParser_free will not release it.
-RegexCharClass *RegexParser_releaseClasses(RegexParser *parser, uint32_t *outCount);
+RegexCharClass *RegexParser_releaseClasses(RegexParser *parser, u32 *outCount);
 
 // Release the AST and any un-transferred class array. Null-safe.
 void RegexParser_free(RegexParser *parser);

@@ -38,10 +38,10 @@ typedef struct Reactive Reactive;
 typedef void (*ReactiveDeliverFn)(Reactive *self);
 
 // The value stringifier: formats the raw word as text FOR ITS TYPE. Bound by each
-// typed reactive (int -> "%d", float -> "%g", string -> the Bytes, …) so a
+// typed reactive (int -> "%d", f32 -> "%g", string -> the Bytes, …) so a
 // type-erased consumer (a Label's [] slot) can render any reactive as text — a
 // valueOf() in the reactive section.
-typedef void (*ReactiveValueFn)(uintptr_t word, char *out, size_t cap);
+typedef void (*ReactiveValueFn)(uintptr_t word, char *out, bytes cap);
 
 struct Reactive {
     _Atomic(uintptr_t) value;  // the live word (scalar, or ptr to an immutable block)
@@ -68,7 +68,7 @@ typedef void (*ReactiveNullptrFn)(Reactive *self, void *userdata);
 bool Reactive_init(Reactive *self, uintptr_t initialWord);
 // Arena-allocated conveniences (the Arity and Constructive Convenience Law).
 Reactive *Reactive_1(uintptr_t initialWord);
-Reactive *Reactive_2(const Reactive *init, size_t count);
+Reactive *Reactive_2(const Reactive *init, bytes count);
 // The bare `Reactive(...)` arity chooser is retired: the token is promoted to the
 // generic family constructor `Reactive(T)` (reactive/generic.h), so a bare engine
 // is built through Reactive_1/Reactive_2, and typed reactives through Reactive(T).
@@ -109,7 +109,7 @@ ReactiveDeliverFn Reactive_getDefaultDelivery(void);
 void Reactive_setValueOf(Reactive *self, ReactiveValueFn valueOf);
 // Format the current value into `out` (nul-terminated within cap) and return it.
 // Falls back to "%llu" of the raw word when no stringifier is bound.
-const char *Reactive_valueOf(Reactive *self, char *out, size_t cap);
+const char *Reactive_valueOf(Reactive *self, char *out, bytes cap);
 // The owner-thread notification point: consume the writes since the last drain
 // as ONE coalesced batch and fire onSet then onChanged (only on a real move).
 // Returns true when a batch fired. Lock-free — never blocks.
@@ -127,7 +127,7 @@ bool Reactive_watchNullptr(Reactive *self, ReactiveNullptrFn cb, void *userdata)
 bool Reactive_unwatchNullptr(Reactive *self, ReactiveNullptrFn cb, void *userdata);
 
 // --- Getters (the Symmetric Getter/Setter Completeness Law: null-safe) ---
-size_t Reactive_observerCount(const Reactive *self);
+bytes Reactive_observerCount(const Reactive *self);
 bool Reactive_isDirty(const Reactive *self);
 bool Reactive_isActive(const Reactive *self);
 

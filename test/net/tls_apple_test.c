@@ -35,10 +35,10 @@ static int g_checks = 0;
         }                                                                       \
     } while (0)
 
-static uint64_t nowMs(void) {
+static u64 nowMs(void) {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
-    return (uint64_t) ts.tv_sec * 1000u + (uint64_t) (ts.tv_nsec / 1000000);
+    return (u64) ts.tv_sec * 1000u + (u64) (ts.tv_nsec / 1000000);
 }
 
 /** Bind an ephemeral port, then release it so nothing is listening there. */
@@ -93,9 +93,9 @@ int main(void) {
     int port = closedPort();
     CHECK(port > 0);
     if (port > 0) {
-        uint64_t started = nowMs();
+        u64 started = nowMs();
         bool connected = Tls_connect("127.0.0.1", port, &conn);
-        uint64_t elapsed = nowMs() - started;
+        u64 elapsed = nowMs() - started;
         printf("  refused connect returned in %llu ms\n", (unsigned long long) elapsed);
         CHECK(!connected);
         CHECK(conn == nullptr);
@@ -111,7 +111,7 @@ int main(void) {
 
     // Null-safety across the rest of the seam.
     char buffer[8];
-    size_t got = 99u;
+    bytes got = 99u;
     CHECK(!Tls_send(nullptr, "x", 1u));
     CHECK(!Tls_send(nullptr, nullptr, 0u));
     CHECK(!Tls_recv(nullptr, buffer, sizeof(buffer), &got));

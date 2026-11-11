@@ -5,17 +5,17 @@
 #include "security/totp.h"
 
 // RFC 6238 Appendix B uses the ASCII secret "12345678901234567890" in SHA-1 mode.
-static const uint8_t SECRET[] = "12345678901234567890";
+static const u8 SECRET[] = "12345678901234567890";
 
 int main(void) {
-    struct { uint64_t t; uint32_t code; } vectors[] = {
+    struct { u64 t; u32 code; } vectors[] = {
         { 59u,          94287082u },
         { 1111111109u,  7081804u },
         { 1234567890u,  89005924u },
         { 20000000000u, 65353130u },
     };
-    for (size_t i = 0; i < sizeof vectors / sizeof vectors[0]; ++i) {
-        uint32_t code = Totp_code(SECRET, sizeof SECRET - 1, vectors[i].t, 8u,
+    for (bytes i = 0; i < sizeof vectors / sizeof vectors[0]; ++i) {
+        u32 code = Totp_code(SECRET, sizeof SECRET - 1, vectors[i].t, 8u,
                                   TOTP_STEP_SECONDS_DEFAULT);
         assert(code == vectors[i].code);
     }
@@ -24,7 +24,7 @@ int main(void) {
     assert(Totp_code(SECRET, sizeof SECRET - 1, 59u, 6u, TOTP_STEP_SECONDS_DEFAULT) == 287082u);
 
     // Verification inside the window, with replay refusal recorded per user.
-    uint64_t lastStep = 0;
+    u64 lastStep = 0;
     assert(Totp_verify(SECRET, sizeof SECRET - 1, 94287082u, 59u, 8u,
                        TOTP_STEP_SECONDS_DEFAULT, TOTP_WINDOW_DEFAULT, &lastStep));
     assert(lastStep == 1u);                                   // 59 / 30
@@ -37,11 +37,11 @@ int main(void) {
     assert(lastStep == 1111111109u / TOTP_STEP_SECONDS_DEFAULT);
 
     // Clock skew: a code from the previous step still verifies with a window of 1.
-    uint64_t fresh = 0;
+    u64 fresh = 0;
     assert(Totp_verify(SECRET, sizeof SECRET - 1, 94287082u, 89u, 8u,
                        TOTP_STEP_SECONDS_DEFAULT, TOTP_WINDOW_DEFAULT, &fresh));
     // ...and the next step's code does not, outside the window.
-    uint32_t next = Totp_code(SECRET, sizeof SECRET - 1, 119u, 8u, TOTP_STEP_SECONDS_DEFAULT);
+    u32 next = Totp_code(SECRET, sizeof SECRET - 1, 119u, 8u, TOTP_STEP_SECONDS_DEFAULT);
     assert(!Totp_verify(SECRET, sizeof SECRET - 1, next, 59u, 8u,
                         TOTP_STEP_SECONDS_DEFAULT, TOTP_WINDOW_DEFAULT, nullptr));
 

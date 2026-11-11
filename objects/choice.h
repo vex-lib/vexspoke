@@ -4,31 +4,31 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stddef.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 // objects/choice.h — Immutable deterministic choice / branch dispatcher.
 // Ported from legacy objects/Choice.java.
 
-typedef void (*ChoiceCallback)(uint64_t objectPtr, void *userdata);
+typedef void (*ChoiceCallback)(u64 objectPtr, void *userdata);
 
 typedef struct Choice Choice;
 
 // Allocate an immutable Choice array with option object pointers and callbacks
-Choice *Choice_3(const uint64_t *objectPtrs, const ChoiceCallback *callbacks, size_t count);
+Choice *Choice_3(const u64 *objectPtrs, const ChoiceCallback *callbacks, bytes count);
 
 // Free choice memory
 
-Choice *Choice_2(const Choice *init, size_t count);
+Choice *Choice_2(const Choice *init, bytes count);
 
 #define Choice(...) CONSTRUCTOR_DISPATCH(Choice, __VA_ARGS__)
 
 void Choice_free(Choice *choice);
 
 // Inspect choices
-size_t   Choice_length(const Choice *choice);
-uint64_t Choice_getObject(const Choice *choice, size_t index);
+bytes   Choice_length(const Choice *choice);
+u64 Choice_getObject(const Choice *choice, bytes index);
 
 // Trigger the callback associated with choice option 'index'
-void Choice_trigger(const Choice *choice, size_t index, void *userdata);
+void Choice_trigger(const Choice *choice, bytes index, void *userdata);
 
 #endif

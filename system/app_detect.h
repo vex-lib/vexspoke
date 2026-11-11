@@ -28,7 +28,7 @@ typedef struct AppSlot {
 
 // The detection class — singleton handle; state lives in static rows.
 typedef struct AppDetect {
-    uint32_t reserved; // signature; no mutable state
+    u32 reserved; // signature; no mutable state
 } AppDetect;
 
 // --- Constructor ---
@@ -40,7 +40,7 @@ AppDetect *AppDetect_shared(void);
 // Resolves like `which` (getenv PATH, colon-separated, X_OK). Returns
 // false when not found or scratch too small; true + NUL-terminated path.
 bool AppDetect_which(const AppDetect *self, const char *name,
-                     char *outBuf, size_t outCap);
+                     char *outBuf, bytes outCap);
 // true when `name` resolves on PATH (AppDetect_which, any location).
 bool AppDetect_isOnPath(const AppDetect *self, const char *name);
 // true when an app bundle exists: /Applications/<Name>.app
@@ -56,8 +56,8 @@ bool AppDetect_isInstalled(const AppDetect *self, const AppSlot *slot);
 bool AppDetect_isRunning(const AppDetect *self, const AppSlot *slot);
 
 // --- Registry (L1 rows from src/system/data/apps.inc) ---
-uint32_t AppDetect_count(const AppDetect *self);
-const AppSlot *AppDetect_at(const AppDetect *self, uint32_t i);
+u32 AppDetect_count(const AppDetect *self);
+const AppSlot *AppDetect_at(const AppDetect *self, u32 i);
 const AppSlot *AppDetect_get(const AppDetect *self, const char *name);
 
 // --- Getters (Rule 24; null-safe; setters omitted — immutable rows) ---

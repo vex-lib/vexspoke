@@ -178,8 +178,8 @@ static void testPtr(void) {
 // --- TryCode taxonomy ---
 /** Confirms error codes retain their declared categories and identifying values. */
 static void testCodeTaxonomy(void) {
-    size_t count = sizeof ALL_CODES / sizeof ALL_CODES[0];
-    for (size_t i = 0; i < count; i++) {
+    bytes count = sizeof ALL_CODES / sizeof ALL_CODES[0];
+    for (bytes i = 0; i < count; i++) {
         TryCode code = ALL_CODES[i];
         CHECK(TryCode_name(code) != nullptr);
         CHECK(TryCode_message(code) != nullptr);

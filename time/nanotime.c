@@ -34,11 +34,11 @@
  * STRUCT FIELDS (Mirroring time/nanotime.h):
  * ----------------------------------------------------------------------------
  *   NanoTimer {
- *     uint64_t startNanos; // nanosecond timestamp
- *     uint64_t lastNanos; // nanosecond timestamp
- *     uint64_t currentNanos; // nanosecond timestamp
- *     double deltaTime; // seconds, Clock-scaled
- *     double totalTime; // seconds, accumulated scaled
+ *     u64 startNanos; // nanosecond timestamp
+ *     u64 lastNanos; // nanosecond timestamp
+ *     u64 currentNanos; // nanosecond timestamp
+ *     d64 deltaTime; // seconds, Clock-scaled
+ *     d64 totalTime; // seconds, accumulated scaled
  *   }
  *
  * FUNCTION REGISTRY:
@@ -62,13 +62,13 @@
 
 
 // little conflicted.. would need this to be localthread variable to ensure thread safety
-static uint64_t s_startNanos = 0;
+static u64 s_startNanos = 0;
 static int s_started = 0;
 
-static uint64_t nanoTime(void) {
+static u64 nanoTime(void) {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
-    return (uint64_t)ts.tv_sec * 1000000000ULL + (uint64_t)ts.tv_nsec;
+    return (u64)ts.tv_sec * 1000000000ULL + (u64)ts.tv_nsec;
 }
 
 void NanoTime_init(void) {
@@ -77,17 +77,17 @@ void NanoTime_init(void) {
     s_started = 1;
 }
 
-uint64_t NanoTime_startNanos(void) {
+u64 NanoTime_startNanos(void) {
     return s_startNanos;
 }
 
 // Raw reading only — pure function of the clock, no shared state involved
 // (the init-race concern lives in the epoch accessors below, not here).
-uint64_t NanoTime_now(void) {
+u64 NanoTime_now(void) {
     return nanoTime();
 }
 
-uint64_t NanoTime_elapsedNanos(void) {
+u64 NanoTime_elapsedNanos(void) {
     if (!s_started)
         return 0;
     return nanoTime() - s_startNanos;
@@ -96,7 +96,7 @@ uint64_t NanoTime_elapsedNanos(void) {
 // --- Tickable timer (Legacy: NanoTime.allocate/tick) ---
 
 void NanoTimer_reset(NanoTimer *timer) {
-    uint64_t now = nanoTime();
+    u64 now = nanoTime();
     (*timer).startNanos = now;
     (*timer).lastNanos = now;
     (*timer).currentNanos = now;
@@ -105,15 +105,15 @@ void NanoTimer_reset(NanoTimer *timer) {
 }
 
 void NanoTimer_tickWithClock(NanoTimer *timer, const Clock *clock) {
-    uint64_t now = nanoTime();
-    uint64_t current = (*timer).currentNanos;
+    u64 now = nanoTime();
+    u64 current = (*timer).currentNanos;
 
     (*timer).lastNanos = current;
     (*timer).currentNanos = now;
 
-    double realDeltaSec = (double)(now - current) / 1000000000.0;
+    d64 realDeltaSec = (d64)(now - current) / 1000000000.0;
 
-    double scale = 1.0;
+    d64 scale = 1.0;
     if (clock) {
         if (Clock_isPaused(clock))
             scale = 0.0;
@@ -121,7 +121,7 @@ void NanoTimer_tickWithClock(NanoTimer *timer, const Clock *clock) {
             scale = Clock_timeScale(clock);
     }
 
-    double scaledDeltaSec = realDeltaSec * scale;
+    d64 scaledDeltaSec = realDeltaSec * scale;
     (*timer).deltaTime = scaledDeltaSec;
     (*timer).totalTime += scaledDeltaSec;
 }
@@ -130,18 +130,18 @@ void NanoTimer_tick(NanoTimer *timer) {
     NanoTimer_tickWithClock(timer, nullptr);
 }
 
-double NanoTimer_deltaTime(const NanoTimer *timer) {
+d64 NanoTimer_deltaTime(const NanoTimer *timer) {
     return (*timer).deltaTime;
 }
 
-double NanoTimer_totalTime(const NanoTimer *timer) {
+d64 NanoTimer_totalTime(const NanoTimer *timer) {
     return (*timer).totalTime;
 }
 
-uint64_t NanoTimer_deltaNanos(const NanoTimer *timer) {
+u64 NanoTimer_deltaNanos(const NanoTimer *timer) {
     return (*timer).currentNanos - (*timer).lastNanos;
 }
 
-uint64_t NanoTimer_elapsedNanosOf(const NanoTimer *timer) {
+u64 NanoTimer_elapsedNanosOf(const NanoTimer *timer) {
     return (*timer).currentNanos - (*timer).startNanos;
 }

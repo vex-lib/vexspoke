@@ -21,9 +21,9 @@
 
 // All four pointers are borrowed; the key and data may be null only when their
 // length is zero. Output goes into the caller's buffer.
-void Hmac_sha1(const uint8_t *key, size_t keyLen, const uint8_t *data, size_t dataLen,
-               uint8_t out[HMAC_SHA1_DIGEST_SIZE]);
-void Hmac_sha256(const uint8_t *key, size_t keyLen, const uint8_t *data, size_t dataLen,
-                 uint8_t out[HMAC_SHA256_DIGEST_SIZE]);
+void Hmac_sha1(const u8 *key, bytes keyLen, const u8 *data, bytes dataLen,
+               u8 out[HMAC_SHA1_DIGEST_SIZE]);
+void Hmac_sha256(const u8 *key, bytes keyLen, const u8 *data, bytes dataLen,
+                 u8 out[HMAC_SHA256_DIGEST_SIZE]);
 
 #endif

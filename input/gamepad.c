@@ -31,13 +31,13 @@
  * STRUCT FIELDS (Mirroring input/gamepad.h):
  * ----------------------------------------------------------------------------
  *   GamepadState {
- *     uint32_t buttons;       // bitmask of active pressed buttons
+ *     u32 buttons;       // bitmask of active pressed buttons
  *     Coord2     leftStick;     // filtered deadzone vector [-1.0, +1.0]
  *     Coord2     rightStick;    // filtered deadzone vector [-1.0, +1.0]
- *     float    leftTrigger;   // normalized trigger squeeze [0.0, 1.0]
- *     float    rightTrigger;  // normalized trigger squeeze [0.0, 1.0]
- *     float    rumbleLowFreq; // low frequency heavy rumble [0.0, 1.0]
- *     float    rumbleHighFreq;// high frequency sharp rumble [0.0, 1.0]
+ *     f32    leftTrigger;   // normalized trigger squeeze [0.0, 1.0]
+ *     f32    rightTrigger;  // normalized trigger squeeze [0.0, 1.0]
+ *     f32    rumbleLowFreq; // low frequency heavy rumble [0.0, 1.0]
+ *     f32    rumbleHighFreq;// high frequency sharp rumble [0.0, 1.0]
  *     bool     isConnected;
  *   }
  *
@@ -57,19 +57,19 @@ GamepadState GamepadState_0(void) {
     return state;
 }
 
-bool GamepadState_isDown(const GamepadState *state, uint32_t buttonMask) {
+bool GamepadState_isDown(const GamepadState *state, u32 buttonMask) {
     if (state == nullptr) return false;
     return ((*state).buttons & buttonMask) == buttonMask;
 }
 
-Coord2 Gamepad_applyCircularDeadzone(Coord2 rawStick, float deadzone) {
+Coord2 Gamepad_applyCircularDeadzone(Coord2 rawStick, f32 deadzone) {
     if (deadzone <= 0.0f)
         return rawStick;
     if (deadzone >= 0.99f) {
         deadzone = 0.99f;
     }
 
-    float mag = sqrtf(rawStick.horizontal * rawStick.horizontal +
+    f32 mag = sqrtf(rawStick.horizontal * rawStick.horizontal +
                       rawStick.vertical   * rawStick.vertical);
 
     Coord2 filtered;
@@ -79,12 +79,12 @@ Coord2 Gamepad_applyCircularDeadzone(Coord2 rawStick, float deadzone) {
     }
 
     // Rescale vector smoothly from (deadzone..1.0) to (0.0..1.0)
-    float normalizedMag = (mag - deadzone) / (1.0f - deadzone);
+    f32 normalizedMag = (mag - deadzone) / (1.0f - deadzone);
     if (normalizedMag > 1.0f) {
         normalizedMag = 1.0f;
     }
 
-    float scale = normalizedMag / mag;
+    f32 scale = normalizedMag / mag;
     Coord2_set(&filtered, rawStick.horizontal * scale, rawStick.vertical * scale);
     return filtered;
 }

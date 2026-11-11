@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "util/constructor.h"
+#include "lang/constructor.h"
 #include "net/websocket.h"
 
 // net/vex_ws_source.h — the socket adapter behind a host's WsSource seam.
@@ -14,8 +14,8 @@
 // that turns a live `WebSocket` connection into the four-callback transport a
 // host expects lives here, next to the protocol it wraps. The four operations
 // below are declared with the shape a host's transport seam already uses
-// (`bool connect(void*)`, `uint32_t poll(void*, uint64_t)`,
-// `bool send(void*, const uint8_t*, uint32_t)`, `void close(void*)`), so a host
+// (`bool connect(void*)`, `u32 poll(void*, u64)`,
+// `bool send(void*, const u8*, u32)`, `void close(void*)`), so a host
 // that can see both this header and its own seam assigns them directly:
 //
 //     const HavenWsSource source = {
@@ -63,11 +63,11 @@ bool VexWsSource_connect(void *handle);
 // polls slower than the peer still loses nothing. Returns 1 when a text or
 // binary message was delivered (read it with VexWsSource_last), 0 otherwise —
 // a close or a failure is reported through the record, not as a count.
-uint32_t VexWsSource_poll(void *handle, uint64_t budgetMs);
+u32 VexWsSource_poll(void *handle, u64 budgetMs);
 
 // Send one TEXT frame. A payload that is not valid UTF-8 is refused rather than
 // silently re-typed; use VexWsSource_socket for binary, ping and close frames.
-bool VexWsSource_send(void *handle, const uint8_t *bytes, uint32_t length);
+bool VexWsSource_send(void *handle, const u8 *bytes, u32 length);
 
 // Close the connection and release the owned buffer. Safe on a null handle.
 void VexWsSource_close(void *handle);
@@ -82,7 +82,7 @@ const char *VexWsSource_url(const VexWsSource *self);
 bool VexWsSource_isOpen(const VexWsSource *self);
 
 // --- String projections (the toString Law) ---
-void VexWsSource_toString(const VexWsSource *self, char *dest, size_t cap, bool *outTruncated);
-void VexWsSource_toStringStruct(const VexWsSource *self, char *dest, size_t cap, bool *outTruncated);
+void VexWsSource_toString(const VexWsSource *self, char *dest, bytes cap, bool *outTruncated);
+void VexWsSource_toStringStruct(const VexWsSource *self, char *dest, bytes cap, bool *outTruncated);
 
 #endif

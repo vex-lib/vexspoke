@@ -36,10 +36,10 @@
 #define ARGON2_TAG_DEFAULT    32u
 
 typedef struct Argon2Params {
-    uint32_t memoryKiB; // m, memory size in kibibytes
-    uint32_t passes;    // t, number of passes
-    uint32_t lanes;     // p, degree of parallelism
-    uint32_t tagBytes;  // T, desired tag length (4..64)
+    u32 memoryKiB; // m, memory size in kibibytes
+    u32 passes;    // t, number of passes
+    u32 lanes;     // p, degree of parallelism
+    u32 tagBytes;  // T, desired tag length (4..64)
 } Argon2Params;
 
 // Derive a tag. `secret` (K) and `associated` (X) are optional and may be null
@@ -48,10 +48,10 @@ typedef struct Argon2Params {
 // (with one THROW) on invalid input or refused work memory; nothing is written
 // on failure.
 bool Argon2id_derive(const Argon2Params *params,
-                     const uint8_t *password, size_t passwordLen,
-                     const uint8_t *salt, size_t saltLen,
-                     const uint8_t *secret, size_t secretLen,
-                     const uint8_t *associated, size_t associatedLen,
-                     uint8_t *tag, size_t tagCap);
+                     const u8 *password, bytes passwordLen,
+                     const u8 *salt, bytes saltLen,
+                     const u8 *secret, bytes secretLen,
+                     const u8 *associated, bytes associatedLen,
+                     u8 *tag, bytes tagCap);
 
 #endif

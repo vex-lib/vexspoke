@@ -9,7 +9,7 @@
  * ============================================================================
  * Top-level umbrella forwarder for the Vec3 family. Per the Single Class Per
  * File Law the canonical implementation lives in lang/vec3/vec3.c (plus the
- * vec3d / vec3_int_float / vec3_long_double variants); this file exists only
+ * vec3d / vec3_int_f32 / vec3_long_f64 variants); this file exists only
  * so consumers can include "lang/vec3.h" and get the whole family. It owns
  * no struct and defines no functions.
  * ============================================================================

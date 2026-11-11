@@ -23,14 +23,14 @@
 #define TOTP_WINDOW_DEFAULT       1   // ±1 step, the usual clock-skew allowance
 
 // The code for one instant. `digits` is 6..8; anything else is rejected (returns 0).
-uint32_t Totp_code(const uint8_t *secret, size_t secretLen, uint64_t unixTime,
+u32 Totp_code(const u8 *secret, bytes secretLen, u64 unixTime,
                    unsigned digits, unsigned stepSeconds);
 
 // True when `code` is valid for `unixTime` within ±`window` steps. When
 // `ioLastAcceptedStep` is non-null it is read as the last accepted step and
 // written back on success, so a replayed code is refused. Null means "no replay
 // tracking" — the caller takes responsibility for it.
-bool Totp_verify(const uint8_t *secret, size_t secretLen, uint32_t code, uint64_t unixTime,
-                 unsigned digits, unsigned stepSeconds, int window, uint64_t *ioLastAcceptedStep);
+bool Totp_verify(const u8 *secret, bytes secretLen, u32 code, u64 unixTime,
+                 unsigned digits, unsigned stepSeconds, int window, u64 *ioLastAcceptedStep);
 
 #endif

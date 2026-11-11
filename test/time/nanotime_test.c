@@ -46,7 +46,7 @@ static void test_epoch(void) {
     CHECK(NanoTime_elapsedNanos() == 0);
 
     NanoTime_init();
-    uint64_t start = NanoTime_startNanos();
+    u64 start = NanoTime_startNanos();
     CHECK(start != 0);
 
     // Idempotent: a second init does not move the anchor.
@@ -54,14 +54,14 @@ static void test_epoch(void) {
     NanoTime_init();
     CHECK(NanoTime_startNanos() == start);
 
-    uint64_t a = NanoTime_now();
-    uint64_t b = NanoTime_now();
+    u64 a = NanoTime_now();
+    u64 b = NanoTime_now();
     CHECK(b >= a);                                  // monotonic, never backwards
     wait_ms(2);
-    uint64_t c = NanoTime_now();
+    u64 c = NanoTime_now();
     CHECK(c > a);
 
-    CHECK(NanoTime_elapsedNanos() < (uint64_t) 60 * 1000000000ULL);
+    CHECK(NanoTime_elapsedNanos() < (u64) 60 * 1000000000ULL);
 }
 
 // Verifies timer reset restarts its elapsed-time measurement.
@@ -90,10 +90,10 @@ static void test_timer_tick(void) {
     CHECK(NanoTimer_totalTime(&t) == NanoTimer_deltaTime(&t));
     CHECK(NanoTimer_elapsedNanosOf(&t) > 0);
     // deltaTime is the nanos delta expressed in seconds.
-    double secs = (double) NanoTimer_deltaNanos(&t) / 1e9;
+    d64 secs = (d64) NanoTimer_deltaNanos(&t) / 1e9;
     CHECK(fabs(NanoTimer_deltaTime(&t) - secs) < 1e-6);
 
-    double firstTotal = NanoTimer_totalTime(&t);
+    d64 firstTotal = NanoTimer_totalTime(&t);
     wait_ms(3);
     NanoTimer_tick(&t);
     CHECK(NanoTimer_totalTime(&t) > firstTotal);    // accumulates
@@ -135,7 +135,7 @@ static void test_timer_scale(void) {
     NanoTimer_reset(&t);
     wait_ms(5);
     NanoTimer_tickWithClock(&t, &c);
-    double real = (double) NanoTimer_deltaNanos(&t) / 1e9;
+    d64 real = (d64) NanoTimer_deltaNanos(&t) / 1e9;
     CHECK(real > 0.0);
     // Scaled delta is about twice the real delta (allow scheduling slack).
     CHECK(NanoTimer_deltaTime(&t) > real * 1.5);

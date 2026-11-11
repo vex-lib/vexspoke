@@ -43,19 +43,19 @@
  *     JsonType type; // node type tag
  *     JsonRef child; // first element/member
  *     JsonRef next; // next sibling
- *     uint32_t offset; // string/key start (in src, or scratch when inScratch)
- *     uint32_t length; // string/key length (decoded)
+ *     u32 offset; // string/key start (in src, or scratch when inScratch)
+ *     u32 length; // string/key length (decoded)
  *     bool inScratch; // true when offset points into the decode arena
- *     double number; // JSON_NUMBER payload
+ *     d64 number; // JSON_NUMBER payload
  *   }
  *   JsonDoc {
  *     JsonNode *nodes; // caller-owned pool
- *     uint32_t nodeCap; // node pool state
- *     uint32_t nodeCount; // live entry count
+ *     u32 nodeCap; // node pool state
+ *     u32 nodeCount; // live entry count
  *     const char *src; // input text (must outlive all string views)
  *     char *scratch; // caller-owned: decoded escape copies
- *     uint32_t scratchCap; // input/decode buffer state
- *     uint32_t scratchUsed; // input/decode buffer state
+ *     u32 scratchCap; // input/decode buffer state
+ *     u32 scratchUsed; // input/decode buffer state
  *     JsonRef root; // root node ref
  *     bool ok; // parse result
  *   }
@@ -124,7 +124,7 @@ static bool fail(JsonDoc *d) {
 // Decode a JSON string body starting after the opening quote. Unescaped
 // input is viewed in place; any escape forces a scratch copy of the whole
 // string so the returned view is always contiguous.
-static bool parseStringBody(Parser *ps, uint32_t *offOut, uint32_t *lenOut, bool *scratchFlagOut) {
+static bool parseStringBody(Parser *ps, u32 *offOut, u32 *lenOut, bool *scratchFlagOut) {
     JsonDoc *d = (*ps).doc;
     const char *start = (*ps).p;
 
@@ -133,8 +133,8 @@ static bool parseStringBody(Parser *ps, uint32_t *offOut, uint32_t *lenOut, bool
     while (*q && *q != '"' && *q != '\\') q++;
     if (*q == '"') {
         // No escapes: the view points straight into the caller's text.
-        *offOut = (uint32_t)(start - (*d).src);
-        *lenOut = (uint32_t)(q - start);
+        *offOut = (u32)(start - (*d).src);
+        *lenOut = (u32)(q - start);
         *scratchFlagOut = false;
         (*ps).p = q + 1;
         return true;
@@ -143,7 +143,7 @@ static bool parseStringBody(Parser *ps, uint32_t *offOut, uint32_t *lenOut, bool
 
     // Escape present: copy-decode into scratch.
     char *dst = (*d).scratch + (*d).scratchUsed;
-    size_t capLeft = (*d).scratchCap - (*d).scratchUsed;
+    bytes capLeft = (*d).scratchCap - (*d).scratchUsed;
     char *out = dst;
     (*ps).p = start;
     while (*(*ps).p && *(*ps).p != '"') {
@@ -173,14 +173,14 @@ static bool parseStringBody(Parser *ps, uint32_t *offOut, uint32_t *lenOut, bool
                     }
                     (*ps).p++; // past the last hex digit
                     if (cp < 0x80) {
-                        if ((size_t)(out - dst) + 1 > capLeft) return fail(d);
+                        if ((bytes)(out - dst) + 1 > capLeft) return fail(d);
                         *out++ = (char)cp;
                     } else if (cp < 0x800) {
-                        if ((size_t)(out - dst) + 2 > capLeft) return fail(d);
+                        if ((bytes)(out - dst) + 2 > capLeft) return fail(d);
                         *out++ = (char)(0xC0 | (cp >> 6));
                         *out++ = (char)(0x80 | (cp & 0x3F));
                     } else {
-                        if ((size_t)(out - dst) + 3 > capLeft) return fail(d);
+                        if ((bytes)(out - dst) + 3 > capLeft) return fail(d);
                         *out++ = (char)(0xE0 | (cp >> 12));
                         *out++ = (char)(0x80 | ((cp >> 6) & 0x3F));
                         *out++ = (char)(0x80 | (cp & 0x3F));
@@ -192,16 +192,16 @@ static bool parseStringBody(Parser *ps, uint32_t *offOut, uint32_t *lenOut, bool
         } else {
             (*ps).p++; // consume the plain character
         }
-        if ((size_t)(out - dst) + 1 > capLeft) return fail(d);
+        if ((bytes)(out - dst) + 1 > capLeft) return fail(d);
         *out++ = c;
     }
     if (*(*ps).p != '"') return fail(d);
     (*ps).p++; // closing quote
 
-    *offOut = (uint32_t)(dst - (*d).scratch);
-    *lenOut = (uint32_t)(out - dst);
+    *offOut = (u32)(dst - (*d).scratch);
+    *lenOut = (u32)(out - dst);
     *scratchFlagOut = true;
-    (*d).scratchUsed += (uint32_t)(out - dst) + 1; // keep NUL space per string
+    (*d).scratchUsed += (u32)(out - dst) + 1; // keep NUL space per string
     if ((*d).scratchUsed < (*d).scratchCap) (*d).scratch[(*d).scratchUsed - 1] = '\0';
     return true;
 }
@@ -225,7 +225,7 @@ static bool parseObject(Parser *ps, JsonRef *out, int depth) {
         skipWs(ps);
         if (*(*ps).p != '"') return fail(d);
         (*ps).p++;
-        uint32_t kOff, kLen;
+        u32 kOff, kLen;
         bool kScratch;
         if (!parseStringBody(ps, &kOff, &kLen, &kScratch)) return fail(d);
 
@@ -293,7 +293,7 @@ static bool parseValue(Parser *ps, JsonRef *out, int depth) {
 
     if (c == '"') {
         (*ps).p++;
-        uint32_t off, len;
+        u32 off, len;
         bool scratch;
         if (!parseStringBody(ps, &off, &len, &scratch)) return fail(d);
         JsonRef s = allocNode(ps);
@@ -336,7 +336,7 @@ static bool parseValue(Parser *ps, JsonRef *out, int depth) {
 
     // Number: strtod handles sign/exponent/fraction in one bite.
     char *end = nullptr;
-    double num = strtod((*ps).p, &end);
+    d64 num = strtod((*ps).p, &end);
     if (end == (*ps).p) return fail(d);
     JsonRef v = allocNode(ps);
     if (v < 0) return fail(d);
@@ -347,8 +347,8 @@ static bool parseValue(Parser *ps, JsonRef *out, int depth) {
     return true;
 }
 
-bool Json_parse(JsonDoc *doc, JsonNode *nodes, uint32_t nodeCap,
-                char *scratch, uint32_t scratchCap, const char *text) {
+bool Json_parse(JsonDoc *doc, JsonNode *nodes, u32 nodeCap,
+                char *scratch, u32 scratchCap, const char *text) {
     (*doc).nodes = nodes;
     (*doc).nodeCap = nodeCap;
     (*doc).nodeCount = 0;
@@ -382,9 +382,9 @@ bool Json_ok(const JsonDoc *doc) {
 
 JsonRef Json_member(const JsonDoc *doc, JsonRef obj, const char *key) {
     if (obj < 0 || (*doc).nodes[obj].type != JSON_OBJECT) return -1;
-    size_t klen = strlen(key);
+    bytes klen = strlen(key);
     for (JsonRef m = (*doc).nodes[obj].child; m >= 0; m = (*doc).nodes[m].next) {
-        uint32_t len = 0;
+        u32 len = 0;
         const char *base = Json_key(doc, m, &len);
         if (len == klen && memcmp(base, key, klen) == 0)
             return (*doc).nodes[m].child;
@@ -392,21 +392,21 @@ JsonRef Json_member(const JsonDoc *doc, JsonRef obj, const char *key) {
     return -1;
 }
 
-JsonRef Json_at(const JsonDoc *doc, JsonRef node, uint32_t index) {
+JsonRef Json_at(const JsonDoc *doc, JsonRef node, u32 index) {
     if (node < 0) return -1;
     JsonType t = (*doc).nodes[node].type;
     if (t != JSON_ARRAY && t != JSON_OBJECT) return -1;
-    uint32_t i = 0;
+    u32 i = 0;
     for (JsonRef e = (*doc).nodes[node].child; e >= 0; e = (*doc).nodes[e].next, i++)
         if (i == index) return (*doc).nodes[e].child;
     return -1;
 }
 
-uint32_t Json_count(const JsonDoc *doc, JsonRef node) {
+u32 Json_count(const JsonDoc *doc, JsonRef node) {
     if (node < 0) return 0;
     JsonType t = (*doc).nodes[node].type;
     if (t != JSON_ARRAY && t != JSON_OBJECT) return 0;
-    uint32_t n = 0;
+    u32 n = 0;
     for (JsonRef e = (*doc).nodes[node].child; e >= 0; e = (*doc).nodes[e].next) n++;
     return n;
 }
@@ -421,12 +421,12 @@ bool Json_bool(const JsonDoc *doc, JsonRef ref) {
     return (*doc).nodes[ref].type == JSON_TRUE;
 }
 
-double Json_number(const JsonDoc *doc, JsonRef ref) {
+d64 Json_number(const JsonDoc *doc, JsonRef ref) {
     if (ref < 0) return 0.0;
     return (*doc).nodes[ref].number;
 }
 
-const char *Json_string(const JsonDoc *doc, JsonRef ref, uint32_t *lengthOut) {
+const char *Json_string(const JsonDoc *doc, JsonRef ref, u32 *lengthOut) {
     if (lengthOut) *lengthOut = 0;
     if (ref < 0 || (*doc).nodes[ref].type != JSON_STRING) return "";
     if (lengthOut) *lengthOut = (*doc).nodes[ref].length;
@@ -435,7 +435,7 @@ const char *Json_string(const JsonDoc *doc, JsonRef ref, uint32_t *lengthOut) {
     return (*doc).src + (*doc).nodes[ref].offset;
 }
 
-const char *Json_key(const JsonDoc *doc, JsonRef ref, uint32_t *lengthOut) {
+const char *Json_key(const JsonDoc *doc, JsonRef ref, u32 *lengthOut) {
     if (lengthOut) *lengthOut = 0;
     if (ref < 0) return "";
     if (lengthOut) *lengthOut = (*doc).nodes[ref].length;
@@ -446,15 +446,15 @@ const char *Json_key(const JsonDoc *doc, JsonRef ref, uint32_t *lengthOut) {
 
 // --- Writer ---
 
-int64_t Json_writeNumber(char *out, size_t cap, double v) {
+int64_t Json_writeNumber(char *out, bytes cap, d64 v) {
     long long asInt = (long long)v;
-    if ((double)asInt == v)
+    if ((d64)asInt == v)
         return (int64_t)snprintf(out, cap, "%lld", asInt);
     return (int64_t)snprintf(out, cap, "%.17g", v);
 }
 
-int64_t Json_writeString(char *out, size_t cap, const char *s) {
-    size_t used = 0;
+int64_t Json_writeString(char *out, bytes cap, const char *s) {
+    bytes used = 0;
     if (cap < 2) return -1;
     out[used++] = '"';
     for (const char *p = s; *p; p++) {
@@ -471,7 +471,7 @@ int64_t Json_writeString(char *out, size_t cap, const char *s) {
             default: break;
         }
         if (esc) {
-            size_t l = strlen(esc);
+            bytes l = strlen(esc);
             if (used + l >= cap) return -1;
             memcpy(out + used, esc, l);
             used += l;
@@ -486,7 +486,7 @@ int64_t Json_writeString(char *out, size_t cap, const char *s) {
     return (int64_t)used;
 }
 
-int64_t Json_writeBool(char *out, size_t cap, bool v) {
+int64_t Json_writeBool(char *out, bytes cap, bool v) {
     return (int64_t)snprintf(out, cap, "%s", v ? "true" : "false");
 }
 
@@ -510,7 +510,7 @@ JsonRef Json_path(const JsonDoc *doc, JsonRef root, const char *path) {
             continue;
         }
         if ((*p) != '[') {
-            size_t klen = 0;
+            bytes klen = 0;
             while (*p && (*p) != '.' && (*p) != '[') {
                 if (klen + 1 < sizeof(keyBuf))
                     keyBuf[klen++] = *p;
@@ -529,11 +529,11 @@ JsonRef Json_path(const JsonDoc *doc, JsonRef root, const char *path) {
             continue;
         }
         p++;
-        uint32_t idx = 0;
+        u32 idx = 0;
         bool anyDigit = false;
         while (*p >= '0' && (*p) <= '9') {
             anyDigit = true;
-            idx = idx * 10 + (uint32_t)((*p) - '0');
+            idx = idx * 10 + (u32)((*p) - '0');
             p++;
         }
         if (!anyDigit || (*p) != ']')
@@ -557,7 +557,7 @@ bool Json_getBool(const JsonDoc *doc, JsonRef ref, bool def) {
     return def;
 }
 
-double Json_getNumber(const JsonDoc *doc, JsonRef ref, double def) {
+d64 Json_getNumber(const JsonDoc *doc, JsonRef ref, d64 def) {
     if (!doc || ref < 0)
         return def;
     if ((*doc).nodes[ref].type != JSON_NUMBER)
@@ -583,7 +583,7 @@ static bool writerFail(JsonWriter *w) {
     return false;
 }
 
-static bool writerReserve(JsonWriter *w, size_t n) {
+static bool writerReserve(JsonWriter *w, bytes n) {
     if (!(*w).ok)
         return false;
     if (!(*w).out || (*w).used + n >= (*w).cap)
@@ -599,7 +599,7 @@ static bool writerPut(JsonWriter *w, char c) {
     return true;
 }
 
-static bool writerAppend(JsonWriter *w, const char *s, size_t n) {
+static bool writerAppend(JsonWriter *w, const char *s, bytes n) {
     if (n == 0)
         return true;
     if (!writerReserve(w, n))
@@ -635,7 +635,7 @@ static bool writerStringBody(JsonWriter *w, const char *s) {
     return true;
 }
 
-JsonWriter JsonWriter_2(char *out, size_t cap) {
+JsonWriter JsonWriter_2(char *out, bytes cap) {
     JsonWriter result;
     memset(&result, 0, sizeof result);
     result.out = out;
@@ -655,7 +655,7 @@ bool JsonWriter_ok(const JsonWriter *w) {
     return (*w).ok;
 }
 
-size_t JsonWriter_used(const JsonWriter *w) {
+bytes JsonWriter_used(const JsonWriter *w) {
     if (!w)
         return 0;
     return (*w).used;
@@ -763,19 +763,19 @@ bool Json_stringVal(JsonWriter *w, const char *s) {
     return writerValueClose(w);
 }
 
-bool Json_numberVal(JsonWriter *w, double v) {
+bool Json_numberVal(JsonWriter *w, d64 v) {
     if (!w || !writerValueOpen(w))
         return false;
     char tmp[32];
     long long asInt = (long long)v;
     int n = 0;
-    if ((double)asInt == v)
+    if ((d64)asInt == v)
         n = snprintf(tmp, sizeof(tmp), "%lld", asInt);
     else
         n = snprintf(tmp, sizeof(tmp), "%.17g", v);
-    if (n <= 0 || (size_t)n >= sizeof(tmp))
+    if (n <= 0 || (bytes)n >= sizeof(tmp))
         return writerFail(w);
-    if (!writerAppend(w, tmp, (size_t)n))
+    if (!writerAppend(w, tmp, (bytes)n))
         return false;
     return writerValueClose(w);
 }

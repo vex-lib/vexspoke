@@ -32,8 +32,8 @@
  * STRUCT FIELDS (Mirroring search/spotlight.h):
  * ----------------------------------------------------------------------------
  *   SpotlightMatch {
- *     uint32_t id;    // candidate index (or caller-supplied id)
- *     int32_t score;  // relevance score, higher is better
+ *     u32 id;    // candidate index (or caller-supplied id)
+ *     i32 score;  // relevance score, higher is better
  *   }
  *
  * FUNCTION REGISTRY:
@@ -51,8 +51,8 @@
 // Scores exact, prefix, boundary, substring, then subsequence matches in descending tiers.
 static int calculate_score(const char *candidate, const char *query) {
     if (!candidate || !query) return 0;
-    size_t qlen = strlen(query);
-    size_t clen = strlen(candidate);
+    bytes qlen = strlen(query);
+    bytes clen = strlen(candidate);
     if (qlen == 0) return 0;
 
     // 1. Exact match
@@ -66,7 +66,7 @@ static int calculate_score(const char *candidate, const char *query) {
     }
 
     // 3. Word-boundary prefix match (e.g. "bar" matching "foo_bar")
-    for (size_t i = 1; i < clen; i++) {
+    for (bytes i = 1; i < clen; i++) {
         if ((candidate[i - 1] == '_' || candidate[i - 1] == '-' || isupper((unsigned char)candidate[i])) &&
             strncasecmp(candidate + i, query, qlen) == 0) {
             return 600 - (int)(clen - qlen);
@@ -76,12 +76,12 @@ static int calculate_score(const char *candidate, const char *query) {
     // 4. Substring match
     char qlower[64];
     char clower[128];
-    size_t ql = qlen < sizeof(qlower) - 1 ? qlen : sizeof(qlower) - 1;
-    for (size_t i = 0; i < ql; i++) qlower[i] = (char) tolower((unsigned char)query[i]);
+    bytes ql = qlen < sizeof(qlower) - 1 ? qlen : sizeof(qlower) - 1;
+    for (bytes i = 0; i < ql; i++) qlower[i] = (char) tolower((unsigned char)query[i]);
     qlower[ql] = '\0';
 
-    size_t cl = clen < sizeof(clower) - 1 ? clen : sizeof(clower) - 1;
-    for (size_t i = 0; i < cl; i++) clower[i] = (char) tolower((unsigned char)candidate[i]);
+    bytes cl = clen < sizeof(clower) - 1 ? clen : sizeof(clower) - 1;
+    for (bytes i = 0; i < cl; i++) clower[i] = (char) tolower((unsigned char)candidate[i]);
     clower[cl] = '\0';
 
     if (strstr(clower, qlower) != nullptr) {
@@ -89,8 +89,8 @@ static int calculate_score(const char *candidate, const char *query) {
     }
 
     // 5. Fuzzy subsequence match
-    size_t qi = 0;
-    for (size_t ci = 0; ci < cl && qi < ql; ci++) {
+    bytes qi = 0;
+    for (bytes ci = 0; ci < cl && qi < ql; ci++) {
         if (clower[ci] == qlower[qi]) {
             qi++;
         }
@@ -110,18 +110,18 @@ static int compare_matches(const void *a, const void *b) {
 }
 
 // Writes up to maxCount ranked matches and returns the total number that scored.
-size_t Spotlight_rank(const char *query, const char *const *candidates, const uint32_t *ids,
-                      size_t candidateCount, SpotlightMatch *outMatches, size_t maxCount) {
+bytes Spotlight_rank(const char *query, const char *const *candidates, const u32 *ids,
+                      bytes candidateCount, SpotlightMatch *outMatches, bytes maxCount) {
     if (!query || !candidates || !outMatches || maxCount == 0) return 0;
 
-    size_t matchCount = 0;
-    size_t total = 0;
-    for (size_t i = 0; i < candidateCount; i++) {
+    bytes matchCount = 0;
+    bytes total = 0;
+    for (bytes i = 0; i < candidateCount; i++) {
         int score = calculate_score(candidates[i], query);
         if (score > 0) {
             total++;
             if (matchCount < maxCount) {
-                outMatches[matchCount].id = ids ? ids[i] : (uint32_t) i;
+                outMatches[matchCount].id = ids ? ids[i] : (u32) i;
                 outMatches[matchCount].score = score;
                 matchCount++;
             }
@@ -136,7 +136,7 @@ size_t Spotlight_rank(const char *query, const char *const *candidates, const ui
 }
 
 // Evaluates query as a calculator expression and writes the result on success.
-bool Spotlight_tryCalculate(const char *query, double *outResult) {
+bool Spotlight_tryCalculate(const char *query, d64 *outResult) {
     if (!query || !outResult) return false;
     return Calc_eval(query, outResult);
 }

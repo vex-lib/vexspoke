@@ -2,6 +2,7 @@
 #define EVENT_MOUSE_H
 
 #include <stdint.h>
+#include "lang/primitive.h"
 
 // event/mousehandler.h — high-level listener contract for mouse events
 // (Legacy: event/MouseEvent.java).
@@ -11,18 +12,18 @@
 
 typedef struct MouseHandler {
     void *self; // the implementing object, handed back to every callback
-    void (*onMouseDown)(void *self, int mouseEvent, uint64_t exactNanos);
-    void (*onMouseUp)(void *self, int mouseEvent, uint64_t exactNanos);
-    void (*onMouseRepeat)(void *self, int mouseEvent, uint64_t exactNanos);
-    void (*onMouseMove)(void *self, double x, double y);
+    void (*onMouseDown)(void *self, int mouseEvent, u64 exactNanos);
+    void (*onMouseUp)(void *self, int mouseEvent, u64 exactNanos);
+    void (*onMouseRepeat)(void *self, int mouseEvent, u64 exactNanos);
+    void (*onMouseMove)(void *self, d64 x, d64 y);
     // Relative movement while the cursor is locked. (dx, dy) is how much the
     // mouse travelled this step; the absolute position stays at the anchor.
-    void (*onMouseMoveDelta)(void *self, double dx, double dy); // default no-op in legacy
-    void (*onMouseDrag)(void *self, int mouseEvent, double x, double y); // default no-op
-    void (*onMouseScroll)(void *self, double dx, double dy);             // default no-op
+    void (*onMouseMoveDelta)(void *self, d64 dx, d64 dy); // default no-op in legacy
+    void (*onMouseDrag)(void *self, int mouseEvent, d64 x, d64 y); // default no-op
+    void (*onMouseScroll)(void *self, d64 dx, d64 dy);             // default no-op
     // Trackpad pinch-to-zoom (macOS NSEventTypeMagnify). Positive = zoom in
     // (fingers spread), negative = zoom _out (fingers pinched).
-    void (*onMouseZoom)(void *self, double magnification);               // default no-op
+    void (*onMouseZoom)(void *self, d64 magnification);               // default no-op
 } MouseHandler;
 
 #endif

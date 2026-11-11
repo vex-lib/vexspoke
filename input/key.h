@@ -22,11 +22,11 @@
 // Multi-tap recognition is windowed (settle-based): a press opens a tap
 // sequence whose pending window closes `tapWindowNanos` after the LAST press.
 // While the window is open the sequence is offered (Key_tapPhase reports
-// PENDING); when it closes the count settles into SINGLE / DOUBLE / TRIPLE
+// PENDING); when it closes the count settles into SINGLE / d64 / TRIPLE
 // and the KeyMap resolver fires the matching binding exactly once.
 // A modifier-state change between presses breaks the sequence.
 //
-// Event wire format (one uint64_t, identical to legacy):
+// Event wire format (one u64, identical to legacy):
 //   [63:18] micros since engine start (46 bits, ~2.2 years wrap)
 //   [17:14] modifier mask (1 shift | 2 ctrl | 4 alt/option | 8 cmd/super)
 //   [13: 2] key code (12 bits)
@@ -174,9 +174,9 @@ bool Key_removeListener(const KeyHandler *listener);
 // Window-scoped registration: the listener only receives events whose
 // windowId tag matches (broadcast-tagged events reach every window). Any
 // nonzero windowId is accepted and grows the registry as needed.
-void Key_attachWindow(uint32_t windowId, const KeyHandler *listener);
-bool Key_detachWindow(uint32_t windowId, const KeyHandler *listener);
-void Key_detachWindowAll(uint32_t windowId);
+void Key_attachWindow(u32 windowId, const KeyHandler *listener);
+bool Key_detachWindow(u32 windowId, const KeyHandler *listener);
+void Key_detachWindowAll(u32 windowId);
 
 // Producer: Thread 0 only. Updates the state table (with multi-tap counting
 // inside tapWindowNanos — the same window that gates when a tap sequence
@@ -185,10 +185,10 @@ void Key_detachWindowAll(uint32_t windowId);
 // without touching tap counts. A modifier-state change between presses breaks
 // the tap sequence (different modifiers => fresh sequence). windowId tags
 // which window the OS delivered the event to.
-void Key_pushEvent(uint32_t windowId, int keyCode, int action, uint64_t tapWindowNanos);
+void Key_pushEvent(u32 windowId, int keyCode, int action, u64 tapWindowNanos);
 
 // Producer: text input, fired alongside down events that carry a character.
-void Key_pushCharEvent(uint32_t windowId, uint32_t c);
+void Key_pushCharEvent(u32 windowId, u32 c);
 
 // Consumer: drain the ring into the listeners. Game thread, once per frame.
 // Global taps get every event; window-scoped listeners only get events
@@ -197,25 +197,25 @@ void Key_dispatchEvents(void);
 
 // --- State queries (lock-free reads of the state table) ---
 bool     Key_isDown(int keyCode);
-uint64_t Key_pressTime(int keyCode);
-uint64_t Key_lastReleaseTime(int keyCode);
-uint64_t Key_lastHoldDurationNanos(int keyCode);
-uint64_t Key_currentHoldDurationNanos(int keyCode);
-uint64_t Key_holdDurationNanos(int keyCode); // current if held, else last
-uint64_t Key_durationSinceReleaseNanos(int keyCode);
+u64 Key_pressTime(int keyCode);
+u64 Key_lastReleaseTime(int keyCode);
+u64 Key_lastHoldDurationNanos(int keyCode);
+u64 Key_currentHoldDurationNanos(int keyCode);
+u64 Key_holdDurationNanos(int keyCode); // current if held, else last
+u64 Key_durationSinceReleaseNanos(int keyCode);
 int      Key_taps(int keyCode);
 void     Key_resetTaps(int keyCode);
 
 // --- Multi-tap gesture timeline (windowed settlement) ---
 // The per-key tap counter is a windowed sequence: it is PENDING from the most
 // recent press until its pending window closes, then settles into
-// SINGLE / DOUBLE / TRIPLE (taps >= 3 clamp to TRIPLE). A consumed sequence
+// SINGLE / d64 / TRIPLE (taps >= 3 clamp to TRIPLE). A consumed sequence
 // (Key_resetTaps / KeyMap resolution) reads NONE again.
 typedef enum KeyTapPhase {
     KEY_TAP_NONE    = 0, // no taps in flight (or consumed)
     KEY_TAP_PENDING = 1, // taps counted, window still open — not yet settled
     KEY_TAP_SINGLE  = 2, // settled: window closed, taps == 1
-    KEY_TAP_DOUBLE  = 3, // settled: window closed, taps == 2
+    KEY_TAP_f64  = 3, // settled: window closed, taps == 2
     KEY_TAP_TRIPLE  = 4, // settled: window closed, taps >= 3
 } KeyTapPhase;
 

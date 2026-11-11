@@ -1,9 +1,9 @@
-// vexspoke/test/primitive/float_test.c — the Float class _test.
+// vexspoke/test/primitive/f32_test.c — the Float class _test.
 
 #include <math.h>
 #include <stdio.h>
 
-#include "primitive/vex-float.h"
+#include "primitive/vex-f32.h"
 #include "oop/type.h"
 
 static int g_failures = 0;
@@ -26,8 +26,8 @@ int main(void) {
     CHECK(Float_type(p) == ID_FLOAT);
     CHECK(Float_length(p) == 4);
 
-    const float values[] = { 0.0f, 1.0f, -1.0f, 3.5f, -0.0f };
-    for (size_t i = 0; i < sizeof values / sizeof values[0]; i++) {
+    const f32 values[] = { 0.0f, 1.0f, -1.0f, 3.5f, -0.0f };
+    for (bytes i = 0; i < sizeof values / sizeof values[0]; i++) {
         Float_set(p, values[i]);
         CHECK(Float_get(p) == values[i]);
     }
@@ -66,9 +66,9 @@ int main(void) {
     Float_shutdown();
 
     if (g_failures == 0) {
-        printf("float_test: all assertions held\n");
+        printf("f32_test: all assertions held\n");
         return 0;
     }
-    printf("float_test: %d FAILURES\n", g_failures);
+    printf("f32_test: %d FAILURES\n", g_failures);
     return 1;
 }

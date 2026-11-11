@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 // security/secure_random.h — OS-backed cryptographically secure randomness.
 //
@@ -33,14 +33,14 @@ void SecureRandom_free(SecureRandom *self);
 
 // Fill dest[0..len) with cryptographically secure Bytes. Returns false when the
 // OS source is unavailable (dest untouched). len 0 is a successful no-op.
-bool SecureRandom_bytes(SecureRandom *self, void *dest, size_t len);
+bool SecureRandom_bytes(SecureRandom *self, void *dest, bytes len);
 
 // Convenience scalar draws; 0 on OS failure (prefer SecureRandom_bytes when the
 // caller must distinguish failure from a legitimate zero).
-uint64_t SecureRandom_u64(SecureRandom *self);
-uint32_t SecureRandom_u32(SecureRandom *self);
+u64 SecureRandom_u64(SecureRandom *self);
+u32 SecureRandom_u32(SecureRandom *self);
 
 // Telemetry: number of draws issued through this handle.
-uint64_t SecureRandom_draws(const SecureRandom *self);
+u64 SecureRandom_draws(const SecureRandom *self);
 
 #endif

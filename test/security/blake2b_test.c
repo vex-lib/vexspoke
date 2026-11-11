@@ -10,20 +10,20 @@
 #include <stdio.h>
 #include <string.h>
 
-static void toHex(const uint8_t *bytes, size_t len, char *out) {
-    for (size_t i = 0; i < len; ++i)
+static void toHex(const u8 *bytes, bytes len, char *out) {
+    for (bytes i = 0; i < len; ++i)
         snprintf(out + i * 2u, 3u, "%02x", bytes[i]);
     out[len * 2u] = '\0';
 }
 
-static void checkDigest(const uint8_t *bytes, size_t len, const char *hex) {
+static void checkDigest(const u8 *bytes, bytes len, const char *hex) {
     char got[129];
     toHex(bytes, len, got);
     assert(strcmp(got, hex) == 0);
 }
 
 int main(void) {
-    uint8_t out[BLAKE2B_DIGEST_MAX];
+    u8 out[BLAKE2B_DIGEST_MAX];
 
     // RFC 7693 Appendix A: BLAKE2b-512("abc").
     static const char *abc =
@@ -40,9 +40,9 @@ int main(void) {
     checkDigest(out, BLAKE2B_DIGEST_DEFAULT, empty);
 
     // Official BLAKE2 KAT: keyed empty, key = 00 01 .. 3f, digest 64.
-    uint8_t key[BLAKE2B_KEY_MAX];
+    u8 key[BLAKE2B_KEY_MAX];
     for (unsigned i = 0; i < BLAKE2B_KEY_MAX; ++i)
-        key[i] = (uint8_t) i;
+        key[i] = (u8) i;
     static const char *keyedEmpty =
         "10ebb67700b1868efb4417987acf4690ae9d972fb7a590c2f02871799aaa4786"
         "b5e996e8f0f4eb981fc214b005f42d2ff4233499391653df7aefcbc13fc51568";
@@ -52,10 +52,10 @@ int main(void) {
     checkDigest(out, BLAKE2B_DIGEST_DEFAULT, keyedEmpty);
 
     // Streaming equals one-shot across a block boundary and a partial tail.
-    uint8_t message[1000];
-    for (size_t i = 0; i < sizeof message; ++i)
-        message[i] = (uint8_t) (i * 31u + 7u);
-    uint8_t oneShot[BLAKE2B_DIGEST_MAX];
+    u8 message[1000];
+    for (bytes i = 0; i < sizeof message; ++i)
+        message[i] = (u8) (i * 31u + 7u);
+    u8 oneShot[BLAKE2B_DIGEST_MAX];
     assert(Blake2b_digest(message, sizeof message, 32u, oneShot, sizeof oneShot));
     Blake2b streamed = Blake2b_0();
     assert(Blake2b_init(&streamed, 32u));
@@ -63,7 +63,7 @@ int main(void) {
     Blake2b_update(&streamed, message + 1u, 127u);
     Blake2b_update(&streamed, message + 128u, 128u);
     Blake2b_update(&streamed, message + 256u, sizeof message - 256u);
-    uint8_t chunked[BLAKE2B_DIGEST_MAX];
+    u8 chunked[BLAKE2B_DIGEST_MAX];
     assert(Blake2b_final(&streamed, chunked, sizeof chunked));
     assert(memcmp(oneShot, chunked, 32u) == 0);
 

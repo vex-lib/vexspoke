@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 // c23/fn.h — functions as data (the opcode-in-hand class).
 //

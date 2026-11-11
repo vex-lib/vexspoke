@@ -4,8 +4,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include "lang/primitive.h"
 
-#include "util/constructor.h"
+#include "lang/constructor.h"
 #include "net/tls.h"
 
 // net/websocket.h — RFC 6455 WebSocket client over BSD sockets
@@ -73,37 +74,37 @@ typedef enum WebSocketMessageKind {
 
 typedef struct WebSocketMessage {
     WebSocketMessageKind kind;
-    const uint8_t *payload; // borrowed; null unless TEXT/BINARY
-    size_t length;
+    const u8 *payload; // borrowed; null unless TEXT/BINARY
+    bytes length;
     bool truncated;         // a bounded text field in this record was cut
-    uint16_t closeCode;     // 1005 when the peer sent no code
+    u16 closeCode;     // 1005 when the peer sent no code
     char error[WS_TEXT_BYTES];
 } WebSocketMessage;
 
 // Connection budgets. Both are caller-selected; the defaults are named above.
 typedef struct WebSocketConfig {
-    uint32_t timeoutMs;     // transport budget for one read or write burst
-    size_t maxMessageBytes; // reassembly cap for one complete message
+    u32 timeoutMs;     // transport budget for one read or write burst
+    bytes maxMessageBytes; // reassembly cap for one complete message
 } WebSocketConfig;
 
 typedef struct WebSocket {
     int fd;                        // connected socket, -1 once released
     TlsConn *tls;                  // TLS session for wss://, null for ws://
     WebSocketState state;
-    uint32_t timeoutMs;            // transport budget for one read/write burst
-    size_t maxMessageBytes;        // reassembly cap
-    uint8_t *message;              // owned reassembly buffer
-    size_t messageCap;             // allocated Bytes
-    size_t messageLength;          // Bytes accumulated for the current message
-    uint32_t messageOpcode;        // TEXT/BINARY while a fragmented message builds
-    uint8_t control[WS_CONTROL_MAX_BYTES]; // ping/pong/close payload
-    uint16_t closeCode;            // finalized close code (1005 when absent)
+    u32 timeoutMs;            // transport budget for one read/write burst
+    bytes maxMessageBytes;        // reassembly cap
+    u8 *message;              // owned reassembly buffer
+    bytes messageCap;             // allocated Bytes
+    bytes messageLength;          // Bytes accumulated for the current message
+    u32 messageOpcode;        // TEXT/BINARY while a fragmented message builds
+    u8 control[WS_CONTROL_MAX_BYTES]; // ping/pong/close payload
+    u16 closeCode;            // finalized close code (1005 when absent)
     char closeReason[WS_TEXT_BYTES]; // bounded close reason text
     bool closeReasonTruncated;     // the reason was cut to fit
     char error[WS_TEXT_BYTES];     // bounded last-failure text
-    uint64_t framesIn;             // complete frames decoded
-    uint64_t framesOut;            // complete frames encoded and sent
-    uint64_t pongsSent;            // automatic pong replies
+    u64 framesIn;             // complete frames decoded
+    u64 framesOut;            // complete frames encoded and sent
+    u64 pongsSent;            // automatic pong replies
 } WebSocket;
 
 // --- Constructors ---
@@ -131,30 +132,30 @@ void WebSocket_close(WebSocket *self);
 // Read frames for at most budgetMs, answering pings and returning the first
 // complete data message or close. Control frames are handled inline and never
 // surface as a message. Returns WS_MESSAGE_NONE when the budget elapses.
-WebSocketMessage WebSocket_poll(WebSocket *self, uint32_t budgetMs);
+WebSocketMessage WebSocket_poll(WebSocket *self, u32 budgetMs);
 
 // Encode and send one final frame with fresh client masking. Text payloads are
 // validated as UTF-8 before they leave; an invalid text payload is refused.
-bool WebSocket_writeText(WebSocket *self, const char *text, size_t length);
-bool WebSocket_writeBinary(WebSocket *self, const uint8_t *bytes, size_t length);
-bool WebSocket_writePing(WebSocket *self, const uint8_t *payload, size_t length);
+bool WebSocket_writeText(WebSocket *self, const char *text, bytes length);
+bool WebSocket_writeBinary(WebSocket *self, const u8 *data, bytes length);
+bool WebSocket_writePing(WebSocket *self, const u8 *payload, bytes length);
 // Send a close frame and move to CLOSING. A zero code sends no close payload.
 // The reason is cut to WS_CLOSE_REASON_BYTES and the cut is observable.
-bool WebSocket_writeClose(WebSocket *self, uint16_t code, const char *reason);
+bool WebSocket_writeClose(WebSocket *self, u16 code, const char *reason);
 
 // --- Getters (the Symmetric Getter/Setter Completeness Law: null-safe) ---
 WebSocketState WebSocket_state(const WebSocket *self);
 bool WebSocket_isOpen(const WebSocket *self);
 const char *WebSocket_lastError(const WebSocket *self);
-uint16_t WebSocket_closeCode(const WebSocket *self);
+u16 WebSocket_closeCode(const WebSocket *self);
 const char *WebSocket_closeReason(const WebSocket *self);
-size_t WebSocket_maxMessageBytes(const WebSocket *self);
-uint64_t WebSocket_framesIn(const WebSocket *self);
-uint64_t WebSocket_framesOut(const WebSocket *self);
-uint64_t WebSocket_pongsSent(const WebSocket *self);
+bytes WebSocket_maxMessageBytes(const WebSocket *self);
+u64 WebSocket_framesIn(const WebSocket *self);
+u64 WebSocket_framesOut(const WebSocket *self);
+u64 WebSocket_pongsSent(const WebSocket *self);
 
 // --- String projections (the toString Law) ---
-void WebSocket_toString(const WebSocket *self, char *dest, size_t cap, bool *outTruncated);
-void WebSocket_toStringStruct(const WebSocket *self, char *dest, size_t cap, bool *outTruncated);
+void WebSocket_toString(const WebSocket *self, char *dest, bytes cap, bool *outTruncated);
+void WebSocket_toStringStruct(const WebSocket *self, char *dest, bytes cap, bool *outTruncated);
 
 #endif

@@ -13,16 +13,16 @@
 // and handles calculator spotlight queries.
 
 typedef struct SpotlightMatch {
-    uint32_t id;
-    int32_t score; // higher is better
+    u32 id;
+    i32 score; // higher is better
 } SpotlightMatch;
 
 // Ranks candidate strings against query. Fills outMatches up to maxCount.
 // Returns total number of matches found.
-size_t Spotlight_rank(const char *query, const char *const *candidates, const uint32_t *ids,
-                      size_t candidateCount, SpotlightMatch *outMatches, size_t maxCount);
+bytes Spotlight_rank(const char *query, const char *const *candidates, const u32 *ids,
+                      bytes candidateCount, SpotlightMatch *outMatches, bytes maxCount);
 
 // Evaluates whether a query string represents a math expression and computes its result.
-bool Spotlight_tryCalculate(const char *query, double *outResult);
+bool Spotlight_tryCalculate(const char *query, d64 *outResult);
 
 #endif

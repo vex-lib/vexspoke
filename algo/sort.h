@@ -14,28 +14,28 @@
 
 typedef int (*SortCompareFn)(const void *left, const void *right);
 
-bool Sort_quickSort(void *values, size_t count, size_t elementSize,
+bool Sort_quickSort(void *values, bytes count, bytes elementSize,
                     SortCompareFn compare);
-bool Sort_insertionSort(void *values, size_t count, size_t elementSize,
+bool Sort_insertionSort(void *values, bytes count, bytes elementSize,
                         SortCompareFn compare);
-bool Sort_selectionSort(void *values, size_t count, size_t elementSize,
+bool Sort_selectionSort(void *values, bytes count, bytes elementSize,
                         SortCompareFn compare);
-bool Sort_bubbleSort(void *values, size_t count, size_t elementSize,
+bool Sort_bubbleSort(void *values, bytes count, bytes elementSize,
                      SortCompareFn compare);
-bool Sort_heapSort(void *values, size_t count, size_t elementSize,
+bool Sort_heapSort(void *values, bytes count, bytes elementSize,
                    SortCompareFn compare);
-bool Sort_mergeSort(void *values, size_t count, size_t elementSize,
+bool Sort_mergeSort(void *values, bytes count, bytes elementSize,
                     SortCompareFn compare, void *scratch);
 
 // Two-way partition: [0, boundary) is below pivot; the remainder is greater
 // than or equal to pivot. This operation is not stable. Returns zero for
 // nullptr or an empty range.
-size_t Sort_partitionInt32(int32_t *values, size_t count, int32_t pivot);
+bytes Sort_partitionInt32(i32 *values, bytes count, i32 pivot);
 
 // Stable unsigned LSD radix sorts. Return false for invalid input or allocation
 // failure; on allocation failure the input arrays remain unchanged.
-bool Sort_radixSortUint32(uint32_t *values, size_t count);
-bool Sort_radixSortUint64(uint64_t *values, size_t count);
-bool Sort_radixSortPairsUint64(uint64_t *keys, void **values, size_t count);
+bool Sort_radixSortUint32(u32 *values, bytes count);
+bool Sort_radixSortUint64(u64 *values, bytes count);
+bool Sort_radixSortPairsUint64(u64 *keys, void **values, bytes count);
 
 #endif

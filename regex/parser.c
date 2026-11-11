@@ -47,15 +47,15 @@
  * ----------------------------------------------------------------------------
  *   RegexParser {
  *     const char     *pattern;       // borrowed pattern text (not owned)
- *     size_t          length;        // pattern byte length
- *     size_t          pos;           // parse cursor
+ *     bytes          length;        // pattern byte length
+ *     bytes          pos;           // parse cursor
  *     bool            ignoreCase;    // fold ASCII case while building the AST
  *     RegexNodeList   nodes;         // the AST being built (owned)
  *     RegexCharClass *classes;       // growable class bitmaps (owned)
- *     uint32_t        classCount;    // classes in use
- *     uint32_t        classCapacity; // classes allocated
- *     uint32_t        groupCount;    // capturing groups seen
- *     uint32_t        depth;         // current group nesting depth
+ *     u32        classCount;    // classes in use
+ *     u32        classCapacity; // classes allocated
+ *     u32        groupCount;    // capturing groups seen
+ *     u32        depth;         // current group nesting depth
  *     bool            failed;        // a rejection was recorded
  *     const char     *error;         // first rejection reason (static text)
  *   }
@@ -94,9 +94,9 @@
  */
 
 // ASCII-only lowercase; deliberately not locale-sensitive (byte patterns).
-static uint8_t lowerByte(uint8_t c) {
-    if (c >= (uint8_t) 'A' && c <= (uint8_t) 'Z')
-        return (uint8_t)(c + 32u);
+static u8 lowerByte(u8 c) {
+    if (c >= (u8) 'A' && c <= (u8) 'Z')
+        return (u8)(c + 32u);
     return c;
 }
 
@@ -113,30 +113,30 @@ static void parserFail(RegexParser *parser, const char *message) {
 }
 
 // Appends a zeroed AST node under the node ceiling.
-static uint32_t parserNode(RegexParser *parser, uint8_t kind) {
+static u32 parserNode(RegexParser *parser, u8 kind) {
     RegexNodeList nodes = (*parser).nodes;
     if (nodes.count >= REGEX_MAX_NODES) {
         parserFail(parser, "pattern too complex (node ceiling)");
         return REGEX_NODE_NONE;
     }
-    uint32_t index = RegexNodeList_add(&(*parser).nodes, kind);
+    u32 index = RegexNodeList_add(&(*parser).nodes, kind);
     if (index == REGEX_NODE_NONE)
         parserFail(parser, "out of memory");
     return index;
 }
 
 // Adds one cleared class bitmap under the class ceiling; UINT32_MAX on refusal.
-static uint32_t parserAddClass(RegexParser *parser) {
+static u32 parserAddClass(RegexParser *parser) {
     if ((*parser).classCount >= REGEX_MAX_CLASSES) {
         parserFail(parser, "too many character classes");
         return UINT32_MAX;
     }
     if ((*parser).classCount == (*parser).classCapacity) {
-        uint32_t next = (*parser).classCapacity ? (*parser).classCapacity * 2u : 8u;
+        u32 next = (*parser).classCapacity ? (*parser).classCapacity * 2u : 8u;
         if (next > REGEX_MAX_CLASSES)
             next = REGEX_MAX_CLASSES;
         RegexCharClass *grown = (RegexCharClass*) Memory_realloc(
-            (*parser).classes, (size_t) next * sizeof(RegexCharClass));
+            (*parser).classes, (bytes) next * sizeof(RegexCharClass));
         if (!grown) {
             parserFail(parser, "out of memory");
             return UINT32_MAX;
@@ -144,26 +144,26 @@ static uint32_t parserAddClass(RegexParser *parser) {
         (*parser).classes = grown;
         (*parser).classCapacity = next;
     }
-    uint32_t index = (*parser).classCount++;
+    u32 index = (*parser).classCount++;
     RegexCharClass_clear(&(*parser).classes[index]);
     return index;
 }
 
 // Reads the escape body after a backslash and yields a literal byte. A
 // predefined family is recognised by the caller before this runs.
-static bool parseEscapeByte(RegexParser *parser, uint8_t *outByte) {
+static bool parseEscapeByte(RegexParser *parser, u8 *outByte) {
     if ((*parser).pos >= (*parser).length) {
         parserFail(parser, "trailing backslash");
         return false;
     }
     char c = (*parser).pattern[(*parser).pos++];
     switch (c) {
-    case 'n': *outByte = (uint8_t) '\n'; return true;
-    case 'r': *outByte = (uint8_t) '\r'; return true;
-    case 't': *outByte = (uint8_t) '\t'; return true;
-    case 'f': *outByte = (uint8_t) '\f'; return true;
-    case 'v': *outByte = (uint8_t) '\v'; return true;
-    case '0': *outByte = (uint8_t) '\0'; return true;
+    case 'n': *outByte = (u8) '\n'; return true;
+    case 'r': *outByte = (u8) '\r'; return true;
+    case 't': *outByte = (u8) '\t'; return true;
+    case 'f': *outByte = (u8) '\f'; return true;
+    case 'v': *outByte = (u8) '\v'; return true;
+    case '0': *outByte = (u8) '\0'; return true;
     case 'x': {
         if ((*parser).pos + 1u >= (*parser).length) {
             parserFail(parser, "malformed \\x escape");
@@ -171,17 +171,17 @@ static bool parseEscapeByte(RegexParser *parser, uint8_t *outByte) {
         }
         char h = (*parser).pattern[(*parser).pos];
         char l = (*parser).pattern[(*parser).pos + 1u];
-        uint32_t hi, lo;
-        if (h >= '0' && h <= '9') hi = (uint32_t)(h - '0');
-        else if (h >= 'a' && h <= 'f') hi = (uint32_t)(h - 'a' + 10);
-        else if (h >= 'A' && h <= 'F') hi = (uint32_t)(h - 'A' + 10);
+        u32 hi, lo;
+        if (h >= '0' && h <= '9') hi = (u32)(h - '0');
+        else if (h >= 'a' && h <= 'f') hi = (u32)(h - 'a' + 10);
+        else if (h >= 'A' && h <= 'F') hi = (u32)(h - 'A' + 10);
         else { parserFail(parser, "malformed \\x escape"); return false; }
-        if (l >= '0' && l <= '9') lo = (uint32_t)(l - '0');
-        else if (l >= 'a' && l <= 'f') lo = (uint32_t)(l - 'a' + 10);
-        else if (l >= 'A' && l <= 'F') lo = (uint32_t)(l - 'A' + 10);
+        if (l >= '0' && l <= '9') lo = (u32)(l - '0');
+        else if (l >= 'a' && l <= 'f') lo = (u32)(l - 'a' + 10);
+        else if (l >= 'A' && l <= 'F') lo = (u32)(l - 'A' + 10);
         else { parserFail(parser, "malformed \\x escape"); return false; }
         (*parser).pos += 2u;
-        *outByte = (uint8_t)((hi << 4) | lo);
+        *outByte = (u8)((hi << 4) | lo);
         return true;
     }
     default:
@@ -191,15 +191,15 @@ static bool parseEscapeByte(RegexParser *parser, uint8_t *outByte) {
             return false;
         }
         // Every other escaped byte is that literal byte (\\. \\* \\\\ ...).
-        *outByte = (uint8_t) c;
+        *outByte = (u8) c;
         return true;
     }
 }
 
-static uint32_t parseAlternation(RegexParser *parser);
+static u32 parseAlternation(RegexParser *parser);
 
 // Parses "(...)" or "(?:...)" into a group node.
-static uint32_t parseGroup(RegexParser *parser) {
+static u32 parseGroup(RegexParser *parser) {
     (*parser).pos++; // consume '('
     bool capturing = true;
     if ((*parser).pos + 1u < (*parser).length && (*parser).pattern[(*parser).pos] == '?' &&
@@ -210,7 +210,7 @@ static uint32_t parseGroup(RegexParser *parser) {
         parserFail(parser, "unsupported group construct (only (?:...) is supported)");
         return REGEX_NODE_NONE;
     }
-    uint32_t group = 0;
+    u32 group = 0;
     if (capturing)
         group = ++(*parser).groupCount;
     if ((*parser).depth >= REGEX_MAX_DEPTH) {
@@ -218,7 +218,7 @@ static uint32_t parseGroup(RegexParser *parser) {
         return REGEX_NODE_NONE;
     }
     (*parser).depth++;
-    uint32_t body = parseAlternation(parser);
+    u32 body = parseAlternation(parser);
     (*parser).depth--;
     if (body == REGEX_NODE_NONE)
         return REGEX_NODE_NONE;
@@ -229,7 +229,7 @@ static uint32_t parseGroup(RegexParser *parser) {
     (*parser).pos++;
     if (!capturing)
         return body;
-    uint32_t node = parserNode(parser, REGEX_NODE_GROUP);
+    u32 node = parserNode(parser, REGEX_NODE_GROUP);
     if (node == REGEX_NODE_NONE)
         return REGEX_NODE_NONE;
     RegexNode *group_node = RegexNodeList_get(&(*parser).nodes, node);
@@ -239,14 +239,14 @@ static uint32_t parseGroup(RegexParser *parser) {
 }
 
 // Parses "[...]" into a class bitmap index; UINT32_MAX on failure.
-static uint32_t parseClass(RegexParser *parser) {
+static u32 parseClass(RegexParser *parser) {
     (*parser).pos++; // consume '['
     bool negate = false;
     if ((*parser).pos < (*parser).length && (*parser).pattern[(*parser).pos] == '^') {
         negate = true;
         (*parser).pos++;
     }
-    uint32_t index = parserAddClass(parser);
+    u32 index = parserAddClass(parser);
     if (index == UINT32_MAX)
         return UINT32_MAX;
     RegexCharClass *cls = &(*parser).classes[index];
@@ -261,7 +261,7 @@ static uint32_t parseClass(RegexParser *parser) {
             break;
         }
         first = false;
-        uint8_t lo = 0;
+        u8 lo = 0;
         bool predefined = false;
         if (c == '\\') {
             (*parser).pos++;
@@ -274,7 +274,7 @@ static uint32_t parseClass(RegexParser *parser) {
                 return UINT32_MAX;
             }
         } else {
-            lo = (uint8_t) c;
+            lo = (u8) c;
             (*parser).pos++;
         }
         if (predefined)
@@ -282,7 +282,7 @@ static uint32_t parseClass(RegexParser *parser) {
         if ((*parser).pos + 1u < (*parser).length && (*parser).pattern[(*parser).pos] == '-' &&
             (*parser).pattern[(*parser).pos + 1u] != ']') {
             (*parser).pos++; // consume '-'
-            uint8_t hi = 0;
+            u8 hi = 0;
             char hc = (*parser).pattern[(*parser).pos];
             if (hc == '\\') {
                 (*parser).pos++;
@@ -294,7 +294,7 @@ static uint32_t parseClass(RegexParser *parser) {
                 if (!parseEscapeByte(parser, &hi))
                     return UINT32_MAX;
             } else {
-                hi = (uint8_t) hc;
+                hi = (u8) hc;
                 (*parser).pos++;
             }
             if (hi < lo) {
@@ -316,16 +316,16 @@ static uint32_t parseClass(RegexParser *parser) {
 }
 
 // Parses one atom: a literal, '.', an anchor, a group, a class or an escape.
-static uint32_t parseAtom(RegexParser *parser) {
+static u32 parseAtom(RegexParser *parser) {
     char c = (*parser).pattern[(*parser).pos];
     switch (c) {
     case '(':
         return parseGroup(parser);
     case '[': {
-        uint32_t index = parseClass(parser);
+        u32 index = parseClass(parser);
         if (index == UINT32_MAX)
             return REGEX_NODE_NONE;
-        uint32_t node = parserNode(parser, REGEX_NODE_CLASS);
+        u32 node = parserNode(parser, REGEX_NODE_CLASS);
         if (node == REGEX_NODE_NONE)
             return REGEX_NODE_NONE;
         RegexNode *cls_node = RegexNodeList_get(&(*parser).nodes, node);
@@ -345,23 +345,23 @@ static uint32_t parseAtom(RegexParser *parser) {
         (*parser).pos++;
         if ((*parser).pos < (*parser).length &&
             RegexCharClass_isPredefined((*parser).pattern[(*parser).pos])) {
-            uint32_t index = parserAddClass(parser);
+            u32 index = parserAddClass(parser);
             if (index == UINT32_MAX)
                 return REGEX_NODE_NONE;
             RegexCharClass_addPredefined(&(*parser).classes[index],
                                          (*parser).pattern[(*parser).pos]);
             (*parser).pos++;
-            uint32_t node = parserNode(parser, REGEX_NODE_CLASS);
+            u32 node = parserNode(parser, REGEX_NODE_CLASS);
             if (node == REGEX_NODE_NONE)
                 return REGEX_NODE_NONE;
             RegexNode *cls_node = RegexNodeList_get(&(*parser).nodes, node);
             (*cls_node).clsIndex = index;
             return node;
         }
-        uint8_t byte = 0;
+        u8 byte = 0;
         if (!parseEscapeByte(parser, &byte))
             return REGEX_NODE_NONE;
-        uint32_t node = parserNode(parser, REGEX_NODE_CHAR);
+        u32 node = parserNode(parser, REGEX_NODE_CHAR);
         if (node == REGEX_NODE_NONE)
             return REGEX_NODE_NONE;
         RegexNode *char_node = RegexNodeList_get(&(*parser).nodes, node);
@@ -375,11 +375,11 @@ static uint32_t parseAtom(RegexParser *parser) {
         return REGEX_NODE_NONE;
     default: {
         (*parser).pos++;
-        uint32_t node = parserNode(parser, REGEX_NODE_CHAR);
+        u32 node = parserNode(parser, REGEX_NODE_CHAR);
         if (node == REGEX_NODE_NONE)
             return REGEX_NODE_NONE;
         RegexNode *char_node = RegexNodeList_get(&(*parser).nodes, node);
-        uint8_t byte = (uint8_t) c;
+        u8 byte = (u8) c;
         (*char_node).byte = (*parser).ignoreCase ? lowerByte(byte) : byte;
         return node;
     }
@@ -388,13 +388,13 @@ static uint32_t parseAtom(RegexParser *parser) {
 
 // Parses "{m}", "{m,}" or "{m,n}". 1 = quantifier consumed, 0 = a literal
 // '{', -1 = a malformed quantifier (already recorded).
-static int parseBraces(RegexParser *parser, uint32_t *outMin, uint32_t *outMax, bool *outHasMax) {
-    size_t i = (*parser).pos + 1u;
+static int parseBraces(RegexParser *parser, u32 *outMin, u32 *outMax, bool *outHasMax) {
+    bytes i = (*parser).pos + 1u;
     if (i >= (*parser).length || !isAsciiDigit((*parser).pattern[i]))
         return 0;
-    uint32_t lo = 0;
+    u32 lo = 0;
     while (i < (*parser).length && isAsciiDigit((*parser).pattern[i])) {
-        lo = lo * 10u + (uint32_t)((*parser).pattern[i] - '0');
+        lo = lo * 10u + (u32)((*parser).pattern[i] - '0');
         if (lo > REGEX_MAX_REPEAT) {
             parserFail(parser, "repetition count too large");
             return -1;
@@ -402,13 +402,13 @@ static int parseBraces(RegexParser *parser, uint32_t *outMin, uint32_t *outMax, 
         i++;
     }
     bool hasMax = true;
-    uint32_t hi = lo;
+    u32 hi = lo;
     if (i < (*parser).length && (*parser).pattern[i] == ',') {
         i++;
         if (i < (*parser).length && isAsciiDigit((*parser).pattern[i])) {
             hi = 0;
             while (i < (*parser).length && isAsciiDigit((*parser).pattern[i])) {
-                hi = hi * 10u + (uint32_t)((*parser).pattern[i] - '0');
+                hi = hi * 10u + (u32)((*parser).pattern[i] - '0');
                 if (hi > REGEX_MAX_REPEAT) {
                     parserFail(parser, "repetition count too large");
                     return -1;
@@ -435,16 +435,16 @@ static int parseBraces(RegexParser *parser, uint32_t *outMin, uint32_t *outMax, 
 }
 
 // Parses an atom plus any trailing quantifiers into one node.
-static uint32_t parseRepeat(RegexParser *parser) {
-    uint32_t atom = parseAtom(parser);
+static u32 parseRepeat(RegexParser *parser) {
+    u32 atom = parseAtom(parser);
     if (atom == REGEX_NODE_NONE)
         return REGEX_NODE_NONE;
     for (;;) {
         if ((*parser).pos >= (*parser).length)
             break;
         char c = (*parser).pattern[(*parser).pos];
-        uint8_t wrapKind = 0;
-        uint32_t min = 0, max = 0;
+        u8 wrapKind = 0;
+        u32 min = 0, max = 0;
         bool hasMax = false;
         if (c == '*') {
             wrapKind = REGEX_NODE_STAR;
@@ -465,7 +465,7 @@ static uint32_t parseRepeat(RegexParser *parser) {
         } else {
             break;
         }
-        uint32_t wrap = parserNode(parser, wrapKind);
+        u32 wrap = parserNode(parser, wrapKind);
         if (wrap == REGEX_NODE_NONE)
             return REGEX_NODE_NONE;
         RegexNode *n = RegexNodeList_get(&(*parser).nodes, wrap);
@@ -490,22 +490,22 @@ static uint32_t parseRepeat(RegexParser *parser) {
 }
 
 // Parses a run of repeat atoms into a left-nested concatenation.
-static uint32_t parseConcat(RegexParser *parser) {
-    uint32_t head = REGEX_NODE_NONE;
+static u32 parseConcat(RegexParser *parser) {
+    u32 head = REGEX_NODE_NONE;
     for (;;) {
         if ((*parser).pos >= (*parser).length)
             break;
         char c = (*parser).pattern[(*parser).pos];
         if (c == '|' || c == ')')
             break;
-        uint32_t piece = parseRepeat(parser);
+        u32 piece = parseRepeat(parser);
         if (piece == REGEX_NODE_NONE)
             return REGEX_NODE_NONE;
         if (head == REGEX_NODE_NONE) {
             head = piece;
             continue;
         }
-        uint32_t cat = parserNode(parser, REGEX_NODE_CONCAT);
+        u32 cat = parserNode(parser, REGEX_NODE_CONCAT);
         if (cat == REGEX_NODE_NONE)
             return REGEX_NODE_NONE;
         RegexNode *n = RegexNodeList_get(&(*parser).nodes, cat);
@@ -519,16 +519,16 @@ static uint32_t parseConcat(RegexParser *parser) {
 }
 
 // Parses a run of concatenations separated by '|' into a left-nested alternation.
-static uint32_t parseAlternation(RegexParser *parser) {
-    uint32_t left = parseConcat(parser);
+static u32 parseAlternation(RegexParser *parser) {
+    u32 left = parseConcat(parser);
     if (left == REGEX_NODE_NONE)
         return REGEX_NODE_NONE;
     while ((*parser).pos < (*parser).length && (*parser).pattern[(*parser).pos] == '|') {
         (*parser).pos++;
-        uint32_t right = parseConcat(parser);
+        u32 right = parseConcat(parser);
         if (right == REGEX_NODE_NONE)
             return REGEX_NODE_NONE;
-        uint32_t alt = parserNode(parser, REGEX_NODE_ALT);
+        u32 alt = parserNode(parser, REGEX_NODE_ALT);
         if (alt == REGEX_NODE_NONE)
             return REGEX_NODE_NONE;
         RegexNode *n = RegexNodeList_get(&(*parser).nodes, alt);
@@ -539,7 +539,7 @@ static uint32_t parseAlternation(RegexParser *parser) {
     return left;
 }
 
-RegexParser RegexParser_3(const char *pattern, size_t length, bool ignoreCase) {
+RegexParser RegexParser_3(const char *pattern, bytes length, bool ignoreCase) {
     RegexParser parser;
     parser.pattern = pattern;
     parser.length = length;
@@ -556,10 +556,10 @@ RegexParser RegexParser_3(const char *pattern, size_t length, bool ignoreCase) {
     return parser;
 }
 
-uint32_t RegexParser_parse(RegexParser *parser) {
+u32 RegexParser_parse(RegexParser *parser) {
     if ((*parser).length == 0)
         return parseAlternation(parser); // the empty pattern is the empty node
-    uint32_t root = parseAlternation(parser);
+    u32 root = parseAlternation(parser);
     if (root == REGEX_NODE_NONE || (*parser).failed)
         return REGEX_NODE_NONE;
     if ((*parser).pos != (*parser).length) {
@@ -581,11 +581,11 @@ RegexNodeList *RegexParser_nodes(RegexParser *parser) {
     return &(*parser).nodes;
 }
 
-uint32_t RegexParser_groupCount(const RegexParser *parser) {
+u32 RegexParser_groupCount(const RegexParser *parser) {
     return (*parser).groupCount;
 }
 
-RegexCharClass *RegexParser_releaseClasses(RegexParser *parser, uint32_t *outCount) {
+RegexCharClass *RegexParser_releaseClasses(RegexParser *parser, u32 *outCount) {
     RegexCharClass *classes = (*parser).classes;
     if (outCount)
         *outCount = (*parser).classCount;

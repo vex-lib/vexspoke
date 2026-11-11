@@ -7,7 +7,7 @@
 void Console_init(void);
 void Console_log(const char *message);
 // Consumes a live string block, even if stdout fails. Null reports rejection.
-void Console_logString(uint8_t *message);
+void Console_logString(u8 *message);
 void Console_drain(void);
 void Console_shutdown(void);
 #endif

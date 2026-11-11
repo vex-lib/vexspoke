@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 // objects/local.h — Thread-local variable slot table object wrapper.
 // Ported from legacy objects/Local.java. The slot table is arena-backed
@@ -17,7 +17,7 @@ Local *Local_0(void);
 
 // Free local memory
 
-Local *Local_2(const Local *init, size_t count);
+Local *Local_2(const Local *init, bytes count);
 
 #define Local(...) CONSTRUCTOR_DISPATCH(Local, __VA_ARGS__)
 
@@ -25,7 +25,7 @@ void Local_free(Local *local);
 
 // Slot accessors per thread id — reads outside the live table return 0,
 // writes grow the table first.
-uint64_t Local_get(const Local *local, uint32_t threadId);
-void     Local_set(Local *local, uint32_t threadId, uint64_t value);
+u64 Local_get(const Local *local, u32 threadId);
+void     Local_set(Local *local, u32 threadId, u64 value);
 
 #endif

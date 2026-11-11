@@ -24,11 +24,11 @@ static int g_failures = 0;
 
 // axis[3] then sign[3] for each of the 12 frames, straight from the source
 // table (the oracle that catches a silent permutation/sign drift).
-static const int8_t k_axis[12][3] = {
+static const  k_axis[12][3] = {
     {0,1,2},{0,1,2},{2,0,1},{0,2,1},{1,2,0},{1,0,2},
     {0,1,2},{0,1,2},{2,0,1},{0,2,1},{1,2,0},{1,0,2},
 };
-static const int8_t k_sign[12][3] = {
+static const  k_sign[12][3] = {
     { 1, 1, 1},{ 1, 1,-1},{ 1, 1, 1},{ 1, 1, 1},{ 1, 1, 1},{ 1, 1, 1},
     { 1,-1, 1},{ 1,-1,-1},{ 1, 1,-1},{ 1, 1,-1},{-1, 1, 1},{-1, 1, 1},
 };
@@ -47,7 +47,7 @@ static void test_basis(void) {
             CHECK(b.axis[a] == k_axis[f][a]);
             CHECK(b.sign[a] == k_sign[f][a]);
             CHECK(CoordFrame_getAxisIndex((CoordFrame) f, a) == k_axis[f][a]);
-            CHECK(CoordFrame_getAxisSign((CoordFrame) f, a) == (float) k_sign[f][a]);
+            CHECK(CoordFrame_getAxisSign((CoordFrame) f, a) == (f32) k_sign[f][a]);
         }
     }
 }
@@ -85,7 +85,7 @@ static void test_out_of_range(void) {
 // Checks frame validity predicates and stable frame-name projections.
 // Checks frame validity classification and stable human-readable names.
 static void test_validity_and_names(void) {
-    for (uint32_t f = 0; f < 12; f++)
+    for (u32 f = 0; f < 12; f++)
         CHECK(CoordFrame_isValid(f));
     CHECK(!CoordFrame_isValid(12));
     CHECK(!CoordFrame_isValid(100));

@@ -18,6 +18,7 @@
     "entry": "",
     "sources": [
       "download.c",
+      "frame_inbox.c",
       "http.c",
       "json.c",
       "netfacade.c",

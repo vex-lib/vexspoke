@@ -1,4 +1,4 @@
-#include "primitive/int_double.h"
+#include "primitive/int_f64.h"
 
 #include <string.h>
 
@@ -9,120 +9,120 @@
 ;;DEFINITION
 /**
  * ============================================================================
- * DEFINITION: IntDouble
+ * DEFINITION: Intf64
  * ============================================================================
- * IntDouble primitive (Legacy: primitive/IntDouble.java). 16-byte payload
- * (int32 + double) singletons come from a fixed 1024-slot BitPool; arrays fall
+ * Intf64 primitive (Legacy: primitive/Intf64.java). 16-byte payload
+ * (int32 + d64) singletons come from a fixed 1024-slot BitPool; arrays fall
  * back to the memory arena because the pool is not sized for large contiguous
- * blocks. IntDouble_free routes to the owning allocator via BitPool_contains,
- * and IntDouble_compareAndSet provides an atomic CAS on the payload.
+ * blocks. Intf64_free routes to the owning allocator via BitPool_contains,
+ * and Intf64_compareAndSet provides an atomic CAS on the payload.
  * ============================================================================
  */
 
 ;;OVERVIEW
 /**
  * ============================================================================
- * MODULE: Int_double (primitive/int_double.c)
+ * MODULE: Int_f64 (primitive/int_f64.c)
  * ============================================================================
- * IntDouble primitive (Legacy: primitive/IntDouble.java).
+ * Intf64 primitive (Legacy: primitive/Intf64.java).
  *
- * STRUCT FIELDS: none — procedural (operates on BitPool/memory blocks of int_double payloads)
+ * STRUCT FIELDS: none — procedural (operates on BitPool/memory blocks of int_f64 payloads)
  *
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Constructors:
- *   - IntDouble_init(void)
+ *   - Intf64_init(void)
  *
  * Core Functions:
- *   - IntDouble_shutdown(void)
- *   - IntDouble_alloc(void)
- *   - IntDouble_allocArray(count)
- *   - IntDouble_free(ptr)
- *   - IntDouble_compareAndSet(ptr, expected, value)
- *   - IntDouble_type(ptr)
- *   - IntDouble_length(ptr)
- *   - IntDouble_allocWithValues(v1, v2)
+ *   - Intf64_shutdown(void)
+ *   - Intf64_alloc(void)
+ *   - Intf64_allocArray(count)
+ *   - Intf64_free(ptr)
+ *   - Intf64_compareAndSet(ptr, expected, value)
+ *   - Intf64_type(ptr)
+ *   - Intf64_length(ptr)
+ *   - Intf64_allocWithValues(v1, v2)
  *
  * Setters:
- *   - IntDouble_set(ptr, value)
+ *   - Intf64_set(ptr, value)
  *
  * Getters:
- *   - IntDouble_get(ptr)
+ *   - Intf64_get(ptr)
  * ============================================================================
  */
 
 
-BitPool g_int_doublePool;
+BitPool g_int_f64Pool;
 
-bool IntDouble_init(void) {
-    g_int_doublePool = BitPool(16, 1024);
-    return BitPool_live(&g_int_doublePool);
+bool Intf64_init(void) {
+    g_int_f64Pool = BitPool(16, 1024);
+    return BitPool_live(&g_int_f64Pool);
 }
 
-void IntDouble_shutdown(void) {
-    BitPool_shutdown(&g_int_doublePool);
+void Intf64_shutdown(void) {
+    BitPool_shutdown(&g_int_f64Pool);
 }
 
-void *IntDouble_alloc(void) {
-    return BitPool_alloc(&g_int_doublePool, ID_INT_DOUBLE);
+void *Intf64_alloc(void) {
+    return BitPool_alloc(&g_int_f64Pool, ID_INT_f64);
 }
 
-void *IntDouble_allocArray(size_t count) {
+void *Intf64_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
-    size_t Bytes = count * sizeof(int64_t);
+    bytes Bytes = count * sizeof(int64_t);
     // For compound types, elem_size 16 already accounts for stride, but sizeof(int64_t) is placeholder
     // Use elem_size for true stride where c_type is int64 placeholder
     if (count > 1 && 16 != sizeof(int64_t))
         Bytes = count * 16;
-    return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_INT_DOUBLE), Bytes);
+    return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_INT_f64), Bytes);
 }
 
-void IntDouble_free(void *ptr) {
+void Intf64_free(void *ptr) {
     if (!ptr)
         return;
-    if (BitPool_contains(&g_int_doublePool, ptr)) BitPool_free(&g_int_doublePool, ptr);
+    if (BitPool_contains(&g_int_f64Pool, ptr)) BitPool_free(&g_int_f64Pool, ptr);
     else Memory_free(ptr);
 }
 
-int64_t IntDouble_get(void *ptr) {
+int64_t Intf64_get(void *ptr) {
     if (!ptr)
         return (int64_t) 0;
     return *(int64_t*) ptr;
 }
 
-void IntDouble_set(void *ptr, int64_t value) {
+void Intf64_set(void *ptr, int64_t value) {
     if (!ptr)
         return;
     *(int64_t*) ptr = value;
 }
 
-bool IntDouble_compareAndSet(void *ptr, int64_t expected, int64_t value) {
+bool Intf64_compareAndSet(void *ptr, int64_t expected, int64_t value) {
     if (!ptr)
         return false;
     // fallback to simple CAS via __atomic_compare_exchange
     return __atomic_compare_exchange_n((int64_t*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
-uint64_t IntDouble_type(void *ptr) {
+u64 Intf64_type(void *ptr) {
     if (!ptr)
         return 0;
-    if (BitPool_contains(&g_int_doublePool, ptr)) return BitPool_type(&g_int_doublePool, ptr);
+    if (BitPool_contains(&g_int_f64Pool, ptr)) return BitPool_type(&g_int_f64Pool, ptr);
     return Memory_type(ptr);
 }
 
-size_t IntDouble_length(void *ptr) {
+bytes Intf64_length(void *ptr) {
     if (!ptr)
         return 0;
-    if (BitPool_contains(&g_int_doublePool, ptr)) return BitPool_length(&g_int_doublePool, ptr);
+    if (BitPool_contains(&g_int_f64Pool, ptr)) return BitPool_length(&g_int_f64Pool, ptr);
     return Memory_length(ptr);
 }
 
-void *IntDouble_allocWithValues(int32_t v1, double v2) {
-    void *ptr = IntDouble_alloc();
+void *Intf64_allocWithValues(i32 v1, d64 v2) {
+    void *ptr = Intf64_alloc();
     if (!ptr) return nullptr;
-    *(int32_t*) ptr = v1;
-    *(double*) ((uint8_t*) ptr + sizeof(int32_t)) = v2;
+    *(i32*) ptr = v1;
+    *(d64*) ((u8*) ptr + sizeof(i32)) = v2;
     return ptr;
 }

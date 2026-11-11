@@ -48,11 +48,11 @@ static void onChangedB(Reactive *r, uintptr_t o, uintptr_t n, void *ud) { (void)
 
 // A writer thread: hammer the reactive from a foreign thread. Must never fire an
 // observer there — it only stores + marks dirty.
-typedef struct SetterArg { Reactive *r; uint64_t n; } SetterArg;
+typedef struct SetterArg { Reactive *r; u64 n; } SetterArg;
 // Writes a sequence from a worker thread; observer delivery is left to the owner drain.
 static void *setterLoop(void *arg) {
     SetterArg *a = (SetterArg*) arg;
-    for (uint64_t i = 1; i <= (*a).n; i++)
+    for (u64 i = 1; i <= (*a).n; i++)
         Reactive_set((*a).r, i);
     return nullptr;
 }

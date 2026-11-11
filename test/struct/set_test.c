@@ -38,7 +38,7 @@ int main(void) {
     CHECK(Set_remove(s, 10) == 0);
 
     // Volume: 100,000 distinct (grows past the initial capacity), then membership.
-    for (uint64_t i = 0; i < 100000; i++)
+    for (u64 i = 0; i < 100000; i++)
         Set_add(s, i);
     CHECK(Set_size(s) == 100000);
     CHECK(Set_contains(s, 0));

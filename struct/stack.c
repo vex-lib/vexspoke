@@ -67,15 +67,15 @@
 
 // stack.c — Stack port (Legacy: struct/Stack.java).
 
-static const size_t DEFAULT_CAPACITY = 1024;
+static const bytes DEFAULT_CAPACITY = 1024;
 
 static Collection *asCollection(Stack *stack) {
     return (Collection*) stack;
 }
 
-Stack *Stack_3(uint32_t elementClass, size_t capacity, size_t count) {
-    size_t stride = Stride_get(elementClass);
-    size_t cap = capacity < DEFAULT_CAPACITY ? DEFAULT_CAPACITY : capacity;
+Stack *Stack_3(u32 elementClass, bytes capacity, bytes count) {
+    bytes stride = Stride_get(elementClass);
+    bytes cap = capacity < DEFAULT_CAPACITY ? DEFAULT_CAPACITY : capacity;
     Stack *stack = (Stack*) Memory_alloc(TYPE_STACK, sizeof(Stack));
     if (!stack) {
         (void) Struct_reportConstructionExhaustion("stack", sizeof(Stack));
@@ -84,17 +84,17 @@ Stack *Stack_3(uint32_t elementClass, size_t capacity, size_t count) {
 
     Collection *c = asCollection(stack);
     (*c).typeId = TYPE_STACK;
-    (*c).activeCount = (uint32_t)count;
+    (*c).activeCount = (u32)count;
     (*c).elementClass = elementClass;
-    (*c).stride = (uint32_t)stride;
-    (*c).capacity = (uint32_t)cap;
+    (*c).stride = (u32)stride;
+    (*c).capacity = (u32)cap;
     (*c).head = 0;
     (*c).exhaustionCount = 0;
     (*c).exhaustionReported = false;
 
-    size_t Bytes = cap * stride;
-    uint64_t bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, elementClass);
-    (*c).data = (uint8_t*) Memory_alloc(bufType, Bytes);
+    bytes Bytes = cap * stride;
+    u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, elementClass);
+    (*c).data = (u8*) Memory_alloc(bufType, Bytes);
     if (!(*c).data) {
         (void) Struct_reportConstructionExhaustion("stack", Bytes);
         Memory_free(stack);
@@ -104,7 +104,7 @@ Stack *Stack_3(uint32_t elementClass, size_t capacity, size_t count) {
     return stack;
 }
 
-Stack *Stack_2(uint32_t elementClass, size_t capacity) {
+Stack *Stack_2(u32 elementClass, bytes capacity) {
     return Stack_3(elementClass, capacity, 0);
 }
 
@@ -116,31 +116,31 @@ void Stack_free(Stack *stack) {
     Memory_free(stack);
 }
 
-void Stack_push(Stack *stack, uint64_t valueOrPointer) {
+void Stack_push(Stack *stack, u64 valueOrPointer) {
     // Family-consistent void entry point, but not silent: a refused element is
     // reported by Stack_pushTry (THROW + a named TryCode).
     (void) Stack_pushTry(stack, valueOrPointer);
 }
 
-TryValue Stack_pushTry(Stack *stack, uint64_t valueOrPointer) {
+TryValue Stack_pushTry(Stack *stack, u64 valueOrPointer) {
     if (!stack) {
         THROW("stack pushTry: null stack");
         return TryValue_error(TRY_NULL_ARG);
     }
     Collection *c = asCollection(stack);
     if ((*c).activeCount >= (*c).capacity) {
-        // Double, like the sibling containers (Deque/Queue/List). Growing by a
+        // d64, like the sibling containers (Deque/Queue/List). Growing by a
         // fixed step allocates a fresh buffer on every growth, and freed bump
         // storage is reclaimed only wholesale -- so a large push run exhausts
         // the arena long before the buffer fits (the No Hardcoding Law).
-        size_t newCap = (*c).capacity ? (size_t)(*c).capacity * 2 : DEFAULT_CAPACITY;
+        bytes newCap = (*c).capacity ? (bytes)(*c).capacity * 2 : DEFAULT_CAPACITY;
         if (newCap > UINT32_MAX) {
             THROW("stack pushTry: capacity %zu would exceed uint32", newCap);
             return TryValue_error(TRY_OVERFLOW);
         }
-        size_t Bytes = newCap * (*c).stride;
-        uint64_t bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, (*c).elementClass);
-        uint8_t *next = (uint8_t*) Memory_alloc(bufType, Bytes);
+        bytes Bytes = newCap * (*c).stride;
+        u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, (*c).elementClass);
+        u8 *next = (u8*) Memory_alloc(bufType, Bytes);
         if (!next) {
             // Shared loud, counted refusal (the Exhaustion Loudness Law); the
             // Try carries the machine-readable reason.
@@ -150,14 +150,14 @@ TryValue Stack_pushTry(Stack *stack, uint64_t valueOrPointer) {
         memcpy(next, (*c).data, (*c).activeCount * (*c).stride);
         Memory_free((*c).data);
         (*c).data = next;
-        (*c).capacity = (uint32_t)newCap;
+        (*c).capacity = (u32)newCap;
     }
     Collection_writeSlot(c, (*c).activeCount, valueOrPointer);
     (*c).activeCount++;
     return TryValue_ok(valueOrPointer);
 }
 
-uint64_t Stack_pop(Stack *stack) {
+u64 Stack_pop(Stack *stack) {
     if (!stack) return 0;
     Collection *c = asCollection(stack);
     if ((*c).activeCount == 0)
@@ -166,7 +166,7 @@ uint64_t Stack_pop(Stack *stack) {
     return Collection_readSlot(c, (*c).activeCount);
 }
 
-uint64_t Stack_peek(Stack *stack) {
+u64 Stack_peek(Stack *stack) {
     if (!stack) return 0;
     Collection *c = asCollection(stack);
     if ((*c).activeCount == 0)
@@ -174,7 +174,7 @@ uint64_t Stack_peek(Stack *stack) {
     return Collection_readSlot(c, (*c).activeCount - 1);
 }
 
-uint8_t *Stack_slot(Stack *stack, size_t index) {
+u8 *Stack_slot(Stack *stack, bytes index) {
     if (!stack) return nullptr;
     Collection *c = asCollection(stack);
     if (index >= (*c).activeCount)
@@ -186,35 +186,35 @@ bool Stack_isEmpty(Stack *stack) {
     return Collection_isEmpty(asCollection(stack));
 }
 
-size_t Stack_size(Stack *stack) {
+bytes Stack_size(Stack *stack) {
     return Collection_size(asCollection(stack));
 }
 
 ;;TEST
-uint64_t Stack_exhaustionCount(const Stack *stack) {
+u64 Stack_exhaustionCount(const Stack *stack) {
     return Collection_exhaustionCount((const Collection*) stack);
 }
 
-size_t Stack_length(Stack *stack) {
+bytes Stack_length(Stack *stack) {
     return Collection_length(asCollection(stack));
 }
 
-size_t Stack_capacity(Stack *stack) {
+bytes Stack_capacity(Stack *stack) {
     return Collection_capacity(asCollection(stack));
 }
 
-uint32_t Stack_elementClassId(Stack *stack) {
+u32 Stack_elementClassId(Stack *stack) {
     return Collection_elementClassId(asCollection(stack));
 }
 
-size_t Stack_stride(Stack *stack) {
+bytes Stack_stride(Stack *stack) {
     return Collection_stride(asCollection(stack));
 }
 
 ;;TEST
-uint8_t *Stack_dataBuffer(Stack *stack) {
+u8 *Stack_dataBuffer(Stack *stack) {
     return Collection_dataBuffer(asCollection(stack));
 }
-Stack *Stack_1(uint32_t element_class) {
+Stack *Stack_1(u32 element_class) {
     return Stack_2(element_class, 16);
 }

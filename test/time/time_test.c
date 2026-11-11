@@ -85,9 +85,9 @@ int main(void) {
     Clock_tick(&clock); // first tick: ~0ms elapsed since create
     struct timespec pause_req = { 0, 40 * 1000000 };
     nanosleep(&pause_req, nullptr);
-    uint64_t before = Clock_virtualTimeMillis(&clock);
+    u64 before = Clock_virtualTimeMillis(&clock);
     Clock_tick(&clock);
-    uint64_t after = Clock_virtualTimeMillis(&clock);
+    u64 after = Clock_virtualTimeMillis(&clock);
     CHECK(after >= before && after - before <= 60); // ~40ms real * 0.5
 
     Clock_setPaused(&clock, true);
@@ -109,7 +109,7 @@ int main(void) {
 
     // Paused clock freezes timer deltas but keeps the real reading moving.
     Clock_setPaused(&clock, true);
-    double totalBefore = NanoTimer_totalTime(&timer);
+    d64 totalBefore = NanoTimer_totalTime(&timer);
     nanosleep(&pause_req, nullptr);
     NanoTimer_tickWithClock(&timer, &clock);
     CHECK(NanoTimer_totalTime(&timer) == totalBefore);

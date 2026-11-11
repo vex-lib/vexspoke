@@ -31,17 +31,17 @@
  * STRUCT FIELDS (local to this file):
  * ----------------------------------------------------------------------------
  *   DisplayMonitor {
- *     uint32_t id;               // monitor identifier
+ *     u32 id;               // monitor identifier
  *     char name[128];            // display name string
- *     int32_t currentWidth;      // active physical pixel width
- *     int32_t currentHeight;     // active physical pixel height
- *     int32_t pointWidth;        // logical point width (UI space)
- *     int32_t pointHeight;       // logical point height (UI space)
- *     int32_t nativeWidth;       // hardware panel native width
- *     int32_t nativeHeight;      // hardware panel native height
- *     int32_t refreshRate;       // refresh rate in Hz
+ *     i32 currentWidth;      // active physical pixel width
+ *     i32 currentHeight;     // active physical pixel height
+ *     i32 pointWidth;        // logical point width (UI space)
+ *     i32 pointHeight;       // logical point height (UI space)
+ *     i32 nativeWidth;       // hardware panel native width
+ *     i32 nativeHeight;      // hardware panel native height
+ *     i32 refreshRate;       // refresh rate in Hz
  *     bool hdrSupported;         // HDR capability flag
- *     float dpi;                 // density / scale factor
+ *     f32 dpi;                 // density / scale factor
  *   }
  *
  * FUNCTION REGISTRY:
@@ -82,17 +82,17 @@
 
 
 struct DisplayMonitor {
-    uint32_t id;
+    u32 id;
     char name[128];
-    int32_t currentWidth;   // active physical pixels
-    int32_t currentHeight;
-    int32_t pointWidth;     // logical points
-    int32_t pointHeight;
-    int32_t nativeWidth;    // hardware panel native pixels
-    int32_t nativeHeight;
-    int32_t refreshRate;    // Hz
+    i32 currentWidth;   // active physical pixels
+    i32 currentHeight;
+    i32 pointWidth;     // logical points
+    i32 pointHeight;
+    i32 nativeWidth;    // hardware panel native pixels
+    i32 nativeHeight;
+    i32 refreshRate;    // Hz
     bool hdrSupported;
-    float dpi;              // scale factor / density
+    f32 dpi;              // scale factor / density
 };
 
 DisplayMonitor *DisplayMonitor_0(void) {
@@ -110,11 +110,11 @@ void DisplayMonitor_free(DisplayMonitor *monitor) {
     Memory_free(monitor);
 }
 
-uint32_t DisplayMonitor_getId(const DisplayMonitor *m) {
+u32 DisplayMonitor_getId(const DisplayMonitor *m) {
     return m ? (*m).id : 0;
 }
 
-void DisplayMonitor_setId(DisplayMonitor *m, uint32_t id) {
+void DisplayMonitor_setId(DisplayMonitor *m, u32 id) {
     if (m) (*m).id = id;
 }
 
@@ -132,59 +132,59 @@ void DisplayMonitor_setName(DisplayMonitor *m, const char *name) {
     }
 }
 
-int32_t DisplayMonitor_getCurrentWidth(const DisplayMonitor *m) {
+i32 DisplayMonitor_getCurrentWidth(const DisplayMonitor *m) {
     return m ? (*m).currentWidth : 0;
 }
 
-void DisplayMonitor_setCurrentWidth(DisplayMonitor *m, int32_t val) {
+void DisplayMonitor_setCurrentWidth(DisplayMonitor *m, i32 val) {
     if (m) (*m).currentWidth = val;
 }
 
-int32_t DisplayMonitor_getCurrentHeight(const DisplayMonitor *m) {
+i32 DisplayMonitor_getCurrentHeight(const DisplayMonitor *m) {
     return m ? (*m).currentHeight : 0;
 }
 
-void DisplayMonitor_setCurrentHeight(DisplayMonitor *m, int32_t val) {
+void DisplayMonitor_setCurrentHeight(DisplayMonitor *m, i32 val) {
     if (m) (*m).currentHeight = val;
 }
 
-int32_t DisplayMonitor_getPointWidth(const DisplayMonitor *m) {
+i32 DisplayMonitor_getPointWidth(const DisplayMonitor *m) {
     return m ? (*m).pointWidth : 0;
 }
 
-void DisplayMonitor_setPointWidth(DisplayMonitor *m, int32_t val) {
+void DisplayMonitor_setPointWidth(DisplayMonitor *m, i32 val) {
     if (m) (*m).pointWidth = val;
 }
 
-int32_t DisplayMonitor_getPointHeight(const DisplayMonitor *m) {
+i32 DisplayMonitor_getPointHeight(const DisplayMonitor *m) {
     return m ? (*m).pointHeight : 0;
 }
 
-void DisplayMonitor_setPointHeight(DisplayMonitor *m, int32_t val) {
+void DisplayMonitor_setPointHeight(DisplayMonitor *m, i32 val) {
     if (m) (*m).pointHeight = val;
 }
 
-int32_t DisplayMonitor_getNativeWidth(const DisplayMonitor *m) {
+i32 DisplayMonitor_getNativeWidth(const DisplayMonitor *m) {
     return m ? (*m).nativeWidth : 0;
 }
 
-void DisplayMonitor_setNativeWidth(DisplayMonitor *m, int32_t val) {
+void DisplayMonitor_setNativeWidth(DisplayMonitor *m, i32 val) {
     if (m) (*m).nativeWidth = val;
 }
 
-int32_t DisplayMonitor_getNativeHeight(const DisplayMonitor *m) {
+i32 DisplayMonitor_getNativeHeight(const DisplayMonitor *m) {
     return m ? (*m).nativeHeight : 0;
 }
 
-void DisplayMonitor_setNativeHeight(DisplayMonitor *m, int32_t val) {
+void DisplayMonitor_setNativeHeight(DisplayMonitor *m, i32 val) {
     if (m) (*m).nativeHeight = val;
 }
 
-int32_t DisplayMonitor_getRefreshRate(const DisplayMonitor *m) {
+i32 DisplayMonitor_getRefreshRate(const DisplayMonitor *m) {
     return m ? (*m).refreshRate : 0;
 }
 
-void DisplayMonitor_setRefreshRate(DisplayMonitor *m, int32_t val) {
+void DisplayMonitor_setRefreshRate(DisplayMonitor *m, i32 val) {
     if (m) (*m).refreshRate = val;
 }
 
@@ -196,10 +196,10 @@ void DisplayMonitor_setHdrSupported(DisplayMonitor *m, bool val) {
     if (m) (*m).hdrSupported = val;
 }
 
-float DisplayMonitor_getDpi(const DisplayMonitor *m) {
+f32 DisplayMonitor_getDpi(const DisplayMonitor *m) {
     return m ? (*m).dpi : 1.0f;
 }
 
-void DisplayMonitor_setDpi(DisplayMonitor *m, float val) {
+void DisplayMonitor_setDpi(DisplayMonitor *m, f32 val) {
     if (m) (*m).dpi = val;
 }

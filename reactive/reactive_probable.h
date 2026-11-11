@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "util/constructor.h"
+#include "lang/constructor.h"
 #include "reactive/generic.h"
 #include "reactive/reactive.h"
 
@@ -19,7 +19,7 @@
 // nesting (Reactive(Probable(T)) does not exist) — the reactivity lives inside.
 
 #define VEX_NAME ReactiveProbableInt
-#define VEX_T    int32_t
+#define VEX_T    i32
 #include "reactive/reactive_probable_tmpl.h"
 #undef VEX_NAME
 #undef VEX_T

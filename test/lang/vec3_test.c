@@ -18,8 +18,8 @@
 
 #include "lang/vec3.h"
 #include "lang/vec3/vec3d.h"
-#include "lang/vec3/vec3_int_float.h"
-#include "lang/vec3/vec3_long_double.h"
+#include "lang/vec3/vec3_int_f32.h"
+#include "lang/vec3/vec3_long_f64.h"
 #include "nio/mem.h"
 
 static int g_failures = 0;
@@ -108,25 +108,25 @@ static void test_construction(void) {
 
     Vec3IntFloat_free(sectorFloat);
 
-    Vec3LongDouble *sectorDouble = Vec3LongDouble();
+    Vec3Longf64 *sectorf64 = Vec3Longf64();
 
-    CHECK(sectorDouble != nullptr);
+    CHECK(sectorf64 != nullptr);
 
-    Vec3LongDouble zeroDouble = *sectorDouble;
+    Vec3Longf64 zerof64 = *sectorf64;
 
-    CHECK(zeroDouble.horizontal.sector == 0);
+    CHECK(zerof64.horizontal.sector == 0);
 
-    Vec3LongDouble_free(sectorDouble);
+    Vec3Longf64_free(sectorf64);
 
-    sectorDouble = Vec3LongDouble(1, 0.25, 2, 0.5, 3, 0.75, COORD_FRAME_DEFAULT);
+    sectorf64 = Vec3Longf64(1, 0.25, 2, 0.5, 3, 0.75, COORD_FRAME_DEFAULT);
 
-    CHECK(sectorDouble != nullptr);
+    CHECK(sectorf64 != nullptr);
 
-    Vec3LongDouble doubleValue = *sectorDouble;
+    Vec3Longf64 f64Value = *sectorf64;
 
-    CHECK(doubleValue.depth.sector == 3 && doubleValue.depth.local == 0.75);
+    CHECK(f64Value.depth.sector == 3 && f64Value.depth.local == 0.75);
 
-    Vec3LongDouble_free(sectorDouble);
+    Vec3Longf64_free(sectorf64);
 }
 
 // Checks directional aliases, frame-aware accessors, and frame-preserving copy.

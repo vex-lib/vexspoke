@@ -1,8 +1,8 @@
 // vexspoke/test/primitive/brain_test.c — the Brain class _test.
 //
-// Brain is the bfloat16 primitive: a uint16 payload plus float<->bfloat16
-// conversion. 3.5 is exactly representable in bfloat16, so those round trips
-// are exact; other values are checked within the bfloat16 epsilon.
+// Brain is the bf3216 primitive: a uint16 payload plus f32<->bf3216
+// conversion. 3.5 is exactly representable in bf3216, so those round trips
+// are exact; other values are checked within the bf3216 epsilon.
 
 #include <math.h>
 #include <stdint.h>
@@ -21,7 +21,7 @@ static int g_failures = 0;
         }                                                                  \
     } while (0)
 
-// Exercises Brain storage, bfloat16 conversions, CAS, arrays, metadata, and null safety.
+// Exercises Brain storage, bf3216 conversions, CAS, arrays, metadata, and null safety.
 int main(void) {
     CHECK(Brain_init());
 
@@ -31,14 +31,14 @@ int main(void) {
     CHECK(Brain_type(p) == ID_BRAIN);
     CHECK(Brain_length(p) == 2);
 
-    const uint16_t raw[] = { 0, 1, 0x3F80, 0xFFFF };
-    for (size_t i = 0; i < sizeof raw / sizeof raw[0]; i++) {
+    const u16 raw[] = { 0, 1, 0x3F80, 0xFFFF };
+    for (bytes i = 0; i < sizeof raw / sizeof raw[0]; i++) {
         Brain_set(p, raw[i]);
         CHECK(Brain_get(p) == raw[i]);
     }
 
-    // Exact bfloat16 value.
-    uint16_t bf35 = Brain_floatToBFloat16(3.5f);
+    // Exact bf3216 value.
+    u16 bf35 = Brain_f32ToBFloat16(3.5f);
     CHECK(fabsf(Brain_bFloat16ToFloat(bf35) - 3.5f) < 1e-6f);
 
     // getFloat / setFloat round trip through the encoding.
@@ -46,7 +46,7 @@ int main(void) {
     CHECK(Brain_get(p) == bf35);
     CHECK(fabsf(Brain_getFloat(p) - 3.5f) < 1e-6f);
 
-    // A non-exact value stays within the bfloat16 epsilon (2^-8 relative).
+    // A non-exact value stays within the bf3216 epsilon (2^-8 relative).
     Brain_setFloat(p, 100.0f);
     CHECK(fabsf(Brain_getFloat(p) - 100.0f) < 1.0f);
 

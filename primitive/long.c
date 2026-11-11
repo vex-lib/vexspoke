@@ -15,7 +15,7 @@
  * served from a 1024-slot BitPool for singletons and from the memory arena
  * for arrays; Long_free routes to whichever pool owns the pointer.
  * compareAndSet is a lock-free __atomic_compare_exchange on the payload, so
- * the primitive doubles as a small atomic counter. Getters return safe
+ * the primitive f64s as a small atomic counter. Getters return safe
  * defaults on null.
  * ============================================================================
  */
@@ -68,11 +68,11 @@ void *Long_alloc(void) {
     return BitPool_alloc(&g_longPool, ID_LONG);
 }
 
-void *Long_allocArray(size_t count) {
+void *Long_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
-    size_t Bytes = count * sizeof(int64_t);
+    bytes Bytes = count * sizeof(int64_t);
     // For compound types, elem_size 8 already accounts for stride, but sizeof(int64_t) is placeholder
     // Use elem_size for true stride where c_type is int64 placeholder
     if (count > 1 && 8 != sizeof(int64_t))
@@ -106,14 +106,14 @@ bool Long_compareAndSet(void *ptr, int64_t expected, int64_t value) {
     return __atomic_compare_exchange_n((int64_t*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
-uint64_t Long_type(void *ptr) {
+u64 Long_type(void *ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_longPool, ptr)) return BitPool_type(&g_longPool, ptr);
     return Memory_type(ptr);
 }
 
-size_t Long_length(void *ptr) {
+bytes Long_length(void *ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_longPool, ptr)) return BitPool_length(&g_longPool, ptr);

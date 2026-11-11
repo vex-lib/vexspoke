@@ -45,8 +45,8 @@
 #define Reactivechar    ReactiveChar
 #define Reactiveshort   ReactiveShort
 #define Reactivelong    ReactiveLong
-#define Reactivefloat   ReactiveFloat
-#define Reactivedouble  ReactiveDouble
+#define Reactivef32   ReactiveFloat
+#define Reactivef64  Reactivef64
 #define Reactivebool    ReactiveBool
 #define Reactivestring  ReactiveString
 
@@ -176,16 +176,16 @@
 // The PLAIN one-liner: the object renders as its pointer (hex). Use when the
 // object has no textual form.
 #define IMPLEMENT_REACTIVE(NAME)                                            \
-    static void VEX_CAT(VEX_RCLASS(NAME), _valueOfPtr)(uintptr_t word, char *out, size_t cap) { \
+    static void VEX_CAT(VEX_RCLASS(NAME), _valueOfPtr)(uintptr_t word, char *out, bytes cap) { \
         snprintf((out), (cap), "%p", (void*) word);                         \
     }                                                                       \
     VEX_IMPLEMENT_REACTIVE_BODY(NAME, VEX_CAT(VEX_RCLASS(NAME), _valueOfPtr))
 
 // The TYPED one-liner: the object class supplies its valueOf()
-//   void STRFN(const NAME *value, char *out, size_t cap);
+//   void STRFN(const NAME *value, char *out, bytes cap);
 // (declared before the stamp). A Label [] slot then renders real text.
 #define IMPLEMENT_REACTIVE_STR(NAME, STRFN)                                 \
-    static void VEX_CAT(VEX_RCLASS(NAME), _valueOfStr)(uintptr_t word, char *out, size_t cap) { \
+    static void VEX_CAT(VEX_RCLASS(NAME), _valueOfStr)(uintptr_t word, char *out, bytes cap) { \
         STRFN((const NAME*) word, out, cap);                                \
     }                                                                       \
     VEX_IMPLEMENT_REACTIVE_BODY(NAME, VEX_CAT(VEX_RCLASS(NAME), _valueOfStr))

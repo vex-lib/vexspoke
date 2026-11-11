@@ -68,7 +68,7 @@ int main(void) {
     Random *stream = Random_2(123, RANDOM_ENGINE_MURMUR);
     CHECK(stream != nullptr);
     if (stream && weighted) {
-        for (size_t i = 0; i < 1000; i++)
+        for (bytes i = 0; i < 1000; i++)
             CHECK(Random_probablePool(stream, weighted) == 22);
     }
     Random_free(stream);
@@ -82,7 +82,7 @@ int main(void) {
     CHECK(ProbableObjects_size(small) == 2);
     ProbableObjects_free(small);
 
-    // The allocator and pool use uint32_t lengths. Neither constructor
+    // The allocator and pool use u32 lengths. Neither constructor
     // arithmetic nor cumulative weights may silently wrap.
     ProbableObjects *boundary = ProbableObjects_1(2);
     CHECK(boundary != nullptr);
@@ -104,7 +104,7 @@ int main(void) {
             TEST_CLOSE(saved);
             rewind(capture);
             char log[512] = { 0 };
-            size_t readCount = fread(log, 1, sizeof(log) - 1, capture);
+            bytes readCount = fread(log, 1, sizeof(log) - 1, capture);
             log[readCount] = '\0';
             CHECK(strstr(log, "[vex]") != nullptr);
             CHECK(strstr(log, "capacity is not representable") != nullptr);

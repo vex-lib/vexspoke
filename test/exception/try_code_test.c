@@ -24,8 +24,8 @@ static const TryCode ALL[] = {
 };
 
 int main(void) {
-    size_t n = sizeof ALL / sizeof ALL[0];
-    for (size_t i = 0; i < n; i++) {
+    bytes n = sizeof ALL / sizeof ALL[0];
+    for (bytes i = 0; i < n; i++) {
         TryCode c = ALL[i];
         CHECK(TryCode_name(c) != nullptr);
         CHECK(TryCode_message(c) != nullptr);

@@ -39,7 +39,7 @@
  * STRUCT FIELDS (Mirroring system/capture_tool.h — exactly this file's
  * class):
  * ----------------------------------------------------------------------------
- *   uint32_t reserved;  // singleton marker; no mutable state — all data
+ *   u32 reserved;  // singleton marker; no mutable state — all data
  *                       // lives in the static const CaptureSlot rows
  *
  * SLOT RECORD (CaptureSlot — Rule 3 co-location, zero behavior of its own):
@@ -82,8 +82,8 @@
 
 #include "system/data/capture_tools.inc"
 
-static const uint32_t kCaptureToolCount =
-    (uint32_t)(sizeof(kCaptureTools) / sizeof(kCaptureTools[0]));
+static const u32 kCaptureToolCount =
+    (u32)(sizeof(kCaptureTools) / sizeof(kCaptureTools[0]));
 
 // CONSTRUCTORS
 
@@ -94,13 +94,13 @@ CaptureTool *CaptureTool_shared(void) {
 
 // CORE FUNCTIONS
 
-uint32_t CaptureTool_count(const CaptureTool *self) {
+u32 CaptureTool_count(const CaptureTool *self) {
     if (!self)
         return 0;
     return kCaptureToolCount;
 }
 
-const CaptureSlot *CaptureTool_at(const CaptureTool *self, uint32_t i) {
+const CaptureSlot *CaptureTool_at(const CaptureTool *self, u32 i) {
     if (!self || i >= kCaptureToolCount)
         return nullptr;
     return &kCaptureTools[i];
@@ -109,7 +109,7 @@ const CaptureSlot *CaptureTool_at(const CaptureTool *self, uint32_t i) {
 const CaptureSlot *CaptureTool_get(const CaptureTool *self, const char *slug) {
     if (!self || !slug || (*slug) == '\0')
         return nullptr;
-    for (uint32_t i = 0; i < kCaptureToolCount; i++) {
+    for (u32 i = 0; i < kCaptureToolCount; i++) {
         if (kCaptureTools[i].slug && strcmp(kCaptureTools[i].slug, slug) == 0)
             return &kCaptureTools[i];
     }
@@ -142,22 +142,22 @@ bool CaptureTool_isRunning(const CaptureTool *self, const CaptureSlot *slot) {
     return ProcessProbe_isRunning(probe, procKey);
 }
 
-uint32_t CaptureTool_countRunning(const CaptureTool *self, CaptureKind kind) {
+u32 CaptureTool_countRunning(const CaptureTool *self, CaptureKind kind) {
     if (!self)
         return 0;
-    uint32_t running = 0;
-    for (uint32_t i = 0; i < kCaptureToolCount; i++) {
+    u32 running = 0;
+    for (u32 i = 0; i < kCaptureToolCount; i++) {
         if (kCaptureTools[i].kind == kind && CaptureTool_isRunning(self, &kCaptureTools[i]))
             running++;
     }
     return running;
 }
 
-uint32_t CaptureTool_countRunningAll(const CaptureTool *self) {
+u32 CaptureTool_countRunningAll(const CaptureTool *self) {
     if (!self)
         return 0;
-    uint32_t running = 0;
-    for (uint32_t i = 0; i < kCaptureToolCount; i++) {
+    u32 running = 0;
+    for (u32 i = 0; i < kCaptureToolCount; i++) {
         if (CaptureTool_isRunning(self, &kCaptureTools[i]))
             running++;
     }

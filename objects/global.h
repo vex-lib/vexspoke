@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 // objects/global.h — Atomic global pointer/variable object wrapper.
 // Ported from legacy objects/Global.java.
@@ -12,19 +12,19 @@
 typedef struct Global Global;
 
 // Allocate a new atomic Global pointer/value
-Global *Global_1(uint64_t initialValue);
+Global *Global_1(u64 initialValue);
 
 // Free global memory
 
-Global *Global_2(const Global *init, size_t count);
+Global *Global_2(const Global *init, bytes count);
 
 #define Global(...) CONSTRUCTOR_DISPATCH(Global, __VA_ARGS__)
 
 void Global_free(Global *global);
 
 // Atomic read/write
-uint64_t Global_get(const Global *global);
-void     Global_set(Global *global, uint64_t value);
-bool     Global_compareAndSet(Global *global, uint64_t expected, uint64_t value);
+u64 Global_get(const Global *global);
+void     Global_set(Global *global, u64 value);
+bool     Global_compareAndSet(Global *global, u64 expected, u64 value);
 
 #endif

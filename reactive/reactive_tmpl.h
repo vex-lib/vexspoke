@@ -8,7 +8,7 @@
 // (the preprocessor does not expand a macro on the left of a `#define`).
 //
 //   #define VEX_NAME ReactiveInt
-//   #define VEX_T    int32_t
+//   #define VEX_T    i32
 //   #include "reactive/reactive_tmpl.h"
 //   #undef VEX_NAME
 //   #undef VEX_T

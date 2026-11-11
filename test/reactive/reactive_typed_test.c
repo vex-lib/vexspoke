@@ -18,8 +18,8 @@
  * MODULE: ReactiveTypedTest (reactive_typed_test/test.c)
  * LEVEL: L3 — Module Code (headless verification harness)
  * ============================================================================
- * Headless suite for the typed reactives (bool / int / double / string): the
- * embed-first contract, per-type set/get, bit-exact double round-trip, pointer
+ * Headless suite for the typed reactives (bool / int / d64 / string): the
+ * embed-first contract, per-type set/get, bit-exact d64 round-trip, pointer
  * rebind as change, observer fan-out, batch coalescing, out-of-band raw writes,
  * and null-safety.
  *
@@ -46,21 +46,21 @@ static int g_checks = 0;
 
 static int g_changed = 0;
 static int g_sets = 0;
-static int32_t g_old = 0;
-static int32_t g_new = 0;
+static i32 g_old = 0;
+static i32 g_new = 0;
 static Coord3 *g_objectValue = nullptr;
-static int32_t g_probableValue = 0;
+static i32 g_probableValue = 0;
 
 static void onObjectChanged(Coord3 *value) { g_objectValue = value; }
-static void onProbableChanged(int32_t value) { g_probableValue = value; }
+static void onProbableChanged(i32 value) { g_probableValue = value; }
 
 // Records typed integer change notifications and their old/new payloads.
 static void onChangedInt(Reactive *r, uintptr_t o, uintptr_t n, void *ud) {
     (void) r;
     (void) ud;
     g_changed++;
-    g_old = (int32_t) (uint32_t) o;
-    g_new = (int32_t) (uint32_t) n;
+    g_old = (i32) (u32) o;
+    g_new = (i32) (u32) n;
 }
 
 // Counts typed integer onSet notifications.
@@ -113,7 +113,7 @@ static void testInt(void) {
     CHECK(Reactive_drain(&(*h).base) == false);
 
     // Out-of-band: a raw engine write to the word IS the value -> detected.
-    Reactive_set(&(*h).base, (uintptr_t) (uint32_t) 99);
+    Reactive_set(&(*h).base, (uintptr_t) (u32) 99);
     CHECK(Reactive_drain(&(*h).base) == true);
     CHECK(g_changed == 3 && g_new == 99);
     CHECK(ReactiveInt_get(h) == 99);
@@ -141,38 +141,38 @@ static void testBool(void) {
     CHECK(ReactiveBool_get(nullptr) == false);
 }
 
-// Checks double round trips preserve signed zero and NaN payload meaning.
-static void testDouble(void) {
-    printf("[4] double: bit-exact round trip, incl. -0.0 and NaN\n");
-    ReactiveDouble *d = ReactiveDouble(1.5);
+// Checks d64 round trips preserve signed zero and NaN payload meaning.
+static void testf64(void) {
+    printf("[4] d64: bit-exact round trip, incl. -0.0 and NaN\n");
+    Reactivef64 *d = Reactivef64(1.5);
     CHECK(d != nullptr);
     if (!d)
         return;
-    CHECK(ReactiveDouble_get(d) == 1.5);
+    CHECK(Reactivef64_get(d) == 1.5);
 
     // -0.0 must keep its sign bit (== 0.0 numerically, different bits).
-    double negZero = -0.0;
-    uint64_t negBits = 0u;
+    d64 negZero = -0.0;
+    u64 negBits = 0u;
     memcpy(&negBits, &negZero, sizeof(negBits));
-    ReactiveDouble_set(d, negZero);
-    CHECK((uint64_t) Reactive_get(&(*d).base) == negBits);
-    CHECK(ReactiveDouble_get(d) == 0.0);
+    Reactivef64_set(d, negZero);
+    CHECK((u64) Reactive_get(&(*d).base) == negBits);
+    CHECK(Reactivef64_get(d) == 0.0);
 
     // NaN round-trips (a numerically unequal value must still survive).
-    double nan = NAN;
-    ReactiveDouble_set(d, nan);
-    CHECK(isnan(ReactiveDouble_get(d)));
+    d64 nan = NAN;
+    Reactivef64_set(d, nan);
+    CHECK(isnan(Reactivef64_get(d)));
 
-    ReactiveDouble_set(d, -42.25);
-    CHECK(ReactiveDouble_get(d) == -42.25);
-    ReactiveDouble_free(d);
+    Reactivef64_set(d, -42.25);
+    CHECK(Reactivef64_get(d) == -42.25);
+    Reactivef64_free(d);
 }
 
 // Checks borrowed string-pointer storage, rebinding notifications, and same-pointer writes.
 static void testString(void) {
     printf("[5] string: pointer word, rebind is a change\n");
-    const uint8_t *a = (const uint8_t*) "hello";
-    const uint8_t *b = (const uint8_t*) "world";
+    const u8 *a = (const u8*) "hello";
+    const u8 *b = (const u8*) "world";
     ReactiveString *s = ReactiveString(a);
     CHECK(s != nullptr);
     if (!s)
@@ -200,14 +200,14 @@ static void testObjectAndProbable(void) {
     Reactive(Coord2) *emptyVec2 = Reactive(Coord2)();
     Reactive(Coord4) *emptyVec4 = Reactive(Coord4)();
     Reactive(Rectangle) *emptyRectangle = Reactive(Rectangle)();
-    Reactive(IntDouble) *emptyIntDouble = Reactive(IntDouble)();
+    Reactive(Intf64) *emptyIntf64 = Reactive(Intf64)();
     Reactive(LongFloat) *emptyLongFloat = Reactive(LongFloat)();
-    Reactive(LongDouble) *emptyLongDouble = Reactive(LongDouble)();
-    CHECK(emptyVec2 && emptyVec4 && emptyRectangle && emptyIntDouble
-        && emptyLongFloat && emptyLongDouble);
+    Reactive(Longf64) *emptyLongf64 = Reactive(Longf64)();
+    CHECK(emptyVec2 && emptyVec4 && emptyRectangle && emptyIntf64
+        && emptyLongFloat && emptyLongf64);
     ReactiveVec2_free(emptyVec2); ReactiveVec4_free(emptyVec4);
-    ReactiveRectangle_free(emptyRectangle); ReactiveIntDouble_free(emptyIntDouble);
-    ReactiveLongFloat_free(emptyLongFloat); ReactiveLongDouble_free(emptyLongDouble);
+    ReactiveRectangle_free(emptyRectangle); ReactiveIntf64_free(emptyIntf64);
+    ReactiveLongFloat_free(emptyLongFloat); ReactiveLongf64_free(emptyLongf64);
 
     Coord3 *first = Coord3(1.0f, 2.0f, 3.0f);
     Coord3 *next = Coord3(4.0f, 5.0f, 6.0f);
@@ -252,13 +252,13 @@ static void testNull(void) {
     ReactiveInt_set(nullptr, 1);
     CHECK(ReactiveInt_get(nullptr) == 0);
     ReactiveBool_set(nullptr, true);
-    ReactiveDouble_set(nullptr, 1.0);
+    Reactivef64_set(nullptr, 1.0);
     ReactiveString_set(nullptr, nullptr);
-    CHECK(ReactiveDouble_get(nullptr) == 0.0);
+    CHECK(Reactivef64_get(nullptr) == 0.0);
     CHECK(ReactiveString_get(nullptr) == nullptr);
     ReactiveInt_free(nullptr);
     ReactiveBool_free(nullptr);
-    ReactiveDouble_free(nullptr);
+    Reactivef64_free(nullptr);
     ReactiveString_free(nullptr);
     CHECK(true);
 }
@@ -270,7 +270,7 @@ int main(void) {
     testEmbedFirst();
     testInt();
     testBool();
-    testDouble();
+    testf64();
     testString();
     testObjectAndProbable();
     testNull();

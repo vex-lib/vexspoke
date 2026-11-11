@@ -28,7 +28,7 @@ static int g_failures = 0;
 // Compares two independently created generators for identical seeded output.
 // Confirms repeated engines initialized from one seed produce the same stream.
 // Compares two independently constructed engines for identical seeded output.
-static bool sameStream(uint64_t seed, RandomEngine engine) {
+static bool sameStream(u64 seed, RandomEngine engine) {
     Random *a = Random_2(seed, engine);
     Random *b = Random_2(seed, engine);
     bool ok = (a != nullptr) && (b != nullptr);
@@ -87,23 +87,23 @@ int main(void) {
 
     // xorshift's zero-seed guard: the stream is not stuck at 0.
     Random *z = Random_2(0u, RANDOM_ENGINE_XORSHIFT);
-    uint64_t z0 = Random_nextLong(z);
-    uint64_t z1 = Random_nextLong(z);
+    u64 z0 = Random_nextLong(z);
+    u64 z1 = Random_nextLong(z);
     CHECK(z0 != z1);
     Random_free(z);
 
     // Draw ranges hold on every engine.
     RandomEngine engines[] = { RANDOM_ENGINE_MURMUR, RANDOM_ENGINE_XORSHIFT, RANDOM_ENGINE_PCG };
-    for (size_t e = 0; e < sizeof engines / sizeof engines[0]; e++) {
+    for (bytes e = 0; e < sizeof engines / sizeof engines[0]; e++) {
         Random *r = Random_2(42u, engines[e]);
         for (int i = 0; i < 32; i++) {
-            float f = Random_nextFloat(r);
+            f32 f = Random_nextFloat(r);
             CHECK(f >= 0.0f && f < 1.0f);
-            double d = Random_nextDouble(r);
+            d64 d = Random_nextf64(r);
             CHECK(d >= 0.0 && d < 1.0);
             (void) Random_nextInt(r);
             (void) Random_nextChar(r);
-            CHECK(isfinite((double) Random_nextNDCFloat(r)));
+            CHECK(isfinite((d64) Random_nextNDCFloat(r)));
         }
         Random_free(r);
     }

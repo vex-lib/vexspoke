@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stddef.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 #include "objects/probable.h"
 
@@ -16,43 +16,43 @@
 // random value in [0, total) then binary-searches the cumulative line.
 
 typedef struct ProbableObjects {
-    uint32_t count;         // active choices
-    uint32_t totalWeight;   // sum of all weights
-    uint32_t capacity;      // maximum choices
-    uint32_t pad;
+    u32 count;         // active choices
+    u32 totalWeight;   // sum of all weights
+    u32 capacity;      // maximum choices
+    u32 pad;
     // capacity slots of 16 Bytes: object(8) + cumulativeWeight(4) + weight(4)
-    uint8_t slots[];
+    u8 slots[];
 } ProbableObjects;
 
 // Allocate an empty pool with room for capacity choices. Rejects capacities
 // that cannot fit the allocator's 32-bit payload length.
-ProbableObjects *ProbableObjects_1(size_t capacity);
+ProbableObjects *ProbableObjects_1(bytes capacity);
 
 
 // Clone one populated pool (including its slots), or create count empty
 // zero-capacity headers. Multiple populated pools cannot be represented as a
 // contiguous C array because each pool ends in a flexible array; rejected.
-ProbableObjects *ProbableObjects_2(const ProbableObjects *init, size_t count);
+ProbableObjects *ProbableObjects_2(const ProbableObjects *init, bytes count);
 
 #define ProbableObjects(...) CONSTRUCTOR_DISPATCH(ProbableObjects, __VA_ARGS__)
 
 void ProbableObjects_free(ProbableObjects *po);
 
-size_t ProbableObjects_size(ProbableObjects *po);
-size_t ProbableObjects_capacity(ProbableObjects *po);
-uint32_t ProbableObjects_totalWeight(ProbableObjects *po);
+bytes ProbableObjects_size(ProbableObjects *po);
+bytes ProbableObjects_capacity(ProbableObjects *po);
+u32 ProbableObjects_totalWeight(ProbableObjects *po);
 
 // Append a choice. Returns 0 without changing the pool if full or if the
-// cumulative uint32_t weight would overflow.
-int ProbableObjects_add(ProbableObjects *po, uintptr_t object, uint32_t weight);
+// cumulative u32 weight would overflow.
+int ProbableObjects_add(ProbableObjects *po, uintptr_t object, u32 weight);
 
 // Append the object/weight of an existing Probable.
 int ProbableObjects_addProbable(ProbableObjects *po, const Probable *probable);
 
 // Slot accessors (used by Random.probablePool's binary search).
-uintptr_t ProbableObjects_objectAt(ProbableObjects *po, size_t index);
-uint32_t ProbableObjects_cumulativeAt(ProbableObjects *po, size_t index);
-uint32_t ProbableObjects_weightAt(ProbableObjects *po, size_t index);
+uintptr_t ProbableObjects_objectAt(ProbableObjects *po, bytes index);
+u32 ProbableObjects_cumulativeAt(ProbableObjects *po, bytes index);
+u32 ProbableObjects_weightAt(ProbableObjects *po, bytes index);
 
 // Draw a weighted object from the pool using the system RNG.
 uintptr_t ProbableObjects_get(ProbableObjects *po);

@@ -9,10 +9,12 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
 
-#include "re/atomic/registry.h"
-#include "re/atomic/spin.h"
+#include "re/atomic/atomic.h"
+#include "re/thread/thread.h"
+#include "thread/thread.h"
 
 static int g_failures = 0;
 
@@ -28,7 +30,7 @@ static int g_failures = 0;
 #define HAMMER_THREADS 8
 #define HAMMER_ITERS 10000
 
-static _Atomic int32_t g_counter;
+static _Atomic i32 g_counter;
 
 // Atomically increments the shared counter for the configured contention batch.
 // Performs the shared atomic increment workload for contention testing.
@@ -40,16 +42,16 @@ static void *hammer(void *arg) {
 }
 
 // --- Concurrent registration ---
-static _Atomic int32_t g_seenMask[THREAD_REGISTRY_SIZE]; // per-index arrival flags
+static _Atomic i32 g_seenMask[THREAD_REGISTRY_DEFAULT_SIZE]; // per-index arrival flags
 
 // Registers the calling thread, assigns its role, and marks its registry slot.
 // Registers the calling thread, assigns its role, and marks its registry slot.
 static void *registerer(void *arg) {
     (void) arg;
     int idx = ThreadRegistry_index();
-    ThreadRegistry_setRole(idx, THREAD_ROLE_USER);
+    ThreadRegistry_setTag(idx, THREAD_ROLE_USER);
 
-    if (idx >= 0 && idx < THREAD_REGISTRY_SIZE)
+    if (idx >= 0 && idx < THREAD_REGISTRY_DEFAULT_SIZE)
         atomic_store(&g_seenMask[idx], 1); // racy-but-atomic same-slot writes
     return nullptr;
 }
@@ -75,10 +77,10 @@ static void *lockWorker(void *arg) {
 // Verifies atomic operations, thread registration, and SpinLock mutual exclusion.
 int main(void) {
     // --- Single-thread C23 atomic semantics ---
-    _Atomic int32_t a = 0;
+    _Atomic i32 a = 0;
     CHECK(atomic_fetch_add(&a, 5) == 0 && atomic_load(&a) == 5);
     CHECK(atomic_exchange(&a, 9) == 5);
-    int32_t expected = 9;
+    i32 expected = 9;
     CHECK(atomic_compare_exchange_strong(&a, &expected, 7));
     expected = 9;
     CHECK(!atomic_compare_exchange_strong(&a, &expected, 1)); // expected stale
@@ -114,13 +116,13 @@ int main(void) {
     CHECK(atomic_load(&g_counter) == HAMMER_THREADS * HAMMER_ITERS);
 
     // --- Concurrent registration yields distinct dense indexes ---
-    for (int i = 0; i < THREAD_REGISTRY_SIZE; i++)
+    for (int i = 0; i < THREAD_REGISTRY_DEFAULT_SIZE; i++)
         atomic_store(&g_seenMask[i], 0);
 
     int mainIdx = ThreadRegistry_index();
-    ThreadRegistry_setRole(mainIdx, THREAD_ROLE_MAIN);
-    CHECK(mainIdx >= 0 && mainIdx < THREAD_REGISTRY_SIZE);
-    CHECK(ThreadRegistry_role(mainIdx) == THREAD_ROLE_MAIN);
+    ThreadRegistry_setTag(mainIdx, THREAD_ROLE_MAIN);
+    CHECK(mainIdx >= 0 && mainIdx < THREAD_REGISTRY_DEFAULT_SIZE);
+    CHECK(ThreadRegistry_tag(mainIdx) == (u32) THREAD_ROLE_MAIN);
 
     enum { REG_THREADS = 16 };
     pthread_t regs[REG_THREADS];
@@ -130,18 +132,28 @@ int main(void) {
         pthread_join(regs[i], nullptr);
 
     int arrivals = 0;
-    for (int i = 0; i < THREAD_REGISTRY_SIZE; i++) {
+    for (int i = 0; i < THREAD_REGISTRY_DEFAULT_SIZE; i++) {
         if (atomic_load(&g_seenMask[i]) != 0) {
             arrivals++;
-            CHECK(ThreadRegistry_role(i) == THREAD_ROLE_USER || i == mainIdx);
+            CHECK(ThreadRegistry_tag(i) == (u32) THREAD_ROLE_USER || i == mainIdx);
         }
     }
     CHECK(arrivals >= REG_THREADS);      // every joiner marked its slot...
-    CHECK(arrivals <= THREAD_REGISTRY_SIZE);
+    CHECK(arrivals <= THREAD_REGISTRY_DEFAULT_SIZE);
 
     // Same thread re-asks: identical index.
     CHECK(ThreadRegistry_index() == mainIdx);
-    CHECK(ThreadRegistry_roleName(THREAD_ROLE_DRAW)[0] == 'd');
+    CHECK(ThreadRole_name(THREAD_ROLE_DRAW)[0] == 'd');
+    CHECK(strcmp(ThreadRole_name(THREAD_ROLE_MAIN), "_main") == 0);
+    CHECK(strcmp(ThreadRole_name(THREAD_ROLE_ENGINE), "engine") == 0);
+    CHECK(strcmp(ThreadRole_name(THREAD_ROLE_PRESENT), "present") == 0);
+    CHECK(strcmp(ThreadRole_name(THREAD_ROLE_NETWORKING), "networking") == 0);
+    CHECK(strcmp(ThreadRole_name(THREAD_ROLE_SCRIPTING), "scripting") == 0);
+    CHECK(strcmp(ThreadRole_name(THREAD_ROLE_CONSOLE), "console") == 0);
+    CHECK(strcmp(ThreadRole_name(THREAD_ROLE_UI), "ui") == 0);
+    CHECK(strcmp(ThreadRole_name(THREAD_ROLE_USER), "user") == 0);
+    CHECK(strcmp(ThreadRole_name(THREAD_ROLE_NONE), "none") == 0);
+    CHECK(strcmp(ThreadRole_name((ThreadRole) 9999), "none") == 0);
 
     // --- SpinLock mutual exclusion under contention ---
     pthread_t lockThreads[4];

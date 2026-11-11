@@ -1,13 +1,13 @@
-// vexspoke/test/primitive/int_float_test.c — the IntFloat class _test.
+// vexspoke/test/primitive/int_f32_test.c — the IntFloat class _test.
 //
-// The composite payload is int32 (offset 0) + float (offset 4); the public API
+// The composite payload is int32 (offset 0) + f32 (offset 4); the public API
 // reads/writes it as one int64, so the assertions pin both halves.
 
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "primitive/int_float.h"
+#include "primitive/int_f32.h"
 #include "oop/type.h"
 
 static int g_failures = 0;
@@ -37,10 +37,10 @@ int main(void) {
 
     void *c = IntFloat_allocWithValues(7, 1.5f);
     CHECK(c != nullptr);
-    uint32_t fbits = 0;
-    float v2 = 1.5f;
+    u32 fbits = 0;
+    f32 v2 = 1.5f;
     memcpy(&fbits, &v2, sizeof fbits);
-    int64_t expected = ((int64_t) fbits << 32) | (uint32_t) 7;
+    int64_t expected = ((int64_t) fbits << 32) | (u32) 7;
     CHECK(IntFloat_get(c) == expected);
 
     void *r = IntFloat_2(3, 0.5f);
@@ -76,9 +76,9 @@ int main(void) {
     IntFloat_shutdown();
 
     if (g_failures == 0) {
-        printf("int_float_test: all assertions held\n");
+        printf("int_f32_test: all assertions held\n");
         return 0;
     }
-    printf("int_float_test: %d FAILURES\n", g_failures);
+    printf("int_f32_test: %d FAILURES\n", g_failures);
     return 1;
 }

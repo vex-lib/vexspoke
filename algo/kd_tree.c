@@ -33,18 +33,18 @@
  * STRUCT FIELDS (Mirroring algo/kd_tree.h):
  * ----------------------------------------------------------------------------
  *   KdPoint {
- *     float coord[3];    // [0] = x/horizontal, [1] = y/vertical, [2] = z/depth
- *     uint64_t payload;  // caller payload carried by the point
+ *     f32 coord[3];    // [0] = x/horizontal, [1] = y/vertical, [2] = z/depth
+ *     u64 payload;  // caller payload carried by the point
  *   }
  *   KdNode {
  *     KdPoint point;         // split point stored at this node
- *     uint8_t axis;          // 0 = X, 1 = Y, 2 = Z split axis
+ *     u8 axis;          // 0 = X, 1 = Y, 2 = Z split axis
  *     struct KdNode *left;   // subtree on the near side of the split plane
  *     struct KdNode *right;  // subtree on the far side of the split plane
  *   }
  *   KdTree {
  *     KdNode *root;  // root of the balanced tree (nullptr when empty)
- *     size_t count;  // number of points indexed
+ *     bytes count;  // number of points indexed
  *   }
  *
  * FUNCTION REGISTRY:
@@ -72,10 +72,10 @@ static void swapPoints(KdPoint *a, KdPoint *b) {
     *b = tmp;
 }
 
-static size_t partitionAxis(KdPoint *points, size_t left, size_t right, uint8_t axis) {
-    float pivot = points[right].coord[axis];
-    size_t i = left;
-    for (size_t j = left; j < right; j++) {
+static bytes partitionAxis(KdPoint *points, bytes left, bytes right, u8 axis) {
+    f32 pivot = points[right].coord[axis];
+    bytes i = left;
+    for (bytes j = left; j < right; j++) {
         if (points[j].coord[axis] < pivot) {
             swapPoints(&points[i], &points[j]);
             i++;
@@ -85,9 +85,9 @@ static size_t partitionAxis(KdPoint *points, size_t left, size_t right, uint8_t 
     return i;
 }
 
-static void quickSelectAxis(KdPoint *points, size_t left, size_t right, size_t k, uint8_t axis) {
+static void quickSelectAxis(KdPoint *points, bytes left, bytes right, bytes k, u8 axis) {
     while (left < right) {
-        size_t pivotIdx = partitionAxis(points, left, right, axis);
+        bytes pivotIdx = partitionAxis(points, left, right, axis);
         if (pivotIdx == k) {
             return;
         } else if (k < pivotIdx) {
@@ -99,11 +99,11 @@ static void quickSelectAxis(KdPoint *points, size_t left, size_t right, size_t k
     }
 }
 
-static KdNode *KdTree_buildRecursive(KdPoint *points, size_t left, size_t right, uint8_t depth) {
+static KdNode *KdTree_buildRecursive(KdPoint *points, bytes left, bytes right, u8 depth) {
     if (left > right) return nullptr;
 
-    uint8_t axis = depth % 3;
-    size_t mid = left + (right - left) / 2;
+    u8 axis = depth % 3;
+    bytes mid = left + (right - left) / 2;
 
     quickSelectAxis(points, left, right, mid, axis);
 
@@ -118,7 +118,7 @@ static KdNode *KdTree_buildRecursive(KdPoint *points, size_t left, size_t right,
     return node;
 }
 
-KdTree *KdTree_build(KdPoint *points, size_t count) {
+KdTree *KdTree_build(KdPoint *points, bytes count) {
     if (points == nullptr || count == 0) return nullptr;
 
     KdTree *tree = (KdTree*) Memory_alloc(TYPE_BYTE_ARRAY, sizeof(KdTree));
@@ -145,28 +145,28 @@ void KdTree_free(KdTree *tree) {
     Memory_free(tree);
 }
 
-static inline float distSq(const float a[3], const float b[3]) {
-    float dx = a[0] - b[0];
-    float dy = a[1] - b[1];
-    float dz = a[2] - b[2];
+static inline f32 distSq(const f32 a[3], const f32 b[3]) {
+    f32 dx = a[0] - b[0];
+    f32 dy = a[1] - b[1];
+    f32 dz = a[2] - b[2];
     return dx * dx + dy * dy + dz * dz;
 }
 
 static void nearestRecursive(const KdNode *node,
-                             const float   query[3],
+                             const f32   query[3],
                              KdPoint      *bestPoint,
-                             float        *bestDistSq) {
+                             f32        *bestDistSq) {
     if (node == nullptr) return;
 
     KdPoint point = (*node).point;
-    float d = distSq(query, point.coord);
+    f32 d = distSq(query, point.coord);
     if (d < *bestDistSq) {
         *bestDistSq = d;
         *bestPoint = point;
     }
 
-    uint8_t axis = (*node).axis;
-    float planeDelta = query[axis] - point.coord[axis];
+    u8 axis = (*node).axis;
+    f32 planeDelta = query[axis] - point.coord[axis];
 
     const KdNode *nearChild = (planeDelta <= 0.0f) ? (*node).left : (*node).right;
     const KdNode *farChild  = (planeDelta <= 0.0f) ? (*node).right : (*node).left;
@@ -180,11 +180,11 @@ static void nearestRecursive(const KdNode *node,
     }
 }
 
-bool KdTree_nearest(const KdTree *tree, const float queryCoord[3], KdPoint *outNearest, float *outDistSq) {
+bool KdTree_nearest(const KdTree *tree, const f32 queryCoord[3], KdPoint *outNearest, f32 *outDistSq) {
     if (tree == nullptr || (*tree).root == nullptr || outNearest == nullptr) {
         return false;
     }
-    float bestD = 1e30f;
+    f32 bestD = 1e30f;
     const KdNode *root = (*tree).root;
     KdPoint bestP = (*root).point;
     nearestRecursive(root, queryCoord, &bestP, &bestD);
@@ -196,23 +196,23 @@ bool KdTree_nearest(const KdTree *tree, const float queryCoord[3], KdPoint *outN
     return true;
 }
 
-static size_t radiusRecursive(const KdNode *node,
-                              const float   query[3],
-                              float         radiusSq,
-                              uint64_t     *outPayloads,
-                              size_t        maxCount,
-                              size_t        count) {
+static bytes radiusRecursive(const KdNode *node,
+                              const f32   query[3],
+                              f32         radiusSq,
+                              u64     *outPayloads,
+                              bytes        maxCount,
+                              bytes        count) {
     if (node == nullptr || count >= maxCount) return count;
 
     KdPoint point = (*node).point;
-    float d = distSq(query, point.coord);
+    f32 d = distSq(query, point.coord);
     if (d <= radiusSq) {
         outPayloads[count++] = point.payload;
         if (count >= maxCount) return count;
     }
 
-    uint8_t axis = (*node).axis;
-    float planeDelta = query[axis] - point.coord[axis];
+    u8 axis = (*node).axis;
+    f32 planeDelta = query[axis] - point.coord[axis];
 
     const KdNode *nearChild = (planeDelta <= 0.0f) ? (*node).left : (*node).right;
     const KdNode *farChild  = (planeDelta <= 0.0f) ? (*node).right : (*node).left;
@@ -226,7 +226,7 @@ static size_t radiusRecursive(const KdNode *node,
     return count;
 }
 
-size_t KdTree_queryRadius(const KdTree *tree, const float queryCoord[3], float radius, uint64_t *outPayloads, size_t maxCount) {
+bytes KdTree_queryRadius(const KdTree *tree, const f32 queryCoord[3], f32 radius, u64 *outPayloads, bytes maxCount) {
     if (tree == nullptr || (*tree).root == nullptr || outPayloads == nullptr || maxCount == 0 || radius < 0.0f) {
         return 0;
     }

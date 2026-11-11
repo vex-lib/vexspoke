@@ -12,7 +12,7 @@
  * ============================================================================
  * 64-byte column-major 4x4 matrix class, ported from lang/Mat4.java. All
  * transforms (translation, scale, rotation, perspective, orthographic,
- * lookAt) write dest-last into caller-provided matrices; the single float
+ * lookAt) write dest-last into caller-provided matrices; the single f32
  * array m[16] keeps the struct trivially copyable and SIMD-friendly.
  * Mat4_0 allocates through the memory arena with the TYPE_MAT4_SINGLETON
  * identity; every other function operates on caller-owned storage with zero
@@ -30,7 +30,7 @@
  * STRUCT FIELDS (Mirroring lang/mat4.h):
  * ----------------------------------------------------------------------------
  *   Mat4 {
- *     float m[16]; // column-major 4x4 matrix
+ *     f32 m[16]; // column-major 4x4 matrix
  *   }
  *
  * FUNCTION REGISTRY:
@@ -87,19 +87,19 @@ void Mat4_free(Mat4 *m) {
     Memory_free(m);
 }
 
-float Mat4_get(const Mat4 *m, int row, int col) {
+f32 Mat4_get(const Mat4 *m, int row, int col) {
     return (*m).m[col * 4 + row];
 }
 
-void Mat4_set(Mat4 *m, int row, int col, float val) {
+void Mat4_set(Mat4 *m, int row, int col, f32 val) {
     (*m).m[col * 4 + row] = val;
 }
 
-float Mat4_getRaw(const Mat4 *m, int index) {
+f32 Mat4_getRaw(const Mat4 *m, int index) {
     return (*m).m[index];
 }
 
-void Mat4_setRaw(Mat4 *m, int index, float val) {
+void Mat4_setRaw(Mat4 *m, int index, f32 val) {
     (*m).m[index] = val;
 }
 
@@ -122,16 +122,16 @@ void Mat4_copy(const Mat4 *src, Mat4 *dest) {
 }
 
 void Mat4_multiply(const Mat4 *left, const Mat4 *right, Mat4 *dest) {
-    float m00 = Mat4_get(left, 0, 0), m01 = Mat4_get(left, 0, 1), m02 = Mat4_get(left, 0, 2), m03 = Mat4_get(left, 0, 3);
-    float m10 = Mat4_get(left, 1, 0), m11 = Mat4_get(left, 1, 1), m12 = Mat4_get(left, 1, 2), m13 = Mat4_get(left, 1, 3);
-    float m20 = Mat4_get(left, 2, 0), m21 = Mat4_get(left, 2, 1), m22 = Mat4_get(left, 2, 2), m23 = Mat4_get(left, 2, 3);
-    float m30 = Mat4_get(left, 3, 0), m31 = Mat4_get(left, 3, 1), m32 = Mat4_get(left, 3, 2), m33 = Mat4_get(left, 3, 3);
+    f32 m00 = Mat4_get(left, 0, 0), m01 = Mat4_get(left, 0, 1), m02 = Mat4_get(left, 0, 2), m03 = Mat4_get(left, 0, 3);
+    f32 m10 = Mat4_get(left, 1, 0), m11 = Mat4_get(left, 1, 1), m12 = Mat4_get(left, 1, 2), m13 = Mat4_get(left, 1, 3);
+    f32 m20 = Mat4_get(left, 2, 0), m21 = Mat4_get(left, 2, 1), m22 = Mat4_get(left, 2, 2), m23 = Mat4_get(left, 2, 3);
+    f32 m30 = Mat4_get(left, 3, 0), m31 = Mat4_get(left, 3, 1), m32 = Mat4_get(left, 3, 2), m33 = Mat4_get(left, 3, 3);
 
     for (int col = 0; col < 4; col++) {
-        float r0 = Mat4_get(right, 0, col);
-        float r1 = Mat4_get(right, 1, col);
-        float r2 = Mat4_get(right, 2, col);
-        float r3 = Mat4_get(right, 3, col);
+        f32 r0 = Mat4_get(right, 0, col);
+        f32 r1 = Mat4_get(right, 1, col);
+        f32 r2 = Mat4_get(right, 2, col);
+        f32 r3 = Mat4_get(right, 3, col);
 
         Mat4_set(dest, 0, col, m00 * r0 + m01 * r1 + m02 * r2 + m03 * r3);
         Mat4_set(dest, 1, col, m10 * r0 + m11 * r1 + m12 * r2 + m13 * r3);
@@ -142,7 +142,7 @@ void Mat4_multiply(const Mat4 *left, const Mat4 *right, Mat4 *dest) {
 
 void Mat4_transpose(const Mat4 *src, Mat4 *dest) {
     if (dest == src) {
-        float t;
+        f32 t;
         t = (*dest).m[1];  (*dest).m[1]  = (*dest).m[4];  (*dest).m[4]  = t;
         t = (*dest).m[2];  (*dest).m[2]  = (*dest).m[8];  (*dest).m[8]  = t;
         t = (*dest).m[3];  (*dest).m[3]  = (*dest).m[12]; (*dest).m[12] = t;
@@ -156,22 +156,22 @@ void Mat4_transpose(const Mat4 *src, Mat4 *dest) {
             Mat4_set(dest, col, row, Mat4_get(src, row, col));
 }
 
-void Mat4_createTransformationMatrix(float pos_x, float pos_y, float pos_z,
-                                     float rot_x_deg, float rot_y_deg, float rot_z_deg,
-                                     float scale_x, float scale_y, float scale_z, Mat4 *dest) {
-    float rx = rot_x_deg * FAST_MATH_DEG_TO_RAD;
-    float ry = rot_y_deg * FAST_MATH_DEG_TO_RAD;
-    float rz = rot_z_deg * FAST_MATH_DEG_TO_RAD;
+void Mat4_createTransformationMatrix(f32 pos_x, f32 pos_y, f32 pos_z,
+                                     f32 rot_x_deg, f32 rot_y_deg, f32 rot_z_deg,
+                                     f32 scale_x, f32 scale_y, f32 scale_z, Mat4 *dest) {
+    f32 rx = rot_x_deg * FAST_MATH_DEG_TO_RAD;
+    f32 ry = rot_y_deg * FAST_MATH_DEG_TO_RAD;
+    f32 rz = rot_z_deg * FAST_MATH_DEG_TO_RAD;
 
-    float cx = FastMath_cos(rx);
-    float sx = FastMath_sin(rx);
-    float cy = FastMath_cos(ry);
-    float sy = FastMath_sin(ry);
-    float cz = FastMath_cos(rz);
-    float sz = FastMath_sin(rz);
+    f32 cx = FastMath_cos(rx);
+    f32 sx = FastMath_sin(rx);
+    f32 cy = FastMath_cos(ry);
+    f32 sy = FastMath_sin(ry);
+    f32 cz = FastMath_cos(rz);
+    f32 sz = FastMath_sin(rz);
 
-    float cycz = cy * cz;
-    float cysz = cy * sz;
+    f32 cycz = cy * cz;
+    f32 cysz = cy * sz;
 
     Mat4_set(dest, 0, 0, cycz * scale_x);
     Mat4_set(dest, 1, 0, cysz * scale_x);
@@ -194,11 +194,11 @@ void Mat4_createTransformationMatrix(float pos_x, float pos_y, float pos_z,
     Mat4_set(dest, 3, 3, 1.0f);
 }
 
-void Mat4_createTransformationMatrix2D(float pos_x, float pos_y,
-                                       float rot_z_deg, float scale_x, float scale_y, Mat4 *dest) {
-    float rz = rot_z_deg * FAST_MATH_DEG_TO_RAD;
-    float cz = FastMath_cos(rz);
-    float sz = FastMath_sin(rz);
+void Mat4_createTransformationMatrix2D(f32 pos_x, f32 pos_y,
+                                       f32 rot_z_deg, f32 scale_x, f32 scale_y, Mat4 *dest) {
+    f32 rz = rot_z_deg * FAST_MATH_DEG_TO_RAD;
+    f32 cz = FastMath_cos(rz);
+    f32 sz = FastMath_sin(rz);
 
     Mat4_zero(dest);
     Mat4_set(dest, 0, 0, cz * scale_x);
@@ -211,21 +211,21 @@ void Mat4_createTransformationMatrix2D(float pos_x, float pos_y,
     Mat4_set(dest, 1, 3, pos_y);
 }
 
-void Mat4_createViewMatrix(float pos_x, float pos_y, float pos_z,
-                           float pitch_deg, float yaw_deg, float roll_deg, Mat4 *dest) {
+void Mat4_createViewMatrix(f32 pos_x, f32 pos_y, f32 pos_z,
+                           f32 pitch_deg, f32 yaw_deg, f32 roll_deg, Mat4 *dest) {
     (void)roll_deg;
 
-    float pitch_rad = pitch_deg * FAST_MATH_DEG_TO_RAD;
-    float yaw_rad = yaw_deg * FAST_MATH_DEG_TO_RAD;
+    f32 pitch_rad = pitch_deg * FAST_MATH_DEG_TO_RAD;
+    f32 yaw_rad = yaw_deg * FAST_MATH_DEG_TO_RAD;
 
-    float cp = FastMath_cos(pitch_rad);
-    float sp = FastMath_sin(pitch_rad);
-    float cy = FastMath_cos(yaw_rad);
-    float sy = FastMath_sin(yaw_rad);
+    f32 cp = FastMath_cos(pitch_rad);
+    f32 sp = FastMath_sin(pitch_rad);
+    f32 cy = FastMath_cos(yaw_rad);
+    f32 sy = FastMath_sin(yaw_rad);
 
-    float m00 = cy,  m01 = sy * sp, m02 = sy * cp;
-    float m10 = 0.0f, m11 = cp,     m12 = -sp;
-    float m20 = -sy, m21 = cy * sp, m22 = cy * cp;
+    f32 m00 = cy,  m01 = sy * sp, m02 = sy * cp;
+    f32 m10 = 0.0f, m11 = cp,     m12 = -sp;
+    f32 m20 = -sy, m21 = cy * sp, m22 = cy * cp;
 
     Mat4_set(dest, 0, 0, m00); Mat4_set(dest, 0, 1, m01); Mat4_set(dest, 0, 2, m02); Mat4_set(dest, 0, 3, 0.0f);
     Mat4_set(dest, 1, 0, m10); Mat4_set(dest, 1, 1, m11); Mat4_set(dest, 1, 2, m12); Mat4_set(dest, 1, 3, 0.0f);
@@ -237,12 +237,12 @@ void Mat4_createViewMatrix(float pos_x, float pos_y, float pos_z,
     Mat4_set(dest, 3, 3, 1.0f);
 }
 
-void Mat4_translate(const Mat4 *src, float tx, float ty, float tz, Mat4 *dest) {
+void Mat4_translate(const Mat4 *src, f32 tx, f32 ty, f32 tz, Mat4 *dest) {
     Mat4_copy(src, dest);
-    float m00 = Mat4_get(src, 0, 0), m01 = Mat4_get(src, 0, 1), m02 = Mat4_get(src, 0, 2), m03 = Mat4_get(src, 0, 3);
-    float m10 = Mat4_get(src, 1, 0), m11 = Mat4_get(src, 1, 1), m12 = Mat4_get(src, 1, 2), m13 = Mat4_get(src, 1, 3);
-    float m20 = Mat4_get(src, 2, 0), m21 = Mat4_get(src, 2, 1), m22 = Mat4_get(src, 2, 2), m23 = Mat4_get(src, 2, 3);
-    float m30 = Mat4_get(src, 3, 0), m31 = Mat4_get(src, 3, 1), m32 = Mat4_get(src, 3, 2), m33 = Mat4_get(src, 3, 3);
+    f32 m00 = Mat4_get(src, 0, 0), m01 = Mat4_get(src, 0, 1), m02 = Mat4_get(src, 0, 2), m03 = Mat4_get(src, 0, 3);
+    f32 m10 = Mat4_get(src, 1, 0), m11 = Mat4_get(src, 1, 1), m12 = Mat4_get(src, 1, 2), m13 = Mat4_get(src, 1, 3);
+    f32 m20 = Mat4_get(src, 2, 0), m21 = Mat4_get(src, 2, 1), m22 = Mat4_get(src, 2, 2), m23 = Mat4_get(src, 2, 3);
+    f32 m30 = Mat4_get(src, 3, 0), m31 = Mat4_get(src, 3, 1), m32 = Mat4_get(src, 3, 2), m33 = Mat4_get(src, 3, 3);
 
     Mat4_set(dest, 0, 3, m00 * tx + m01 * ty + m02 * tz + m03);
     Mat4_set(dest, 1, 3, m10 * tx + m11 * ty + m12 * tz + m13);
@@ -250,7 +250,7 @@ void Mat4_translate(const Mat4 *src, float tx, float ty, float tz, Mat4 *dest) {
     Mat4_set(dest, 3, 3, m30 * tx + m31 * ty + m32 * tz + m33);
 }
 
-void Mat4_scale(const Mat4 *src, float sx, float sy, float sz, Mat4 *dest) {
+void Mat4_scale(const Mat4 *src, f32 sx, f32 sy, f32 sz, Mat4 *dest) {
     Mat4_copy(src, dest);
     for (int row = 0; row < 4; row++) {
         Mat4_set(dest, row, 0, Mat4_get(src, row, 0) * sx);
@@ -259,39 +259,39 @@ void Mat4_scale(const Mat4 *src, float sx, float sy, float sz, Mat4 *dest) {
     }
 }
 
-void Mat4_rotate(const Mat4 *src, float angle_radians,
-                 float axis_x, float axis_y, float axis_z, Mat4 *dest) {
-    float len_sq = axis_x * axis_x + axis_y * axis_y + axis_z * axis_z;
+void Mat4_rotate(const Mat4 *src, f32 angle_radians,
+                 f32 axis_x, f32 axis_y, f32 axis_z, Mat4 *dest) {
+    f32 len_sq = axis_x * axis_x + axis_y * axis_y + axis_z * axis_z;
     if (len_sq <= FAST_MATH_EPSILON)
         return;
-    float inv_len = FastMath_invSqrt(len_sq);
+    f32 inv_len = FastMath_invSqrt(len_sq);
     axis_x *= inv_len;
     axis_y *= inv_len;
     axis_z *= inv_len;
 
-    float c = FastMath_cos(angle_radians);
-    float s = FastMath_sin(angle_radians);
-    float nc = 1.0f - c;
+    f32 c = FastMath_cos(angle_radians);
+    f32 s = FastMath_sin(angle_radians);
+    f32 nc = 1.0f - c;
 
-    float xy = axis_x * axis_y, yz = axis_y * axis_z, zx = axis_z * axis_x;
-    float xs = axis_x * s,      ys = axis_y * s,      zs = axis_z * s;
+    f32 xy = axis_x * axis_y, yz = axis_y * axis_z, zx = axis_z * axis_x;
+    f32 xs = axis_x * s,      ys = axis_y * s,      zs = axis_z * s;
 
-    float r00 = axis_x * axis_x * nc + c;
-    float r01 = xy * nc - zs;
-    float r02 = zx * nc + ys;
+    f32 r00 = axis_x * axis_x * nc + c;
+    f32 r01 = xy * nc - zs;
+    f32 r02 = zx * nc + ys;
 
-    float r10 = xy * nc + zs;
-    float r11 = axis_y * axis_y * nc + c;
-    float r12 = yz * nc - xs;
+    f32 r10 = xy * nc + zs;
+    f32 r11 = axis_y * axis_y * nc + c;
+    f32 r12 = yz * nc - xs;
 
-    float r20 = zx * nc - ys;
-    float r21 = yz * nc + xs;
-    float r22 = axis_z * axis_z * nc + c;
+    f32 r20 = zx * nc - ys;
+    f32 r21 = yz * nc + xs;
+    f32 r22 = axis_z * axis_z * nc + c;
 
     for (int row = 0; row < 4; row++) {
-        float m0 = Mat4_get(src, row, 0);
-        float m1 = Mat4_get(src, row, 1);
-        float m2 = Mat4_get(src, row, 2);
+        f32 m0 = Mat4_get(src, row, 0);
+        f32 m1 = Mat4_get(src, row, 1);
+        f32 m2 = Mat4_get(src, row, 2);
 
         Mat4_set(dest, row, 0, m0 * r00 + m1 * r10 + m2 * r20);
         Mat4_set(dest, row, 1, m0 * r01 + m1 * r11 + m2 * r21);
@@ -302,9 +302,9 @@ void Mat4_rotate(const Mat4 *src, float angle_radians,
     }
 }
 
-void Mat4_perspective(float fov_y_radians, float aspect, float z_near, float z_far, Mat4 *dest) {
+void Mat4_perspective(f32 fov_y_radians, f32 aspect, f32 z_near, f32 z_far, Mat4 *dest) {
     Mat4_zero(dest);
-    float tan_half_fov = FastMath_tan(fov_y_radians / 2.0f);
+    f32 tan_half_fov = FastMath_tan(fov_y_radians / 2.0f);
 
     Mat4_set(dest, 0, 0, 1.0f / (aspect * tan_half_fov));
     Mat4_set(dest, 1, 1, 1.0f / tan_half_fov);
@@ -313,15 +313,15 @@ void Mat4_perspective(float fov_y_radians, float aspect, float z_near, float z_f
     Mat4_set(dest, 3, 2, -1.0f);
 }
 
-void Mat4_perspectiveVulkan(float fov_y_radians, float aspect, float z_near, float z_far, Mat4 *dest) {
+void Mat4_perspectiveVulkan(f32 fov_y_radians, f32 aspect, f32 z_near, f32 z_far, Mat4 *dest) {
     Mat4_perspective(fov_y_radians, aspect, z_near, z_far, dest);
     Mat4_set(dest, 1, 1, -Mat4_get(dest, 1, 1));
     Mat4_set(dest, 2, 2, z_far / (z_near - z_far));
     Mat4_set(dest, 2, 3, (z_near * z_far) / (z_near - z_far));
 }
 
-void Mat4_orthographic(float left, float right, float bottom, float top,
-                       float z_near, float z_far, Mat4 *dest) {
+void Mat4_orthographic(f32 left, f32 right, f32 bottom, f32 top,
+                       f32 z_near, f32 z_far, Mat4 *dest) {
     Mat4_zero(dest);
     Mat4_set(dest, 0, 0, 2.0f / (right - left));
     Mat4_set(dest, 1, 1, 2.0f / (top - bottom));
@@ -332,34 +332,34 @@ void Mat4_orthographic(float left, float right, float bottom, float top,
     Mat4_set(dest, 3, 3, 1.0f);
 }
 
-void Mat4_lookAt(float eye_x, float eye_y, float eye_z,
-                 float target_x, float target_y, float target_z,
-                 float up_x, float up_y, float up_z, Mat4 *dest) {
-    float fx = eye_x - target_x;
-    float fy = eye_y - target_y;
-    float fz = eye_z - target_z;
-    float f_len_sq = fx * fx + fy * fy + fz * fz;
+void Mat4_lookAt(f32 eye_x, f32 eye_y, f32 eye_z,
+                 f32 target_x, f32 target_y, f32 target_z,
+                 f32 up_x, f32 up_y, f32 up_z, Mat4 *dest) {
+    f32 fx = eye_x - target_x;
+    f32 fy = eye_y - target_y;
+    f32 fz = eye_z - target_z;
+    f32 f_len_sq = fx * fx + fy * fy + fz * fz;
     if (f_len_sq > FAST_MATH_EPSILON) {
-        float inv_f = FastMath_invSqrt(f_len_sq);
+        f32 inv_f = FastMath_invSqrt(f_len_sq);
         fx *= inv_f;
         fy *= inv_f;
         fz *= inv_f;
     }
 
-    float rx = up_y * fz - up_z * fy;
-    float ry = up_z * fx - up_x * fz;
-    float rz = up_x * fy - up_y * fx;
-    float r_len_sq = rx * rx + ry * ry + rz * rz;
+    f32 rx = up_y * fz - up_z * fy;
+    f32 ry = up_z * fx - up_x * fz;
+    f32 rz = up_x * fy - up_y * fx;
+    f32 r_len_sq = rx * rx + ry * ry + rz * rz;
     if (r_len_sq > FAST_MATH_EPSILON) {
-        float inv_r = FastMath_invSqrt(r_len_sq);
+        f32 inv_r = FastMath_invSqrt(r_len_sq);
         rx *= inv_r;
         ry *= inv_r;
         rz *= inv_r;
     }
 
-    float ux = fy * rz - fz * ry;
-    float uy = fz * rx - fx * rz;
-    float uz = fx * ry - fy * rx;
+    f32 ux = fy * rz - fz * ry;
+    f32 uy = fz * rx - fx * rz;
+    f32 uz = fx * ry - fy * rx;
 
     Mat4_zero(dest);
     Mat4_set(dest, 0, 0, rx); Mat4_set(dest, 0, 1, ry); Mat4_set(dest, 0, 2, rz); Mat4_set(dest, 0, 3, -(rx * eye_x + ry * eye_y + rz * eye_z));
@@ -369,15 +369,15 @@ void Mat4_lookAt(float eye_x, float eye_y, float eye_z,
 }
 
 void Mat4_transform(const Mat4 *m, const Coord4 *src_vec, Coord4 *dest_vec) {
-    float x = (*src_vec).x;
-    float y = (*src_vec).y;
-    float z = (*src_vec).z;
-    float w = (*src_vec).w;
+    f32 x = (*src_vec).x;
+    f32 y = (*src_vec).y;
+    f32 z = (*src_vec).z;
+    f32 w = (*src_vec).w;
 
-    float rx = Mat4_get(m, 0, 0) * x + Mat4_get(m, 0, 1) * y + Mat4_get(m, 0, 2) * z + Mat4_get(m, 0, 3) * w;
-    float ry = Mat4_get(m, 1, 0) * x + Mat4_get(m, 1, 1) * y + Mat4_get(m, 1, 2) * z + Mat4_get(m, 1, 3) * w;
-    float rz = Mat4_get(m, 2, 0) * x + Mat4_get(m, 2, 1) * y + Mat4_get(m, 2, 2) * z + Mat4_get(m, 2, 3) * w;
-    float rw = Mat4_get(m, 3, 0) * x + Mat4_get(m, 3, 1) * y + Mat4_get(m, 3, 2) * z + Mat4_get(m, 3, 3) * w;
+    f32 rx = Mat4_get(m, 0, 0) * x + Mat4_get(m, 0, 1) * y + Mat4_get(m, 0, 2) * z + Mat4_get(m, 0, 3) * w;
+    f32 ry = Mat4_get(m, 1, 0) * x + Mat4_get(m, 1, 1) * y + Mat4_get(m, 1, 2) * z + Mat4_get(m, 1, 3) * w;
+    f32 rz = Mat4_get(m, 2, 0) * x + Mat4_get(m, 2, 1) * y + Mat4_get(m, 2, 2) * z + Mat4_get(m, 2, 3) * w;
+    f32 rw = Mat4_get(m, 3, 0) * x + Mat4_get(m, 3, 1) * y + Mat4_get(m, 3, 2) * z + Mat4_get(m, 3, 3) * w;
 
     (*dest_vec).x = rx;
     (*dest_vec).y = ry;
@@ -386,13 +386,13 @@ void Mat4_transform(const Mat4 *m, const Coord4 *src_vec, Coord4 *dest_vec) {
 }
 
 void Mat4_transformVec3(const Mat4 *m, const Coord3 *src_vec, Coord3 *dest_vec) {
-    float x = (*src_vec).x;
-    float y = (*src_vec).y;
-    float z = (*src_vec).z;
+    f32 x = (*src_vec).x;
+    f32 y = (*src_vec).y;
+    f32 z = (*src_vec).z;
 
-    float rx = Mat4_get(m, 0, 0) * x + Mat4_get(m, 0, 1) * y + Mat4_get(m, 0, 2) * z + Mat4_get(m, 0, 3);
-    float ry = Mat4_get(m, 1, 0) * x + Mat4_get(m, 1, 1) * y + Mat4_get(m, 1, 2) * z + Mat4_get(m, 1, 3);
-    float rz = Mat4_get(m, 2, 0) * x + Mat4_get(m, 2, 1) * y + Mat4_get(m, 2, 2) * z + Mat4_get(m, 2, 3);
+    f32 rx = Mat4_get(m, 0, 0) * x + Mat4_get(m, 0, 1) * y + Mat4_get(m, 0, 2) * z + Mat4_get(m, 0, 3);
+    f32 ry = Mat4_get(m, 1, 0) * x + Mat4_get(m, 1, 1) * y + Mat4_get(m, 1, 2) * z + Mat4_get(m, 1, 3);
+    f32 rz = Mat4_get(m, 2, 0) * x + Mat4_get(m, 2, 1) * y + Mat4_get(m, 2, 2) * z + Mat4_get(m, 2, 3);
 
     if (dest_vec) {
         (*dest_vec).x = rx;

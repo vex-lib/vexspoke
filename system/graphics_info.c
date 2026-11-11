@@ -61,16 +61,16 @@
 
 
 static char     s_gpuName[128] = "Apple M-Series GPU";
-static int32_t  s_gpuVendorId = 0x106B; // Apple vendor ID
-static int32_t  s_gpuDeviceId = 0;
+static i32  s_gpuVendorId = 0x106B; // Apple vendor ID
+static i32  s_gpuDeviceId = 0;
 static char     s_primaryGraphicsApi[32] = "Metal/Vulkan";
 static bool     s_unifiedMemoryEnabled = true;
 static bool     s_computeShadersEnabled = true;
 static bool     s_meshShadersEnabled = true;
 static bool     s_hardwareRayTracingEnabled = true;
-static int32_t  s_maxTextureSize = 16384;
-static uint64_t s_vramTotal = 0;
-static uint64_t s_vramAvailable = 0;
+static i32  s_maxTextureSize = 16384;
+static u64 s_vramTotal = 0;
+static u64 s_vramAvailable = 0;
 
 static inline void ensureDiscovered(void) {
     SystemDiscovery_bootstrap();
@@ -88,21 +88,21 @@ void GraphicsInfo_setGpuName(const char *val) {
     }
 }
 
-int32_t GraphicsInfo_getGpuVendorId(void) {
+i32 GraphicsInfo_getGpuVendorId(void) {
     ensureDiscovered();
     return s_gpuVendorId;
 }
 
-void GraphicsInfo_setGpuVendorId(int32_t val) {
+void GraphicsInfo_setGpuVendorId(i32 val) {
     s_gpuVendorId = val;
 }
 
-int32_t GraphicsInfo_getGpuDeviceId(void) {
+i32 GraphicsInfo_getGpuDeviceId(void) {
     ensureDiscovered();
     return s_gpuDeviceId;
 }
 
-void GraphicsInfo_setGpuDeviceId(int32_t val) {
+void GraphicsInfo_setGpuDeviceId(i32 val) {
     s_gpuDeviceId = val;
 }
 
@@ -154,29 +154,29 @@ void GraphicsInfo_setHardwareRayTracingEnabled(bool val) {
     s_hardwareRayTracingEnabled = val;
 }
 
-int32_t GraphicsInfo_getMaxTextureSize(void) {
+i32 GraphicsInfo_getMaxTextureSize(void) {
     ensureDiscovered();
     return s_maxTextureSize;
 }
 
-void GraphicsInfo_setMaxTextureSize(int32_t val) {
+void GraphicsInfo_setMaxTextureSize(i32 val) {
     s_maxTextureSize = val;
 }
 
-uint64_t GraphicsInfo_getVramTotal(void) {
+u64 GraphicsInfo_getVramTotal(void) {
     ensureDiscovered();
     return s_vramTotal;
 }
 
-void GraphicsInfo_setVramTotal(uint64_t val) {
+void GraphicsInfo_setVramTotal(u64 val) {
     s_vramTotal = val;
 }
 
-uint64_t GraphicsInfo_getVramAvailable(void) {
+u64 GraphicsInfo_getVramAvailable(void) {
     ensureDiscovered();
     return s_vramAvailable;
 }
 
-void GraphicsInfo_setVramAvailable(uint64_t val) {
+void GraphicsInfo_setVramAvailable(u64 val) {
     s_vramAvailable = val;
 }

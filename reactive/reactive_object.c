@@ -15,8 +15,8 @@
  * ============================================================================
  * DEFINITION: ReactiveObject (the standard object family)
  * ============================================================================
- * The standard object typed reactives (Coord2, Coord3, Coord4, Rectangle, IntDouble,
- * LongFloat, LongDouble), each stamped by TYPEDEF_REACTIVE / IMPLEMENT_REACTIVE.
+ * The standard object typed reactives (Coord2, Coord3, Coord4, Rectangle, Intf64,
+ * LongFloat, Longf64), each stamped by TYPEDEF_REACTIVE / IMPLEMENT_REACTIVE.
  * The word holds the object pointer; a rebind is a change. They share this file
  * by intent (see the header).
  * ============================================================================
@@ -40,32 +40,32 @@
 
 // The standard objects' valueOf(): render the FIELDS, not the pointer. A null
 // value (the word is the object pointer) prints "null".
-static void vec2_str(const Coord2 *v, char *out, size_t cap) {
+static void vec2_str(const Coord2 *v, char *out, bytes cap) {
     if (v == nullptr) { snprintf(out, cap, "null"); return; }
-    snprintf(out, cap, "(%.3g, %.3g)", (double) (*v).x, (double) (*v).y);
+    snprintf(out, cap, "(%.3g, %.3g)", (d64) (*v).x, (d64) (*v).y);
 }
 
-static void vec3_str(const Coord3 *v, char *out, size_t cap) {
+static void vec3_str(const Coord3 *v, char *out, bytes cap) {
     if (v == nullptr) { snprintf(out, cap, "null"); return; }
-    snprintf(out, cap, "(%.3g, %.3g, %.3g)", (double) (*v).x, (double) (*v).y, (double) (*v).z);
+    snprintf(out, cap, "(%.3g, %.3g, %.3g)", (d64) (*v).x, (d64) (*v).y, (d64) (*v).z);
 }
 
-static void vec4_str(const Coord4 *v, char *out, size_t cap) {
+static void vec4_str(const Coord4 *v, char *out, bytes cap) {
     if (v == nullptr) { snprintf(out, cap, "null"); return; }
     snprintf(out, cap, "(%.3g, %.3g, %.3g, %.3g)",
-             (double) (*v).x, (double) (*v).y, (double) (*v).z, (double) (*v).w);
+             (d64) (*v).x, (d64) (*v).y, (d64) (*v).z, (d64) (*v).w);
 }
 
-static void rectangle_str(const Rectangle *r, char *out, size_t cap) {
+static void rectangle_str(const Rectangle *r, char *out, bytes cap) {
     if (r == nullptr) { snprintf(out, cap, "null"); return; }
     snprintf(out, cap, "[%.3g, %.3g, %.3g x %.3g]",
-             (double) (*r).x, (double) (*r).y, (double) (*r).width, (double) (*r).height);
+             (d64) (*r).x, (d64) (*r).y, (d64) (*r).width, (d64) (*r).height);
 }
 
 IMPLEMENT_REACTIVE_STR(Coord2, vec2_str);
 IMPLEMENT_REACTIVE_STR(Coord3, vec3_str);
 IMPLEMENT_REACTIVE_STR(Coord4, vec4_str);
 IMPLEMENT_REACTIVE_STR(Rectangle, rectangle_str);
-IMPLEMENT_REACTIVE(IntDouble);
+IMPLEMENT_REACTIVE(Intf64);
 IMPLEMENT_REACTIVE(LongFloat);
-IMPLEMENT_REACTIVE(LongDouble);
+IMPLEMENT_REACTIVE(Longf64);

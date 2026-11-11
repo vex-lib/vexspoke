@@ -45,7 +45,7 @@
 
 
 int64_t Net_get(const char *host, int port, const char *path,
-                char *bodyOut, size_t cap) {
+                char *bodyOut, bytes cap) {
     HttpRequest req = {
         .method = "GET",
         .host = host,
@@ -59,8 +59,8 @@ int64_t Net_get(const char *host, int port, const char *path,
 }
 
 bool Net_getJson(const char *host, int port, const char *path,
-                 JsonDoc *doc, JsonNode *nodes, uint32_t nodeCap,
-                 char *scratch, uint32_t scratchCap) {
+                 JsonDoc *doc, JsonNode *nodes, u32 nodeCap,
+                 char *scratch, u32 scratchCap) {
     static _Thread_local char body[16384];
     HttpRequest req = { .method = "GET", .host = host, .port = port, .path = path };
     HttpResponse resp = { .body = body, .bodyCap = sizeof(body) };
@@ -72,7 +72,7 @@ bool Net_getJson(const char *host, int port, const char *path,
 }
 
 int64_t Net_postJson(const char *host, int port, const char *path,
-                     const char *jsonBody, char *respBody, size_t cap) {
+                     const char *jsonBody, char *respBody, bytes cap) {
     HttpHeader headers[1] = {
         { .name = "Content-Type", .value = "application/json" },
     };

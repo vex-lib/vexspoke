@@ -59,14 +59,14 @@ Buffer *Buffer_0(void) {
     return self;
 }
 
-Buffer *Buffer_1(size_t n) {
+Buffer *Buffer_1(bytes n) {
     Buffer *self = Buffer_0();
 
     if (!self)
         return nullptr;
 
     if (n > 0) {
-        (*self).bytes = (uint8_t*) Memory_alloc(TYPE_BYTE_ARRAY, n);
+        (*self).bytes = (u8*) Memory_alloc(TYPE_BYTE_ARRAY, n);
 
         if (!(*self).bytes) {
             Memory_free(self);
@@ -81,7 +81,7 @@ Buffer *Buffer_1(size_t n) {
     return self;
 }
 
-Buffer *Buffer_2(const uint8_t *bytes, size_t n) {
+Buffer *Buffer_2(const u8 *bytes, bytes n) {
     Buffer *self = Buffer_1(n);
 
     if (!self)
@@ -103,35 +103,35 @@ void Buffer_free(Buffer *self) {
     Memory_free(self);
 }
 
-uint8_t *Buffer_bytes(const Buffer *self) {
+u8 *Buffer_bytes(const Buffer *self) {
     if (!self)
         return nullptr;
 
     return (*self).bytes;
 }
 
-size_t Buffer_length(const Buffer *self) {
+bytes Buffer_length(const Buffer *self) {
     if (!self)
         return 0;
 
     return (*self).length;
 }
 
-size_t Buffer_capacity(const Buffer *self) {
+bytes Buffer_capacity(const Buffer *self) {
     if (!self)
         return 0;
 
     return (*self).capacity;
 }
 
-bool Buffer_reserve(Buffer *self, size_t capacity) {
+bool Buffer_reserve(Buffer *self, bytes capacity) {
     if (!self)
         return false;
 
     if (capacity <= (*self).capacity)
         return true;
 
-    size_t grown = (*self).capacity > 0 ? (*self).capacity : 64;
+    bytes grown = (*self).capacity > 0 ? (*self).capacity : 64;
 
     while (grown < capacity) {
         if (grown > SIZE_MAX / 2)
@@ -140,7 +140,7 @@ bool Buffer_reserve(Buffer *self, size_t capacity) {
         grown *= 2;
     }
 
-    uint8_t *next = (uint8_t*) Memory_realloc((*self).bytes, grown);
+    u8 *next = (u8*) Memory_realloc((*self).bytes, grown);
 
     if (!next)
         return false;
@@ -151,7 +151,7 @@ bool Buffer_reserve(Buffer *self, size_t capacity) {
     return true;
 }
 
-bool Buffer_append(Buffer *self, const uint8_t *bytes, size_t n) {
+bool Buffer_append(Buffer *self, const u8 *bytes, bytes n) {
     if (!self)
         return false;
 
@@ -161,7 +161,7 @@ bool Buffer_append(Buffer *self, const uint8_t *bytes, size_t n) {
     if (!bytes)
         return false;
 
-    size_t need = (*self).length + n;
+    bytes need = (*self).length + n;
 
     if (need < (*self).length)
         return false;
@@ -175,7 +175,7 @@ bool Buffer_append(Buffer *self, const uint8_t *bytes, size_t n) {
     return true;
 }
 
-bool Buffer_setLength(Buffer *self, size_t n) {
+bool Buffer_setLength(Buffer *self, bytes n) {
     if (!self)
         return false;
 

@@ -44,9 +44,9 @@ static void test_constants(void) {
 // Verifies generic math operations dispatch to strict-math implementations.
 // Compares every strict facade call with its StrictMath implementation.
 static void test_strict_dispatch(void) {
-    float xs[] = { -3.0f, -0.5f, 0.0f, 0.25f, 1.0f, 3.3f };
-    for (size_t i = 0; i < sizeof(xs) / sizeof(xs[0]); i++) {
-        float x = xs[i];
+    f32 xs[] = { -3.0f, -0.5f, 0.0f, 0.25f, 1.0f, 3.3f };
+    for (bytes i = 0; i < sizeof(xs) / sizeof(xs[0]); i++) {
+        f32 x = xs[i];
         CHECK(EQ(Math_sin(x), StrictMath_sin(x)));
         CHECK(EQ(Math_cos(x), StrictMath_cos(x)));
         CHECK(EQ(Math_tan(x), StrictMath_tan(x)));
@@ -79,9 +79,9 @@ static void test_strict_dispatch(void) {
 // Verifies generic math operations dispatch to fast-math implementations.
 // Compares each fast facade call with its FastMath implementation.
 static void test_fast_dispatch(void) {
-    float xs[] = { -2.5f, -0.5f, 0.0f, 0.5f, 2.5f };
-    for (size_t i = 0; i < sizeof(xs) / sizeof(xs[0]); i++) {
-        float x = xs[i];
+    f32 xs[] = { -2.5f, -0.5f, 0.0f, 0.5f, 2.5f };
+    for (bytes i = 0; i < sizeof(xs) / sizeof(xs[0]); i++) {
+        f32 x = xs[i];
         CHECK(Math_fast_sin(x) == FastMath_sin(x));
         CHECK(Math_fast_cos(x) == FastMath_cos(x));
         CHECK(Math_fast_tan(x) == FastMath_tan(x));

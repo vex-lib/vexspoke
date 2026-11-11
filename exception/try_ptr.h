@@ -3,9 +3,9 @@
 
 #include <stdbool.h>
 #include <stddef.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 #include "exception/try_code.h"
-#include "util/annotation.h"
+#include "lang/annotation.h"
 
 ;;DRAFT
 // exception/try_ptr.h — the pointer value-or-error return.
@@ -38,7 +38,7 @@ void    TryPtr_setCode(TryPtr *self, TryCode code);
 bool    TryPtr_isOk(const TryPtr *self);
 
 // --- String projections (the toString Law) ---
-void TryPtr_toString(const TryPtr *self, char *dest, size_t cap, bool *outTruncated);
-void TryPtr_toStringStruct(const TryPtr *self, char *dest, size_t cap, bool *outTruncated);
+void TryPtr_toString(const TryPtr *self, char *dest, bytes cap, bool *outTruncated);
+void TryPtr_toStringStruct(const TryPtr *self, char *dest, bytes cap, bool *outTruncated);
 
 #endif

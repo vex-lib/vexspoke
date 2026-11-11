@@ -17,14 +17,14 @@ static int g_failures = 0;
         }                                                                  \
     } while (0)
 
-static uint64_t g_store = 0;
+static u64 g_store = 0;
 // Supplies the external value used by the Passive getter hook.
-static uint64_t storeGet(void *userdata) {
+static u64 storeGet(void *userdata) {
     (void) userdata;
     return g_store;
 }
 // Updates the external value used by the Passive setter hook.
-static void storeSet(uint64_t value, void *userdata) {
+static void storeSet(u64 value, void *userdata) {
     (void) userdata;
     g_store = value;
 }

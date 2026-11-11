@@ -17,14 +17,14 @@
 #define BASE32_ALPHABET "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
 
 // Encoded length of `byteLen` bytes including '=' padding (0 for 0 bytes).
-size_t Base32_encodedLength(size_t byteLen);
+bytes Base32_encodedLength(bytes byteLen);
 // Upper bound on the bytes a `charLen`-character payload can decode to, for sizing.
-size_t Base32_decodedLength(size_t charLen);
+bytes Base32_decodedLength(bytes charLen);
 // Write the base32 form into `dest` (NUL-terminated). False + *outTruncated when
 // `cap` cannot hold it; on refusal `dest` is left untouched.
-bool   Base32_encode(const uint8_t *bytes, size_t len, char *dest, size_t cap, bool *outTruncated);
+bool   Base32_encode(const u8 *bytes, bytes len, char *dest, bytes cap, bool *outTruncated);
 // Decode `text` into `dest`; *outLen receives the exact byte count. False on an
 // invalid character or an undersized destination.
-bool   Base32_decode(const char *text, size_t len, uint8_t *dest, size_t cap, size_t *outLen);
+bool   Base32_decode(const char *text, bytes len, u8 *dest, bytes cap, bytes *outLen);
 
 #endif

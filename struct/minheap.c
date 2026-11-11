@@ -29,10 +29,10 @@
  * STRUCT FIELDS (Mirroring struct/minheap.h):
  * ----------------------------------------------------------------------------
  *   MinHeap {
- *     int32_t size; // number of live entries
- *     int32_t capacity; // max entries (1-based slots are capacity + 1)
- *     int32_t *items; // item at heap index i (i in [1, size])
- *     float *priorities; // priority at heap index i
+ *     i32 size; // number of live entries
+ *     i32 capacity; // max entries (1-based slots are capacity + 1)
+ *     i32 *items; // item at heap index i (i in [1, size])
+ *     f32 *priorities; // priority at heap index i
  *   }
  *
  * FUNCTION REGISTRY:
@@ -58,12 +58,12 @@
 // minheap.c — MinHeap port (Legacy: struct/MinHeap.java). 1-based array, sift
 // up on push, sift down on pop, strictly lower priority rises to the root.
 
-static void sift_up(MinHeap *heap, size_t index) {
-    int32_t item = (*heap).items[index];
-    float prio = (*heap).priorities[index];
+static void sift_up(MinHeap *heap, bytes index) {
+    i32 item = (*heap).items[index];
+    f32 prio = (*heap).priorities[index];
     while (index > 1) {
-        size_t parent = index / 2;
-        float parent_prio = (*heap).priorities[parent];
+        bytes parent = index / 2;
+        f32 parent_prio = (*heap).priorities[parent];
         if (prio >= parent_prio)
             break;
         (*heap).items[index] = (*heap).items[parent];
@@ -74,19 +74,19 @@ static void sift_up(MinHeap *heap, size_t index) {
     (*heap).priorities[index] = prio;
 }
 
-static void sift_down(MinHeap *heap, size_t index) {
-    size_t size = (size_t)(*heap).size;
-    int32_t item = (*heap).items[index];
-    float prio = (*heap).priorities[index];
-    size_t half = size / 2;
+static void sift_down(MinHeap *heap, bytes index) {
+    bytes size = (bytes)(*heap).size;
+    i32 item = (*heap).items[index];
+    f32 prio = (*heap).priorities[index];
+    bytes half = size / 2;
     while (index <= half) {
-        size_t left = index * 2;
-        size_t right = left + 1;
+        bytes left = index * 2;
+        bytes right = left + 1;
 
-        size_t best = left;
-        float best_prio = (*heap).priorities[left];
+        bytes best = left;
+        f32 best_prio = (*heap).priorities[left];
         if (right <= size) {
-            float right_prio = (*heap).priorities[right];
+            f32 right_prio = (*heap).priorities[right];
             if (right_prio < best_prio) {
                 best = right;
                 best_prio = right_prio;
@@ -102,8 +102,8 @@ static void sift_down(MinHeap *heap, size_t index) {
     (*heap).priorities[index] = prio;
 }
 
-MinHeap *MinHeap_1(size_t capacity) {
-    size_t slots = capacity + 1;
+MinHeap *MinHeap_1(bytes capacity) {
+    bytes slots = capacity + 1;
     MinHeap *heap = (MinHeap*) Memory_alloc(TYPE_MIN_HEAP, sizeof(MinHeap));
     if (!heap) {
         (void) Struct_reportConstructionExhaustion("minheap", sizeof(MinHeap));
@@ -111,11 +111,11 @@ MinHeap *MinHeap_1(size_t capacity) {
     }
 
     (*heap).size = 0;
-    (*heap).capacity = (int32_t)capacity;
+    (*heap).capacity = (i32)capacity;
     (*heap).exhaustionCount = 0;
     (*heap).exhaustionReported = false;
-    (*heap).items = (int32_t*) Memory_alloc(TYPE_INT_ARRAY, slots * sizeof(int32_t));
-    (*heap).priorities = (float*) Memory_alloc(TYPE_FLOAT_ARRAY, slots * sizeof(float));
+    (*heap).items = (i32*) Memory_alloc(TYPE_INT_ARRAY, slots * sizeof(i32));
+    (*heap).priorities = (f32*) Memory_alloc(TYPE_FLOAT_ARRAY, slots * sizeof(f32));
     if (!(*heap).items || !(*heap).priorities) {
         Memory_free((*heap).items);
         Memory_free((*heap).priorities);
@@ -132,14 +132,14 @@ void MinHeap_free(MinHeap *heap) {
     Memory_free(heap);
 }
 
-size_t MinHeap_size(MinHeap *heap) {
+bytes MinHeap_size(MinHeap *heap) {
     if (!heap) return 0;
-    return (size_t)(*heap).size;
+    return (bytes)(*heap).size;
 }
 
-size_t MinHeap_capacity(MinHeap *heap) {
+bytes MinHeap_capacity(MinHeap *heap) {
     if (!heap) return 0;
-    return (size_t)(*heap).capacity;
+    return (bytes)(*heap).capacity;
 }
 
 bool MinHeap_isEmpty(MinHeap *heap) {
@@ -147,32 +147,32 @@ bool MinHeap_isEmpty(MinHeap *heap) {
 }
 
 ;;TEST
-uint64_t MinHeap_exhaustionCount(const MinHeap *heap) {
+u64 MinHeap_exhaustionCount(const MinHeap *heap) {
     return heap ? Struct_exhaustionCount(&(*heap).exhaustionCount) : 0;
 }
 
-int MinHeap_push(MinHeap *heap, int32_t item, float priority) {
+int MinHeap_push(MinHeap *heap, i32 item, f32 priority) {
     if (!heap) return 0;
     if ((*heap).size >= (*heap).capacity) {
         // A full fixed-capacity heap is a refusal, not a silent no-op.
         (void) Struct_reportExhaustion(&(*heap).exhaustionCount, &(*heap).exhaustionReported,
-                                       "minheap", sizeof(int32_t) * 2u, (size_t) (*heap).capacity);
+                                       "minheap", sizeof(i32) * 2u, (bytes) (*heap).capacity);
         return 0;
     }
     (*heap).size++;
-    size_t index = (size_t)(*heap).size;
+    bytes index = (bytes)(*heap).size;
     (*heap).items[index] = item;
     (*heap).priorities[index] = priority;
     sift_up(heap, index);
     return 1;
 }
 
-int32_t MinHeap_popItem(MinHeap *heap) {
+i32 MinHeap_popItem(MinHeap *heap) {
     if (!heap) return 0;
     if ((*heap).size == 0)
         return 0;
-    int32_t result = (*heap).items[1];
-    size_t size = (size_t)(*heap).size;
+    i32 result = (*heap).items[1];
+    bytes size = (bytes)(*heap).size;
     (*heap).items[1] = (*heap).items[size];
     (*heap).priorities[1] = (*heap).priorities[size];
     (*heap).size--;
@@ -181,7 +181,7 @@ int32_t MinHeap_popItem(MinHeap *heap) {
     return result;
 }
 
-int32_t MinHeap_peekItem(MinHeap *heap) {
+i32 MinHeap_peekItem(MinHeap *heap) {
     if (!heap) return 0;
     if ((*heap).size == 0)
         return 0;

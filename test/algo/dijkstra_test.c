@@ -54,9 +54,9 @@ static void test_known_path(void) {
     CHECK(Dijkstra_addBiEdge(g, 1, 2, 2.0f));
     CHECK(Dijkstra_addEdge(g, 0, 2, 10.0f));        // direct but longer
 
-    uint32_t path[8];
-    float dist = -1.0f;
-    size_t n = Dijkstra_shortestPath(g, 0, 2, path, 8, &dist);
+    u32 path[8];
+    f32 dist = -1.0f;
+    bytes n = Dijkstra_shortestPath(g, 0, 2, path, 8, &dist);
     CHECK(n == 3);
     CHECK(path[0] == 0 && path[1] == 1 && path[2] == 2);
     CHECK(fabsf(dist - 3.0f) < 1e-5f);
@@ -91,10 +91,10 @@ static void test_truncation_and_nulls(void) {
     CHECK(Dijkstra_addEdge(g, 0, 1, 1.0f));
     CHECK(Dijkstra_addEdge(g, 1, 2, 1.0f));
 
-    uint32_t path[8];
-    float dist = -1.0f;
+    u32 path[8];
+    f32 dist = -1.0f;
     // Truncated output buffer.
-    size_t n = Dijkstra_shortestPath(g, 0, 2, path, 2, &dist);
+    bytes n = Dijkstra_shortestPath(g, 0, 2, path, 2, &dist);
     CHECK(n == 2);
     CHECK(fabsf(dist - 2.0f) < 1e-5f);
 
@@ -116,16 +116,16 @@ static void test_truncation_and_nulls(void) {
 static void test_edge_growth(void) {
     DijkstraGraph *g = Dijkstra(32);
     CHECK(g != nullptr);
-    // Node 0 gets 20 outgoing edges, forcing the initial capacity 4 to double
+    // Node 0 gets 20 outgoing edges, forcing the initial capacity 4 to d64
     // several times.
-    for (uint32_t i = 1; i <= 20; i++)
-        CHECK(Dijkstra_addEdge(g, 0, i, (float) i));
+    for (u32 i = 1; i <= 20; i++)
+        CHECK(Dijkstra_addEdge(g, 0, i, (f32) i));
 
     // Direct edge to 20 has weight 20; the cheapest route is direct here, so
     // the path is [0, 20] and distance 20.
-    uint32_t path[4];
-    float dist = -1.0f;
-    size_t n = Dijkstra_shortestPath(g, 0, 20, path, 4, &dist);
+    u32 path[4];
+    f32 dist = -1.0f;
+    bytes n = Dijkstra_shortestPath(g, 0, 20, path, 4, &dist);
     CHECK(n == 2 && path[0] == 0 && path[1] == 20);
     CHECK(fabsf(dist - 20.0f) < 1e-5f);
 
@@ -137,16 +137,16 @@ static void test_chain(void) {
     enum { N = 128 };
     DijkstraGraph *g = Dijkstra(N);
     CHECK(g != nullptr);
-    for (uint32_t i = 0; i + 1 < N; i++)
+    for (u32 i = 0; i + 1 < N; i++)
         CHECK(Dijkstra_addEdge(g, i, i + 1, 0.5f));
 
-    uint32_t path[N];
-    float dist = -1.0f;
-    size_t n = Dijkstra_shortestPath(g, 0, N - 1, path, N, &dist);
+    u32 path[N];
+    f32 dist = -1.0f;
+    bytes n = Dijkstra_shortestPath(g, 0, N - 1, path, N, &dist);
     CHECK(n == N);
-    for (size_t i = 0; i < N; i++)
+    for (bytes i = 0; i < N; i++)
         CHECK(path[i] == i);
-    CHECK(fabsf(dist - 0.5f * (float) (N - 1)) < 1e-3f);
+    CHECK(fabsf(dist - 0.5f * (f32) (N - 1)) < 1e-3f);
 
     // The reverse direction is unreachable in this one-way chain.
     CHECK(Dijkstra_shortestPath(g, N - 1, 0, path, N, &dist) == 0);

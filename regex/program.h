@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "util/constructor.h"
+#include "lang/constructor.h"
 #include "regex/nodelist.h"
 
 // regex/program.h — the RegexProgram: the compiled instruction array, the
@@ -34,18 +34,18 @@ typedef enum RegexOp {
 // One compiled instruction; a/b.sh mean target index, class index or save slot
 // depending on op.
 typedef struct RegexInst {
-    uint8_t  op;        // RegexOp
-    uint8_t  byte;      // literal byte for REGEX_OP_CHAR (already folded)
-    uint16_t reserved;  // keeps the record 12 Bytes and naturally aligned
-    uint32_t a;         // first operand
-    uint32_t b;         // second operand
+    u8  op;        // RegexOp
+    u8  byte;      // literal byte for REGEX_OP_CHAR (already folded)
+    u16 reserved;  // keeps the record 12 Bytes and naturally aligned
+    u32 a;         // first operand
+    u32 b;         // second operand
 } RegexInst;
 
 // A flat, growable instruction array in the engine arena.
 typedef struct RegexProgram {
     RegexInst *insts;    // engine-arena block of `capacity` instructions
-    uint32_t   count;    // instructions in use
-    uint32_t   capacity; // instructions allocated
+    u32   count;    // instructions in use
+    u32   capacity; // instructions allocated
 } RegexProgram;
 
 // Create an empty program; allocates nothing.
@@ -55,13 +55,13 @@ RegexProgram RegexProgram_0(void);
 // Emit the Thompson program for an AST rooted at `root`. Returns false when
 // the instruction ceiling is reached or the arena refuses; the program is then
 // unusable and must be freed.
-bool RegexProgram_build(RegexProgram *program, const RegexNodeList *nodes, uint32_t root);
+bool RegexProgram_build(RegexProgram *program, const RegexNodeList *nodes, u32 root);
 
 // Instructions in use.
-uint32_t RegexProgram_count(const RegexProgram *program);
+u32 RegexProgram_count(const RegexProgram *program);
 
 // Borrowed instruction, or nullptr when index is out of range.
-const RegexInst *RegexProgram_at(const RegexProgram *program, uint32_t index);
+const RegexInst *RegexProgram_at(const RegexProgram *program, u32 index);
 
 // Release the instruction block and zero the program.
 void RegexProgram_free(RegexProgram *program);

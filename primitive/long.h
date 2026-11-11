@@ -7,7 +7,7 @@
 
 #include "re/nio/bit_pool.h"
 
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 // primitive/long.h — Long primitive (Legacy: primitive/Long.java).
 // Delegates to Bit64 width pool (8B stride).
@@ -17,13 +17,13 @@ extern BitPool g_longPool;
 bool Long_init(void);
 void Long_shutdown(void);
 void *Long_alloc(void);
-void *Long_allocArray(size_t count);
+void *Long_allocArray(bytes count);
 void Long_free(void *ptr);
 int64_t Long_get(void *ptr);
 void Long_set(void *ptr, int64_t value);
 bool Long_compareAndSet(void *ptr, int64_t expected, int64_t value);
-uint64_t Long_type(void *ptr);
-size_t Long_length(void *ptr);
+u64 Long_type(void *ptr);
+bytes Long_length(void *ptr);
 
 
 // Ergonomic constructors — Long() and Long(value)

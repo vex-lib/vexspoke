@@ -39,8 +39,8 @@ src/lang/point/point.c
 src/lang/rect/rectangle.c
 src/lang/str.c
 src/lang/vec2/vec2d.c
-src/lang/vec3/vec3_int_float.c
-src/lang/vec3/vec3_long_double.c
+src/lang/vec3/vec3_int_f32.c
+src/lang/vec3/vec3_long_f64.c
 src/lang/vec3/vec3d.c
 src/lang/vec4/vec4d.c
 src/net/download.c

@@ -1,4 +1,4 @@
-#include "primitive/long_float.h"
+#include "primitive/long_f32.h"
 
 #include <string.h>
 
@@ -12,12 +12,12 @@
  * DEFINITION: LongFloat
  * ============================================================================
  * LongFloat primitive (Legacy: primitive/LongFloat.java): a procedural class
- * over a process-wide BitPool (16-byte elements — an int64 plus a float —
+ * over a process-wide BitPool (16-byte elements — an int64 plus a f32 —
  * 1024 fixed slots) with a memory arena fallback for large arrays.
  * LongFloat_alloc hands out pool slots typed ID_LONG_FLOAT;
  * LongFloat_allocArray switches to the arena when contiguity or size demands
  * it, and LongFloat_free routes to whichever owner holds the pointer.
- * LongFloat_allocWithValues packs the int64 and float halves of one payload.
+ * LongFloat_allocWithValues packs the int64 and f32 halves of one payload.
  * LongFloat_init/LongFloat_shutdown bracket the pool's lifetime.
  * ============================================================================
  */
@@ -25,11 +25,11 @@
 ;;OVERVIEW
 /**
  * ============================================================================
- * MODULE: Long_float (primitive/long_float.c)
+ * MODULE: Long_f32 (primitive/long_f32.c)
  * ============================================================================
  * LongFloat primitive (Legacy: primitive/LongFloat.java).
  *
- * STRUCT FIELDS: none — procedural (operates on BitPool/memory blocks of long_float payloads)
+ * STRUCT FIELDS: none — procedural (operates on BitPool/memory blocks of long_f32 payloads)
  *
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
@@ -55,26 +55,26 @@
  */
 
 
-BitPool g_long_floatPool;
+BitPool g_long_f32Pool;
 
 bool LongFloat_init(void) {
-    g_long_floatPool = BitPool(16, 1024);
-    return BitPool_live(&g_long_floatPool);
+    g_long_f32Pool = BitPool(16, 1024);
+    return BitPool_live(&g_long_f32Pool);
 }
 
 void LongFloat_shutdown(void) {
-    BitPool_shutdown(&g_long_floatPool);
+    BitPool_shutdown(&g_long_f32Pool);
 }
 
 void *LongFloat_alloc(void) {
-    return BitPool_alloc(&g_long_floatPool, ID_LONG_FLOAT);
+    return BitPool_alloc(&g_long_f32Pool, ID_LONG_FLOAT);
 }
 
-void *LongFloat_allocArray(size_t count) {
+void *LongFloat_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
-    size_t Bytes = count * sizeof(int64_t);
+    bytes Bytes = count * sizeof(int64_t);
     // For compound types, elem_size 16 already accounts for stride, but sizeof(int64_t) is placeholder
     // Use elem_size for true stride where c_type is int64 placeholder
     if (count > 1 && 16 != sizeof(int64_t))
@@ -85,7 +85,7 @@ void *LongFloat_allocArray(size_t count) {
 void LongFloat_free(void *ptr) {
     if (!ptr)
         return;
-    if (BitPool_contains(&g_long_floatPool, ptr)) BitPool_free(&g_long_floatPool, ptr);
+    if (BitPool_contains(&g_long_f32Pool, ptr)) BitPool_free(&g_long_f32Pool, ptr);
     else Memory_free(ptr);
 }
 
@@ -108,24 +108,24 @@ bool LongFloat_compareAndSet(void *ptr, int64_t expected, int64_t value) {
     return __atomic_compare_exchange_n((int64_t*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
-uint64_t LongFloat_type(void *ptr) {
+u64 LongFloat_type(void *ptr) {
     if (!ptr)
         return 0;
-    if (BitPool_contains(&g_long_floatPool, ptr)) return BitPool_type(&g_long_floatPool, ptr);
+    if (BitPool_contains(&g_long_f32Pool, ptr)) return BitPool_type(&g_long_f32Pool, ptr);
     return Memory_type(ptr);
 }
 
-size_t LongFloat_length(void *ptr) {
+bytes LongFloat_length(void *ptr) {
     if (!ptr)
         return 0;
-    if (BitPool_contains(&g_long_floatPool, ptr)) return BitPool_length(&g_long_floatPool, ptr);
+    if (BitPool_contains(&g_long_f32Pool, ptr)) return BitPool_length(&g_long_f32Pool, ptr);
     return Memory_length(ptr);
 }
 
-void *LongFloat_allocWithValues(int64_t v1, float v2) {
+void *LongFloat_allocWithValues(int64_t v1, f32 v2) {
     void *ptr = LongFloat_alloc();
     if (!ptr) return nullptr;
     *(int64_t*) ptr = v1;
-    *(float*) ((uint8_t*) ptr + sizeof(int64_t)) = v2;
+    *(f32*) ((u8*) ptr + sizeof(int64_t)) = v2;
     return ptr;
 }

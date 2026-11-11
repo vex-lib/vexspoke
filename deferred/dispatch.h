@@ -4,7 +4,7 @@
 #include <stdatomic.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include "re/atomic/spin.h"
+#include "re/atomic/atomic.h"
 
 // MPSC mailbox: producers post; one designated consumer drains on its own
 // thread (the UI host chooses Thread 0). No worker, wakeup or scheduler here.
@@ -14,7 +14,7 @@
 // One drain snapshots a FIFO batch. Callback posts wait for a later pass.
 // Nested/concurrent drains return false. Callbacks run outside the post lock
 // and must return normally and promptly; a whole batch has no time budget.
-// Reusable double buffers avoid allocation during drain. Post may grow its
+// Reusable d64 buffers avoid allocation during drain. Post may grow its
 // pending buffer at a new high-water mark: not a hard realtime operation.
 // Reserve/growth budgeting and typed Signal coalescing are separate concerns.
 typedef void (*DispatchFn)(void *context);
@@ -28,10 +28,10 @@ typedef struct DispatchItem {
 typedef struct Dispatch {
     SpinLock lock;                    // one-shot post/snapshot admission
     DispatchItem *items;              // producer buffer, guarded by lock
-    size_t count;
-    size_t cap;
+    bytes count;
+    bytes cap;
     DispatchItem *batch;              // consumer buffer, guarded by draining
-    size_t batchCap;
+    bytes batchCap;
     atomic_bool draining;
     atomic_size_t pendingCount;       // pending only, excludes active batch
     _Atomic unsigned long drainedCount;
@@ -55,7 +55,7 @@ bool Dispatch_post(Dispatch *self, DispatchFn fn, void *context);
 bool Dispatch_drain(Dispatch *self);
 
 // Atomic telemetry snapshots; not lifetime or shutdown synchronization.
-size_t Dispatch_pending(const Dispatch *self);
+bytes Dispatch_pending(const Dispatch *self);
 unsigned long Dispatch_getDrainedCount(const Dispatch *self);
 
 #endif

@@ -11,14 +11,14 @@
 
 typedef struct VEX_NAME {
     Reactive base;   // the engine: word = the value, plus its observers
-    float    chance; // [0, 1] — the probability get() yields the value
+    f32    chance; // [0, 1] — the probability get() yields the value
 } VEX_NAME;
 
 VEX_NAME *VEX_CAT(VEX_NAME, _0)(void);
-VEX_NAME *VEX_CAT(VEX_NAME, _2)(VEX_T value, float chance);
+VEX_NAME *VEX_CAT(VEX_NAME, _2)(VEX_T value, f32 chance);
 void VEX_CAT(VEX_NAME, _free)(VEX_NAME *self);
-void VEX_CAT(VEX_NAME, _set)(VEX_NAME *self, VEX_T value, float chance);
+void VEX_CAT(VEX_NAME, _set)(VEX_NAME *self, VEX_T value, f32 chance);
 VEX_T VEX_CAT(VEX_NAME, _get)(const VEX_NAME *self);
-float VEX_CAT(VEX_NAME, _getChance)(const VEX_NAME *self);
+f32 VEX_CAT(VEX_NAME, _getChance)(const VEX_NAME *self);
 
 VEX_CHANNELS_DECL(VEX_NAME, VEX_T);

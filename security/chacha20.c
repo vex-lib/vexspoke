@@ -8,7 +8,7 @@
 ;;DEFINITION
 /** ChaCha20 is the stream cipher the AEAD is built from: a 4-word constant, an
  * 8-word key, a 32-bit block counter and a 3-word nonce arranged into a 16-word
- * state, stirred by ten double rounds of add-rotate-XOR. Every operation is on
+ * state, stirred by ten d64 rounds of add-rotate-XOR. Every operation is on
  * machine words with no table lookup, so it does not leak through cache timing
  * the way a table-driven AES can. Its only sharp edge is nonce reuse: the same
  * key and nonce twice reveals the XOR of the two plaintexts, which is why the
@@ -31,23 +31,23 @@
  * one THROW; no allocation, no logging beyond the cold rejection.
  * ======================================================================== */
 
-static uint32_t load32(const uint8_t *p) {
-    return (uint32_t) p[0] | ((uint32_t) p[1] << 8) |
-           ((uint32_t) p[2] << 16) | ((uint32_t) p[3] << 24);
+static u32 load32(const u8 *p) {
+    return (u32) p[0] | ((u32) p[1] << 8) |
+           ((u32) p[2] << 16) | ((u32) p[3] << 24);
 }
 
-static void store32(uint8_t *p, uint32_t v) {
-    p[0] = (uint8_t) v;
-    p[1] = (uint8_t) (v >> 8);
-    p[2] = (uint8_t) (v >> 16);
-    p[3] = (uint8_t) (v >> 24);
+static void store32(u8 *p, u32 v) {
+    p[0] = (u8) v;
+    p[1] = (u8) (v >> 8);
+    p[2] = (u8) (v >> 16);
+    p[3] = (u8) (v >> 24);
 }
 
-static uint32_t rotl32(uint32_t v, unsigned bits) {
+static u32 rotl32(u32 v, unsigned bits) {
     return (v << bits) | (v >> (32u - bits));
 }
 
-static void quarterRound(uint32_t *s, unsigned a, unsigned b, unsigned c, unsigned d) {
+static void quarterRound(u32 *s, unsigned a, unsigned b, unsigned c, unsigned d) {
     s[a] += s[b];
     s[d] ^= s[a];
     s[d] = rotl32(s[d], 16u);
@@ -62,13 +62,13 @@ static void quarterRound(uint32_t *s, unsigned a, unsigned b, unsigned c, unsign
     s[b] = rotl32(s[b], 7u);
 }
 
-void ChaCha20_block(uint8_t out[CHACHA20_BLOCK_SIZE], const uint8_t key[CHACHA20_KEY_SIZE],
-                    uint32_t counter, const uint8_t nonce[CHACHA20_NONCE_SIZE]) {
+void ChaCha20_block(u8 out[CHACHA20_BLOCK_SIZE], const u8 key[CHACHA20_KEY_SIZE],
+                    u32 counter, const u8 nonce[CHACHA20_NONCE_SIZE]) {
     if (out == nullptr || key == nullptr || nonce == nullptr) {
         THROW("ChaCha20_block: null output, key or nonce");
         return;
     }
-    uint32_t state[16];
+    u32 state[16];
     state[0] = 0x61707865u;
     state[1] = 0x3320646eu;
     state[2] = 0x79622d32u;
@@ -79,7 +79,7 @@ void ChaCha20_block(uint8_t out[CHACHA20_BLOCK_SIZE], const uint8_t key[CHACHA20
     for (unsigned i = 0; i < 3u; ++i)
         state[13u + i] = load32(nonce + 4u * i);
 
-    uint32_t working[16];
+    u32 working[16];
     memcpy(working, state, sizeof working);
     for (unsigned i = 0; i < 10u; ++i) {
         quarterRound(working, 0u, 4u, 8u, 12u);
@@ -95,21 +95,21 @@ void ChaCha20_block(uint8_t out[CHACHA20_BLOCK_SIZE], const uint8_t key[CHACHA20
         store32(out + 4u * i, working[i] + state[i]);
 }
 
-void ChaCha20_xor(uint8_t *data, size_t len, const uint8_t key[CHACHA20_KEY_SIZE],
-                  uint32_t counter, const uint8_t nonce[CHACHA20_NONCE_SIZE]) {
+void ChaCha20_xor(u8 *data, bytes len, const u8 key[CHACHA20_KEY_SIZE],
+                  u32 counter, const u8 nonce[CHACHA20_NONCE_SIZE]) {
     if (len == 0u)
         return;
     if (data == nullptr || key == nullptr || nonce == nullptr) {
         THROW("ChaCha20_xor: null data, key or nonce");
         return;
     }
-    uint8_t block[CHACHA20_BLOCK_SIZE];
-    size_t offset = 0u;
+    u8 block[CHACHA20_BLOCK_SIZE];
+    bytes offset = 0u;
     while (offset < len) {
         ChaCha20_block(block, key, counter, nonce);
         ++counter;
-        size_t take = len - offset < CHACHA20_BLOCK_SIZE ? len - offset : CHACHA20_BLOCK_SIZE;
-        for (size_t i = 0; i < take; ++i)
+        bytes take = len - offset < CHACHA20_BLOCK_SIZE ? len - offset : CHACHA20_BLOCK_SIZE;
+        for (bytes i = 0; i < take; ++i)
             data[offset + i] ^= block[i];
         offset += take;
     }

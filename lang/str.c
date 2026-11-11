@@ -33,8 +33,8 @@
  * STRUCT FIELDS (Mirroring lang/str.h):
  * ----------------------------------------------------------------------------
  *   char *dest;       // borrowed destination buffer
- *   size_t cap;       // total capacity (including the terminator)
- *   size_t len;       // Bytes written so far (excluding the terminator)
+ *   bytes cap;       // total capacity (including the terminator)
+ *   bytes len;       // Bytes written so far (excluding the terminator)
  *   bool truncated;   // a write was cut
  *
  * PRIVATE HELPERS:
@@ -55,13 +55,13 @@
  */
 
 // Remaining writable Bytes (excluding the reserved terminator).
-static size_t room(const Str *s) {
+static bytes room(const Str *s) {
     if (s == nullptr || (*s).dest == nullptr || (*s).cap == 0)
         return 0;
     return ((*s).len < (*s).cap - 1u) ? ((*s).cap - 1u - (*s).len) : 0u;
 }
 
-Str Str_2(char *dest, size_t cap) {
+Str Str_2(char *dest, bytes cap) {
     Str result;
     result.dest = dest;
     result.cap = cap;
@@ -90,8 +90,8 @@ void Str_putc(Str *s, char c) {
 void Str_put(Str *s, const char *text) {
     if (s == nullptr || text == nullptr)
         return;
-    size_t n = strlen(text);
-    size_t r = room(s);
+    bytes n = strlen(text);
+    bytes r = room(s);
     if (n > r) {
         n = r;
         (*s).truncated = true;
@@ -137,8 +137,8 @@ void Str_printf(Str *s, const char *fmt, ...) {
         (*s).truncated = true;
         return;
     }
-    size_t w = (size_t) written;
-    size_t r = room(s);
+    bytes w = (bytes) written;
+    bytes r = room(s);
     if (w > r) {
         (*s).len = (*s).cap - 1u;   // vsnprintf wrote r Bytes + terminator
         (*s).truncated = true;
@@ -153,7 +153,7 @@ bool Str_isTruncated(const Str *s) {
 }
 
 ;;GETTER
-size_t Str_length(const Str *s) {
+bytes Str_length(const Str *s) {
     return s ? (*s).len : 0u;
 }
 

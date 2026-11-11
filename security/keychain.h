@@ -38,12 +38,12 @@ typedef enum KeychainCode {
 bool Keychain_isAvailable(void);
 // Store or replace `len` bytes under (service, account). Replacing is idempotent.
 KeychainCode Keychain_store(const char *service, const char *account,
-                            const uint8_t *secret, size_t len);
+                            const u8 *secret, bytes len);
 // Read the item into `dest`; *outLen receives the exact byte count. TOO_SMALL when
 // it does not fit — the caller may retry with a larger buffer, and `dest` is left
 // untouched in that case.
 KeychainCode Keychain_load(const char *service, const char *account,
-                           uint8_t *dest, size_t cap, size_t *outLen);
+                           u8 *dest, bytes cap, bytes *outLen);
 KeychainCode Keychain_remove(const char *service, const char *account);
 const char *Keychain_codeName(KeychainCode code);
 

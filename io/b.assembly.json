@@ -1,0 +1,42 @@
+{
+  "application": {
+    "id": "org.vexgraph.vexspoke.io",
+    "name": "io",
+    "displayName": "io",
+    "version": "0.1.0",
+    "type": "lib",
+    "authors": [
+      "vexgraph"
+    ],
+    "publisher": "vexgraph",
+    "description": "Vexspoke io: higher-level path and layout policy above re/io",
+    "license": "MIT",
+    "homepage": "",
+    "icon": ""
+  },
+  "build": {
+    "entry": "",
+    "sources": [
+      "vexhome.c"
+    ],
+    "includes": [
+      "vexspoke",
+      "re",
+      "lib"
+    ],
+    "defines": [],
+    "options": [
+      "-Wall",
+      "-Wextra"
+    ],
+    "link": "static"
+  },
+  "payload": {
+    "files": []
+  },
+  "targets": {},
+  "formats": [
+    "portable"
+  ],
+  "statePolicy": "clean"
+}

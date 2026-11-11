@@ -31,8 +31,8 @@
  * STRUCT FIELDS (Mirroring regex/span.h):
  * ----------------------------------------------------------------------------
  *   RegexSpan {
- *     size_t start;  // inclusive byte offset within the subject
- *     size_t end;    // exclusive byte offset
+ *     bytes start;  // inclusive byte offset within the subject
+ *     bytes end;    // exclusive byte offset
  *   }
  *
  * FUNCTION REGISTRY:
@@ -63,7 +63,7 @@ bool RegexSpan_isSet(RegexSpan span) {
     return span.start != REGEX_UNSET && span.end != REGEX_UNSET;
 }
 
-size_t RegexSpan_length(RegexSpan span) {
+bytes RegexSpan_length(RegexSpan span) {
     if (!RegexSpan_isSet(span) || span.end < span.start)
         return 0;
     return span.end - span.start;

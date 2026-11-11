@@ -2,10 +2,10 @@
 #define INPUT_KEY_MAP_H
 
 #include <stdint.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 #include <stdbool.h>
 
-#include "util/annotation.h"
+#include "lang/annotation.h"
 
 // input/key_map.h — input binding registry (combo → fn pointer).
 //
@@ -21,14 +21,14 @@
 // reserved = leverage: encoding never changes, matcher reads deeper later.
 //
 // Key mode nibble:
-//   0 = TAP, 1 = DOUBLE_TAP, 2 = TRIPLE_TAP, 3 = LONG_PRESS
+//   0 = TAP, 1 = f64_TAP, 2 = TRIPLE_TAP, 3 = LONG_PRESS
 //   4 = DRAG, 5 = SCROLL, 6 = ZOOM, 7..F = reserved
 //
 // Key codes reuse vexspoke key.h / mouse.h values (KEY_A..KEY_Z, MOUSE_LEFT..).
 
 // ── Combo constants: key mode (nibble at bits 52..55) ─────
 #define KMODE_TAP          (0LL << 52)
-#define KMODE_DOUBLE_TAP   (1LL << 52)
+#define KMODE_f64_TAP   (1LL << 52)
 #define KMODE_TRIPLE_TAP   (2LL << 52)
 #define KMODE_LONG_PRESS   (3LL << 52)
 #define KMODE_DRAG         (4LL << 52)
@@ -68,11 +68,11 @@ typedef struct KeyBinding {
 
 typedef struct KeyMap {
     KeyBinding *bindings;      // flat array of registered combos
-    uint32_t    count;         // active binding count
-    uint32_t    capacity;      // allocated slots (doubling growth)
+    u32    count;         // active binding count
+    u32    capacity;      // allocated slots (doubling growth)
     void       *arena;         // opaque MemoryArena handle
     bool        multiTapEnabled; // false = rhythm mode: every press an instant single
-    uint64_t    longPressNanos;  // LONG_PRESS hold threshold (0 = disabled on this map)
+    u64    longPressNanos;  // LONG_PRESS hold threshold (0 = disabled on this map)
 } KeyMap;
 
 // ── Lifecycle ─────────────────────────────────────────────
@@ -103,7 +103,7 @@ const KeyBinding *KeyMap_match(const KeyMap *map, int64_t liveCombo);
 // ── Resolution (per-frame) ────────────────────────────────
 // Resolve live Key/Mouse gesture state against the binding table.
 // Exact-match semantics: a binding fires when its gesture
-// (TAP/DOUBLE_TAP/TRIPLE_TAP/LONG_PRESS) is present in live state for its
+// (TAP/f64_TAP/TRIPLE_TAP/LONG_PRESS) is present in live state for its
 // code, and its modifier bits EQUAL the current modifier state (no
 // unbound-modifier tolerance — wildcard tolerance is KeyMap_matchMask,
 // deferred). When several bindings match, the most specific gesture wins
@@ -115,15 +115,15 @@ const KeyBinding *KeyMap_match(const KeyMap *map, int64_t liveCombo);
 // Windowed settlement (multi-tap on, the default): taps are OFFERED while the
 // per-key pending window (tapWindowNanos, 250ms on the platform drivers) is
 // still open — nothing fires until the window closes after the LAST press and
-// the count settles into SINGLE/DOUBLE/TRIPLE. TAP bindings additionally
-// require the key/button released (release owns the single); DOUBLE/TRIPLE
+// the count settles into SINGLE/d64/TRIPLE. TAP bindings additionally
+// require the key/button released (release owns the single); d64/TRIPLE
 // fire at settlement. A sequence that settled but was declined on modifiers
 // is expired (never re-matched later). Modifier-state changes between presses
 // break the sequence.
 //
 // Multi-tap off (rhythm game mode, KeyMap_setMultiTapEnabled(false)): every
 // press-release is a single tap resolved immediately — zero window latency;
-// DOUBLE/TRIPLE bindings never resolve.
+// d64/TRIPLE bindings never resolve.
 //
 // LONG_PRESS fires once per press (one-shot latch in the driver slot, cleared
 // on release), consuming the tap count so the release of the same press never
@@ -137,14 +137,14 @@ bool KeyMap_resolve(const KeyMap *map, int64_t *outCombo);
 // ── Recognition config ────────────────────────────────────
 // multiTapEnabled (default true): settle-based multi-tap recognition. Turning
 // it off switches to rhythm-game mode — instant singles, no window latency,
-// no double/triple resolution (bindings for them never fire).
+// no d64/triple resolution (bindings for them never fire).
 bool KeyMap_isMultiTapEnabled(const KeyMap *map);
 void KeyMap_setMultiTapEnabled(KeyMap *map, bool enabled);
 
 // Hold threshold for LONG_PRESS resolution (default KEYMAP_LONG_PRESS_NANOS;
 // 0 disables long-press bindings on this map).
-uint64_t KeyMap_getLongPressNanos(const KeyMap *map);
-void     KeyMap_setLongPressNanos(KeyMap *map, uint64_t nanos);
+u64 KeyMap_getLongPressNanos(const KeyMap *map);
+void     KeyMap_setLongPressNanos(KeyMap *map, u64 nanos);
 
 // ── Combo builder ─────────────────────────────────────────
 // Reads current modifier state from vexspoke's Key_isDown / Key_taps,
@@ -161,11 +161,11 @@ int64_t KeyMap_buildCombo(int64_t keyCode, int64_t gestureType);
 //   (nanoseconds; 0 disables long-press detection).
 int64_t KeyMap_buildComboForKey(int key, int64_t gestureType);
 int64_t KeyMap_buildComboForMouse(int button, int64_t gestureType);
-int64_t KeyMap_buildComboForHold(int key, uint64_t longPressThresholdNanos);
+int64_t KeyMap_buildComboForHold(int key, u64 longPressThresholdNanos);
 
 // ── Query ─────────────────────────────────────────────────
 
-uint32_t KeyMap_count(const KeyMap *map);
+u32 KeyMap_count(const KeyMap *map);
 bool     KeyMap_isEmpty(const KeyMap *map);
 
 #endif

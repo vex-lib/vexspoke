@@ -41,7 +41,7 @@ int main(void) {
     CHECK(Queue_peek(q) == 0);
 
     // Volume: a million enqueued, then dequeued in order.
-    for (uint64_t i = 0; i < 1000000; i++)
+    for (u64 i = 0; i < 1000000; i++)
         Queue_push(q, i);
     CHECK(Queue_size(q) == 1000000);
     CHECK(Queue_peek(q) == 0);

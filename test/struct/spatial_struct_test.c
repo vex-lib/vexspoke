@@ -22,23 +22,23 @@ static int g_failures = 0;
 } while (0)
 
 typedef struct CellPayload {
-    int32_t val;
-    float   weight;
+    i32 val;
+    f32   weight;
 } CellPayload;
 
 // Counts visited circle-array cells and accumulates their grid coordinates.
 // Counts CircleArray callback visits for comparison with its valid-cell count.
-static void countCellsCb(int32_t gx, int32_t gy, int32_t dx, int32_t dy, const void *element, void *userData) {
+static void countCellsCb(i32 gx, i32 gy, i32 dx, i32 dy, const void *element, void *userData) {
     (void) gx; (void) gy; (void) dx; (void) dy; (void) element;
-    size_t *count = (size_t*) userData;
+    bytes *count = (bytes*) userData;
     (*count)++;
 }
 
 // Counts visited sphere-array voxels and accumulates their grid coordinates.
 // Counts SphereArray callback visits for comparison with its valid-voxel count.
-static void countVoxelsCb(int32_t gx, int32_t gy, int32_t gz, int32_t dx, int32_t dy, int32_t dz, const void *voxel, void *userData) {
+static void countVoxelsCb(i32 gx, i32 gy, i32 gz, i32 dx, i32 dy, i32 dz, const void *voxel, void *userData) {
     (void) gx; (void) gy; (void) gz; (void) dx; (void) dy; (void) dz; (void) voxel;
-    size_t *count = (size_t*) userData;
+    bytes *count = (bytes*) userData;
     (*count)++;
 }
 
@@ -46,7 +46,7 @@ static void countVoxelsCb(int32_t gx, int32_t gy, int32_t gz, int32_t dx, int32_
 // Tests CircleArray geometry, callback counts, payload round trips, and rejected cells.
 static void test_circle_array(void) {
     printf("\n--- Testing CircleArray (Pythagorean 2D Matrix) ---\n");
-    int32_t r = 3;
+    i32 r = 3;
     CircleArray *ca = CircleArray(r, ID_BYTE, sizeof(CellPayload));
     TEST_ASSERT(ca != nullptr, "CircleArray stride constructor succeeds");
     TEST_ASSERT(CircleArray_radius(ca) == 3, "radius is 3");
@@ -70,9 +70,9 @@ static void test_circle_array(void) {
     TEST_ASSERT(!CircleArray_containsGrid(ca, 3, 7), "out-of-bounds gridY rejected");
 
     // Valid cell count vs forEach iteration count
-    size_t validCells = CircleArray_validCellCount(ca);
+    bytes validCells = CircleArray_validCellCount(ca);
     TEST_ASSERT(validCells > 0 && validCells < 49, "valid cell count is between 0 and 49");
-    size_t iteratedCells = 0;
+    bytes iteratedCells = 0;
     CircleArray_forEach(ca, countCellsCb, &iteratedCells);
     TEST_ASSERT(iteratedCells == validCells, "forEach visited exactly validCellCount cells");
 
@@ -96,7 +96,7 @@ static void test_circle_array(void) {
 // Tests SphereArray containment, traversal counts, payload access, and outside rejection.
 static void test_sphere_array(void) {
     printf("\n--- Testing SphereArray (Pythagorean 3D Voxel Matrix) ---\n");
-    int32_t r = 2;
+    i32 r = 2;
     SphereArray *sa = SphereArray(r, ID_BYTE, sizeof(CellPayload));
     TEST_ASSERT(sa != nullptr, "SphereArray stride constructor succeeds");
     TEST_ASSERT(SphereArray_radius(sa) == 2, "radius is 2");
@@ -111,9 +111,9 @@ static void test_sphere_array(void) {
     TEST_ASSERT(!SphereArray_containsOffset(sa, 2, 2, 0), "planar corner (2, 2, 0) outside (4+4=8 > 4)");
     TEST_ASSERT(!SphereArray_containsOffset(sa, 2, 2, 2), "cubic corner (2, 2, 2) outside (4+4+4=12 > 4)");
 
-    size_t validVoxels = SphereArray_validVoxelCount(sa);
+    bytes validVoxels = SphereArray_validVoxelCount(sa);
     TEST_ASSERT(validVoxels > 0 && validVoxels < 125, "valid voxels count is between 0 and 125");
-    size_t iteratedVoxels = 0;
+    bytes iteratedVoxels = 0;
     SphereArray_forEach(sa, countVoxelsCb, &iteratedVoxels);
     TEST_ASSERT(iteratedVoxels == validVoxels, "forEach visited exactly validVoxelCount voxels");
 
@@ -147,9 +147,9 @@ static void test_octree(void) {
     TEST_ASSERT(!Octree_insert(oct, (OctreePoint){ 200.0f, 0.0f, 0.0f }, 9999), "insert out of bounds fails");
 
     // Range Query (AABB)
-    uint64_t results[8];
+    u64 results[8];
     OctreeAABB queryBox = { 0.0f, 0.0f, 0.0f, 20.0f, 20.0f, 20.0f };
-    size_t matched = Octree_queryRange(oct, queryBox, results, 8);
+    bytes matched = Octree_queryRange(oct, queryBox, results, 8);
     TEST_ASSERT(matched == 2, "queryRange found 2 items in [0, 20]^3");
     bool found1001 = (results[0] == 1001 || results[1] == 1001);
     bool found1002 = (results[0] == 1002 || results[1] == 1002);
@@ -157,7 +157,7 @@ static void test_octree(void) {
 
     // Sphere Query (Pythagorean radius query)
     OctreePoint sphereCenter = { 10.0f, 10.0f, 10.0f };
-    float radius = 5.0f; // distance to (12, 12, 12) is sqrt(4+4+4) = 3.464 <= 5.0
+    f32 radius = 5.0f; // distance to (12, 12, 12) is sqrt(4+4+4) = 3.464 <= 5.0
     matched = Octree_querySphere(oct, sphereCenter, radius, results, 8);
     TEST_ASSERT(matched == 2, "querySphere found 2 items within radius 5.0");
 

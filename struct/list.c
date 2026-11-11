@@ -70,38 +70,38 @@
 
 // list.c — List port (Legacy: struct/List.java).
 
-static const size_t DEFAULT_CAPACITY = 1024;
+static const bytes DEFAULT_CAPACITY = 1024;
 
 static Collection *asCollection(List *list) {
     return (Collection*) list;
 }
 
-static uint8_t *bufferGrow(Collection *c, size_t needed) {
-    // Double, so growth is amortized O(1). A fixed increment makes "support a
+static u8 *bufferGrow(Collection *c, bytes needed) {
+    // d64, so growth is amortized O(1). A fixed increment makes "support a
     // million" quadratic (the Dynamic Scalability & Anti-Hardcoding Law).
-    size_t newCap = (*c).capacity ? (*c).capacity : DEFAULT_CAPACITY;
+    bytes newCap = (*c).capacity ? (*c).capacity : DEFAULT_CAPACITY;
     while (newCap < needed)
         newCap *= 2;
-    size_t Bytes = newCap * (*c).stride;
-    uint64_t bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, (*c).elementClass);
-    uint8_t *next = (uint8_t*) Memory_alloc(bufType, Bytes);
+    bytes Bytes = newCap * (*c).stride;
+    u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, (*c).elementClass);
+    u8 *next = (u8*) Memory_alloc(bufType, Bytes);
     if (!next) {
         // Loud, counted refusal (the Exhaustion Loudness Law): the element is
         // not admitted and the caller can query Collection_exhaustionCount.
         Collection_reportExhaustion(c, Bytes);
         return nullptr;
     }
-    size_t oldBytes = (*c).activeCount * (*c).stride;
+    bytes oldBytes = (*c).activeCount * (*c).stride;
     memcpy(next, (*c).data, oldBytes);
     Memory_free((*c).data);
     (*c).data = next;
-    (*c).capacity = (uint32_t)newCap;
+    (*c).capacity = (u32)newCap;
     return next;
 }
 
-List *List_3(uint32_t elementClass, size_t capacity, size_t count) {
-    size_t stride = Stride_get(elementClass);
-    size_t cap = capacity < DEFAULT_CAPACITY ? DEFAULT_CAPACITY : capacity;
+List *List_3(u32 elementClass, bytes capacity, bytes count) {
+    bytes stride = Stride_get(elementClass);
+    bytes cap = capacity < DEFAULT_CAPACITY ? DEFAULT_CAPACITY : capacity;
     List *list = (List*) Memory_alloc(TYPE_LIST, sizeof(List));
     if (!list) {
         (void) Struct_reportConstructionExhaustion("list", sizeof(List));
@@ -110,17 +110,17 @@ List *List_3(uint32_t elementClass, size_t capacity, size_t count) {
 
     Collection *c = asCollection(list);
     (*c).typeId = TYPE_LIST;
-    (*c).activeCount = (uint32_t)count;
+    (*c).activeCount = (u32)count;
     (*c).elementClass = elementClass;
-    (*c).stride = (uint32_t)stride;
-    (*c).capacity = (uint32_t)cap;
+    (*c).stride = (u32)stride;
+    (*c).capacity = (u32)cap;
     (*c).head = 0;
     (*c).exhaustionCount = 0;
     (*c).exhaustionReported = false;
 
-    size_t Bytes = cap * stride;
-    uint64_t bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, elementClass);
-    (*c).data = (uint8_t*) Memory_alloc(bufType, Bytes);
+    bytes Bytes = cap * stride;
+    u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, elementClass);
+    (*c).data = (u8*) Memory_alloc(bufType, Bytes);
     if (!(*c).data) {
         (void) Struct_reportConstructionExhaustion("list", Bytes);
         Memory_free(list);
@@ -130,7 +130,7 @@ List *List_3(uint32_t elementClass, size_t capacity, size_t count) {
     return list;
 }
 
-List *List_2(uint32_t elementClass, size_t capacity) {
+List *List_2(u32 elementClass, bytes capacity) {
     return List_3(elementClass, capacity, 0);
 }
 
@@ -142,7 +142,7 @@ void List_free(List *list) {
     Memory_free(list);
 }
 
-void List_add(List *list, uint64_t valueOrPointer) {
+void List_add(List *list, u64 valueOrPointer) {
     if (!list) return;
     Collection *c = asCollection(list);
     if ((*c).activeCount >= (*c).capacity) {
@@ -153,20 +153,20 @@ void List_add(List *list, uint64_t valueOrPointer) {
     (*c).activeCount++;
 }
 
-uint8_t *List_addSlot(List *list) {
+u8 *List_addSlot(List *list) {
     if (!list) return nullptr;
     Collection *c = asCollection(list);
     if ((*c).activeCount >= (*c).capacity) {
         if (!bufferGrow(c, (*c).activeCount + 1))
             return nullptr;
     }
-    uint8_t *slot = (*c).data + (*c).activeCount * (*c).stride;
+    u8 *slot = (*c).data + (*c).activeCount * (*c).stride;
     memset(slot, 0, (*c).stride);
     (*c).activeCount++;
     return slot;
 }
 
-uint64_t List_get(List *list, size_t index) {
+u64 List_get(List *list, bytes index) {
     if (!list) return 0;
     Collection *c = asCollection(list);
     if (index >= (*c).activeCount)
@@ -174,7 +174,7 @@ uint64_t List_get(List *list, size_t index) {
     return Collection_readSlot(c, index);
 }
 
-void List_set(List *list, size_t index, uint64_t value) {
+void List_set(List *list, bytes index, u64 value) {
     if (!list) return;
     Collection *c = asCollection(list);
     if (index >= (*c).activeCount)
@@ -182,7 +182,7 @@ void List_set(List *list, size_t index, uint64_t value) {
     Collection_writeSlot(c, index, value);
 }
 
-uint8_t *List_slot(List *list, size_t index) {
+u8 *List_slot(List *list, bytes index) {
     if (!list) return nullptr;
     Collection *c = asCollection(list);
     if (index >= (*c).activeCount)
@@ -190,12 +190,12 @@ uint8_t *List_slot(List *list, size_t index) {
     return (*c).data + index * (*c).stride;
 }
 
-void List_remove(List *list, size_t index) {
+void List_remove(List *list, bytes index) {
     if (!list) return;
     Collection *c = asCollection(list);
     if (index >= (*c).activeCount)
         return;
-    size_t tail = (*c).activeCount - index - 1;
+    bytes tail = (*c).activeCount - index - 1;
     if (tail > 0) {
         memmove((*c).data + index * (*c).stride,
                 (*c).data + (index + 1) * (*c).stride,
@@ -213,7 +213,7 @@ bool List_compare(List *a, List *b) {
         return false;
     if ((*ca).stride != (*cb).stride)
         return false;
-    size_t Bytes = (*ca).activeCount * (*ca).stride;
+    bytes Bytes = (*ca).activeCount * (*ca).stride;
     return memcmp((*ca).data, (*cb).data, Bytes) == 0;
 }
 
@@ -221,34 +221,34 @@ bool List_isEmpty(List *list) {
     return Collection_isEmpty(asCollection(list));
 }
 
-size_t List_size(List *list) {
+bytes List_size(List *list) {
     return Collection_size(asCollection(list));
 }
 
 ;;TEST
-uint64_t List_exhaustionCount(const List *list) {
+u64 List_exhaustionCount(const List *list) {
     return Collection_exhaustionCount((const Collection*) list);
 }
 
-size_t List_length(List *list) {
+bytes List_length(List *list) {
     return Collection_length(asCollection(list));
 }
 
-size_t List_capacity(List *list) {
+bytes List_capacity(List *list) {
     return Collection_capacity(asCollection(list));
 }
 
-uint32_t List_elementClassId(List *list) {
+u32 List_elementClassId(List *list) {
     return Collection_elementClassId(asCollection(list));
 }
 
-size_t List_stride(List *list) {
+bytes List_stride(List *list) {
     return Collection_stride(asCollection(list));
 }
 
-uint8_t *List_dataBuffer(List *list) {
+u8 *List_dataBuffer(List *list) {
     return Collection_dataBuffer(asCollection(list));
 }
-List *List_1(uint32_t element_class) {
+List *List_1(u32 element_class) {
     return List_2(element_class, 16);
 }

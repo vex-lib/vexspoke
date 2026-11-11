@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "util/constructor.h"
+#include "lang/constructor.h"
 #include "relational/variable_hash_map.h"
 #include "relational/variable_mini_map.h"
 #include "struct/chunked_list.h"
@@ -42,40 +42,40 @@
 
 // SLOT RECORD (owned by SegmentIndex, behaviorless): one posting.
 typedef struct SegmentPosting {
-    uint32_t entry;    // entry id
-    uint32_t position; // segment position within the entry's name
+    u32 entry;    // entry id
+    u32 position; // segment position within the entry's name
 } SegmentPosting;
 
 // SLOT RECORD (owned by SegmentIndex, behaviorless): one indexed entry.
 typedef struct SegmentEntry {
     char name[SEGMENT_NAME_BYTES]; // folded dotted name
     uintptr_t payload;             // caller's value (the reflection search stores the VariableSlot*)
-    uint32_t segments;             // segment count
-    uint32_t pad;                  // explicit padding
+    u32 segments;             // segment count
+    u32 pad;                  // explicit padding
 } SegmentEntry;
 
 // One ranked result.
 typedef struct SegmentMatch {
     uintptr_t payload; // the entry's payload
-    uint32_t entry;    // entry id
-    uint32_t start;    // segment position where the match begins
-    uint32_t tier;     // SEGMENT_MATCH_*
+    u32 entry;    // entry id
+    u32 start;    // segment position where the match begins
+    u32 tier;     // SEGMENT_MATCH_*
 } SegmentMatch;
 
 typedef struct SegmentIndex {
     bool active;                  // runtime-active flag
-    uint32_t count;               // indexed entries (== entry row count)
+    u32 count;               // indexed entries (== entry row count)
     ChunkedList *entries;         // never-moved SegmentEntry rows
     VariableHashMap *postings;    // segment -> ChunkedList* of SegmentPosting
 } SegmentIndex;
 
 // --- Path splitting (the '.' splitter) ---
 // Number of '.'-separated segments in a valid path; 0 when null, empty, has an
-// empty segment (leading/trailing/double dot), or a segment over SEGMENT_NAME_MAX.
-size_t SegmentIndex_segmentCount(const char *path);
+// empty segment (leading/trailing/d64 dot), or a segment over SEGMENT_NAME_MAX.
+bytes SegmentIndex_segmentCount(const char *path);
 // Copy segment `index` into out (bounded, NUL-terminated). Returns the length,
 // or -1 on a null out / short buffer / index past the end.
-int SegmentIndex_segment(const char *path, size_t index, char *out, size_t cap);
+int SegmentIndex_segment(const char *path, bytes index, char *out, bytes cap);
 
 // --- Constructors ---
 bool SegmentIndex_init(SegmentIndex *index);
@@ -89,22 +89,22 @@ void SegmentIndex_free(SegmentIndex *index);
 void SegmentIndex_clear(SegmentIndex *index);
 // Index a name (folded + segmented + posted). Returns the entry id, or
 // SEGMENT_ENTRY_NONE on an invalid name or OOM.
-uint32_t SegmentIndex_add(SegmentIndex *index, const char *name, uintptr_t payload);
+u32 SegmentIndex_add(SegmentIndex *index, const char *name, uintptr_t payload);
 // (Re)build the whole index from every live map entry, payload = the VariableSlot*.
 // Returns the entry count.
-size_t SegmentIndex_buildFrom(SegmentIndex *index, VariableHashMap *map);
+bytes SegmentIndex_buildFrom(SegmentIndex *index, VariableHashMap *map);
 // (Re)build from a scoped mini map (field/method search), payload = the VariableSlot*.
-size_t SegmentIndex_buildFromMini(SegmentIndex *index, VariableMiniMap *map);
+bytes SegmentIndex_buildFromMini(SegmentIndex *index, VariableMiniMap *map);
 // Ranked search (dest-last + truncation flag). Returns the total match count;
 // at most cap are written, best first.
-size_t SegmentIndex_query(const SegmentIndex *index, const char *query, SegmentMatch *out, size_t cap, bool *outTruncated);
+bytes SegmentIndex_query(const SegmentIndex *index, const char *query, SegmentMatch *out, bytes cap, bool *outTruncated);
 
 // --- Getters (null-safe) ---
-uint32_t SegmentIndex_count(const SegmentIndex *index);
+u32 SegmentIndex_count(const SegmentIndex *index);
 bool SegmentIndex_isEmpty(const SegmentIndex *index);
 
 // --- String projections (the toString Law) ---
-void SegmentIndex_toString(const SegmentIndex *index, char *dest, size_t cap, bool *outTruncated);
-void SegmentIndex_toStringStruct(const SegmentIndex *index, char *dest, size_t cap, bool *outTruncated);
+void SegmentIndex_toString(const SegmentIndex *index, char *dest, bytes cap, bool *outTruncated);
+void SegmentIndex_toStringStruct(const SegmentIndex *index, char *dest, bytes cap, bool *outTruncated);
 
 #endif

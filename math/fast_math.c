@@ -11,7 +11,7 @@
  * ============================================================================
  * High-speed mathematical approximations for real-time 3D, procedural
  * animations, particles, and graphics: replaces expensive libm routines with
- * branchless bit manipulations (Quake III inverse sqrt, magic-float rounding,
+ * branchless bit manipulations (Quake III inverse sqrt, magic-f32 rounding,
  * sign-bit absolute value) and low-order polynomial / rational approximations
  * (Bhaskara I sine, minimax atan). Deliberately trades IEEE 754 bit-exactness
  * for speed; callers needing exact results use math/strict_math.h. Stateless
@@ -29,7 +29,7 @@
  * particles, and graphics. Replaces expensive libm routines with branchless
  * bit manipulations and low-order polynomial / rational approximations.
  *
- * STRUCT FIELDS: none — procedural (operates on scalar float operands; stateless)
+ * STRUCT FIELDS: none — procedural (operates on scalar f32 operands; stateless)
  *
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
@@ -53,11 +53,11 @@
  * ============================================================================
  */
 
-float FastMath_invSqrt(float x) {
+f32 FastMath_invSqrt(f32 x) {
     if (x <= 0.0f)
         return 0.0f;
-    float xhalf = 0.5f * x;
-    uint32_t i;
+    f32 xhalf = 0.5f * x;
+    u32 i;
     memcpy(&i, &x, 4);
     i = 0x5f3759dfu - (i >> 1);
     memcpy(&x, &i, 4);
@@ -65,19 +65,19 @@ float FastMath_invSqrt(float x) {
     return x;
 }
 
-float FastMath_inv(float x) {
+f32 FastMath_inv(f32 x) {
     if (x == 0.0f)
         return 0.0f;
     // Single Newton-Raphson refinement on IEEE exponent reciprocal
-    uint32_t i;
+    u32 i;
     memcpy(&i, &x, 4);
     i = 0x7ef311c2u - i;
-    float y;
+    f32 y;
     memcpy(&y, &i, 4);
     return y * (2.0f - x * y);
 }
 
-static inline float wrap_pi(float x) {
+static inline f32 wrap_pi(f32 x) {
     // Wrap into [-PI, PI]
     while (x > FAST_MATH_PI)
         x -= FAST_MATH_TWO_PI;
@@ -86,34 +86,34 @@ static inline float wrap_pi(float x) {
     return x;
 }
 
-float FastMath_sin(float x) {
+f32 FastMath_sin(f32 x) {
     x = wrap_pi(x);
     // Bhaskara I formula on [-PI, PI]:
     // For x in [0, PI]: 16*x*(PI - x) / (5*PI^2 - 4*x*(PI - x))
     if (x >= 0.0f) {
-        float num = 16.0f * x * (FAST_MATH_PI - x);
-        float den = 5.0f * FAST_MATH_PI * FAST_MATH_PI - 4.0f * x * (FAST_MATH_PI - x);
+        f32 num = 16.0f * x * (FAST_MATH_PI - x);
+        f32 den = 5.0f * FAST_MATH_PI * FAST_MATH_PI - 4.0f * x * (FAST_MATH_PI - x);
         return num / den;
     } else {
-        float pos = -x;
-        float num = 16.0f * pos * (FAST_MATH_PI - pos);
-        float den = 5.0f * FAST_MATH_PI * FAST_MATH_PI - 4.0f * pos * (FAST_MATH_PI - pos);
+        f32 pos = -x;
+        f32 num = 16.0f * pos * (FAST_MATH_PI - pos);
+        f32 den = 5.0f * FAST_MATH_PI * FAST_MATH_PI - 4.0f * pos * (FAST_MATH_PI - pos);
         return -(num / den);
     }
 }
 
-float FastMath_cos(float x) {
+f32 FastMath_cos(f32 x) {
     return FastMath_sin(x + FAST_MATH_HALF_PI);
 }
 
-float FastMath_tan(float x) {
-    float c = FastMath_cos(x);
+f32 FastMath_tan(f32 x) {
+    f32 c = FastMath_cos(x);
     if (c > -1e-6f && c < 1e-6f)
         return 0.0f;
     return FastMath_sin(x) / c;
 }
 
-float FastMath_atan(float x) {
+f32 FastMath_atan(f32 x) {
     // Fast minimax polynomial approximation on [-1, 1] with range reduction
     if (x > 1.0f) {
         return FAST_MATH_HALF_PI - FastMath_atan(1.0f / x);
@@ -122,17 +122,17 @@ float FastMath_atan(float x) {
         return -FAST_MATH_HALF_PI - FastMath_atan(1.0f / x);
     }
     // P(x) = x * (1 - 0.3333 * x^2)
-    float x2 = x * x;
+    f32 x2 = x * x;
     return x * (0.999866f + x2 * (-0.3302995f + x2 * (0.180141f - 0.085133f * x2)));
 }
 
-float FastMath_atan2(float y, float x) {
+f32 FastMath_atan2(f32 y, f32 x) {
     if (x == 0.0f) {
         if (y > 0.0f) return FAST_MATH_HALF_PI;
         if (y < 0.0f) return -FAST_MATH_HALF_PI;
         return 0.0f;
     }
-    float a = FastMath_atan(y / x);
+    f32 a = FastMath_atan(y / x);
     if (x < 0.0f) {
         if (y >= 0.0f) return a + FAST_MATH_PI;
         return a - FAST_MATH_PI;
@@ -140,47 +140,47 @@ float FastMath_atan2(float y, float x) {
     return a;
 }
 
-float FastMath_abs(float x) {
-    uint32_t i;
+f32 FastMath_abs(f32 x) {
+    u32 i;
     memcpy(&i, &x, 4);
     i &= 0x7FFFFFFFu;
     memcpy(&x, &i, 4);
     return x;
 }
 
-float FastMath_round(float x) {
-    // 2^23 is the magic constant for float32: adding it forces the mantissa to
+f32 FastMath_round(f32 x) {
+    // 2^23 is the magic constant for f3232: adding it forces the mantissa to
     // integer precision, so the add/sub round-trip rounds x to the nearest
     // integer (IEEE round-half-to-even). 2^14 (the old constant) only rounded
-    // to the float ulp at that magnitude (~2^-9), i.e. not to integers at all.
+    // to the f32 ulp at that magnitude (~2^-9), i.e. not to integers at all.
     if (x >= 0.0f) {
-        float f = x + 8388608.0f;
+        f32 f = x + 8388608.0f;
         return f - 8388608.0f;
     } else {
-        float f = x - 8388608.0f;
+        f32 f = x - 8388608.0f;
         return f + 8388608.0f;
     }
 }
 
-float FastMath_clamp(float val, float min, float max) {
+f32 FastMath_clamp(f32 val, f32 min, f32 max) {
     if (val < min) return min;
     if (val > max) return max;
     return val;
 }
 
-float FastMath_lerp(float a, float b, float t) {
+f32 FastMath_lerp(f32 a, f32 b, f32 t) {
     return a + t * (b - a);
 }
 
-bool FastMath_approxEqual(float a, float b, float epsilon) {
-    float diff = FastMath_abs(a - b);
+bool FastMath_approxEqual(f32 a, f32 b, f32 epsilon) {
+    f32 diff = FastMath_abs(a - b);
     return diff <= epsilon;
 }
 
-float FastMath_toRadians(float deg) {
+f32 FastMath_toRadians(f32 deg) {
     return deg * FAST_MATH_DEG_TO_RAD;
 }
 
-float FastMath_toDegrees(float rad) {
+f32 FastMath_toDegrees(f32 rad) {
     return rad * FAST_MATH_RAD_TO_DEG;
 }

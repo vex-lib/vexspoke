@@ -26,10 +26,10 @@
  * ----------------------------------------------------------------------------
  *   Vec2 {
  *     union {
- *       struct { float horizontal; float vertical; };
- *       struct { float x; float y; };
- *       struct { float right; float up; };
- *       float data[2];
+ *       struct { f32 horizontal; f32 vertical; };
+ *       struct { f32 x; f32 y; };
+ *       struct { f32 right; f32 up; };
+ *       f32 data[2];
  *     };
  *   }
  *

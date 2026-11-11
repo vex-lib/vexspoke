@@ -13,7 +13,7 @@
  * ============================================================================
  * DEFINITION: Deque
  * ============================================================================
- * Double-ended queue over a circular buffer, ported from struct/Deque.java.
+ * d64-ended queue over a circular buffer, ported from struct/Deque.java.
  * Logical index i maps to physical (head + i) % capacity; addFirst/addLast
  * and removeFirst/removeLast touch both ends in O(1), and the buffer grows
  * by DEFAULT_CAPACITY chunks through the memory arena when full. The
@@ -71,15 +71,15 @@
 // deque.c — Deque port (Legacy: struct/Deque.java). Circular buffer: logical
 // index i maps to physical (head + i) % capacity.
 
-static const size_t DEFAULT_CAPACITY = 1024;
+static const bytes DEFAULT_CAPACITY = 1024;
 
 static Collection *asCollection(Deque *deque) {
     return (Collection*) deque;
 }
 
-Deque *Deque_3(uint32_t elementClass, size_t capacity, size_t count) {
-    size_t stride = Stride_get(elementClass);
-    size_t cap = capacity < DEFAULT_CAPACITY ? DEFAULT_CAPACITY : capacity;
+Deque *Deque_3(u32 elementClass, bytes capacity, bytes count) {
+    bytes stride = Stride_get(elementClass);
+    bytes cap = capacity < DEFAULT_CAPACITY ? DEFAULT_CAPACITY : capacity;
     Deque *deque = (Deque*) Memory_alloc(TYPE_DEQUE, sizeof(Deque));
     if (!deque) {
         (void) Struct_reportConstructionExhaustion("deque", sizeof(Deque));
@@ -88,17 +88,17 @@ Deque *Deque_3(uint32_t elementClass, size_t capacity, size_t count) {
 
     Collection *c = asCollection(deque);
     (*c).typeId = TYPE_DEQUE;
-    (*c).activeCount = (uint32_t)count;
+    (*c).activeCount = (u32)count;
     (*c).elementClass = elementClass;
-    (*c).stride = (uint32_t)stride;
-    (*c).capacity = (uint32_t)cap;
+    (*c).stride = (u32)stride;
+    (*c).capacity = (u32)cap;
     (*c).head = 0;
     (*c).exhaustionCount = 0;
     (*c).exhaustionReported = false;
 
-    size_t Bytes = cap * stride;
-    uint64_t bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, elementClass);
-    (*c).data = (uint8_t*) Memory_alloc(bufType, Bytes);
+    bytes Bytes = cap * stride;
+    u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, elementClass);
+    (*c).data = (u8*) Memory_alloc(bufType, Bytes);
     if (!(*c).data) {
         (void) Struct_reportConstructionExhaustion("deque", Bytes);
         Memory_free(deque);
@@ -111,34 +111,34 @@ Deque *Deque_3(uint32_t elementClass, size_t capacity, size_t count) {
 static int ensureCapacity(Collection *c) {
     if ((*c).activeCount < (*c).capacity)
         return 1;
-    size_t newCap = (*c).capacity * 2;
-    size_t Bytes = newCap * (*c).stride;
-    uint64_t bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, (*c).elementClass);
-    uint8_t *next = (uint8_t*) Memory_alloc(bufType, Bytes);
+    bytes newCap = (*c).capacity * 2;
+    bytes Bytes = newCap * (*c).stride;
+    u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, (*c).elementClass);
+    u8 *next = (u8*) Memory_alloc(bufType, Bytes);
     if (!next) {
         Collection_reportExhaustion(c, Bytes);
         return 0;
     }
 
-    size_t count = (*c).activeCount;
+    bytes count = (*c).activeCount;
     if (count > 0) {
         if ((*c).head == 0) {
             memcpy(next, (*c).data, count * (*c).stride);
         } else {
-            size_t len1 = (*c).capacity - (*c).head;
-            size_t len2 = (*c).head;
+            bytes len1 = (*c).capacity - (*c).head;
+            bytes len2 = (*c).head;
             memcpy(next, (*c).data + (*c).head * (*c).stride, len1 * (*c).stride);
             memcpy(next + len1 * (*c).stride, (*c).data, len2 * (*c).stride);
         }
     }
     Memory_free((*c).data);
     (*c).data = next;
-    (*c).capacity = (uint32_t)newCap;
+    (*c).capacity = (u32)newCap;
     (*c).head = 0;
     return 1;
 }
 
-Deque *Deque_2(uint32_t elementClass, size_t capacity) {
+Deque *Deque_2(u32 elementClass, bytes capacity) {
     return Deque_3(elementClass, capacity, 0);
 }
 
@@ -150,56 +150,56 @@ void Deque_free(Deque *deque) {
     Memory_free(deque);
 }
 
-void Deque_addFirst(Deque *deque, uint64_t valueOrPointer) {
+void Deque_addFirst(Deque *deque, u64 valueOrPointer) {
     if (!deque) return;
     Collection *c = asCollection(deque);
     if (!ensureCapacity(c))
         return;
-    size_t newHead = ((*c).head - 1 + (*c).capacity) % (*c).capacity;
-    uint8_t *slot = (*c).data + newHead * (*c).stride;
+    bytes newHead = ((*c).head - 1 + (*c).capacity) % (*c).capacity;
+    u8 *slot = (*c).data + newHead * (*c).stride;
     switch ((*c).stride) {
-        case 1:  *(uint8_t*) slot = (uint8_t)valueOrPointer;  break;
-        case 2:  *(uint16_t*) slot = (uint16_t)valueOrPointer; break;
-        case 4:  *(uint32_t*) slot = (uint32_t)valueOrPointer; break;
-        default: *(uint64_t*) slot = valueOrPointer;          break;
+        case 1:  *(u8*) slot = (u8)valueOrPointer;  break;
+        case 2:  *(u16*) slot = (u16)valueOrPointer; break;
+        case 4:  *(u32*) slot = (u32)valueOrPointer; break;
+        default: *(u64*) slot = valueOrPointer;          break;
     }
-    (*c).head = (uint32_t)newHead;
+    (*c).head = (u32)newHead;
     (*c).activeCount++;
 }
 
-void Deque_addLast(Deque *deque, uint64_t valueOrPointer) {
+void Deque_addLast(Deque *deque, u64 valueOrPointer) {
     if (!deque) return;
     Collection *c = asCollection(deque);
     if (!ensureCapacity(c))
         return;
-    size_t tail = ((*c).head + (*c).activeCount) % (*c).capacity;
+    bytes tail = ((*c).head + (*c).activeCount) % (*c).capacity;
     Collection_writeSlot(c, tail, valueOrPointer);
     (*c).activeCount++;
 }
 
-uint64_t Deque_removeFirst(Deque *deque) {
+u64 Deque_removeFirst(Deque *deque) {
     if (!deque) return 0;
     Collection *c = asCollection(deque);
     if ((*c).activeCount == 0)
         return 0;
-    uint64_t value = Collection_readSlot(c, (*c).head);
-    (*c).head = (uint32_t)(((*c).head + 1) % (*c).capacity);
+    u64 value = Collection_readSlot(c, (*c).head);
+    (*c).head = (u32)(((*c).head + 1) % (*c).capacity);
     (*c).activeCount--;
     return value;
 }
 
-uint64_t Deque_removeLast(Deque *deque) {
+u64 Deque_removeLast(Deque *deque) {
     if (!deque) return 0;
     Collection *c = asCollection(deque);
     if ((*c).activeCount == 0)
         return 0;
-    size_t tail = ((*c).head + (*c).activeCount - 1) % (*c).capacity;
-    uint64_t value = Collection_readSlot(c, tail);
+    bytes tail = ((*c).head + (*c).activeCount - 1) % (*c).capacity;
+    u64 value = Collection_readSlot(c, tail);
     (*c).activeCount--;
     return value;
 }
 
-uint64_t Deque_peekFirst(Deque *deque) {
+u64 Deque_peekFirst(Deque *deque) {
     if (!deque) return 0;
     Collection *c = asCollection(deque);
     if ((*c).activeCount == 0)
@@ -207,30 +207,30 @@ uint64_t Deque_peekFirst(Deque *deque) {
     return Collection_readSlot(c, (*c).head);
 }
 
-uint64_t Deque_peekLast(Deque *deque) {
+u64 Deque_peekLast(Deque *deque) {
     if (!deque) return 0;
     Collection *c = asCollection(deque);
     if ((*c).activeCount == 0)
         return 0;
-    size_t tail = ((*c).head + (*c).activeCount - 1) % (*c).capacity;
+    bytes tail = ((*c).head + (*c).activeCount - 1) % (*c).capacity;
     return Collection_readSlot(c, tail);
 }
 
-uint64_t Deque_get(Deque *deque, size_t index) {
+u64 Deque_get(Deque *deque, bytes index) {
     if (!deque) return 0;
     Collection *c = asCollection(deque);
     if (index >= (*c).activeCount)
         return 0;
-    size_t phys = ((*c).head + index) % (*c).capacity;
+    bytes phys = ((*c).head + index) % (*c).capacity;
     return Collection_readSlot(c, phys);
 }
 
-uint8_t *Deque_slot(Deque *deque, size_t index) {
+u8 *Deque_slot(Deque *deque, bytes index) {
     if (!deque) return nullptr;
     Collection *c = asCollection(deque);
     if (index >= (*c).activeCount)
         return nullptr;
-    size_t phys = ((*c).head + index) % (*c).capacity;
+    bytes phys = ((*c).head + index) % (*c).capacity;
     return (*c).data + phys * (*c).stride;
 }
 
@@ -238,38 +238,38 @@ bool Deque_isEmpty(Deque *deque) {
     return Collection_isEmpty(asCollection(deque));
 }
 
-size_t Deque_size(Deque *deque) {
+bytes Deque_size(Deque *deque) {
     return Collection_size(asCollection(deque));
 }
 
 ;;TEST
-uint64_t Deque_exhaustionCount(const Deque *deque) {
+u64 Deque_exhaustionCount(const Deque *deque) {
     return Collection_exhaustionCount((const Collection*) deque);
 }
 
-size_t Deque_length(Deque *deque) {
+bytes Deque_length(Deque *deque) {
     return Collection_length(asCollection(deque));
 }
 
-size_t Deque_capacity(Deque *deque) {
+bytes Deque_capacity(Deque *deque) {
     return Collection_capacity(asCollection(deque));
 }
 
-uint32_t Deque_elementClassId(Deque *deque) {
+u32 Deque_elementClassId(Deque *deque) {
     return Collection_elementClassId(asCollection(deque));
 }
 
-size_t Deque_stride(Deque *deque) {
+bytes Deque_stride(Deque *deque) {
     return Collection_stride(asCollection(deque));
 }
 
-size_t Deque_head(Deque *deque) {
+bytes Deque_head(Deque *deque) {
     return Collection_head(asCollection(deque));
 }
 
-uint8_t *Deque_dataBuffer(Deque *deque) {
+u8 *Deque_dataBuffer(Deque *deque) {
     return Collection_dataBuffer(asCollection(deque));
 }
-Deque *Deque_1(uint32_t element_class) {
+Deque *Deque_1(u32 element_class) {
     return Deque_2(element_class, 16);
 }

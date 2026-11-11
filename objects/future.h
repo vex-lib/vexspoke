@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 // objects/future.h — Asynchronous single-assignment Future object wrapper.
 // Ported from legacy objects/Future.java.
@@ -16,7 +16,7 @@ Future *Future_0(void);
 
 // Free future memory
 
-Future *Future_2(const Future *init, size_t count);
+Future *Future_2(const Future *init, bytes count);
 
 #define Future(...) CONSTRUCTOR_DISPATCH(Future, __VA_ARGS__)
 
@@ -26,9 +26,9 @@ void Future_free(Future *future);
 bool Future_isGiven(const Future *future);
 
 // Get the resolved value (returns 0 if not yet given)
-uint64_t Future_get(const Future *future);
+u64 Future_get(const Future *future);
 
 // Atomically fulfill the future with a value. Returns true on success, false if already fulfilled.
-bool Future_setDesiredValue(Future *future, uint64_t value);
+bool Future_setDesiredValue(Future *future, u64 value);
 
 #endif

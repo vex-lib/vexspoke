@@ -12,8 +12,8 @@
 typedef void (*DestructorFn)(void *ptr);
 
 // Register a custom destructor hook for a specific 64-bit type ID.
-void Destructor_register(uint64_t typeId, DestructorFn fn);
-DestructorFn Destructor_lookup(uint64_t typeId);
+void Destructor_register(u64 typeId, DestructorFn fn);
+DestructorFn Destructor_lookup(u64 typeId);
 
 void c23_free(void *ptr);
 

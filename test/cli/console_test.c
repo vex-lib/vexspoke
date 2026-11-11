@@ -34,8 +34,8 @@ int main(void) {
     memset(text, 0, sizeof(text));
     assert(fread(text, 1, sizeof(text) - 1, errors) != 0);
     assert(strstr(text, "[vex] ") && strstr(text, "null message"));
-    size_t lines = 0;
-    for (size_t i = 0; text[i] != 0; ++i)
+    bytes lines = 0;
+    for (bytes i = 0; text[i] != 0; ++i)
         if (text[i] == '\n')
             ++lines;
     assert(lines == 1);

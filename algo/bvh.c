@@ -1,6 +1,6 @@
 #include "algo/bvh.h"
 
-#include <float.h>
+#include <f32.h>
 #include <stdlib.h>
 
 #include "util/annotation.h"
@@ -52,11 +52,11 @@
 
 ;;INTENTION("Accelerated spatial ray tracing and AABB bounding volume queries")
 
-static inline float fminf_local(float a, float b) {
+static inline f32 fminf_local(f32 a, f32 b) {
     return (a < b) ? a : b;
 }
 
-static inline float fmaxf_local(float a, float b) {
+static inline f32 fmaxf_local(f32 a, f32 b) {
     return (a > b) ? a : b;
 }
 
@@ -71,7 +71,7 @@ BvhAabb BvhAabb_empty() {
     return box;
 }
 
-BvhAabb BvhAabb_from_points(const float min_pt[3], const float max_pt[3]) {
+BvhAabb BvhAabb_from_points(const f32 min_pt[3], const f32 max_pt[3]) {
     BvhAabb box;
     box.min_point[0] = min_pt[0];
     box.min_point[1] = min_pt[1];
@@ -82,7 +82,7 @@ BvhAabb BvhAabb_from_points(const float min_pt[3], const float max_pt[3]) {
     return box;
 }
 
-void BvhAabb_expand_point(const float point[3], BvhAabb *box) {
+void BvhAabb_expand_point(const f32 point[3], BvhAabb *box) {
     if (!point || !box) {
         return;
     }
@@ -106,20 +106,20 @@ void BvhAabb_merge(const BvhAabb *other, BvhAabb *dest) {
     (*dest).max_point[2] = fmaxf_local((*dest).max_point[2], (*other).max_point[2]);
 }
 
-bool BvhAabb_intersect_ray(const BvhRay *ray, const BvhAabb *box, float *t_near_out) {
+bool BvhAabb_intersect_ray(const BvhRay *ray, const BvhAabb *box, f32 *t_near_out) {
     if (!ray || !box) {
         return false;
     }
 
-    float t_min = (*ray).t_min;
-    float t_max = (*ray).t_max;
+    f32 t_min = (*ray).t_min;
+    f32 t_max = (*ray).t_max;
 
     for (int i = 0; i < 3; i++) {
-        float inv_d = ((*ray).direction[i] != 0.0f) ? (1.0f / (*ray).direction[i]) : 1e30f;
-        float t0 = ((*box).min_point[i] - (*ray).origin[i]) * inv_d;
-        float t1 = ((*box).max_point[i] - (*ray).origin[i]) * inv_d;
+        f32 inv_d = ((*ray).direction[i] != 0.0f) ? (1.0f / (*ray).direction[i]) : 1e30f;
+        f32 t0 = ((*box).min_point[i] - (*ray).origin[i]) * inv_d;
+        f32 t1 = ((*box).max_point[i] - (*ray).origin[i]) * inv_d;
         if (inv_d < 0.0f) {
-            float temp = t0;
+            f32 temp = t0;
             t0 = t1;
             t1 = temp;
         }
@@ -147,16 +147,16 @@ BvhTree BvhTree_0(void) {
     return tree;
 }
 
-BvhTree BvhTree_1(uint32_t primitive_count) {
+BvhTree BvhTree_1(u32 primitive_count) {
     BvhTree tree = BvhTree_0();
     if (primitive_count == 0u)
         return tree;
     if (primitive_count > (UINT32_MAX - 1u) / 2u)
         return tree;
 
-    uint32_t max_nodes = (2u * primitive_count) + 1u;
-    tree.nodes = (BvhNode*) malloc((size_t) max_nodes * sizeof(BvhNode));
-    tree.primitive_indices = (uint32_t*) malloc((size_t) primitive_count * sizeof(uint32_t));
+    u32 max_nodes = (2u * primitive_count) + 1u;
+    tree.nodes = (BvhNode*) malloc((bytes) max_nodes * sizeof(BvhNode));
+    tree.primitive_indices = (u32*) malloc((bytes) primitive_count * sizeof(u32));
     if (!tree.nodes || !tree.primitive_indices) {
         free(tree.nodes);
         free(tree.primitive_indices);
@@ -164,7 +164,7 @@ BvhTree BvhTree_1(uint32_t primitive_count) {
     }
     tree.node_capacity = max_nodes;
     tree.primitive_count = primitive_count;
-    for (uint32_t i = 0; i < primitive_count; i++)
+    for (u32 i = 0; i < primitive_count; i++)
         tree.primitive_indices[i] = i;
     return tree;
 }
@@ -187,17 +187,17 @@ void BvhTree_destroy(BvhTree *tree) {
     (*tree).primitives = nullptr;
 }
 
-static int32_t bvh_build_recursive(
+static i32 bvh_build_recursive(
     BvhTree *tree,
-    uint32_t offset,
-    uint32_t count,
-    uint32_t max_leaf_prims
+    u32 offset,
+    u32 count,
+    u32 max_leaf_prims
 ) {
     if (count == 0) {
         return -1;
     }
 
-    uint32_t node_idx = (*tree).node_count++;
+    u32 node_idx = (*tree).node_count++;
     BvhNode *node = &(*tree).nodes[node_idx];
     (*node).bounds = BvhAabb_empty();
     (*node).left_child = -1;
@@ -207,8 +207,8 @@ static int32_t bvh_build_recursive(
     (*node).is_leaf = false;
 
     BvhAabb centroid_bounds = BvhAabb_empty();
-    for (uint32_t i = 0; i < count; i++) {
-        uint32_t prim_id = (*tree).primitive_indices[offset + i];
+    for (u32 i = 0; i < count; i++) {
+        u32 prim_id = (*tree).primitive_indices[offset + i];
         const BvhPrimitive *prim = &(*tree).primitives[prim_id];
         BvhAabb_merge(&(*prim).bounds, &(*node).bounds);
         BvhAabb_expand_point((*prim).centroid, &centroid_bounds);
@@ -216,10 +216,10 @@ static int32_t bvh_build_recursive(
 
     if (count <= max_leaf_prims) {
         (*node).is_leaf = true;
-        return (int32_t) node_idx;
+        return (i32) node_idx;
     }
 
-    float extent[3];
+    f32 extent[3];
     extent[0] = centroid_bounds.max_point[0] - centroid_bounds.min_point[0];
     extent[1] = centroid_bounds.max_point[1] - centroid_bounds.min_point[1];
     extent[2] = centroid_bounds.max_point[2] - centroid_bounds.min_point[2];
@@ -234,34 +234,34 @@ static int32_t bvh_build_recursive(
 
     if (extent[axis] <= 1e-6f) {
         (*node).is_leaf = true;
-        return (int32_t) node_idx;
+        return (i32) node_idx;
     }
 
-    float split_pos = 0.5f * (centroid_bounds.min_point[axis] + centroid_bounds.max_point[axis]);
+    f32 split_pos = 0.5f * (centroid_bounds.min_point[axis] + centroid_bounds.max_point[axis]);
 
     // Partition primitives in-place
-    int32_t left = (int32_t) offset;
-    int32_t right = (int32_t) (offset + count - 1);
+    i32 left = (i32) offset;
+    i32 right = (i32) (offset + count - 1);
 
     while (left <= right) {
-        uint32_t prim_id = (*tree).primitive_indices[left];
+        u32 prim_id = (*tree).primitive_indices[left];
         if ((*tree).primitives[prim_id].centroid[axis] < split_pos) {
             left++;
         } else {
-            uint32_t temp = (*tree).primitive_indices[left];
+            u32 temp = (*tree).primitive_indices[left];
             (*tree).primitive_indices[left] = (*tree).primitive_indices[right];
             (*tree).primitive_indices[right] = temp;
             right--;
         }
     }
 
-    uint32_t left_count = (uint32_t) (left - (int32_t) offset);
+    u32 left_count = (u32) (left - (i32) offset);
     if (left_count == 0 || left_count == count) {
         left_count = count / 2;
     }
 
-    int32_t left_child = bvh_build_recursive(tree, offset, left_count, max_leaf_prims);
-    int32_t right_child = bvh_build_recursive(tree, offset + left_count, count - left_count, max_leaf_prims);
+    i32 left_child = bvh_build_recursive(tree, offset, left_count, max_leaf_prims);
+    i32 right_child = bvh_build_recursive(tree, offset + left_count, count - left_count, max_leaf_prims);
 
     // Re-acquire node pointer in case memory relocated (though capacity was pre-allocated)
     node = &(*tree).nodes[node_idx];
@@ -269,10 +269,10 @@ static int32_t bvh_build_recursive(
     (*node).right_child = right_child;
     (*node).is_leaf = false;
 
-    return (int32_t) node_idx;
+    return (i32) node_idx;
 }
 
-bool BvhTree_build(const BvhPrimitive *prims, uint32_t count, BvhTree *tree) {
+bool BvhTree_build(const BvhPrimitive *prims, u32 count, BvhTree *tree) {
     if (!tree || (count > 0u && !prims)) {
         return false;
     }
@@ -287,7 +287,7 @@ bool BvhTree_build(const BvhPrimitive *prims, uint32_t count, BvhTree *tree) {
     }
 
     (*tree).primitives = prims;
-    for (uint32_t i = 0; i < count; i++)
+    for (u32 i = 0; i < count; i++)
         (*tree).primitive_indices[i] = i;
     bvh_build_recursive(tree, 0, count, 2);
     return true;
@@ -308,15 +308,15 @@ bool BvhTree_intersect_ray(const BvhTree *tree, const BvhRay *ray, BvhRayHit *hi
     (*hit_out).normal[1] = 0.0f;
     (*hit_out).normal[2] = 1.0f;
 
-    int32_t stack[64];
+    i32 stack[64];
     int stack_ptr = 0;
     stack[stack_ptr++] = 0;
 
     while (stack_ptr > 0) {
-        int32_t node_idx = stack[--stack_ptr];
+        i32 node_idx = stack[--stack_ptr];
         const BvhNode *node = &(*tree).nodes[node_idx];
 
-        float t_box = 0.0f;
+        f32 t_box = 0.0f;
         BvhRay curr_ray = *ray;
         curr_ray.t_max = (*hit_out).t;
 
@@ -325,11 +325,11 @@ bool BvhTree_intersect_ray(const BvhTree *tree, const BvhRay *ray, BvhRayHit *hi
         }
 
         if ((*node).is_leaf) {
-            for (uint32_t i = 0; i < (*node).primitive_count; i++) {
-                uint32_t prim_idx = (*tree).primitive_indices[(*node).primitive_offset + i];
+            for (u32 i = 0; i < (*node).primitive_count; i++) {
+                u32 prim_idx = (*tree).primitive_indices[(*node).primitive_offset + i];
                 const BvhPrimitive *prim = &(*tree).primitives[prim_idx];
 
-                float t_prim = 0.0f;
+                f32 t_prim = 0.0f;
                 if (BvhAabb_intersect_ray(&curr_ray, &(*prim).bounds, &t_prim)) {
                     if (t_prim < (*hit_out).t) {
                         (*hit_out).hit = true;

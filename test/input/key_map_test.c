@@ -94,8 +94,8 @@ static void test_bind_and_match(void) {
     CHECK(KeyMap_match(map, KMOD_CMD | KEY_B) == nullptr);
 
     // Bind a second combo
-    int64_t doubleLeft = KMODE_DOUBLE_TAP | MOUSE_LEFT;
-    CHECK(KeyMap_bind(map, doubleLeft, onFire2, nullptr));
+    int64_t f64Left = KMODE_f64_TAP | MOUSE_LEFT;
+    CHECK(KeyMap_bind(map, f64Left, onFire2, nullptr));
     CHECK(KeyMap_count(map) == 2);
 
     // Both match
@@ -103,7 +103,7 @@ static void test_bind_and_match(void) {
     CHECK(hit != nullptr);
     CHECK((*hit).fn == onFire);
 
-    hit = KeyMap_match(map, doubleLeft);
+    hit = KeyMap_match(map, f64Left);
     CHECK(hit != nullptr);
     CHECK((*hit).fn == onFire2);
 
@@ -192,8 +192,8 @@ static void test_combo_constants(void) {
     int64_t cmdA = KMOD_CMD | KEY_A;
     CHECK(cmdA == ((1LL << 36) | 0x41));
 
-    // Double-click left mouse: gesture nibble at bit 52, MOUSE_LEFT=0
-    int64_t dblLeft = KMODE_DOUBLE_TAP | MOUSE_LEFT;
+    // d64-click left mouse: gesture nibble at bit 52, MOUSE_LEFT=0
+    int64_t dblLeft = KMODE_f64_TAP | MOUSE_LEFT;
     CHECK(dblLeft == (1LL << 52));
 
     // Cmd+Shift+F4: bits 36, 32, and key F4=293 (0x125)
@@ -287,7 +287,7 @@ static void onResolveFire(void *userdata, int64_t combo) {
 #define SETTLE_SLEEP_US 40000    // 40 ms > window, so settlement always lands
 
 // Sends one synthetic key press/release using the requested tap window.
-static void tapKeyWin(int key, uint64_t winNanos) {
+static void tapKeyWin(int key, u64 winNanos) {
     Key_pushEvent(0, key, KEY_ACTION_DOWN, winNanos);
     Key_dispatchEvents();
     Key_pushEvent(0, key, KEY_ACTION_UP, winNanos);
@@ -344,17 +344,17 @@ static void test_resolve_tap(void) {
     Key_shutdown();
 }
 
-// Checks a settled double tap selects the more specific double-tap binding.
+// Checks a settled d64 tap selects the more specific d64-tap binding.
 static void test_resolve_specificity(void) {
-    // A TAP and A DOUBLE_TAP both bound: two taps within the window settle as
-    // DOUBLE and resolve the DOUBLE_TAP binding (higher KMODE wins), never the
-    // TAP — settlement is what makes the double reachable.
+    // A TAP and A f64_TAP both bound: two taps within the window settle as
+    // d64 and resolve the f64_TAP binding (higher KMODE wins), never the
+    // TAP — settlement is what makes the d64 reachable.
     Key_init();
     MemoryArena *arena = MemoryArena_create(64u << 20);
     KeyMap *map = KeyMap(arena);
 
     CHECK(KeyMap_bind(map, KEY_A | KMODE_TAP, onResolveFire, nullptr));
-    CHECK(KeyMap_bind(map, KEY_A | KMODE_DOUBLE_TAP, onResolveFire, nullptr));
+    CHECK(KeyMap_bind(map, KEY_A | KMODE_f64_TAP, onResolveFire, nullptr));
 
     g_fireCount = 0;
     tapKeyWin(KEY_A, TAP_WIN_NS);
@@ -369,7 +369,7 @@ static void test_resolve_specificity(void) {
     settle();
     CHECK(KeyMap_resolve(map, &combo));
     CHECK(g_fireCount == 1);
-    CHECK((combo & KMODE_MASK) == KMODE_DOUBLE_TAP);
+    CHECK((combo & KMODE_MASK) == KMODE_f64_TAP);
 
     // Consumed: nothing left to fire.
     CHECK(!KeyMap_resolve(map, &combo));
@@ -417,15 +417,15 @@ static void test_resolve_modifier_exact(void) {
     Key_shutdown();
 }
 
-// Checks a settled right-button double click resolves and consumes its binding.
+// Checks a settled right-button d64 click resolves and consumes its binding.
 static void test_resolve_mouse(void) {
-    // Right-button double-click settles and resolves the MOUSE_RIGHT
-    // DOUBLE_TAP binding; Mouse_resetTaps consumes it via the winner path.
+    // Right-button d64-click settles and resolves the MOUSE_RIGHT
+    // f64_TAP binding; Mouse_resetTaps consumes it via the winner path.
     Mouse_init();
     MemoryArena *arena = MemoryArena_create(64u << 20);
     KeyMap *map = KeyMap(arena);
 
-    int64_t dblRight = MOUSE_RIGHT | KMODE_DOUBLE_TAP;
+    int64_t dblRight = MOUSE_RIGHT | KMODE_f64_TAP;
     CHECK(KeyMap_bind(map, dblRight, onResolveFire, nullptr));
 
     Mouse_pushButtonEvent(0, MOUSE_RIGHT, KEY_ACTION_DOWN, TAP_WIN_NS);
@@ -533,10 +533,10 @@ static void test_long_press_single_fire(void) {
     Key_shutdown();
 }
 
-// Checks disabled multi-tap mode resolves taps immediately and excludes doubles.
+// Checks disabled multi-tap mode resolves taps immediately and excludes f64s.
 static void test_multi_tap_disabled(void) {
     // Rhythm-game mode (KeyMap_setMultiTapEnabled(false)): every press-release
-    // is a single tap resolved IMMEDIATELY — zero window latency; DOUBLE and
+    // is a single tap resolved IMMEDIATELY — zero window latency; d64 and
     // TRIPLE bindings never resolve.
     Key_init();
     MemoryArena *arena = MemoryArena_create(64u << 20);
@@ -547,7 +547,7 @@ static void test_multi_tap_disabled(void) {
     CHECK(!KeyMap_isMultiTapEnabled(map));
 
     CHECK(KeyMap_bind(map, KEY_A | KMODE_TAP, onResolveFire, nullptr));
-    CHECK(KeyMap_bind(map, KEY_A | KMODE_DOUBLE_TAP, onResolveFire, nullptr));
+    CHECK(KeyMap_bind(map, KEY_A | KMODE_f64_TAP, onResolveFire, nullptr));
 
     // Single tap: resolved on the very next resolve call, no window wait.
     g_fireCount = 0;
@@ -557,7 +557,7 @@ static void test_multi_tap_disabled(void) {
     CHECK(g_fireCount == 1);
     CHECK((combo & KMODE_MASK) == KMODE_TAP);
 
-    // Two fast taps still fire TAP — twice. DOUBLE never resolves.
+    // Two fast taps still fire TAP — twice. d64 never resolves.
     tapKeyWin(KEY_A, TAP_WIN_NS);
     tapKeyWin(KEY_A, TAP_WIN_NS);
     CHECK(KeyMap_resolve(map, &combo));
@@ -574,7 +574,7 @@ static void test_multi_tap_disabled(void) {
 // Checks per-key gesture phases through pending, settlement, and consumption.
 static void test_tap_phase(void) {
     // Public per-key gesture timeline: NONE → PENDING (window open) →
-    // settled SINGLE/DOUBLE/TRIPLE once the window closes. Consumed → NONE.
+    // settled SINGLE/d64/TRIPLE once the window closes. Consumed → NONE.
     Key_init();
 
     CHECK(Key_tapPhase(KEY_A) == KEY_TAP_NONE);
@@ -593,7 +593,7 @@ static void test_tap_phase(void) {
     Key_resetTaps(KEY_A);
     CHECK(Key_tapPhase(KEY_A) == KEY_TAP_NONE);
 
-    // Two taps within the window settle as DOUBLE.
+    // Two taps within the window settle as d64.
     Key_pushEvent(0, KEY_A, KEY_ACTION_DOWN, TAP_WIN_NS);
     Key_dispatchEvents();
     Key_pushEvent(0, KEY_A, KEY_ACTION_UP, TAP_WIN_NS);
@@ -604,7 +604,7 @@ static void test_tap_phase(void) {
     Key_dispatchEvents();
     CHECK(Key_tapPhase(KEY_A) == KEY_TAP_PENDING);
     settle();
-    CHECK(Key_tapPhase(KEY_A) == KEY_TAP_DOUBLE);
+    CHECK(Key_tapPhase(KEY_A) == KEY_TAP_f64);
     Key_resetTaps(KEY_A);
 
     // Three taps settle as TRIPLE.
@@ -627,7 +627,7 @@ static void test_tap_phase(void) {
 static void test_modifier_breaks_sequence(void) {
     // A modifier-state change between presses breaks the tap sequence:
     // plain Q then Cmd+Q within the window must NOT accumulate into a
-    // double — the Cmd+Q key press starts a fresh single sequence.
+    // d64 — the Cmd+Q key press starts a fresh single sequence.
     Key_init();
     MemoryArena *arena = MemoryArena_create(64u << 20);
     KeyMap *map = KeyMap(arena);
@@ -638,7 +638,7 @@ static void test_modifier_breaks_sequence(void) {
     g_fireCount = 0;
     tapKeyWin(KEY_Q, TAP_WIN_NS);  // plain Q (no Cmd)
     holdSuper(true);               // modifier state changes between presses
-    tapKeyWin(KEY_Q, TAP_WIN_NS);  // Cmd+Q — fresh sequence, never a double
+    tapKeyWin(KEY_Q, TAP_WIN_NS);  // Cmd+Q — fresh sequence, never a d64
 
     int64_t combo = -1;
     CHECK(!KeyMap_resolve(map, &combo)); // pending

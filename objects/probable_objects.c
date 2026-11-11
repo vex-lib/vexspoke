@@ -33,11 +33,11 @@
  * STRUCT FIELDS (Mirroring objects/probable_objects.h):
  * ----------------------------------------------------------------------------
  *   ProbableObjects {
- *     uint32_t count; // active choices
- *     uint32_t totalWeight; // sum of all weights
- *     uint32_t capacity; // maximum choices
- *     uint32_t pad; // alignment padding
- *     uint8_t slots[]; // backing store
+ *     u32 count; // active choices
+ *     u32 totalWeight; // sum of all weights
+ *     u32 capacity; // maximum choices
+ *     u32 pad; // alignment padding
+ *     u8 slots[]; // backing store
  *   }
  *
  * FUNCTION REGISTRY:
@@ -65,25 +65,25 @@
 
 // probable_objects.c — ProbableObjects port (Legacy: objects/ProbableObjects.java).
 
-static const size_t SLOT_SIZE = 16;
+static const bytes SLOT_SIZE = 16;
 
-ProbableObjects *ProbableObjects_1(size_t capacity) {
+ProbableObjects *ProbableObjects_1(bytes capacity) {
     // The allocator records payload lengths in 32 bits, as does this pool's
     // capacity. Reject before computing Bytes or narrowing the capacity.
     if (capacity > (UINT32_MAX - sizeof(ProbableObjects)) / SLOT_SIZE) {
         THROW("probable objects capacity is not representable");
         return nullptr;
     }
-    size_t Bytes = sizeof(ProbableObjects) + capacity * SLOT_SIZE;
+    bytes Bytes = sizeof(ProbableObjects) + capacity * SLOT_SIZE;
     ProbableObjects *po = (ProbableObjects*) Memory_alloc(TYPE_PROBABLE_OBJECTS, Bytes);
     if (!po) return nullptr;
     memset(po, 0, Bytes);
-    (*po).capacity = (uint32_t)capacity;
+    (*po).capacity = (u32)capacity;
     return po;
 }
 
 
-ProbableObjects *ProbableObjects_2(const ProbableObjects *init, size_t count) {
+ProbableObjects *ProbableObjects_2(const ProbableObjects *init, bytes count) {
     if (count == 0) return nullptr;
     // C arrays stride by sizeof(ProbableObjects), not by a flexible slot
     // payload. Only a single element can own populated flexible storage.
@@ -95,9 +95,9 @@ ProbableObjects *ProbableObjects_2(const ProbableObjects *init, size_t count) {
         THROW("probable objects array size is not representable");
         return nullptr;
     }
-    size_t Bytes = sizeof(ProbableObjects) * count;
+    bytes Bytes = sizeof(ProbableObjects) * count;
     if (init && (*init).capacity)
-        Bytes += (size_t) (*init).capacity * SLOT_SIZE;
+        Bytes += (bytes) (*init).capacity * SLOT_SIZE;
     ProbableObjects *p = (ProbableObjects*) Memory_alloc(TYPE_PROBABLE_OBJECTS_ARRAY, Bytes);
     if (!p) return nullptr;
     if (init && (*init).capacity)
@@ -110,26 +110,26 @@ void ProbableObjects_free(ProbableObjects *po) {
     Memory_free(po);
 }
 
-size_t ProbableObjects_size(ProbableObjects *po) {
+bytes ProbableObjects_size(ProbableObjects *po) {
     if (!po) return 0;
     return (*po).count;
 }
 
-size_t ProbableObjects_capacity(ProbableObjects *po) {
+bytes ProbableObjects_capacity(ProbableObjects *po) {
     if (!po) return 0;
     return (*po).capacity;
 }
 
-uint32_t ProbableObjects_totalWeight(ProbableObjects *po) {
+u32 ProbableObjects_totalWeight(ProbableObjects *po) {
     if (!po) return 0;
     return (*po).totalWeight;
 }
 
-static uint8_t *slotAt(ProbableObjects *po, size_t index) {
+static u8 *slotAt(ProbableObjects *po, bytes index) {
     return (*po).slots + index * SLOT_SIZE;
 }
 
-int ProbableObjects_add(ProbableObjects *po, uintptr_t object, uint32_t weight) {
+int ProbableObjects_add(ProbableObjects *po, uintptr_t object, u32 weight) {
     if (!po) return 0;
     if ((*po).count >= (*po).capacity) {
         THROW("probable objects pool is full");
@@ -140,12 +140,12 @@ int ProbableObjects_add(ProbableObjects *po, uintptr_t object, uint32_t weight) 
         return 0;
     }
 
-    uint8_t *slot = slotAt(po, (*po).count);
+    u8 *slot = slotAt(po, (*po).count);
     *(uintptr_t*) slot = object;
 
-    uint32_t running = (*po).totalWeight + weight;
-    *(uint32_t*) (slot + 8) = running;
-    *(uint32_t*) (slot + 12) = weight;
+    u32 running = (*po).totalWeight + weight;
+    *(u32*) (slot + 8) = running;
+    *(u32*) (slot + 12) = weight;
 
     (*po).totalWeight = running;
     (*po).count++;
@@ -157,19 +157,19 @@ int ProbableObjects_addProbable(ProbableObjects *po, const Probable *probable) {
     return ProbableObjects_add(po, (*probable).object, (*probable).weight);
 }
 
-uintptr_t ProbableObjects_objectAt(ProbableObjects *po, size_t index) {
+uintptr_t ProbableObjects_objectAt(ProbableObjects *po, bytes index) {
     if (!po || index >= (*po).count) return 0;
     return *(uintptr_t*) slotAt(po, index);
 }
 
-uint32_t ProbableObjects_cumulativeAt(ProbableObjects *po, size_t index) {
+u32 ProbableObjects_cumulativeAt(ProbableObjects *po, bytes index) {
     if (!po || index >= (*po).count) return 0;
-    return *(uint32_t*) (slotAt(po, index) + 8);
+    return *(u32*) (slotAt(po, index) + 8);
 }
 
-uint32_t ProbableObjects_weightAt(ProbableObjects *po, size_t index) {
+u32 ProbableObjects_weightAt(ProbableObjects *po, bytes index) {
     if (!po || index >= (*po).count) return 0;
-    return *(uint32_t*) (slotAt(po, index) + 12);
+    return *(u32*) (slotAt(po, index) + 12);
 }
 
 uintptr_t ProbableObjects_get(ProbableObjects *po) {

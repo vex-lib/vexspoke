@@ -103,14 +103,14 @@ static TlsBackendKind s_lastBackend = TLS_BACKEND_NONE;
 @interface VexTlsSession : NSObject
 @property (nonatomic, strong) nw_connection_t connection;
 @property (nonatomic, strong) dispatch_queue_t queue;
-@property (nonatomic) uint32_t budgetMs;      // per-operation IO budget in force
+@property (nonatomic) u32 budgetMs;      // per-operation IO budget in force
 @property (nonatomic) bool readArmed;         // a receive is outstanding
 @property (nonatomic) bool readReady;         // it completed with Bytes waiting
 @property (nonatomic) bool readFailed;        // the connection will deliver no more
 @property (nonatomic, strong) dispatch_semaphore_t readSettled; // signalled on completion
-@property (nonatomic) uint8_t *readBytes;     // malloc'd VEX_TLS_READ_BYTES
-@property (nonatomic) size_t readOffset;      // Bytes already handed to the caller
-@property (nonatomic) size_t readLength;      // Bytes this receive produced
+@property (nonatomic) u8 *readBytes;     // malloc'd VEX_TLS_READ_BYTES
+@property (nonatomic) bytes readOffset;      // Bytes already handed to the caller
+@property (nonatomic) bytes readLength;      // Bytes this receive produced
 @end
 
 @implementation VexTlsSession
@@ -123,7 +123,7 @@ static TlsBackendKind s_lastBackend = TLS_BACKEND_NONE;
 ;;INTENTION("the seam is synchronous and Network.framework is not, so this adapter waits on a semaphore with a deadline and cancels the connection on expiry -- a bounded wait the seam could not otherwise promise (the Bounded Wait Law)")
 
 /** Convert a millisecond budget into a dispatch deadline. */
-static dispatch_time_t vexDeadline(uint32_t milliseconds) {
+static dispatch_time_t vexDeadline(u32 milliseconds) {
     return dispatch_time(DISPATCH_TIME_NOW, (int64_t) milliseconds * NSEC_PER_MSEC);
 }
 
@@ -132,7 +132,7 @@ static dispatch_time_t vexDeadline(uint32_t milliseconds) {
  * failure, cancellation or deadline; the caller cancels on any false.
  */
 static bool vexWaitForReady(nw_connection_t connection, dispatch_queue_t queue,
-                            uint32_t timeoutMs) {
+                            u32 timeoutMs) {
     dispatch_semaphore_t settled = dispatch_semaphore_create(0);
     __block bool ready = false;
     nw_connection_set_queue(connection, queue);
@@ -168,7 +168,7 @@ static bool vexWaitForReady(nw_connection_t connection, dispatch_queue_t queue,
  * for us.
  */
 static bool vexSendBounded(nw_connection_t connection, const void *bytes,
-                           size_t length, uint32_t timeoutMs) {
+                           bytes length, u32 timeoutMs) {
     dispatch_data_t payload = dispatch_data_create(bytes, length, nullptr,
                                                    DISPATCH_DATA_DESTRUCTOR_DEFAULT);
     dispatch_semaphore_t settled = dispatch_semaphore_create(0);
@@ -205,9 +205,9 @@ static void vexArmRead(VexTlsSession *session) {
             (void) context;
             session.readArmed = false; // the slot is free again
             if (error == nullptr && content != nullptr) {
-                __block size_t got = 0u;
-                dispatch_data_apply(content, ^bool(dispatch_data_t region, size_t offset,
-                                                   const void *buffer, size_t size) {
+                __block bytes got = 0u;
+                dispatch_data_apply(content, ^bool(dispatch_data_t region, bytes offset,
+                                                   const void *buffer, bytes size) {
                     (void) region;
                     if (offset + size > VEX_TLS_READ_BYTES)
                         return false;
@@ -231,7 +231,7 @@ static void vexArmRead(VexTlsSession *session) {
  * Bytes stay in the slot. False means the budget expired (the receive is still
  * armed, so nothing was lost) or the connection will deliver no more.
  */
-static bool vexAwaitRead(VexTlsSession *session, uint32_t budgetMs) {
+static bool vexAwaitRead(VexTlsSession *session, u32 budgetMs) {
     if (session.readOffset < session.readLength)
         return true; // Bytes are already buffered
     if (session.readFailed)
@@ -297,7 +297,7 @@ bool Tls_connect(const char *host, int port, TlsConn **connOut) {
         session.readArmed = false;
         session.readReady = false;
         session.readFailed = false;
-        session.readBytes = (uint8_t*) malloc(VEX_TLS_READ_BYTES);
+        session.readBytes = (u8*) malloc(VEX_TLS_READ_BYTES);
         if (session.readBytes == nullptr) {
             nw_connection_cancel(connection);
             THROW("Tls_connect: read slot allocation failed");
@@ -324,7 +324,7 @@ bool Tls_connect(const char *host, int port, TlsConn **connOut) {
 }
 
 /** Send a whole buffer, bounded. False on a null/closing connection or timeout. */
-bool Tls_send(TlsConn *conn, const char *buf, size_t len) {
+bool Tls_send(TlsConn *conn, const char *buf, bytes len) {
     VexTlsSession *session = vexSession(conn);
     if (session == nullptr || (buf == nullptr && len != 0u))
         return false;
@@ -340,7 +340,7 @@ bool Tls_send(TlsConn *conn, const char *buf, size_t len) {
  * readiness probe already fetched are served from the session's slot, so probing
  * never costs or duplicates a Byte.
  */
-bool Tls_recv(TlsConn *conn, char *buf, size_t cap, size_t *gotOut) {
+bool Tls_recv(TlsConn *conn, char *buf, bytes cap, bytes *gotOut) {
     if (gotOut != nullptr)
         *gotOut = 0u;
     VexTlsSession *session = vexSession(conn);
@@ -349,8 +349,8 @@ bool Tls_recv(TlsConn *conn, char *buf, size_t cap, size_t *gotOut) {
     @autoreleasepool {
         if (!vexAwaitRead(session, session.budgetMs))
             return false;
-        size_t available = session.readLength - session.readOffset;
-        size_t copy = available < cap ? available : cap;
+        bytes available = session.readLength - session.readOffset;
+        bytes copy = available < cap ? available : cap;
         memcpy(buf, session.readBytes + session.readOffset, copy);
         session.readOffset += copy;
         *gotOut = copy;
@@ -370,18 +370,18 @@ bool Tls_recv(TlsConn *conn, char *buf, size_t cap, size_t *gotOut) {
  * the budget was quiet OR the connection is broken — a poll loop only needs the
  * first question answered, and it stops asking as soon as it reads.
  */
-bool Tls_readable(TlsConn *conn, uint32_t budgetMs) {
+bool Tls_readable(TlsConn *conn, u32 budgetMs) {
     VexTlsSession *session = vexSession(conn);
     if (session == nullptr)
         return false;
-    uint32_t budget = budgetMs == 0u ? session.budgetMs : budgetMs;
+    u32 budget = budgetMs == 0u ? session.budgetMs : budgetMs;
     @autoreleasepool {
         return vexAwaitRead(session, budget);
     }
 }
 
 /** Set the per-operation IO budget, so a read cannot outlive its caller's slice. */
-void Tls_setBudget(TlsConn *conn, uint32_t timeoutMs) {
+void Tls_setBudget(TlsConn *conn, u32 timeoutMs) {
     VexTlsSession *session = vexSession(conn);
     if (session == nullptr)
         return;
@@ -389,7 +389,7 @@ void Tls_setBudget(TlsConn *conn, uint32_t timeoutMs) {
 }
 
 /** The IO budget in force, or zero when there is no live session. */
-uint32_t Tls_getBudget(const TlsConn *conn) {
+u32 Tls_getBudget(const TlsConn *conn) {
     VexTlsSession *session = vexSession(conn);
     return session == nullptr ? 0u : session.budgetMs;
 }

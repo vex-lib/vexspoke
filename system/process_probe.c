@@ -40,7 +40,7 @@
  * STRUCT FIELDS (Mirroring system/process_probe.h — exactly this file's
  * class):
  * ----------------------------------------------------------------------------
- *   uint32_t reserved;  // singleton marker; no mutable state
+ *   u32 reserved;  // singleton marker; no mutable state
  *
  * PRIVATE HELPERS (static pure functions, no state — documented here per
  * Rule 3 so the file reads from the overview alone):
@@ -121,7 +121,7 @@ bool ProcessProbe_isDriverLoaded(const ProcessProbe *self,
     DIR *dir = opendir(dirPath);
     if (!dir)
         return false;
-    const size_t prefixLen = strlen(prefix);
+    const bytes prefixLen = strlen(prefix);
     struct dirent *entry;
     bool found = false;
     while ((entry = readdir(dir)) != nullptr) {

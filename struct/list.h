@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 #include "struct/collection.h"
 
@@ -20,46 +20,46 @@ typedef struct List {
 } List;
 
 // Empty list for element_class with initial capacity (min 1024, legacy default).
-List *List_2(uint32_t element_class, size_t capacity);
+List *List_2(u32 element_class, bytes capacity);
 
 // List pre-filled to count slots (legacy allocate): active_count = count.
-List *List_3(uint32_t element_class, size_t capacity, size_t count);
+List *List_3(u32 element_class, bytes capacity, bytes count);
 
 // Free the list and its data buffer.
 void List_free(List *list);
 
 // Append a scalar value or pointer, growing the buffer if needed.
-void List_add(List *list, uint64_t value_or_pointer);
+void List_add(List *list, u64 value_or_pointer);
 
 // Append a new (zeroed) struct slot and return a pointer to it.
-uint8_t *List_addSlot(List *list);
+u8 *List_addSlot(List *list);
 
 // Get/set the value or pointer at index (bounds-checked).
-uint64_t List_get(List *list, size_t index);
-void List_set(List *list, size_t index, uint64_t value);
+u64 List_get(List *list, bytes index);
+void List_set(List *list, bytes index, u64 value);
 
 // Pointer to the struct element at index (bounds-checked).
-uint8_t *List_slot(List *list, size_t index);
+u8 *List_slot(List *list, bytes index);
 
 // Remove the element at index, shifting the tail left.
-void List_remove(List *list, size_t index);
+void List_remove(List *list, bytes index);
 
 // Element-wise equality (stride + Bytes must match).
 bool List_compare(List *a, List *b);
 
 bool List_isEmpty(List *list);
-size_t List_size(List *list);
+bytes List_size(List *list);
 // Refused-grow count since construction (the Exhaustion Loudness Law).
 ;;TEST
-uint64_t List_exhaustionCount(const List *list);
-size_t List_length(List *list);
-size_t List_capacity(List *list);
-uint32_t List_elementClassId(List *list);
-size_t List_stride(List *list);
-uint8_t *List_dataBuffer(List *list);
+u64 List_exhaustionCount(const List *list);
+bytes List_length(List *list);
+bytes List_capacity(List *list);
+u32 List_elementClassId(List *list);
+bytes List_stride(List *list);
+u8 *List_dataBuffer(List *list);
 
 
-List *List_1(uint32_t element_class);
+List *List_1(u32 element_class);
 
 #define List(...) CONSTRUCTOR_DISPATCH(List, __VA_ARGS__)
 

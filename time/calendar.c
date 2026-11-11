@@ -49,12 +49,12 @@
 
 
 // Reports whether year has the Gregorian leap-year extra day.
-bool Calendar_isLeapYear(int32_t year) {
+bool Calendar_isLeapYear(i32 year) {
     return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
 }
 
 // Returns the month's Gregorian day count, or zero for a month outside 1..12.
-int32_t Calendar_daysInMonth(int32_t year, int32_t month) {
+i32 Calendar_daysInMonth(i32 year, i32 month) {
     if (month < 1 || month > 12) return 0;
     if (month == 2) return Calendar_isLeapYear(year) ? 29 : 28;
     if (month == 4 || month == 6 || month == 9 || month == 11) return 30;
@@ -62,15 +62,15 @@ int32_t Calendar_daysInMonth(int32_t year, int32_t month) {
 }
 
 // Returns the ISO weekday number (Monday 1 through Sunday 7) for the date.
-int32_t Calendar_dayOfWeek(int32_t year, int32_t month, int32_t day) {
+i32 Calendar_dayOfWeek(i32 year, i32 month, i32 day) {
     if (month < 3) {
         month += 12;
         year--;
     }
-    int32_t k = year % 100;
-    int32_t j = year / 100;
+    i32 k = year % 100;
+    i32 j = year / 100;
     // Zeller's congruence: h = 0 Saturday, 1 Sunday, .. 6 Friday.
-    int32_t h = (day + 13 * (month + 1) / 5 + k + k / 4 + j / 4 + 5 * j) % 7;
+    i32 h = (day + 13 * (month + 1) / 5 + k + k / 4 + j / 4 + 5 * j) % 7;
 
     // Convert to ISO-8601 (1=Monday .. 7=Sunday).
     switch (h) {
@@ -85,20 +85,20 @@ int32_t Calendar_dayOfWeek(int32_t year, int32_t month, int32_t day) {
 }
 
 // Advances the date-time by the requested number of 24-hour days.
-void Calendar_addDays(DateTime *dt, int32_t days) {
+void Calendar_addDays(DateTime *dt, i32 days) {
     setEpochMillis(dt, DateTime_epochMillis(dt) + (int64_t)days * 86400000LL);
 }
 
 // Inverse of Hinnant's algorithm: calendar fields => UTC epoch millis.
-static int64_t toEpochMillis(int32_t year, int32_t month, int32_t day,
-                             int32_t hour, int32_t minute, int32_t second,
-                             int32_t millisecond) {
-    int32_t y = year - (month <= 2 ? 1 : 0);
-    int32_t m = month + (month <= 2 ? 9 : -3);
-    int32_t era = (y >= 0 ? y : y - 399) / 400;
-    int32_t yoe = y - era * 400;
-    int32_t doy = (153 * m + 2) / 5 + day - 1;
-    int32_t doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
+static int64_t toEpochMillis(i32 year, i32 month, i32 day,
+                             i32 hour, i32 minute, i32 second,
+                             i32 millisecond) {
+    i32 y = year - (month <= 2 ? 1 : 0);
+    i32 m = month + (month <= 2 ? 9 : -3);
+    i32 era = (y >= 0 ? y : y - 399) / 400;
+    i32 yoe = y - era * 400;
+    i32 doy = (153 * m + 2) / 5 + day - 1;
+    i32 doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
     int64_t totalDays = (int64_t)era * 146097 + doe - 719468;
 
     int64_t totalSecs = totalDays * 86400LL + hour * 3600LL + minute * 60LL + second;
@@ -106,40 +106,40 @@ static int64_t toEpochMillis(int32_t year, int32_t month, int32_t day,
 }
 
 // Shifts the month while retaining time-of-day and clipping an invalid day to month end.
-void Calendar_addMonths(DateTime *dt, int32_t months) {
-    int32_t year = DateTime_year(dt);
-    int32_t month = DateTime_month(dt);
-    int32_t day = DateTime_day(dt);
-    int32_t hour = DateTime_hour(dt);
-    int32_t minute = DateTime_minute(dt);
-    int32_t second = DateTime_second(dt);
-    int32_t millisecond = DateTime_millisecond(dt);
+void Calendar_addMonths(DateTime *dt, i32 months) {
+    i32 year = DateTime_year(dt);
+    i32 month = DateTime_month(dt);
+    i32 day = DateTime_day(dt);
+    i32 hour = DateTime_hour(dt);
+    i32 minute = DateTime_minute(dt);
+    i32 second = DateTime_second(dt);
+    i32 millisecond = DateTime_millisecond(dt);
 
-    int32_t totalMonths = (year * 12) + (month - 1) + months;
-    int32_t newYear = totalMonths / 12;
-    int32_t newMonth = (totalMonths % 12) + 1;
+    i32 totalMonths = (year * 12) + (month - 1) + months;
+    i32 newYear = totalMonths / 12;
+    i32 newMonth = (totalMonths % 12) + 1;
 
     // Clip day into the target month (Jan 31 + 1 month => Feb 28).
-    int32_t maxDays = Calendar_daysInMonth(newYear, newMonth);
-    int32_t newDay = day < maxDays ? day : maxDays;
+    i32 maxDays = Calendar_daysInMonth(newYear, newMonth);
+    i32 newDay = day < maxDays ? day : maxDays;
 
     setEpochMillis(dt, toEpochMillis(newYear, newMonth, newDay,
                                               hour, minute, second, millisecond));
 }
 
 // Shifts the year while retaining month and time, clipping the day when needed.
-void Calendar_addYears(DateTime *dt, int32_t years) {
-    int32_t year = DateTime_year(dt);
-    int32_t month = DateTime_month(dt);
-    int32_t day = DateTime_day(dt);
-    int32_t hour = DateTime_hour(dt);
-    int32_t minute = DateTime_minute(dt);
-    int32_t second = DateTime_second(dt);
-    int32_t millisecond = DateTime_millisecond(dt);
+void Calendar_addYears(DateTime *dt, i32 years) {
+    i32 year = DateTime_year(dt);
+    i32 month = DateTime_month(dt);
+    i32 day = DateTime_day(dt);
+    i32 hour = DateTime_hour(dt);
+    i32 minute = DateTime_minute(dt);
+    i32 second = DateTime_second(dt);
+    i32 millisecond = DateTime_millisecond(dt);
 
-    int32_t newYear = year + years;
-    int32_t maxDays = Calendar_daysInMonth(newYear, month);
-    int32_t newDay = day < maxDays ? day : maxDays;
+    i32 newYear = year + years;
+    i32 maxDays = Calendar_daysInMonth(newYear, month);
+    i32 newDay = day < maxDays ? day : maxDays;
 
     setEpochMillis(dt, toEpochMillis(newYear, month, newDay,
                                               hour, minute, second, millisecond));

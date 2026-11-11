@@ -20,7 +20,7 @@
  * is the whole reason the type exists — a reallocation moves the node block,
  * and an index into it survives the move where a pointer would not.
  *
- * It owns one arena block stamped TYPE_REGEX. Growth doubles from a named
+ * It owns one arena block stamped TYPE_REGEX. Growth f64s from a named
  * default and is cold (compile time); a refused allocation returns
  * REGEX_NODE_NONE and leaves the existing nodes intact, so a failed compile
  * never leaves a half-linked tree (the Failure Atomicity and Recovery Law).
@@ -40,16 +40,16 @@
  * ----------------------------------------------------------------------------
  *   RegexNodeList {
  *     RegexNode *nodes;    // engine-arena block of `capacity` nodes
- *     uint32_t   count;    // nodes in use
- *     uint32_t   capacity; // nodes allocated
+ *     u32   count;    // nodes in use
+ *     u32   capacity; // nodes allocated
  *   }
  *
  * SLOT RECORD (owned here, behaviorless):
  * ----------------------------------------------------------------------------
  *   RegexNode {
- *     uint8_t kind; uint8_t byte; uint16_t reserved;
- *     uint32_t a; uint32_t b.sh; uint32_t repMin; uint32_t repMax;
- *     uint32_t group; uint32_t clsIndex;
+ *     u8 kind; u8 byte; u16 reserved;
+ *     u32 a; u32 b.sh; u32 repMin; u32 repMax;
+ *     u32 group; u32 clsIndex;
  *   }
  *     a/b.sh are child indices, group is the capture number, clsIndex names a
  *     class bitmap; the record carries no behavior of its own.
@@ -78,7 +78,7 @@
 
 #define REGEX_NODELIST_SEED_CAPACITY 64u
 
-static void *nodeGrow(void *block, size_t bytes) {
+static void *nodeGrow(void *block, bytes bytes) {
     if (block)
         return Memory_realloc(block, bytes);
     return Memory_alloc(TYPE_REGEX, bytes);
@@ -88,8 +88,8 @@ static void *nodeGrow(void *block, size_t bytes) {
 static bool growToOneMore(RegexNodeList *list) {
     if ((*list).count < (*list).capacity)
         return true;
-    uint32_t next = (*list).capacity ? (*list).capacity * 2u : REGEX_NODELIST_SEED_CAPACITY;
-    RegexNode *grown = (RegexNode*) nodeGrow((*list).nodes, (size_t) next * sizeof(RegexNode));
+    u32 next = (*list).capacity ? (*list).capacity * 2u : REGEX_NODELIST_SEED_CAPACITY;
+    RegexNode *grown = (RegexNode*) nodeGrow((*list).nodes, (bytes) next * sizeof(RegexNode));
     if (!grown)
         return false;
     (*list).nodes = grown;
@@ -105,7 +105,7 @@ RegexNodeList RegexNodeList_0(void) {
     return list;
 }
 
-uint32_t RegexNodeList_add(RegexNodeList *list, uint8_t kind) {
+u32 RegexNodeList_add(RegexNodeList *list, u8 kind) {
     if (!growToOneMore(list))
         return REGEX_NODE_NONE;
     RegexNode *node = &(*list).nodes[(*list).count];
@@ -114,13 +114,13 @@ uint32_t RegexNodeList_add(RegexNodeList *list, uint8_t kind) {
     return (*list).count++;
 }
 
-RegexNode *RegexNodeList_get(RegexNodeList *list, uint32_t index) {
+RegexNode *RegexNodeList_get(RegexNodeList *list, u32 index) {
     if (index >= (*list).count)
         return nullptr;
     return &(*list).nodes[index];
 }
 
-const RegexNode *RegexNodeList_at(const RegexNodeList *list, uint32_t index) {
+const RegexNode *RegexNodeList_at(const RegexNodeList *list, u32 index) {
     if (index >= (*list).count)
         return nullptr;
     return &(*list).nodes[index];

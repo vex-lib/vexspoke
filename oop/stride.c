@@ -35,8 +35,8 @@
 
 // stride.c — Stride port (Legacy: oop/Stride.java). Byte width of a class.
 
-size_t Stride_get(uint32_t class_id) {
-    uint64_t id = (uint64_t)class_id & MASK_CLASS;
+bytes Stride_get(u32 class_id) {
+    u64 id = (u64)class_id & MASK_CLASS;
 
     switch (id) {
         case ID_BYTE:       return 1;
@@ -47,15 +47,15 @@ size_t Stride_get(uint32_t class_id) {
         case ID_BIT16:
         case ID_BIT32:      return 4;
         case ID_LONG:
-        case ID_DOUBLE:
+        case ID_f64:
         case ID_FIXED64:
         case ID_BIT64:
         case ID_STRING:
         case ID_INT_FLOAT:
         case ID_ARGUMENTS:  return 8;
-        case ID_INT_DOUBLE:
+        case ID_INT_f64:
         case ID_LONG_FLOAT:
-        case ID_LONG_DOUBLE: return 16;
+        case ID_LONG_f64: return 16;
 
         // Variable and the time outliers.
         case ID_VARIABLE:   return 40;

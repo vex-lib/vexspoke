@@ -19,12 +19,12 @@ static int g_failures = 0;
         }                                                                  \
     } while (0)
 
-static uint64_t g_lastObject = 0;
+static u64 g_lastObject = 0;
 static void *g_lastUserdata = (void*) 0;
 static int g_fired = 0;
 
 // Captures the object and caller context delivered by Choice_trigger.
-static void cb(uint64_t objectPtr, void *userdata) {
+static void cb(u64 objectPtr, void *userdata) {
     g_lastObject = objectPtr;
     g_lastUserdata = userdata;
     g_fired++;
@@ -32,7 +32,7 @@ static void cb(uint64_t objectPtr, void *userdata) {
 
 // Checks Choice indexing, callback dispatch, invalid indices, and null safety.
 int main(void) {
-    uint64_t objects[3] = { 100, 200, 300 };
+    u64 objects[3] = { 100, 200, 300 };
     ChoiceCallback callbacks[3] = { cb, cb, cb };
 
     Choice *c = Choice_3(objects, callbacks, 3);

@@ -22,11 +22,11 @@
 /** ========================================================================
  * MODULE: Blake2b (security/blake2b.c)
  * STRUCT FIELDS (Mirroring security/blake2b.h)
- *   uint64_t h[8]     working hash words
- *   uint64_t t[2]     128-bit byte counter (low, high)
- *   uint8_t  buf[128] pending block
- *   size_t   used     bytes buffered in buf
- *   size_t   outlen   digest length chosen at init
+ *   u64 h[8]     working hash words
+ *   u64 t[2]     128-bit byte counter (low, high)
+ *   u8  buf[128] pending block
+ *   bytes   used     bytes buffered in buf
+ *   bytes   outlen   digest length chosen at init
  * FUNCTION REGISTRY (exports)
  *   Blake2b_init(self, outlen) / Blake2b_initKeyed(self, outlen, key, keylen)
  *   Blake2b_update(self, data, len)
@@ -43,14 +43,14 @@
  * logging beyond the cold THROW.
  * ======================================================================== */
 
-static const uint64_t BLAKE2B_IV[8] = {
+static const u64 BLAKE2B_IV[8] = {
     0x6a09e667f3bcc908ULL, 0xbb67ae8584caa73bULL,
     0x3c6ef372fe94f82bULL, 0xa54ff53a5f1d36f1ULL,
     0x510e527fade682d1ULL, 0x9b05688c2b3e6c1fULL,
     0x1f83d9abfb41bd6bULL, 0x5be0cd19137e2179ULL,
 };
 
-static const uint8_t BLAKE2B_SIGMA[12][16] = {
+static const u8 BLAKE2B_SIGMA[12][16] = {
     { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
     { 14, 10, 4, 8, 9, 15, 13, 6, 1, 12, 0, 2, 11, 7, 5, 3 },
     { 11, 8, 12, 0, 5, 2, 15, 13, 10, 14, 3, 6, 7, 1, 9, 4 },
@@ -65,12 +65,12 @@ static const uint8_t BLAKE2B_SIGMA[12][16] = {
     { 14, 10, 4, 8, 9, 15, 13, 6, 1, 12, 0, 2, 11, 7, 5, 3 },
 };
 
-static uint64_t rotr64(uint64_t v, unsigned bits) {
+static u64 rotr64(u64 v, unsigned bits) {
     return (v >> bits) | (v << (64u - bits));
 }
 
-static void mix(uint64_t *v, unsigned a, unsigned b, unsigned c, unsigned d,
-                uint64_t x, uint64_t y) {
+static void mix(u64 *v, unsigned a, unsigned b, unsigned c, unsigned d,
+                u64 x, u64 y) {
     v[a] = v[a] + v[b] + x;
     v[d] = rotr64(v[d] ^ v[a], 32u);
     v[c] = v[c] + v[d];
@@ -81,14 +81,14 @@ static void mix(uint64_t *v, unsigned a, unsigned b, unsigned c, unsigned d,
     v[b] = rotr64(v[b] ^ v[c], 63u);
 }
 
-static void compress(Blake2b *self, const uint8_t *block, bool last) {
-    uint64_t m[16];
+static void compress(Blake2b *self, const u8 *block, bool last) {
+    u64 m[16];
     for (unsigned i = 0; i < 16u; ++i) {
         m[i] = 0u;
         for (unsigned j = 0; j < 8u; ++j)
-            m[i] |= (uint64_t) block[i * 8u + j] << (8u * j);
+            m[i] |= (u64) block[i * 8u + j] << (8u * j);
     }
-    uint64_t v[16];
+    u64 v[16];
     for (unsigned i = 0; i < 8u; ++i) {
         v[i] = (*self).h[i];
         v[i + 8u] = BLAKE2B_IV[i];
@@ -98,7 +98,7 @@ static void compress(Blake2b *self, const uint8_t *block, bool last) {
     if (last)
         v[14] = ~v[14];
     for (unsigned r = 0; r < 12u; ++r) {
-        const uint8_t *s = BLAKE2B_SIGMA[r];
+        const u8 *s = BLAKE2B_SIGMA[r];
         mix(v, 0u, 4u, 8u, 12u, m[s[0]], m[s[1]]);
         mix(v, 1u, 5u, 9u, 13u, m[s[2]], m[s[3]]);
         mix(v, 2u, 6u, 10u, 14u, m[s[4]], m[s[5]]);
@@ -112,7 +112,7 @@ static void compress(Blake2b *self, const uint8_t *block, bool last) {
         (*self).h[i] ^= v[i] ^ v[i + 8u];
 }
 
-bool Blake2b_init(Blake2b *self, size_t outlen) {
+bool Blake2b_init(Blake2b *self, bytes outlen) {
     if (self == nullptr || outlen < BLAKE2B_DIGEST_MIN || outlen > BLAKE2B_DIGEST_MAX) {
         THROW("Blake2b_init: null context or digest length out of range");
         return false;
@@ -120,12 +120,12 @@ bool Blake2b_init(Blake2b *self, size_t outlen) {
     memset(self, 0, sizeof *self);
     for (unsigned i = 0; i < 8u; ++i)
         (*self).h[i] = BLAKE2B_IV[i];
-    (*self).h[0] ^= (uint64_t) 0x01010000u ^ (uint64_t) outlen;
+    (*self).h[0] ^= (u64) 0x01010000u ^ (u64) outlen;
     (*self).outlen = outlen;
     return true;
 }
 
-bool Blake2b_initKeyed(Blake2b *self, size_t outlen, const uint8_t *key, size_t keylen) {
+bool Blake2b_initKeyed(Blake2b *self, bytes outlen, const u8 *key, bytes keylen) {
     if (keylen == 0u)
         return Blake2b_init(self, outlen);
     if (self == nullptr || key == nullptr || keylen < BLAKE2B_KEY_MIN ||
@@ -136,14 +136,14 @@ bool Blake2b_initKeyed(Blake2b *self, size_t outlen, const uint8_t *key, size_t 
     }
     if (!Blake2b_init(self, outlen))
         return false;
-    (*self).h[0] ^= (uint64_t) keylen << 8;
+    (*self).h[0] ^= (u64) keylen << 8;
     memcpy((*self).buf, key, keylen);
     memset((*self).buf + keylen, 0, BLAKE2B_BLOCK_SIZE - keylen);
     (*self).used = BLAKE2B_BLOCK_SIZE;
     return true;
 }
 
-void Blake2b_update(Blake2b *self, const void *data, size_t len) {
+void Blake2b_update(Blake2b *self, const void *data, bytes len) {
     if (self == nullptr)
         return;
     if (len == 0u)
@@ -152,9 +152,9 @@ void Blake2b_update(Blake2b *self, const void *data, size_t len) {
         THROW("Blake2b_update: null data with a nonzero length");
         return;
     }
-    const uint8_t *p = (const uint8_t*) data;
+    const u8 *p = (const u8*) data;
     if ((*self).used + len > BLAKE2B_BLOCK_SIZE) {
-        size_t take = BLAKE2B_BLOCK_SIZE - (*self).used;
+        bytes take = BLAKE2B_BLOCK_SIZE - (*self).used;
         memcpy((*self).buf + (*self).used, p, take);
         (*self).t[0] += BLAKE2B_BLOCK_SIZE;
         if ((*self).t[0] < BLAKE2B_BLOCK_SIZE)
@@ -176,7 +176,7 @@ void Blake2b_update(Blake2b *self, const void *data, size_t len) {
     (*self).used += len;
 }
 
-bool Blake2b_final(Blake2b *self, uint8_t *out, size_t outCap) {
+bool Blake2b_final(Blake2b *self, u8 *out, bytes outCap) {
     if (self == nullptr || out == nullptr || outCap < (*self).outlen) {
         THROW("Blake2b_final: null context/output or short destination");
         return false;
@@ -186,13 +186,13 @@ bool Blake2b_final(Blake2b *self, uint8_t *out, size_t outCap) {
         (*self).t[1]++;
     memset((*self).buf + (*self).used, 0, BLAKE2B_BLOCK_SIZE - (*self).used);
     compress(self, (*self).buf, true);
-    for (size_t i = 0; i < (*self).outlen; ++i)
-        out[i] = (uint8_t) ((*self).h[i / 8u] >> (8u * (i % 8u)));
+    for (bytes i = 0; i < (*self).outlen; ++i)
+        out[i] = (u8) ((*self).h[i / 8u] >> (8u * (i % 8u)));
     memset(self, 0, sizeof *self);
     return true;
 }
 
-bool Blake2b_digest(const void *data, size_t len, size_t outlen, uint8_t *out, size_t outCap) {
+bool Blake2b_digest(const void *data, bytes len, bytes outlen, u8 *out, bytes outCap) {
     Blake2b ctx = Blake2b_0();
     if (!Blake2b_init(&ctx, outlen))
         return false;

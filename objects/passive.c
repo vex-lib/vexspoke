@@ -31,7 +31,7 @@
  * STRUCT FIELDS (local to this file):
  * ----------------------------------------------------------------------------
  *   Passive {
- *     uint64_t cachedValue;      // memoized lazy value
+ *     u64 cachedValue;      // memoized lazy value
  *     PassiveGetter getter;      // lazy compute callback
  *     PassiveSetter setter;      // optional write-back callback
  *     void *userdata;            // opaque callback context
@@ -58,14 +58,14 @@
 // passive.c — Lazy-evaluated / computed Passive object wrapper implementation.
 
 struct Passive {
-    uint64_t      cachedValue;
+    u64      cachedValue;
     PassiveGetter getter;
     PassiveSetter setter;
     void         *userdata;
 };
 
 Passive *Passive_3(PassiveGetter getter, PassiveSetter setter, void *userdata) {
-    uint64_t type = Type_make(PROJ_VEXSPOKE, FORM_SINGLETON, ID_PASSIVE) | WRAP_PROACTIVE;
+    u64 type = Type_make(PROJ_VEXSPOKE, FORM_SINGLETON, ID_PASSIVE) | WRAP_PROACTIVE;
     Passive *passive = (Passive*) Memory_alloc(type, sizeof(Passive));
     if (!passive)
         return nullptr;
@@ -77,12 +77,12 @@ Passive *Passive_3(PassiveGetter getter, PassiveSetter setter, void *userdata) {
 }
 
 
-Passive *Passive_2(const Passive *init, size_t count) {
+Passive *Passive_2(const Passive *init, bytes count) {
     if (count == 0) return nullptr;
     Passive *p = (Passive*) Memory_alloc(TYPE_PASSIVE_ARRAY, sizeof(Passive) * count);
     if (!p) return nullptr;
     if (init) {
-        for (size_t i = 0; i < count; i++) p[i] = *init;
+        for (bytes i = 0; i < count; i++) p[i] = *init;
     } else {
         memset(p, 0, sizeof(Passive) * count);
     }
@@ -93,7 +93,7 @@ void Passive_free(Passive *passive) {
     Memory_free(passive);
 }
 
-uint64_t Passive_get(Passive *passive) {
+u64 Passive_get(Passive *passive) {
     if (!passive) return 0;
     if ((*passive).getter) {
         return (*passive).getter((*passive).userdata);
@@ -101,7 +101,7 @@ uint64_t Passive_get(Passive *passive) {
     return (*passive).cachedValue;
 }
 
-void Passive_set(Passive *passive, uint64_t value) {
+void Passive_set(Passive *passive, u64 value) {
     if (!passive) return;
     (*passive).cachedValue = value;
     if ((*passive).setter) {

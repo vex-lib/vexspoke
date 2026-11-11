@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #include "thread/thread.h"
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 // thread/compute.h — the heavy-work job system (the parking lot).
 //
@@ -25,7 +25,7 @@
 typedef void (*ComputeJobFn)(void *ctx);
 
 typedef struct ComputeJob {
-    uint64_t tag;        // COMPUTE_JOB_TAG — recognition for any role thread
+    u64 tag;        // COMPUTE_JOB_TAG — recognition for any role thread
     ComputeJobFn run;    // the heavy/blocking body (runs on a worker)
     void *ctx;           // its argument (caller-owned; keep alive until run)
     ComputeJobFn onDone; // optional completion (runs on the same worker)
@@ -57,7 +57,7 @@ bool ComputeJob_run(void *task);             // true when handled as a job
 Thread *ComputeThread_invoke(void);
 
 // The shared pool: lazily starts `count` workers (idempotent; clamped 1..8).
-bool ComputeThread_start(size_t count);
+bool ComputeThread_start(bytes count);
 // Round-robin submit into the pool. False when the pool has no free worker.
 bool ComputeThread_submit(ComputeJob *job);
 // Submit to a specific established worker (any role).
@@ -65,6 +65,6 @@ bool ComputeThread_submitTo(Thread *worker, ComputeJob *job);
 
 void ComputeThread_stop(void);
 void ComputeThread_free(void);
-size_t ComputeThread_count(void);
+bytes ComputeThread_count(void);
 
 #endif // THREAD_COMPUTE_H

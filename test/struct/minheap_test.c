@@ -44,7 +44,7 @@ int main(void) {
     MinHeap *big = MinHeap_1(2048);
     CHECK(big != nullptr);
     for (int i = 2047; i >= 0; i--)
-        CHECK(MinHeap_push(big, i, (float) i) == 1);
+        CHECK(MinHeap_push(big, i, (f32) i) == 1);
     CHECK(MinHeap_size(big) == 2048);
     // A full fixed-capacity heap is a refusal, not a silent no-op: the push is
     // rejected and the refusal is COUNTED (the Exhaustion Loudness Law).

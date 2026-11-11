@@ -47,7 +47,7 @@ static void test_sha256_nist_vectors(void) {
     Crypto_sha256Update(&ctx, "a", 1);
     Crypto_sha256Update(&ctx, "b.sh", 1);
     Crypto_sha256Update(&ctx, "c", 1);
-    uint8_t digestStream[CRYPTO_SHA256_DIGEST_SIZE];
+    u8 digestStream[CRYPTO_SHA256_DIGEST_SIZE];
     Crypto_sha256Final(&ctx, digestStream);
     char hexStream[CRYPTO_SHA256_HEX_SIZE];
     Crypto_toHex(digestStream, CRYPTO_SHA256_DIGEST_SIZE, hexStream);
@@ -58,30 +58,30 @@ static void test_sha256_nist_vectors(void) {
 // Checks equality results for equal buffers and differences at both ends.
 static void test_constant_time_equals(void) {
     printf("\n--- Testing Constant-Time Equality Check ---\n");
-    uint8_t a[32] = { 1, 2, 3, 4, 5, 6, 7, 8 };
-    uint8_t b[32] = { 1, 2, 3, 4, 5, 6, 7, 8 };
-    uint8_t c[32] = { 1, 2, 3, 4, 5, 6, 7, 9 };
+    u8 a[32] = { 1, 2, 3, 4, 5, 6, 7, 8 };
+    u8 b[32] = { 1, 2, 3, 4, 5, 6, 7, 8 };
+    u8 c[32] = { 1, 2, 3, 4, 5, 6, 7, 9 };
 
     TEST_ASSERT(Crypto_constantTimeEquals(a, b, 32), "identical buffers evaluate equal");
     TEST_ASSERT(!Crypto_constantTimeEquals(a, c, 32), "different last byte evaluates not equal");
 
-    uint8_t d[32] = { 0, 2, 3, 4, 5, 6, 7, 8 };
+    u8 d[32] = { 0, 2, 3, 4, 5, 6, 7, 8 };
     TEST_ASSERT(!Crypto_constantTimeEquals(a, d, 32), "different first byte evaluates not equal");
 }
 
 // Checks relational hash nonzero output, deterministic repeats, and distinction.
 static void test_relational_hash(void) {
     printf("\n--- Testing Fast Relational Hash Mixers ---\n");
-    uint64_t h1 = Crypto_hash64("transform.position", 18);
-    uint64_t h2 = Crypto_hash64("transform.rotation", 18);
-    uint64_t h3 = Crypto_hash64("transform.position", 18);
+    u64 h1 = Crypto_hash64("transform.position", 18);
+    u64 h2 = Crypto_hash64("transform.rotation", 18);
+    u64 h3 = Crypto_hash64("transform.position", 18);
 
     TEST_ASSERT(h1 != 0, "hash64 produces non-zero value");
     TEST_ASSERT(h1 == h3, "hash64 is deterministic for identical input");
     TEST_ASSERT(h1 != h2, "hash64 differentiates different strings");
 
-    uint32_t h32a = Crypto_hash32("camera.fov", 10);
-    uint32_t h32b = Crypto_hash32("camera.fov", 10);
+    u32 h32a = Crypto_hash32("camera.fov", 10);
+    u32 h32b = Crypto_hash32("camera.fov", 10);
     TEST_ASSERT(h32a == h32b, "hash32 is deterministic");
 }
 
@@ -92,18 +92,18 @@ static void test_prng(void) {
     Crypto_rngInit(&rng1, 0xCAFEBABEDEADBEEFULL);
     Crypto_rngInit(&rng2, 0xCAFEBABEDEADBEEFULL);
 
-    uint64_t r1 = Crypto_rngNextU64(&rng1);
-    uint64_t r2 = Crypto_rngNextU64(&rng2);
+    u64 r1 = Crypto_rngNextU64(&rng1);
+    u64 r2 = Crypto_rngNextU64(&rng2);
     TEST_ASSERT(r1 == r2, "PRNG seeded with same value generates identical first integer");
 
-    uint64_t r3 = Crypto_rngNextU64(&rng1);
+    u64 r3 = Crypto_rngNextU64(&rng1);
     TEST_ASSERT(r1 != r3, "successive PRNG integers differ");
 
-    uint8_t Bytes[64];
+    u8 Bytes[64];
     memset(Bytes, 0, sizeof(Bytes));
     Crypto_prngBytes(Bytes, sizeof(Bytes));
     bool hasNonZero = false;
-    for (size_t i = 0; i < sizeof(Bytes); i++) {
+    for (bytes i = 0; i < sizeof(Bytes); i++) {
         if (Bytes[i] != 0) {
             hasNonZero = true;
             break;
@@ -115,13 +115,13 @@ static void test_prng(void) {
 // Checks lowercase hexadecimal encoding and byte-for-byte decode round trips.
 static void test_hex_conversion(void) {
     printf("\n--- Testing Hex Serialization Helpers ---\n");
-    uint8_t raw[4] = { 0xDE, 0xAD, 0xBE, 0xEF };
+    u8 raw[4] = { 0xDE, 0xAD, 0xBE, 0xEF };
     char hex[9];
     Crypto_toHex(raw, 4, hex);
     TEST_ASSERT(strcmp(hex, "deadbeef") == 0, "toHex converts correctly to lowercase hex");
 
-    uint8_t decoded[4];
-    size_t count = Crypto_fromHex(hex, decoded, 4);
+    u8 decoded[4];
+    bytes count = Crypto_fromHex(hex, decoded, 4);
     TEST_ASSERT(count == 4, "fromHex decoded 4 Bytes");
     TEST_ASSERT(memcmp(raw, decoded, 4) == 0, "fromHex decoded Bytes match original raw Bytes");
 }

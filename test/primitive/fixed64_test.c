@@ -27,7 +27,7 @@ int main(void) {
     CHECK(Fixed64_length(p) == 8);
 
     const int64_t values[] = { 0, 1, -1, 4294967296LL, 4294967295LL, INT64_MIN };
-    for (size_t i = 0; i < sizeof values / sizeof values[0]; i++) {
+    for (bytes i = 0; i < sizeof values / sizeof values[0]; i++) {
         Fixed64_set(p, values[i]);
         CHECK(Fixed64_get(p) == values[i]);
     }

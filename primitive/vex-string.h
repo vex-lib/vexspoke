@@ -21,47 +21,47 @@
 #define STRING_LARGE_SLOT_SIZE 1024L
 
 // Allocate a NUL-terminated string block copied from value (Java allocate).
-uint8_t *string_allocate(const char *value);
+u8 *string_allocate(const char *value);
 
 // Allocate a string block copied from len Bytes (Java allocate(byte[])).
-uint8_t *string_allocateBytes(const uint8_t *Bytes, size_t len);
+u8 *string_allocateBytes(const u8 *Bytes, bytes len);
 
 // Allocate a len-byte string block without copying (Java allocateUninitialized).
 // The block is zeroed and NUL-terminated.
-uint8_t *string_allocateUninitialized(size_t len);
+u8 *string_allocateUninitialized(bytes len);
 
 // Recycle a string block back to the allocator (Java free).
-void string_free(uint8_t *ptr);
+void string_free(u8 *ptr);
 
 // Read-only C view of the Bytes (Java get).
-const char *string_get(const uint8_t *ptr);
+const char *string_get(const u8 *ptr);
 
 // Byte length excluding the NUL terminator (Java length).
-size_t string_length(const uint8_t *ptr);
+bytes string_length(const u8 *ptr);
 
 // Block header type id (Java type).
-uint64_t string_type(const uint8_t *ptr);
+u64 string_type(const u8 *ptr);
 
 // True if the block type is an array form (Java isArray).
-bool string_isArray(const uint8_t *ptr);
+bool string_isArray(const u8 *ptr);
 
 // Class id (ID_STRING) of any string block (Java classId).
-uint32_t string_classId(void);
+u32 string_classId(void);
 
 // Allocated capacity in Bytes, NUL included (Java capacity).
-size_t string_capacity(const uint8_t *ptr);
+bytes string_capacity(const u8 *ptr);
 
 // Fresh copy of the block (Java copy).
-uint8_t *string_copy(const uint8_t *ptr);
+u8 *string_copy(const u8 *ptr);
 
 // True when the string block's Bytes equal a NUL-terminated C string.
-bool string_equals(const uint8_t *ptr, const char *value);
+bool string_equalsCString(const u8 *ptr, const char *value);
 
 // — Capital String class — vex reserved word String() — file stays string.h lowercase per prefs
-// String("hello"), String(uint8_t*), String() → ""
-#include "util/constructor.h"
+// String("hello"), String(u8*), String() → ""
+#include "lang/constructor.h"
 #define String_0(...) string_allocate("")
-#define String_1(value) _Generic((value), const char*: string_allocate, char*: string_allocate, uint8_t*: string_copy, const uint8_t*: string_copy, default: string_allocate)(value)
+#define String_1(value) _Generic((value), const char*: string_allocate, char*: string_allocate, u8*: string_copy, const u8*: string_copy, default: string_allocate)(value)
 #define String(...) CONSTRUCTOR_DISPATCH(String, __VA_ARGS__)
 
 // Capital aliases for code-editor ergonomics (lowercase kept for compat)
@@ -76,34 +76,34 @@ bool string_equals(const uint8_t *ptr, const char *value);
 #define String_classId string_classId
 #define String_capacity string_capacity
 #define String_copy string_copy
-#define String_equals string_equals
+#define String_equals string_equalsCString
 
 // Compare — strcmp style, negatives/zero/positives
-int String_compare(const uint8_t *a, const uint8_t *b);
+int String_compare(const u8 *a, const u8 *b);
 #define String_compare String_compare
 
 // Search — contains / indexOf / instring(index, haystack, needle)
-bool String_contains(const uint8_t *haystack, const uint8_t *needle);
-bool String_containsLiteral(const uint8_t *haystack, const char *needle);
-size_t String_indexOf(const uint8_t *haystack, const uint8_t *needle);
-size_t String_indexOfLiteral(const uint8_t *haystack, const char *needle);
-bool String_instring(size_t index, const uint8_t *haystack, const uint8_t *needle);
-bool String_instringLiteral(size_t index, const uint8_t *haystack, const char *needle);
+bool String_contains(const u8 *haystack, const u8 *needle);
+bool String_containsLiteral(const u8 *haystack, const char *needle);
+bytes String_indexOf(const u8 *haystack, const u8 *needle);
+bytes String_indexOfLiteral(const u8 *haystack, const char *needle);
+bool String_instring(bytes index, const u8 *haystack, const u8 *needle);
+bool String_instringLiteral(bytes index, const u8 *haystack, const char *needle);
 
 // Substring — new block, caller frees
-uint8_t *String_substring(const uint8_t *str, size_t start, size_t len);
-uint8_t *String_substringLiteral(const char *str, size_t start, size_t len);
-uint8_t *String_subFirstChar(const uint8_t *str);
-uint8_t *String_subLastChar(const uint8_t *str);
-uint8_t *String_subFirst(const uint8_t *str, size_t count);
-uint8_t *String_subLast(const uint8_t *str, size_t count);
+u8 *String_substring(const u8 *str, bytes start, bytes len);
+u8 *String_substringLiteral(const char *str, bytes start, bytes len);
+u8 *String_subFirstChar(const u8 *str);
+u8 *String_subLastChar(const u8 *str);
+u8 *String_subFirst(const u8 *str, bytes count);
+u8 *String_subLast(const u8 *str, bytes count);
 
 // Append — new block or in-place first
-uint8_t *String_append(const uint8_t *a, const uint8_t *b);
-uint8_t *String_appendLiteral(const uint8_t *a, const char *b);
-uint8_t *String_appendLiterals(const char *a, const char *b);
-void String_appendInto(const uint8_t *a, const uint8_t *b, uint8_t *dest);
-uint8_t *String_appendFirst(uint8_t *a, const uint8_t *b);
-uint8_t *String_appendFirstLiteral(uint8_t *a, const char *b);
+u8 *String_append(const u8 *a, const u8 *b);
+u8 *String_appendLiteral(const u8 *a, const char *b);
+u8 *String_appendLiterals(const char *a, const char *b);
+void String_appendInto(const u8 *a, const u8 *b, u8 *dest);
+u8 *String_appendFirst(u8 *a, const u8 *b);
+u8 *String_appendFirstLiteral(u8 *a, const char *b);
 
 #endif

@@ -32,7 +32,7 @@ static int g_failures = 0;
     } while (0)
 
 // Hashes a byte span and compares its hex digest with the supplied expectation.
-static void expect_hex(const void *data, size_t len, const char *want) {
+static void expect_hex(const void *data, bytes len, const char *want) {
     char got[CRYPTO_SHA256_HEX_SIZE];
     Crypto_sha256Hex(data, len, got);
     CHECK(strcmp(got, want) == 0);
@@ -54,14 +54,14 @@ static void test_sha256_vectors(void) {
 
 // Checks streaming SHA-256 of one million repeated bytes against its reference digest.
 static void test_sha256_million_a(void) {
-    uint8_t block[1000];
+    u8 block[1000];
     memset(block, 'a', sizeof(block));
     CryptoSha256 ctx;
     Crypto_sha256Init(&ctx);
     for (int i = 0; i < 1000; i++)
         Crypto_sha256Update(&ctx, block, sizeof(block));
     char hex[CRYPTO_SHA256_HEX_SIZE];
-    uint8_t digest[CRYPTO_SHA256_DIGEST_SIZE];
+    u8 digest[CRYPTO_SHA256_DIGEST_SIZE];
     Crypto_sha256Final(&ctx, digest);
     Crypto_toHex(digest, sizeof(digest), hex);
     CHECK(strcmp(hex,
@@ -70,25 +70,25 @@ static void test_sha256_million_a(void) {
 
 // Compares one-shot hashing with varied streaming chunk sizes and zero-length update.
 static void test_streaming_equivalence(void) {
-    uint8_t buf[205];
+    u8 buf[205];
     for (int i = 0; i < 205; i++)
-        buf[i] = (uint8_t) (i * 7 + 1);
+        buf[i] = (u8) (i * 7 + 1);
 
-    uint8_t oneShot[CRYPTO_SHA256_DIGEST_SIZE];
+    u8 oneShot[CRYPTO_SHA256_DIGEST_SIZE];
     Crypto_sha256(buf, sizeof(buf), oneShot);
 
     // Odd update chunk sizes that straddle the 64-byte block boundary.
-    const size_t chunks[] = { 1, 3, 63, 64, 65, 7 };
-    for (size_t c = 0; c < sizeof(chunks) / sizeof(chunks[0]); c++) {
+    const bytes chunks[] = { 1, 3, 63, 64, 65, 7 };
+    for (bytes c = 0; c < sizeof(chunks) / sizeof(chunks[0]); c++) {
         CryptoSha256 ctx;
         Crypto_sha256Init(&ctx);
-        size_t off = 0, step = chunks[c];
+        bytes off = 0, step = chunks[c];
         while (off < sizeof(buf)) {
-            size_t n = step < sizeof(buf) - off ? step : sizeof(buf) - off;
+            bytes n = step < sizeof(buf) - off ? step : sizeof(buf) - off;
             Crypto_sha256Update(&ctx, buf + off, n);
             off += n;
         }
-        uint8_t dig[CRYPTO_SHA256_DIGEST_SIZE];
+        u8 dig[CRYPTO_SHA256_DIGEST_SIZE];
         Crypto_sha256Final(&ctx, dig);
         CHECK(memcmp(dig, oneShot, sizeof(oneShot)) == 0);
     }
@@ -96,15 +96,15 @@ static void test_streaming_equivalence(void) {
     CryptoSha256 ctx;
     Crypto_sha256Init(&ctx);
     Crypto_sha256Update(&ctx, buf, 0);
-    uint8_t dig[CRYPTO_SHA256_DIGEST_SIZE];
+    u8 dig[CRYPTO_SHA256_DIGEST_SIZE];
     Crypto_sha256Final(&ctx, dig);
     CHECK(memcmp(dig, oneShot, 0) == 0);       // just proves it returned
 }
 
 // Checks equality and mismatch outcomes at first/last bytes, zero length, and null pointers.
 static void test_constant_time(void) {
-    uint8_t a[8] = { 1, 2, 3, 4, 5, 6, 7, 8 };
-    uint8_t b[8] = { 1, 2, 3, 4, 5, 6, 7, 8 };
+    u8 a[8] = { 1, 2, 3, 4, 5, 6, 7, 8 };
+    u8 b[8] = { 1, 2, 3, 4, 5, 6, 7, 8 };
     CHECK(Crypto_constantTimeEquals(a, b, 8));
     b[0] = 9;
     CHECK(!Crypto_constantTimeEquals(a, b, 8));
@@ -121,10 +121,10 @@ static void test_constant_time(void) {
 static void test_hash(void) {
     CHECK(Crypto_hash64(nullptr, 4) == 0);
     CHECK(Crypto_hash64("abc", 0) == 0);
-    uint64_t h = Crypto_hash64("abc", 3);
+    u64 h = Crypto_hash64("abc", 3);
     CHECK(h == Crypto_hash64("abc", 3));           // deterministic
     CHECK(h != Crypto_hash64("abd", 3));
-    CHECK(Crypto_hash32("abc", 3) == (uint32_t) (h ^ (h >> 32)));
+    CHECK(Crypto_hash32("abc", 3) == (u32) (h ^ (h >> 32)));
     CHECK(Crypto_hash32(nullptr, 3) == 0);
 }
 
@@ -143,13 +143,13 @@ static void test_rng(void) {
     // Byte output must equal the word stream, little-endian, for full words.
     CryptoRng rb;
     Crypto_rngInit(&rb, 999);
-    uint8_t Bytes[16];
+    u8 Bytes[16];
     Crypto_rngBytes(&rb, Bytes, sizeof(Bytes));
     CryptoRng rw;
     Crypto_rngInit(&rw, 999);
     for (int i = 0; i < 2; i++) {
-        uint64_t w = Crypto_rngNextU64(&rw);
-        uint8_t wb[8];
+        u64 w = Crypto_rngNextU64(&rw);
+        u8 wb[8];
         memcpy(wb, &w, 8);
         CHECK(memcmp(Bytes + i * 8, wb, 8) == 0);
     }
@@ -168,15 +168,15 @@ static void test_rng(void) {
 // Checks reseeding reproduces global scalar and byte streams and changes with seed.
 static void test_global_rng(void) {
     Crypto_prngSeed(42);
-    uint64_t a = Crypto_prngU64();
+    u64 a = Crypto_prngU64();
     Crypto_prngSeed(42);
-    uint64_t b = Crypto_prngU64();
+    u64 b = Crypto_prngU64();
     CHECK(a == b);
     Crypto_prngSeed(43);
     CHECK(Crypto_prngU64() != a);
 
     Crypto_prngSeed(7);
-    uint8_t x[16], y[16];
+    u8 x[16], y[16];
     Crypto_prngBytes(x, sizeof(x));
     Crypto_prngSeed(7);
     Crypto_prngBytes(y, sizeof(y));
@@ -185,12 +185,12 @@ static void test_global_rng(void) {
 
 // Checks hexadecimal encoding/decoding, capacity limits, invalid characters, and null cases.
 static void test_hex(void) {
-    uint8_t Bytes[4] = { 0x00, 0x0f, 0xa5, 0xff };
+    u8 Bytes[4] = { 0x00, 0x0f, 0xa5, 0xff };
     char hex[9];
     Crypto_toHex(Bytes, 4, hex);
     CHECK(strcmp(hex, "000fa5ff") == 0);
 
-    uint8_t back[4] = { 0 };
+    u8 back[4] = { 0 };
     CHECK(Crypto_fromHex(hex, back, sizeof(back)) == 4);
     CHECK(memcmp(back, Bytes, 4) == 0);
 
@@ -203,7 +203,7 @@ static void test_hex(void) {
     CHECK(back[0] == 0x0f);
 
     // maxBytes truncates.
-    uint8_t two[2];
+    u8 two[2];
     CHECK(Crypto_fromHex("000fa5", two, sizeof(two)) == 2);
 
     // Empty/null edges.
@@ -220,7 +220,7 @@ static void test_hex(void) {
 
 // Exercises null context, input, and digest pointers across SHA-256 entry points.
 static void test_null_safety(void) {
-    uint8_t digest[CRYPTO_SHA256_DIGEST_SIZE];
+    u8 digest[CRYPTO_SHA256_DIGEST_SIZE];
     Crypto_sha256Init(nullptr);
     Crypto_sha256Update(nullptr, "x", 1);
     Crypto_sha256Final(nullptr, digest);

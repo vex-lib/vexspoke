@@ -31,10 +31,10 @@ static int g_checks = 0;
     } while (0)
 
 typedef struct Row16 {
-    uint32_t a;
-    uint32_t b;
-    uint32_t c;
-    uint32_t d;
+    u32 a;
+    u32 b;
+    u32 c;
+    u32 d;
 } Row16;
 
 // Checks empty-list defaults, row geometry, and initial capacity.
@@ -71,8 +71,8 @@ static void testDefaults(void) {
         CHECK(ChunkedList_getChunkBytes(tiny) == 16u);
         // Invariant: the chunk never exceeds the budget it was given.
         CHECK(ChunkedList_getRowsPerChunk(tiny) >= 1u);
-        CHECK((size_t)ChunkedList_getRowsPerChunk(tiny) * (size_t)ChunkedList_stride(tiny)
-              <= (size_t)ChunkedList_getChunkBytes(tiny));
+        CHECK((bytes)ChunkedList_getRowsPerChunk(tiny) * (bytes)ChunkedList_stride(tiny)
+              <= (bytes)ChunkedList_getChunkBytes(tiny));
         ChunkedList_free(tiny);
     }
 
@@ -87,7 +87,7 @@ static void testStableAddresses(void) {
     if (!list)
         return;
 
-    uint8_t *first = ChunkedList_addSlot(list);
+    u8 *first = ChunkedList_addSlot(list);
     CHECK(first != nullptr);
     CHECK(ChunkedList_size(list) == 1u);
     CHECK(ChunkedList_getChunkCount(list) == 1u);
@@ -104,9 +104,9 @@ static void testStableAddresses(void) {
 
     // Fill well past a chunk boundary (8 rows) and past the first directory
     // generation (64 chunks = 512 rows) so COW doubling happens too.
-    const uint32_t total = 1200u;
-    for (uint32_t i = 1u; i < total; i++) {
-        uint8_t *row = ChunkedList_addSlot(list);
+    const u32 total = 1200u;
+    for (u32 i = 1u; i < total; i++) {
+        u8 *row = ChunkedList_addSlot(list);
         if (!row) {
             CHECK(false);
             break;
@@ -130,8 +130,8 @@ static void testStableAddresses(void) {
     CHECK((*row0).d == 0xD0u);
 
     // Rows 7 and 8 straddle the chunk boundary -> different chunks.
-    uint8_t *row7 = ChunkedList_slot(list, 7u);
-    uint8_t *row8 = ChunkedList_slot(list, 8u);
+    u8 *row7 = ChunkedList_slot(list, 7u);
+    u8 *row8 = ChunkedList_slot(list, 8u);
     CHECK(row7 != nullptr && row8 != nullptr);
     CHECK(ChunkedList_getChunk(list, 0u) == first);
     CHECK(ChunkedList_getChunk(list, 1u) == row8);
@@ -139,7 +139,7 @@ static void testStableAddresses(void) {
 
     // Every earlier row is still readable at its original contents.
     bool intact = true;
-    for (uint32_t i = 1u; i < 64u; i++) {
+    for (u32 i = 1u; i < 64u; i++) {
         Row16 *r = (Row16*) ChunkedList_slot(list, i);
         if (!r || (*r).a != i || (*r).d != i + 3u) {
             intact = false;
@@ -171,13 +171,13 @@ static void testReserve(void) {
     CHECK(ChunkedList_isEmpty(list) == true);
 
     // A reserved chunk is addressable before any row is live.
-    uint8_t *chunk = ChunkedList_getChunk(list, 12u);
+    u8 *chunk = ChunkedList_getChunk(list, 12u);
     CHECK(chunk != nullptr);
     CHECK(ChunkedList_slot(list, 0u) == nullptr);
 
     // Growing past the reservation keeps the same chunk addresses.
-    uint8_t *before = ChunkedList_getChunk(list, 0u);
-    for (uint32_t i = 0u; i < 200u; i++)
+    u8 *before = ChunkedList_getChunk(list, 0u);
+    for (u32 i = 0u; i < 200u; i++)
         CHECK(ChunkedList_addSlot(list) != nullptr);
     CHECK(ChunkedList_getChunk(list, 0u) == before);
 
@@ -195,7 +195,7 @@ static void testPackInto(void) {
     if (!list)
         return;
 
-    for (uint32_t i = 0u; i < 20u; i++) {
+    for (u32 i = 0u; i < 20u; i++) {
         Row16 *r = (Row16*) ChunkedList_addSlot(list);
         if (!r)
             break;
@@ -208,9 +208,9 @@ static void testPackInto(void) {
 
     Row16 flat[20];
     memset(flat, 0, sizeof(flat));
-    uint32_t rows = 0u;
+    u32 rows = 0u;
     bool truncated = true;
-    CHECK(ChunkedList_packInto(list, (uint8_t*) flat, sizeof(flat), &rows, &truncated) == true);
+    CHECK(ChunkedList_packInto(list, (u8*) flat, sizeof(flat), &rows, &truncated) == true);
     CHECK(rows == 20u);
     CHECK(truncated == false);
     CHECK(flat[0].a == 0u && flat[19].a == 19u);
@@ -220,7 +220,7 @@ static void testPackInto(void) {
     Row16 shortDest[3];
     rows = 0u;
     truncated = false;
-    CHECK(ChunkedList_packInto(list, (uint8_t*) shortDest, sizeof(shortDest), &rows, &truncated) == false);
+    CHECK(ChunkedList_packInto(list, (u8*) shortDest, sizeof(shortDest), &rows, &truncated) == false);
     CHECK(rows == 3u);
     CHECK(truncated == true);
     CHECK(shortDest[0].a == 0u && shortDest[2].a == 2u);
@@ -230,10 +230,10 @@ static void testPackInto(void) {
     truncated = true;
     CHECK(ChunkedList_packInto(list, nullptr, 64u, &rows, &truncated) == false);
     CHECK(rows == 0u && truncated == false);
-    CHECK(ChunkedList_packInto(nullptr, (uint8_t*) shortDest, sizeof(shortDest), &rows, &truncated) == false);
+    CHECK(ChunkedList_packInto(nullptr, (u8*) shortDest, sizeof(shortDest), &rows, &truncated) == false);
 
     // Out-params may be omitted entirely.
-    CHECK(ChunkedList_packInto(list, (uint8_t*) flat, sizeof(flat), nullptr, nullptr) == true);
+    CHECK(ChunkedList_packInto(list, (u8*) flat, sizeof(flat), nullptr, nullptr) == true);
 
     ChunkedList_free(list);
 }
@@ -258,8 +258,8 @@ static void testChunkBytesBudget(void) {
     ChunkedList *own = ChunkedList_3(ID_INT, 128u, 128u);
     if (own) {
         CHECK(ChunkedList_getRowsPerChunk(own) == 1u);
-        uint8_t *a = ChunkedList_addSlot(own);
-        uint8_t *b = ChunkedList_addSlot(own);
+        u8 *a = ChunkedList_addSlot(own);
+        u8 *b = ChunkedList_addSlot(own);
         CHECK(a != nullptr && b != nullptr);
         CHECK(a != b);
         CHECK(ChunkedList_getChunk(own, 0u) == a);
@@ -342,17 +342,17 @@ static void testCheckedMath(void) {
 #define CONC_TOTAL (CONC_WRITERS * CONC_ROWS)
 
 static ChunkedList *g_concList;
-static _Atomic uint32_t g_concSeq;
+static _Atomic u32 g_concSeq;
 static _Atomic bool g_concDone;
 
 // Appends a fixed batch of rows and stamps each admitted row with a unique sequence.
 static void *concWriter(void *arg) {
     (void) arg;
-    for (uint32_t i = 0u; i < CONC_ROWS; i++) {
-        uint8_t *row = ChunkedList_addSlot(g_concList);
+    for (u32 i = 0u; i < CONC_ROWS; i++) {
+        u8 *row = ChunkedList_addSlot(g_concList);
         if (!row)
             return (void*) 1;
-        uint32_t seq = atomic_fetch_add(&g_concSeq, 1u) + 1u;
+        u32 seq = atomic_fetch_add(&g_concSeq, 1u) + 1u;
         memcpy(row, &seq, sizeof(seq));
     }
     return nullptr;
@@ -362,14 +362,14 @@ static void *concWriter(void *arg) {
 static void *concReader(void *arg) {
     (void) arg;
     while (!atomic_load(&g_concDone)) {
-        uint32_t n = ChunkedList_size(g_concList);
-        for (uint32_t i = 0u; i < n; i++) {
-            uint8_t *row = ChunkedList_slot(g_concList, i);
+        u32 n = ChunkedList_size(g_concList);
+        for (u32 i = 0u; i < n; i++) {
+            u8 *row = ChunkedList_slot(g_concList, i);
             if (!row)
                 return (void*) 1; // hole below the published count: defect
-            uint32_t seq = 0u;
+            u32 seq = 0u;
             memcpy(&seq, row, sizeof(seq));
-            if (seq > (uint32_t) CONC_TOTAL)
+            if (seq > (u32) CONC_TOTAL)
                 return (void*) 1; // out of range (0 = claimed but not yet stamped)
         }
     }
@@ -378,8 +378,8 @@ static void *concReader(void *arg) {
 
 // Orders pointer values for deterministic comparison of concurrent writer results.
 static int cmpPtr(const void *a, const void *b) {
-    uint8_t * const *pa = (uint8_t * const *) a;
-    uint8_t * const *pb = (uint8_t * const *) b;
+    u8 * const *pa = (u8 * const *) a;
+    u8 * const *pb = (u8 * const *) b;
     if (*pa < *pb)
         return -1;
     if (*pa > *pb)
@@ -427,20 +427,20 @@ static void testConcurrentWriters(void) {
 
     // Exactly-once claim: stamps must be exactly 1..TOTAL — no gaps, no dups.
     // (A duplicate claim would surface as a repeated stamp plus a short size.)
-    CHECK(ChunkedList_size(list) == (uint32_t) CONC_TOTAL);
-    uint8_t *seen = (uint8_t*) calloc((size_t) CONC_TOTAL + 1u, 1u);
-    uint8_t **ptrs = (uint8_t**) malloc((size_t) CONC_TOTAL * sizeof(uint8_t*));
+    CHECK(ChunkedList_size(list) == (u32) CONC_TOTAL);
+    u8 *seen = (u8*) calloc((bytes) CONC_TOTAL + 1u, 1u);
+    u8 **ptrs = (u8**) malloc((bytes) CONC_TOTAL * sizeof(u8*));
     CHECK(seen != nullptr && ptrs != nullptr);
     bool stampsOk = seen != nullptr && ptrs != nullptr;
-    for (uint32_t i = 0u; stampsOk && i < (uint32_t) CONC_TOTAL; i++) {
-        uint8_t *row = ChunkedList_slot(list, i);
+    for (u32 i = 0u; stampsOk && i < (u32) CONC_TOTAL; i++) {
+        u8 *row = ChunkedList_slot(list, i);
         if (!row) {
             stampsOk = false;
             break;
         }
-        uint32_t seq = 0u;
+        u32 seq = 0u;
         memcpy(&seq, row, sizeof(seq));
-        if (seq < 1u || seq > (uint32_t) CONC_TOTAL || seen[seq]) {
+        if (seq < 1u || seq > (u32) CONC_TOTAL || seen[seq]) {
             stampsOk = false;
             break;
         }
@@ -452,8 +452,8 @@ static void testConcurrentWriters(void) {
     // No two rows share an address: chunks never aliased under contention.
     bool distinct = stampsOk;
     if (distinct) {
-        qsort(ptrs, (size_t) CONC_TOTAL, sizeof(uint8_t*), cmpPtr);
-        for (uint32_t i = 1u; i < (uint32_t) CONC_TOTAL; i++)
+        qsort(ptrs, (bytes) CONC_TOTAL, sizeof(u8*), cmpPtr);
+        for (u32 i = 1u; i < (u32) CONC_TOTAL; i++)
             if (ptrs[i] == ptrs[i - 1u]) {
                 distinct = false;
                 break;

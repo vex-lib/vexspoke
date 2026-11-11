@@ -1,11 +1,11 @@
-// vexspoke/test/primitive/int_double_test.c — the IntDouble class _test.
+// vexspoke/test/primitive/int_f64_test.c — the Intf64 class _test.
 //
-// Composite: int32 (offset 0) + double (offset 4); the API reads/writes int64.
+// Composite: int32 (offset 0) + d64 (offset 4); the API reads/writes int64.
 
 #include <stdint.h>
 #include <stdio.h>
 
-#include "primitive/int_double.h"
+#include "primitive/int_f64.h"
 #include "oop/type.h"
 
 static int g_failures = 0;
@@ -18,61 +18,61 @@ static int g_failures = 0;
         }                                                                  \
     } while (0)
 
-// Exercises IntDouble's packed two-field layout, constructors, CAS, arrays, and null safety.
+// Exercises Intf64's packed two-field layout, constructors, CAS, arrays, and null safety.
 int main(void) {
-    CHECK(IntDouble_init());
+    CHECK(Intf64_init());
 
-    void *p = IntDouble_alloc();
+    void *p = Intf64_alloc();
     CHECK(p != nullptr);
-    CHECK(IntDouble_get(p) == 0);
-    CHECK(IntDouble_type(p) == ID_INT_DOUBLE);
-    CHECK(IntDouble_length(p) == 16);
+    CHECK(Intf64_get(p) == 0);
+    CHECK(Intf64_type(p) == ID_INT_f64);
+    CHECK(Intf64_length(p) == 16);
 
-    IntDouble_set(p, 0x0123456789ABCDEFLL);
-    CHECK(IntDouble_get(p) == 0x0123456789ABCDEFLL);
-    IntDouble_set(p, -1);
-    CHECK(IntDouble_get(p) == -1);
+    Intf64_set(p, 0x0123456789ABCDEFLL);
+    CHECK(Intf64_get(p) == 0x0123456789ABCDEFLL);
+    Intf64_set(p, -1);
+    CHECK(Intf64_get(p) == -1);
 
-    void *c = IntDouble_allocWithValues(7, 2.5);
+    void *c = Intf64_allocWithValues(7, 2.5);
     CHECK(c != nullptr);
-    CHECK((IntDouble_get(c) & 0xFFFFFFFFLL) == 7); // v1 landed at offset 0
+    CHECK((Intf64_get(c) & 0xFFFFFFFFLL) == 7); // v1 landed at offset 0
 
-    void *r = IntDouble_2(4, 0.5);
+    void *r = Intf64_2(4, 0.5);
     CHECK(r != nullptr);
-    CHECK((IntDouble_get(r) & 0xFFFFFFFFLL) == 4);
-    void *s = IntDouble_0();
-    CHECK(s != nullptr && IntDouble_type(s) == ID_INT_DOUBLE);
+    CHECK((Intf64_get(r) & 0xFFFFFFFFLL) == 4);
+    void *s = Intf64_0();
+    CHECK(s != nullptr && Intf64_type(s) == ID_INT_f64);
 
-    IntDouble_set(p, 11);
-    CHECK(IntDouble_compareAndSet(p, 11, 22));
-    CHECK(IntDouble_get(p) == 22);
-    CHECK(!IntDouble_compareAndSet(p, 11, 33));
-    CHECK(IntDouble_get(p) == 22);
+    Intf64_set(p, 11);
+    CHECK(Intf64_compareAndSet(p, 11, 22));
+    CHECK(Intf64_get(p) == 22);
+    CHECK(!Intf64_compareAndSet(p, 11, 33));
+    CHECK(Intf64_get(p) == 22);
 
-    CHECK(IntDouble_allocArray(0) == nullptr);
-    void *arr = IntDouble_array(4);
+    CHECK(Intf64_allocArray(0) == nullptr);
+    void *arr = Intf64_array(4);
     CHECK(arr != nullptr);
-    CHECK((IntDouble_type(arr) & MASK_CLASS) == ID_INT_DOUBLE);
-    CHECK(IntDouble_length(arr) >= 4);
+    CHECK((Intf64_type(arr) & MASK_CLASS) == ID_INT_f64);
+    CHECK(Intf64_length(arr) >= 4);
 
-    CHECK(IntDouble_get(nullptr) == 0);
-    IntDouble_set(nullptr, 5);
-    CHECK(!IntDouble_compareAndSet(nullptr, 0, 1));
-    CHECK(IntDouble_type(nullptr) == 0);
-    CHECK(IntDouble_length(nullptr) == 0);
-    IntDouble_free(nullptr);
+    CHECK(Intf64_get(nullptr) == 0);
+    Intf64_set(nullptr, 5);
+    CHECK(!Intf64_compareAndSet(nullptr, 0, 1));
+    CHECK(Intf64_type(nullptr) == 0);
+    CHECK(Intf64_length(nullptr) == 0);
+    Intf64_free(nullptr);
 
-    IntDouble_free(p);
-    IntDouble_free(c);
-    IntDouble_free(r);
-    IntDouble_free(s);
-    IntDouble_free(arr);
-    IntDouble_shutdown();
+    Intf64_free(p);
+    Intf64_free(c);
+    Intf64_free(r);
+    Intf64_free(s);
+    Intf64_free(arr);
+    Intf64_shutdown();
 
     if (g_failures == 0) {
-        printf("int_double_test: all assertions held\n");
+        printf("int_f64_test: all assertions held\n");
         return 0;
     }
-    printf("int_double_test: %d FAILURES\n", g_failures);
+    printf("int_f64_test: %d FAILURES\n", g_failures);
     return 1;
 }

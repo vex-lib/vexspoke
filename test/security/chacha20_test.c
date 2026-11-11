@@ -9,32 +9,32 @@
 #include <stdio.h>
 #include <string.h>
 
-static size_t fromHex(const char *hex, uint8_t *out, size_t cap) {
-    size_t n = 0;
+static bytes fromHex(const char *hex, u8 *out, bytes cap) {
+    bytes n = 0;
     for (const char *p = hex; p[0] != '\0' && p[1] != '\0'; p += 2) {
         unsigned byte = 0;
         assert(sscanf(p, "%2x", &byte) == 1);
         assert(n < cap);
-        out[n++] = (uint8_t) byte;
+        out[n++] = (u8) byte;
     }
     return n;
 }
 
-static void toHex(const uint8_t *bytes, size_t len, char *out) {
-    for (size_t i = 0; i < len; ++i)
+static void toHex(const u8 *bytes, bytes len, char *out) {
+    for (bytes i = 0; i < len; ++i)
         snprintf(out + i * 2u, 3u, "%02x", bytes[i]);
     out[len * 2u] = '\0';
 }
 
 int main(void) {
-    uint8_t key[CHACHA20_KEY_SIZE];
+    u8 key[CHACHA20_KEY_SIZE];
     for (unsigned i = 0; i < CHACHA20_KEY_SIZE; ++i)
-        key[i] = (uint8_t) i;
+        key[i] = (u8) i;
 
     // RFC 8439 section 2.3.2: the block function, counter 1.
-    uint8_t nonce[CHACHA20_NONCE_SIZE];
+    u8 nonce[CHACHA20_NONCE_SIZE];
     assert(fromHex("000000090000004a00000000", nonce, sizeof nonce) == 12u);
-    uint8_t block[CHACHA20_BLOCK_SIZE];
+    u8 block[CHACHA20_BLOCK_SIZE];
     ChaCha20_block(block, key, 1u, nonce);
     static const char *blockHex =
         "10f1e7e4d13b5915500fdd1fa32071c4c7d1f4c733c068030422aa9ac3d46c4e"
@@ -52,13 +52,13 @@ int main(void) {
         "f91b65c5524733ab8f593dabcd62b3571639d624e65152ab8f530c359f0861d8"
         "07ca0dbf500d6a6156a38e088a22b65e52bc514d16ccf806818ce91ab7793736"
         "5af90bbf74a35be6b40b8eedf2785e42874d";
-    uint8_t buffer[128];
-    size_t plainLen = strlen(plain);
+    u8 buffer[128];
+    bytes plainLen = strlen(plain);
     memcpy(buffer, plain, plainLen);
     assert(fromHex("000000000000004a00000000", nonce, sizeof nonce) == 12u);
     ChaCha20_xor(buffer, plainLen, key, 1u, nonce);
-    uint8_t expected[128];
-    size_t expectedLen = fromHex(cipherHex, expected, sizeof expected);
+    u8 expected[128];
+    bytes expectedLen = fromHex(cipherHex, expected, sizeof expected);
     assert(expectedLen == plainLen);
     assert(memcmp(buffer, expected, plainLen) == 0);
 

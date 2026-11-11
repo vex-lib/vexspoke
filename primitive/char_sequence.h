@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 // primitive/char_sequence.h — a non-owning view of text: bytes plus a length.
 //
@@ -27,10 +27,10 @@
 
 typedef struct CharSequence {
     const char *data;
-    size_t length;
+    bytes length;
 } CharSequence;
 
-CharSequence CharSequence_2(const char *data, size_t length);
+CharSequence CharSequence_2(const char *data, bytes length);
 #define CharSequence(...) CONSTRUCTOR_DISPATCH(CharSequence, __VA_ARGS__)
 #define CharSequence_zero() CharSequence_2(nullptr, 0)
 
@@ -38,9 +38,9 @@ CharSequence CharSequence_2(const char *data, size_t length);
 // class measures a C string.
 CharSequence CharSequence_cstr(const char *text);
 // An owned String block (primitive/vex-string.h). Null is the empty view.
-CharSequence CharSequence_block(const uint8_t *block);
+CharSequence CharSequence_block(const u8 *block);
 
-size_t CharSequence_length(CharSequence self);
+bytes CharSequence_length(CharSequence self);
 bool CharSequence_isEmpty(CharSequence self);
 // Lexicographic: negative, zero, positive. Length breaks a shared prefix.
 int CharSequence_compare(CharSequence left, CharSequence right);
@@ -48,8 +48,8 @@ bool CharSequence_equals(CharSequence left, CharSequence right);
 bool CharSequence_startsWith(CharSequence self, CharSequence prefix);
 bool CharSequence_endsWith(CharSequence self, CharSequence suffix);
 // Byte offset of the first occurrence, or SIZE_MAX when absent.
-size_t CharSequence_find(CharSequence self, CharSequence needle);
-size_t CharSequence_findChar(CharSequence self, char needle);
+bytes CharSequence_find(CharSequence self, CharSequence needle);
+bytes CharSequence_findChar(CharSequence self, char needle);
 // Convenience for a literal prefix, without spelling a second view.
 bool CharSequence_hasPrefix(CharSequence self, const char *literal);
 

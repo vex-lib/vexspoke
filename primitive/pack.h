@@ -5,14 +5,14 @@
 
 // primitive/pack.h — bit-packing utilities (Legacy: primitive/Pack.java).
 
-static inline int16_t Pack_packByte(int8_t b1, int8_t b2) { return (int16_t)((b1 << 8) | (b2 & 0xFF)); }
-static inline int32_t Pack_packShort(int16_t s1, int16_t s2) { return (int32_t)((s1 << 16) | (s2 & 0xFFFF)); }
-static inline int64_t Pack_packInt(int32_t i1, int32_t i2) { return ((int64_t)i1 << 32) | (uint32_t)i2; }
-static inline int8_t Pack_unpackByte1(int16_t p) { return (int8_t)(p >> 8); }
-static inline int8_t Pack_unpackByte2(int16_t p) { return (int8_t)(p & 0xFF); }
-static inline int16_t Pack_unpackShort1(int32_t p) { return (int16_t)(p >> 16); }
-static inline int16_t Pack_unpackShort2(int32_t p) { return (int16_t)(p & 0xFFFF); }
-static inline int32_t Pack_unpackInt1(int64_t p) { return (int32_t)(p >> 32); }
-static inline int32_t Pack_unpackInt2(int64_t p) { return (int32_t)(p & 0xFFFFFFFF); }
+static inline  Pack_packByte( b1,  b2) { return ()((b1 << 8) | (b2 & 0xFF)); }
+static inline i32 Pack_packShort( s1,  s2) { return (i32)((s1 << 16) | (s2 & 0xFFFF)); }
+static inline int64_t Pack_packInt(i32 i1, i32 i2) { return ((int64_t)i1 << 32) | (u32)i2; }
+static inline  Pack_unpackByte1( p) { return ()(p >> 8); }
+static inline  Pack_unpackByte2( p) { return ()(p & 0xFF); }
+static inline  Pack_unpackShort1(i32 p) { return ()(p >> 16); }
+static inline  Pack_unpackShort2(i32 p) { return ()(p & 0xFFFF); }
+static inline i32 Pack_unpackInt1(int64_t p) { return (i32)(p >> 32); }
+static inline i32 Pack_unpackInt2(int64_t p) { return (i32)(p & 0xFFFFFFFF); }
 
 #endif

@@ -31,8 +31,8 @@
  * STRUCT FIELDS (local to this file):
  * ----------------------------------------------------------------------------
  *   Thread *s_pool[COMPUTE_POOL_MAX];  // lazily started workers
- *   size_t s_poolCount;                // live pool size
- *   _Atomic size_t s_rr;               // round-robin cursor
+ *   bytes s_poolCount;                // live pool size
+ *   _Atomic bytes s_rr;               // round-robin cursor
  *
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
@@ -50,8 +50,8 @@
 #define COMPUTE_POOL_MAX 8
 
 static Thread *s_pool[COMPUTE_POOL_MAX];
-static size_t s_poolCount = 0;
-static _Atomic size_t s_rr = 0;
+static bytes s_poolCount = 0;
+static _Atomic bytes s_rr = 0;
 
 // The one body every compute worker runs: a popped task is a ComputeJob.
 static void compute_job(Thread *self, void *task) {
@@ -82,12 +82,12 @@ Thread *ComputeThread_invoke(void) {
     return worker;
 }
 
-bool ComputeThread_start(size_t count) {
+bool ComputeThread_start(bytes count) {
     if (count == 0)
         count = 1;
     if (count > COMPUTE_POOL_MAX)
         count = COMPUTE_POOL_MAX;
-    for (size_t i = 0; i < count; i++) {
+    for (bytes i = 0; i < count; i++) {
         if (s_pool[i] != nullptr)
             continue;                        // idempotent: keep the existing worker
         Thread *worker = ComputeThread_invoke();
@@ -103,8 +103,8 @@ bool ComputeThread_start(size_t count) {
 bool ComputeThread_submit(ComputeJob *job) {
     if (job == nullptr || s_poolCount == 0)
         return false;
-    size_t start = atomic_fetch_add_explicit(&s_rr, 1, memory_order_relaxed);
-    for (size_t i = 0; i < s_poolCount; i++) {
+    bytes start = atomic_fetch_add_explicit(&s_rr, 1, memory_order_relaxed);
+    for (bytes i = 0; i < s_poolCount; i++) {
         Thread *worker = s_pool[(start + i) % s_poolCount];
         if (worker != nullptr && Thread_submit(worker, job))
             return true;
@@ -117,18 +117,18 @@ bool ComputeThread_submitTo(Thread *worker, ComputeJob *job) {
 }
 
 void ComputeThread_stop(void) {
-    for (size_t i = 0; i < COMPUTE_POOL_MAX; i++)
+    for (bytes i = 0; i < COMPUTE_POOL_MAX; i++)
         Thread_stop(s_pool[i]);
 }
 
 void ComputeThread_free(void) {
-    for (size_t i = 0; i < COMPUTE_POOL_MAX; i++) {
+    for (bytes i = 0; i < COMPUTE_POOL_MAX; i++) {
         Thread_free(s_pool[i]);
         s_pool[i] = nullptr;
     }
     s_poolCount = 0;
 }
 
-size_t ComputeThread_count(void) {
+bytes ComputeThread_count(void) {
     return s_poolCount;
 }

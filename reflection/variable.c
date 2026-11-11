@@ -101,13 +101,13 @@ void Variable_free(Variable *self) {
 
 // CORE FUNCTIONS
 
-uint64_t Variable_kind(const Variable *self) {
+u64 Variable_kind(const Variable *self) {
     if (self == nullptr)
         return 0u;
     return Memory_type((void*) self);
 }
 
-bool Variable_check(const Variable *self, uint64_t typeId) {
+bool Variable_check(const Variable *self, u64 typeId) {
     if (self == nullptr)
         return false;
     return Memory_type((void*) self) == typeId;
@@ -164,7 +164,7 @@ void *Variable_getTarget(const Variable *self) {
 
 // STRING PROJECTIONS (the toString Law)
 
-void Variable_toString(const Variable *self, char *dest, size_t cap, bool *outTruncated) {
+void Variable_toString(const Variable *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (dest == nullptr || cap == 0u)
@@ -174,13 +174,13 @@ void Variable_toString(const Variable *self, char *dest, size_t cap, bool *outTr
         return;
     }
     int written = snprintf(dest, cap, "Variable(%s)", (*self).name[0] == '\0' ? "?" : (*self).name);
-    if (written < 0 || (size_t) written >= cap) {
+    if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
     }
 }
 
-void Variable_toStringStruct(const Variable *self, char *dest, size_t cap, bool *outTruncated) {
+void Variable_toStringStruct(const Variable *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (dest == nullptr || cap == 0u)
@@ -193,7 +193,7 @@ void Variable_toStringStruct(const Variable *self, char *dest, size_t cap, bool 
                            (*self).name,
                            (unsigned long long) (uintptr_t) (*self).read,
                            (unsigned long long) (uintptr_t) (*self).target);
-    if (written < 0 || (size_t) written >= cap) {
+    if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
     }

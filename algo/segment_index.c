@@ -45,19 +45,19 @@
  * ----------------------------------------------------------------------------
  *   SegmentIndex {
  *     bool active;               // runtime-active flag
- *     uint32_t count;            // indexed entries (== entry row count)
+ *     u32 count;            // indexed entries (== entry row count)
  *     ChunkedList *entries;      // never-moved SegmentEntry rows
  *     VariableHashMap *postings; // segment -> ChunkedList* of SegmentPosting
  *   }
  *
  * SLOT RECORDS (owned by SegmentIndex, behaviorless):
  * ----------------------------------------------------------------------------
- *   SegmentPosting entry;    // uint32_t + the entry id
- *   SegmentPosting position; // uint32_t + the segment position
+ *   SegmentPosting entry;    // u32 + the entry id
+ *   SegmentPosting position; // u32 + the segment position
  *   SegmentEntry name;       // char[24] + the folded dotted name
  *   SegmentEntry payload;    // uintptr_t + the caller's value
- *   SegmentEntry segments;   // uint32_t + the segment count
- *   SegmentEntry pad;        // uint32_t + explicit row padding
+ *   SegmentEntry segments;   // u32 + the segment count
+ *   SegmentEntry pad;        // u32 + explicit row padding
  *
  * PRIVATE HELPERS (kept file-local, pure logic, no behavior of their own): none.
  *
@@ -99,7 +99,7 @@
 
 // PRIVATE HELPERS
 
-static const SegmentEntry *entryAt(const SegmentIndex *index, uint32_t entry) {
+static const SegmentEntry *entryAt(const SegmentIndex *index, u32 entry) {
     if (!index || !(*index).entries)
         return nullptr;
     return (const SegmentEntry*) ChunkedList_slot((*index).entries, entry);
@@ -108,14 +108,14 @@ static const SegmentEntry *entryAt(const SegmentIndex *index, uint32_t entry) {
 // Append one posting (entry, position) for `segment`, minting the segment's
 // list on first use. Postings stay sorted by entry because entries are added in
 // order, so findPosting can binary search.
-static bool postSegment(SegmentIndex *index, uint32_t entry, uint32_t position, const char *segment) {
+static bool postSegment(SegmentIndex *index, u32 entry, u32 position, const char *segment) {
     VariableHashMap *postings = (*index).postings;
     uintptr_t existing = VariableHashMap_get(postings, segment);
     ChunkedList *list = nullptr;
     if (VariableHashMap_contains(postings, segment))
         list = (ChunkedList*) existing;
     if (!list) {
-        list = ChunkedList_3(ID_SEGMENT_POSTING, (uint32_t) sizeof(SegmentPosting), VEX_CHUNKED_BYTES_DEFAULT);
+        list = ChunkedList_3(ID_SEGMENT_POSTING, (u32) sizeof(SegmentPosting), VEX_CHUNKED_BYTES_DEFAULT);
         if (!list)
             return false;
         if (!VariableHashMap_add(postings, segment, (uintptr_t) list)) {
@@ -132,13 +132,13 @@ static bool postSegment(SegmentIndex *index, uint32_t entry, uint32_t position, 
 }
 
 // Binary search by entry, then scan the equal-entry run for the position.
-static bool findPosting(const ChunkedList *list, uint32_t entry, uint32_t position) {
+static bool findPosting(const ChunkedList *list, u32 entry, u32 position) {
     if (!list)
         return false;
-    uint32_t lo = 0u;
-    uint32_t hi = ChunkedList_size(list);
+    u32 lo = 0u;
+    u32 hi = ChunkedList_size(list);
     while (lo < hi) {
-        uint32_t mid = lo + (hi - lo) / 2u;
+        u32 mid = lo + (hi - lo) / 2u;
         const SegmentPosting *p = (const SegmentPosting*) ChunkedList_slot(list, mid);
         if (!p)
             return false;
@@ -147,8 +147,8 @@ static bool findPosting(const ChunkedList *list, uint32_t entry, uint32_t positi
         else
             hi = mid;
     }
-    uint32_t n = ChunkedList_size(list);
-    for (uint32_t i = lo; i < n; i++) {
+    u32 n = ChunkedList_size(list);
+    for (u32 i = lo; i < n; i++) {
         const SegmentPosting *p = (const SegmentPosting*) ChunkedList_slot(list, i);
         if (!p || (*p).entry != entry)
             return false;
@@ -159,15 +159,15 @@ static bool findPosting(const ChunkedList *list, uint32_t entry, uint32_t positi
 }
 
 // Fold a path and split it into up to SEGMENT_QUERY_SEGMENTS_MAX segments.
-static size_t splitFold(const char *path, char segs[][SEGMENT_NAME_BYTES]) {
+static bytes splitFold(const char *path, char segs[][SEGMENT_NAME_BYTES]) {
     char folded[SEGMENT_NAME_BYTES];
     if (!VariableSlot_foldName(path, folded))
         return 0u;
-    size_t n = 0u;
+    bytes n = 0u;
     const char *p = folded;
     while (*p != '\0' && n < SEGMENT_QUERY_SEGMENTS_MAX) {
         const char *dot = strchr(p, '.');
-        size_t len = dot ? (size_t)(dot - p) : strlen(p);
+        bytes len = dot ? (bytes)(dot - p) : strlen(p);
         if (len == 0u || len >= SEGMENT_NAME_BYTES)
             return 0u;
         memcpy(segs[n], p, len);
@@ -190,26 +190,26 @@ static bool matchBefore(const SegmentIndex *index, const SegmentMatch *a, const 
     const SegmentEntry *eb = entryAt(index, (*b).entry);
     if (!ea || !eb)
         return ea != nullptr;
-    size_t la = strlen((*ea).name);
-    size_t lb = strlen((*eb).name);
+    bytes la = strlen((*ea).name);
+    bytes lb = strlen((*eb).name);
     if (la != lb)
         return la < lb;
     return strcmp((*ea).name, (*eb).name) < 0;
 }
 
 // Insert into the bounded best-first output array (top-`cap`, insertion sort).
-static void insertMatch(const SegmentIndex *index, SegmentMatch *out, size_t cap, size_t *kept, const SegmentMatch *m) {
-    size_t pos = 0u;
+static void insertMatch(const SegmentIndex *index, SegmentMatch *out, bytes cap, bytes *kept, const SegmentMatch *m) {
+    bytes pos = 0u;
     while (pos < *kept && !matchBefore(index, m, &out[pos]))
         pos++;
     if (pos >= cap)
         return;
-    size_t size = *kept;
+    bytes size = *kept;
     if (size < cap) {
         size++;
         *kept = size;
     }
-    for (size_t i = size - 1u; i > pos; i--)
+    for (bytes i = size - 1u; i > pos; i--)
         out[i] = out[i - 1u];
     out[pos] = *m;
 }
@@ -235,11 +235,11 @@ static void freePostingsFn(VariableSlot *slot, void *userdata) {
 
 // PATH SPLITTING
 
-size_t SegmentIndex_segmentCount(const char *path) {
+bytes SegmentIndex_segmentCount(const char *path) {
     if (!path || path[0] == '\0')
         return 0u;
-    size_t count = 0u;
-    size_t len = 0u;
+    bytes count = 0u;
+    bytes len = 0u;
     for (const char *p = path; ; p++) {
         char c = *p;
         if (c != '\0' && c != '.') {
@@ -257,19 +257,19 @@ size_t SegmentIndex_segmentCount(const char *path) {
     }
 }
 
-int SegmentIndex_segment(const char *path, size_t index, char *out, size_t cap) {
+int SegmentIndex_segment(const char *path, bytes index, char *out, bytes cap) {
     if (!path || !out || cap == 0u)
         return -1;
     if (SegmentIndex_segmentCount(path) <= index)
         return -1;
-    size_t seg = 0u;
+    bytes seg = 0u;
     const char *start = path;
     const char *p = path;
     for (; ; p++) {
         char c = *p;
         if (c != '\0' && c != '.')
             continue;
-        size_t len = (size_t)(p - start);
+        bytes len = (bytes)(p - start);
         if (len > 0u) {
             if (seg == index) {
                 if (len + 1u > cap)
@@ -292,7 +292,7 @@ bool SegmentIndex_init(SegmentIndex *index) {
     if (!index)
         return false;
     memset(index, 0, sizeof(*index));
-    ChunkedList *entries = ChunkedList_3(ID_SEGMENT_ENTRY, (uint32_t) sizeof(SegmentEntry), VEX_CHUNKED_BYTES_DEFAULT);
+    ChunkedList *entries = ChunkedList_3(ID_SEGMENT_ENTRY, (u32) sizeof(SegmentEntry), VEX_CHUNKED_BYTES_DEFAULT);
     if (!entries)
         return false;
     VariableHashMap *postings = VariableHashMap_0();
@@ -349,14 +349,14 @@ void SegmentIndex_clear(SegmentIndex *index) {
     VariableHashMap_shutdown((*index).postings);
     VariableHashMap_init((*index).postings);
     ChunkedList_free((*index).entries);
-    ChunkedList *entries = ChunkedList_3(ID_SEGMENT_ENTRY, (uint32_t) sizeof(SegmentEntry), VEX_CHUNKED_BYTES_DEFAULT);
+    ChunkedList *entries = ChunkedList_3(ID_SEGMENT_ENTRY, (u32) sizeof(SegmentEntry), VEX_CHUNKED_BYTES_DEFAULT);
     (*index).entries = entries;
     (*index).count = 0u;
     if (!entries)
         (*index).active = false;
 }
 
-uint32_t SegmentIndex_add(SegmentIndex *index, const char *name, uintptr_t payload) {
+u32 SegmentIndex_add(SegmentIndex *index, const char *name, uintptr_t payload) {
     if (!index || !(*index).active)
         return SEGMENT_ENTRY_NONE;
     char folded[SEGMENT_NAME_BYTES];
@@ -368,13 +368,13 @@ uint32_t SegmentIndex_add(SegmentIndex *index, const char *name, uintptr_t paylo
     memset(row, 0, sizeof(*row));
     memcpy((*row).name, folded, strlen(folded) + 1);
     (*row).payload = payload;
-    uint32_t entry = ChunkedList_size((*index).entries) - 1u;
+    u32 entry = ChunkedList_size((*index).entries) - 1u;
 
-    uint32_t position = 0u;
+    u32 position = 0u;
     const char *p = folded;
     while (*p != '\0') {
         const char *dot = strchr(p, '.');
-        size_t len = dot ? (size_t)(dot - p) : strlen(p);
+        bytes len = dot ? (bytes)(dot - p) : strlen(p);
         char segment[SEGMENT_NAME_BYTES];
         memcpy(segment, p, len);
         segment[len] = '\0';
@@ -393,7 +393,7 @@ uint32_t SegmentIndex_add(SegmentIndex *index, const char *name, uintptr_t paylo
     return entry;
 }
 
-size_t SegmentIndex_buildFrom(SegmentIndex *index, VariableHashMap *map) {
+bytes SegmentIndex_buildFrom(SegmentIndex *index, VariableHashMap *map) {
     if (!index || !map)
         return 0u;
     SegmentIndex_clear(index);
@@ -402,7 +402,7 @@ size_t SegmentIndex_buildFrom(SegmentIndex *index, VariableHashMap *map) {
     return SegmentIndex_count(index);
 }
 
-size_t SegmentIndex_buildFromMini(SegmentIndex *index, VariableMiniMap *map) {
+bytes SegmentIndex_buildFromMini(SegmentIndex *index, VariableMiniMap *map) {
     if (!index || !map)
         return 0u;
     SegmentIndex_clear(index);
@@ -411,20 +411,20 @@ size_t SegmentIndex_buildFromMini(SegmentIndex *index, VariableMiniMap *map) {
     return SegmentIndex_count(index);
 }
 
-size_t SegmentIndex_query(const SegmentIndex *index, const char *query, SegmentMatch *out, size_t cap, bool *outTruncated) {
+bytes SegmentIndex_query(const SegmentIndex *index, const char *query, SegmentMatch *out, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (!index || !(*index).active || !query || !out || cap == 0u)
         return 0u;
 
     char segs[SEGMENT_QUERY_SEGMENTS_MAX][SEGMENT_NAME_BYTES];
-    size_t qn = splitFold(query, segs);
+    bytes qn = splitFold(query, segs);
     if (qn == 0u)
         return 0u;
 
     const ChunkedList *lists[SEGMENT_QUERY_SEGMENTS_MAX];
-    size_t rarest = 0u;
-    for (size_t k = 0u; k < qn; k++) {
+    bytes rarest = 0u;
+    for (bytes k = 0u; k < qn; k++) {
         uintptr_t value = VariableHashMap_get((*index).postings, segs[k]);
         if (value == 0u)
             return 0u;
@@ -435,19 +435,19 @@ size_t SegmentIndex_query(const SegmentIndex *index, const char *query, SegmentM
 
     ;;INTENTION("cold path search is a node walk by design; hot iteration stays DOD")
     const ChunkedList *cand = lists[rarest];
-    uint32_t candCount = ChunkedList_size(cand);
-    size_t kept = 0u;
-    size_t total = 0u;
-    for (uint32_t i = 0u; i < candCount; i++) {
+    u32 candCount = ChunkedList_size(cand);
+    bytes kept = 0u;
+    bytes total = 0u;
+    for (u32 i = 0u; i < candCount; i++) {
         const SegmentPosting *p = (const SegmentPosting*) ChunkedList_slot(cand, i);
         if (!p || (*p).position < rarest)
             continue;
-        uint32_t entry = (*p).entry;
-        uint32_t start = (*p).position - (uint32_t) rarest;
+        u32 entry = (*p).entry;
+        u32 start = (*p).position - (u32) rarest;
 
         bool ok = true;
-        for (size_t k = 0u; k < qn; k++) {
-            if (!findPosting(lists[k], entry, start + (uint32_t) k)) {
+        for (bytes k = 0u; k < qn; k++) {
+            if (!findPosting(lists[k], entry, start + (u32) k)) {
                 ok = false;
                 break;
             }
@@ -458,11 +458,11 @@ size_t SegmentIndex_query(const SegmentIndex *index, const char *query, SegmentM
         const SegmentEntry *e = entryAt(index, entry);
         if (!e)
             continue;
-        uint32_t entrySegments = (*e).segments;
-        uint32_t tier = SEGMENT_MATCH_CONTAINS;
+        u32 entrySegments = (*e).segments;
+        u32 tier = SEGMENT_MATCH_CONTAINS;
         if (qn == entrySegments && start == 0u)
             tier = SEGMENT_MATCH_EXACT;
-        else if (start + (uint32_t) qn == entrySegments)
+        else if (start + (u32) qn == entrySegments)
             tier = SEGMENT_MATCH_SUFFIX;
 
         SegmentMatch m;
@@ -481,7 +481,7 @@ size_t SegmentIndex_query(const SegmentIndex *index, const char *query, SegmentM
 
 // GETTERS
 
-uint32_t SegmentIndex_count(const SegmentIndex *index) {
+u32 SegmentIndex_count(const SegmentIndex *index) {
     return index ? (*index).count : 0u;
 }
 
@@ -493,7 +493,7 @@ bool SegmentIndex_isEmpty(const SegmentIndex *index) {
 
 // STRING PROJECTIONS (the toString Law)
 
-void SegmentIndex_toString(const SegmentIndex *index, char *dest, size_t cap, bool *outTruncated) {
+void SegmentIndex_toString(const SegmentIndex *index, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (!dest || cap == 0u)
@@ -503,13 +503,13 @@ void SegmentIndex_toString(const SegmentIndex *index, char *dest, size_t cap, bo
         return;
     }
     int written = snprintf(dest, cap, "SegmentIndex(entries=%u)", (*index).count);
-    if (written < 0 || (size_t) written >= cap) {
+    if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
     }
 }
 
-void SegmentIndex_toStringStruct(const SegmentIndex *index, char *dest, size_t cap, bool *outTruncated) {
+void SegmentIndex_toStringStruct(const SegmentIndex *index, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (!dest || cap == 0u)
@@ -522,7 +522,7 @@ void SegmentIndex_toStringStruct(const SegmentIndex *index, char *dest, size_t c
                            (*index).active ? "true" : "false", (*index).count,
                            (unsigned long long) (uintptr_t) (*index).entries,
                            (unsigned long long) (uintptr_t) (*index).postings);
-    if (written < 0 || (size_t) written >= cap) {
+    if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
     }

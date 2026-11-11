@@ -31,13 +31,13 @@
  * STRUCT FIELDS (Mirroring struct/sparseset.h):
  * ----------------------------------------------------------------------------
  *   SparseSet {
- *     int32_t capacity; // dense/data capacity
- *     int32_t maxEntities; // sparse array length
- *     int32_t count; // live entries
- *     int32_t stride; // component stride (0 = set only)
- *     int32_t *dense; // dense[i] = entity id
- *     int32_t *sparse; // sparse[entity] = dense index, -1 = absent
- *     uint8_t *data; // component data, capacity * stride Bytes
+ *     i32 capacity; // dense/data capacity
+ *     i32 maxEntities; // sparse array length
+ *     i32 count; // live entries
+ *     i32 stride; // component stride (0 = set only)
+ *     i32 *dense; // dense[i] = entity id
+ *     i32 *sparse; // sparse[entity] = dense index, -1 = absent
+ *     u8 *data; // component data, capacity * stride Bytes
  *   }
  *
  * FUNCTION REGISTRY:
@@ -64,45 +64,45 @@
 
 // sparseset.c — SparseSet port (Legacy: struct/SparseSet.java).
 
-static int32_t *allocateInts(size_t count) {
-    return (int32_t*) Memory_alloc(TYPE_INT_ARRAY, count * sizeof(int32_t));
+static i32 *allocateInts(bytes count) {
+    return (i32*) Memory_alloc(TYPE_INT_ARRAY, count * sizeof(i32));
 }
 
-SparseSet *SparseSet_3(size_t capacity, size_t maxEntities, size_t stride) {
+SparseSet *SparseSet_3(bytes capacity, bytes maxEntities, bytes stride) {
     SparseSet *set = (SparseSet*) Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_SINGLETON, ID_SPARSE_SET), sizeof(SparseSet));
     if (!set) {
         (void) Struct_reportConstructionExhaustion("sparseset", sizeof(SparseSet));
         return nullptr;
     }
 
-    (*set).capacity = (int32_t)capacity;
-    (*set).maxEntities = (int32_t)maxEntities;
+    (*set).capacity = (i32)capacity;
+    (*set).maxEntities = (i32)maxEntities;
     (*set).count = 0;
-    (*set).stride = (int32_t)stride;
+    (*set).stride = (i32)stride;
     (*set).exhaustionCount = 0;
     (*set).exhaustionReported = false;
 
     (*set).dense = allocateInts(capacity);
     if (!(*set).dense) {
-        (void) Struct_reportConstructionExhaustion("sparseset", capacity * sizeof(int32_t));
+        (void) Struct_reportConstructionExhaustion("sparseset", capacity * sizeof(i32));
         Memory_free(set);
         return nullptr;
     }
 
     (*set).sparse = allocateInts(maxEntities);
     if (!(*set).sparse) {
-        (void) Struct_reportConstructionExhaustion("sparseset", maxEntities * sizeof(int32_t));
+        (void) Struct_reportConstructionExhaustion("sparseset", maxEntities * sizeof(i32));
         Memory_free((*set).dense);
         Memory_free(set);
         return nullptr;
     }
-    for (size_t i = 0; i < maxEntities; i++)
+    for (bytes i = 0; i < maxEntities; i++)
         (*set).sparse[i] = -1;
 
     if (stride > 0) {
-        size_t Bytes = capacity * stride;
-        uint64_t bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_SPARSE_SET);
-        (*set).data = (uint8_t*) Memory_alloc(bufType, Bytes);
+        bytes Bytes = capacity * stride;
+        u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_SPARSE_SET);
+        (*set).data = (u8*) Memory_alloc(bufType, Bytes);
         if (!(*set).data) {
             (void) Struct_reportConstructionExhaustion("sparseset", Bytes);
             Memory_free((*set).dense);
@@ -124,81 +124,81 @@ void SparseSet_free(SparseSet *set) {
     Memory_free(set);
 }
 
-size_t SparseSet_count(SparseSet *set) {
+bytes SparseSet_count(SparseSet *set) {
     if (!set) return 0;
-    return (size_t)(*set).count;
+    return (bytes)(*set).count;
 }
 
 ;;TEST
-uint64_t SparseSet_exhaustionCount(const SparseSet *set) {
+u64 SparseSet_exhaustionCount(const SparseSet *set) {
     return set ? Struct_exhaustionCount(&(*set).exhaustionCount) : 0;
 }
 
-size_t SparseSet_capacity(SparseSet *set) {
+bytes SparseSet_capacity(SparseSet *set) {
     if (!set) return 0;
-    return (size_t)(*set).capacity;
+    return (bytes)(*set).capacity;
 }
 
-size_t SparseSet_maxEntities(SparseSet *set) {
+bytes SparseSet_maxEntities(SparseSet *set) {
     if (!set) return 0;
-    return (size_t)(*set).maxEntities;
+    return (bytes)(*set).maxEntities;
 }
 
-bool SparseSet_contains(SparseSet *set, int32_t entityId) {
+bool SparseSet_contains(SparseSet *set, i32 entityId) {
     if (!set) return false;
     if (entityId < 0 || entityId >= (*set).maxEntities)
         return false;
     return (*set).sparse[entityId] != -1;
 }
 
-uint8_t *SparseSet_add(SparseSet *set, int32_t entityId) {
+u8 *SparseSet_add(SparseSet *set, i32 entityId) {
     if (!set) return nullptr;
     if (entityId < 0 || entityId >= (*set).maxEntities)
         return nullptr;
 
-    int32_t denseIndex = (*set).sparse[entityId];
+    i32 denseIndex = (*set).sparse[entityId];
     if (denseIndex != -1) {
         if ((*set).stride > 0)
-            return (*set).data + (size_t)denseIndex * (size_t)(*set).stride;
+            return (*set).data + (bytes)denseIndex * (bytes)(*set).stride;
         return (*set).data;
     }
 
     if ((*set).count >= (*set).capacity) {
         // The dense capacity is full: a refusal, reported (once per epoch).
         (void) Struct_reportExhaustion(&(*set).exhaustionCount, &(*set).exhaustionReported,
-                                       "sparseset", (size_t) (*set).capacity, (size_t) (*set).capacity);
+                                       "sparseset", (bytes) (*set).capacity, (bytes) (*set).capacity);
         return nullptr;
     }
 
-    int32_t count = (*set).count;
+    i32 count = (*set).count;
     (*set).dense[count] = entityId;
     (*set).sparse[entityId] = count;
     (*set).count = count + 1;
 
     if ((*set).stride > 0)
-        return (*set).data + (size_t)count * (size_t)(*set).stride;
+        return (*set).data + (bytes)count * (bytes)(*set).stride;
     return (*set).data;
 }
 
-void SparseSet_remove(SparseSet *set, int32_t entityId) {
+void SparseSet_remove(SparseSet *set, i32 entityId) {
     if (!set) return;
     if (entityId < 0 || entityId >= (*set).maxEntities)
         return;
 
-    int32_t denseIndex = (*set).sparse[entityId];
+    i32 denseIndex = (*set).sparse[entityId];
     if (denseIndex == -1)
         return;
 
-    int32_t count = (*set).count - 1;
-    int32_t lastEntity = (*set).dense[count];
+    i32 count = (*set).count - 1;
+    i32 lastEntity = (*set).dense[count];
 
     if (denseIndex != count) {
         (*set).dense[denseIndex] = lastEntity;
         (*set).sparse[lastEntity] = denseIndex;
         if ((*set).stride > 0) {
-            uint8_t *dest = (*set).data + (size_t)denseIndex * (size_t)(*set).stride;
-            uint8_t *src = (*set).data + (size_t)count * (size_t)(*set).stride;
-            memcpy(dest, src, (size_t)(*set).stride);
+            u8 *dest = (*set).data + (bytes)denseIndex * (bytes)(*set).stride;
+            u8 *src = (*set).data + (bytes)count * (bytes)(*set).stride;
+            memcpy(dest, src, (bytes)(*set).stride);
         }
     }
 
@@ -206,26 +206,26 @@ void SparseSet_remove(SparseSet *set, int32_t entityId) {
     (*set).count = count;
 }
 
-uint8_t *SparseSet_get(SparseSet *set, int32_t entityId) {
+u8 *SparseSet_get(SparseSet *set, i32 entityId) {
     if (!set) return nullptr;
     if (entityId < 0 || entityId >= (*set).maxEntities)
         return nullptr;
 
-    int32_t denseIndex = (*set).sparse[entityId];
+    i32 denseIndex = (*set).sparse[entityId];
     if (denseIndex == -1)
         return nullptr;
     if ((*set).stride == 0)
-        return (uint8_t*) set; // non-nullptr presence sentinel (legacy returns ptr)
+        return (u8*) set; // non-nullptr presence sentinel (legacy returns ptr)
 
-    return (*set).data + (size_t)denseIndex * (size_t)(*set).stride;
+    return (*set).data + (bytes)denseIndex * (bytes)(*set).stride;
 }
 
-const int32_t *SparseSet_denseEntities(SparseSet *set) {
+const i32 *SparseSet_denseEntities(SparseSet *set) {
     if (!set) return nullptr;
     return (*set).dense;
 }
 
-const uint8_t *SparseSet_denseData(SparseSet *set) {
+const u8 *SparseSet_denseData(SparseSet *set) {
     if (!set) return nullptr;
     return (*set).data;
 }

@@ -33,15 +33,15 @@
  *   GestureEvent {
  *     GesturePhase phase;            // BEGAN / CHANGED / ENDED / CANCELLED / MOMENTUM
  *     Coord2 focalPoint;               // gesture origin (normalized or pixel coords)
- *     float magnificationDelta;      // pinch scale delta (+ zoom in, - zoom out)
- *     float rotationDeltaRad;        // two-finger rotation (+ CW, - CCW)
+ *     f32 magnificationDelta;      // pinch scale delta (+ zoom in, - zoom out)
+ *     f32 rotationDeltaRad;        // two-finger rotation (+ CW, - CCW)
  *     Coord2 scrollDelta;              // smooth scroll delta (horizontal & vertical)
  *     SwipeDirection swipe;          // discrete multi-finger swipe if detected
- *     uint64_t timestampUs;          // event timestamp
+ *     u64 timestampUs;          // event timestamp
  *   }
  *   GestureState {
- *     float currentScale;            // absolute accumulated zoom scale (default 1.0)
- *     float currentRotationRad;      // absolute accumulated rotation
+ *     f32 currentScale;            // absolute accumulated zoom scale (default 1.0)
+ *     f32 currentRotationRad;      // absolute accumulated rotation
  *     Coord2 focalPoint;               // gesture origin
  *     Coord2 scrollVelocity;           // inertia velocity decay
  *     bool isPinching;               // pinch in progress
@@ -112,11 +112,11 @@ void GestureState_processEvent(GestureState *state, GestureEvent event) {
     }
 }
 
-void GestureState_tick(GestureState *state, float deltaSeconds) {
+void GestureState_tick(GestureState *state, f32 deltaSeconds) {
     if (state == nullptr || deltaSeconds <= 0.0f) return;
 
     // Decay momentum velocity with smooth exponential friction
-    float friction = powf(0.1f, deltaSeconds);
+    f32 friction = powf(0.1f, deltaSeconds);
     Coord2 *velocity = &(*state).scrollVelocity;
     (*velocity).horizontal *= friction;
     (*velocity).vertical   *= friction;

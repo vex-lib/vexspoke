@@ -9,12 +9,12 @@
 // three pure operations — no allocation, no engine-arena block, no lifetime.
 
 // A span that did not participate (an unmatched capture group).
-#define REGEX_UNSET ((size_t) -1)
+#define REGEX_UNSET ((bytes) -1)
 
 // A half-open byte range inside one subject. end is exclusive.
 typedef struct RegexSpan {
-    size_t start;  // inclusive byte offset within the subject
-    size_t end;    // exclusive byte offset
+    bytes start;  // inclusive byte offset within the subject
+    bytes end;    // exclusive byte offset
 } RegexSpan;
 
 // The "did not participate" span (both ends REGEX_UNSET).
@@ -24,6 +24,6 @@ RegexSpan RegexSpan_none(void);
 bool RegexSpan_isSet(RegexSpan span);
 
 // end - start for a set, non-inverted span; 0 otherwise.
-size_t RegexSpan_length(RegexSpan span);
+bytes RegexSpan_length(RegexSpan span);
 
 #endif

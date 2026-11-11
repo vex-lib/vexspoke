@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "util/constructor.h"
+#include "lang/constructor.h"
 #include "relational/variable_slot.h"
 
 // reflection/variable.h — the Variable metadata record (base of the hierarchy).
@@ -39,8 +39,8 @@ Variable *Variable_3(const char *name, VariableReadFn read, void *target);
 #define Variable(...) CONSTRUCTOR_DISPATCH(Variable, __VA_ARGS__)
 void Variable_free(Variable *self);
 
-uint64_t Variable_kind(const Variable *self);
-bool Variable_check(const Variable *self, uint64_t typeId);
+u64 Variable_kind(const Variable *self);
+bool Variable_check(const Variable *self, u64 typeId);
 void *Variable_read(Variable *self, void *arg);
 
 bool Variable_setName(Variable *self, const char *name);
@@ -50,7 +50,7 @@ VariableReadFn Variable_getRead(const Variable *self);
 void Variable_setTarget(Variable *self, void *target);
 void *Variable_getTarget(const Variable *self);
 
-void Variable_toString(const Variable *self, char *dest, size_t cap, bool *outTruncated);
-void Variable_toStringStruct(const Variable *self, char *dest, size_t cap, bool *outTruncated);
+void Variable_toString(const Variable *self, char *dest, bytes cap, bool *outTruncated);
+void Variable_toStringStruct(const Variable *self, char *dest, bytes cap, bool *outTruncated);
 
 #endif

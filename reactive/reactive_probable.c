@@ -40,11 +40,11 @@
  */
 
 #define VEX_NAME       ReactiveProbableInt
-#define VEX_T          int32_t
+#define VEX_T          i32
 #define VEX_TYPE_ID    TYPE_REACTIVE_PROBABLE
-#define VEX_TO_WORD(v)   ((uintptr_t) (uint32_t) (v))
-#define VEX_FROM_WORD(w) ((int32_t) (uint32_t) (w))
-#define VEX_ZERO       ((int32_t) 0)
+#define VEX_TO_WORD(v)   ((uintptr_t) (u32) (v))
+#define VEX_FROM_WORD(w) ((i32) (u32) (w))
+#define VEX_ZERO       ((i32) 0)
 #define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%d", (int) (v))
 #include "reactive/reactive_probable_tmpl.inc"
 #undef VEX_NAME

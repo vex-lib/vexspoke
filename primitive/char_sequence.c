@@ -26,7 +26,7 @@
  * ============================================================================
  */
 
-CharSequence CharSequence_2(const char *data, size_t length)
+CharSequence CharSequence_2(const char *data, bytes length)
 {
     CharSequence view = {0};
     view.data = data;
@@ -41,14 +41,14 @@ CharSequence CharSequence_cstr(const char *text)
     return CharSequence_2(text, strlen(text));
 }
 
-CharSequence CharSequence_block(const uint8_t *block)
+CharSequence CharSequence_block(const u8 *block)
 {
     if (block == nullptr)
         return CharSequence_zero();
     return CharSequence_2(string_get(block), string_length(block));
 }
 
-size_t CharSequence_length(CharSequence self)
+bytes CharSequence_length(CharSequence self)
 {
     return self.length;
 }
@@ -60,7 +60,7 @@ bool CharSequence_isEmpty(CharSequence self)
 
 int CharSequence_compare(CharSequence left, CharSequence right)
 {
-    size_t common = left.length < right.length ? left.length : right.length;
+    bytes common = left.length < right.length ? left.length : right.length;
     if (common > 0)
     {
         int order = memcmp(left.data, right.data, common);
@@ -100,15 +100,15 @@ bool CharSequence_endsWith(CharSequence self, CharSequence suffix)
                   suffix.length) == 0;
 }
 
-size_t CharSequence_find(CharSequence self, CharSequence needle)
+bytes CharSequence_find(CharSequence self, CharSequence needle)
 {
     if (needle.length == 0)
         return 0;
     if (needle.length > self.length)
         return SIZE_MAX;
 
-    size_t last = self.length - needle.length;
-    for (size_t index = 0; index <= last; ++index)
+    bytes last = self.length - needle.length;
+    for (bytes index = 0; index <= last; ++index)
     {
         if (self.data[index] != needle.data[0])
             continue;
@@ -118,14 +118,14 @@ size_t CharSequence_find(CharSequence self, CharSequence needle)
     return SIZE_MAX;
 }
 
-size_t CharSequence_findChar(CharSequence self, char needle)
+bytes CharSequence_findChar(CharSequence self, char needle)
 {
     if (self.length == 0)
         return SIZE_MAX;
     const char *hit = memchr(self.data, needle, self.length);
     if (hit == nullptr)
         return SIZE_MAX;
-    return (size_t) (hit - self.data);
+    return (bytes) (hit - self.data);
 }
 
 bool CharSequence_hasPrefix(CharSequence self, const char *literal)

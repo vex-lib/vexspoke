@@ -26,7 +26,7 @@ static int g_failures = 0;
 // Counts set bits in a 64-bit value for the hash avalanche oracle.
 // Counts set bits in a 64-bit word for the hash test's deterministic oracle.
 // Counts set bits to measure the 64-bit hash avalanche response.
-static unsigned popcount64(uint64_t v) {
+static unsigned popcount64(u64 v) {
     unsigned n = 0;
     while (v) {
         n += (unsigned) (v & 1u);
@@ -38,7 +38,7 @@ static unsigned popcount64(uint64_t v) {
 // Counts set bits in a 32-bit value for the hash avalanche oracle.
 // Counts set bits in a 32-bit word for the hash test's deterministic oracle.
 // Counts set bits to measure the 32-bit hash avalanche response.
-static unsigned popcount32(uint32_t v) {
+static unsigned popcount32(u32 v) {
     unsigned n = 0;
     while (v) {
         n += (unsigned) (v & 1u);
@@ -54,21 +54,21 @@ int main(void) {
     // --- Value boundary: nullptr and empty are the zero mapping, never a read.
     CHECK(Hash_fnv1a64(nullptr, 0) == 0);
     CHECK(Hash_fnv1a64(nullptr, 999) == 0);          // nullptr vetoes before length
-    const uint8_t none = 0;
+    const u8 none = 0;
     CHECK(Hash_fnv1a64(&none, 0) == 0);              // zero-length block
 
     // --- Published FNV-1a 64 reference vectors (algorithm pin).
-    CHECK(Hash_fnv1a64((const uint8_t*) "a", 1) == 0xaf63dc4c8601ec8cull);
-    CHECK(Hash_fnv1a64((const uint8_t*) "foobar", 6) == 0x85944171f73967e8ull);
+    CHECK(Hash_fnv1a64((const u8*) "a", 1) == 0xaf63dc4c8601ec8cull);
+    CHECK(Hash_fnv1a64((const u8*) "foobar", 6) == 0x85944171f73967e8ull);
 
     // --- Determinism: identical input yields identical output, every call.
-    const uint8_t buf[64] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
-    uint64_t first = Hash_fnv1a64(buf, sizeof(buf));
+    const u8 buf[64] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
+    u64 first = Hash_fnv1a64(buf, sizeof(buf));
     for (int i = 0; i < 8; i++)
         CHECK(Hash_fnv1a64(buf, sizeof(buf)) == first);
 
     // --- Avalanche: one flipped payload byte changes the digest materially.
-    uint8_t tweaked[64];
+    u8 tweaked[64];
     memcpy(tweaked, buf, sizeof(buf));
     tweaked[37] ^= 0x01u;
     CHECK(Hash_fnv1a64(tweaked, sizeof(buf)) != first);
@@ -83,9 +83,9 @@ int main(void) {
     CHECK(Hash_murmur3Mix64(0) == 0);
     CHECK(Hash_murmur3Mix64(1) != Hash_murmur3Mix64(2));
     for (int bit = 0; bit < 64; bit += 7) {
-        uint64_t base = 0x0123456789abcdefull;
-        uint64_t other = base ^ (1ull << bit);
-        uint64_t h = Hash_murmur3Mix64(base) ^ Hash_murmur3Mix64(other);
+        u64 base = 0x0123456789abcdefull;
+        u64 other = base ^ (1ull << bit);
+        u64 h = Hash_murmur3Mix64(base) ^ Hash_murmur3Mix64(other);
         CHECK(popcount64(h) >= 16);                  // >= a quarter of 64 bits flip
     }
     for (int i = 0; i < 4; i++)
@@ -95,9 +95,9 @@ int main(void) {
     CHECK(Hash_murmur3Mix32(0) == 0);
     CHECK(Hash_murmur3Mix32(1u) != Hash_murmur3Mix32(2u));
     for (int bit = 0; bit < 32; bit += 5) {
-        uint32_t base = 0x12345678u;
-        uint32_t other = base ^ (1u << bit);
-        uint32_t h = Hash_murmur3Mix32(base) ^ Hash_murmur3Mix32(other);
+        u32 base = 0x12345678u;
+        u32 other = base ^ (1u << bit);
+        u32 h = Hash_murmur3Mix32(base) ^ Hash_murmur3Mix32(other);
         CHECK(popcount32(h) >= 8);                   // >= a quarter of 32 bits flip
     }
 

@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 // time/clock.h — the virtual clock (Legacy: time/Clock.java).
 //
@@ -17,10 +17,10 @@
 // make virtual time jump backwards mid-session.
 
 typedef struct Clock {
-    double timeScale;             // default 1.0
-    uint64_t baseRealMillis;      // wall anchor at create/reset (informational)
-    uint64_t lastTickRealMillis;  // previous tick's real reading
-    uint64_t virtualTimeMillis;   // accumulated scaled time
+    d64 timeScale;             // default 1.0
+    u64 baseRealMillis;      // wall anchor at create/reset (informational)
+    u64 lastTickRealMillis;  // previous tick's real reading
+    u64 virtualTimeMillis;   // accumulated scaled time
     bool paused;                  // frozen when true
 } Clock;
 
@@ -33,14 +33,14 @@ Clock Clock_0(void);
 // giant jump lands on resume) but nothing accrues.
 void Clock_tick(Clock *clock);
 
-void Clock_setTimeScale(Clock *clock, double scale);
-double Clock_timeScale(const Clock *clock);
+void Clock_setTimeScale(Clock *clock, d64 scale);
+d64 Clock_timeScale(const Clock *clock);
 
 void Clock_setPaused(Clock *clock, bool paused);
 bool Clock_isPaused(const Clock *clock);
 
 // Virtual milliseconds accrued since create/reset.
-uint64_t Clock_virtualTimeMillis(const Clock *clock);
+u64 Clock_virtualTimeMillis(const Clock *clock);
 
 // Zero the virtual timeline and re-anchor the real side at now.
 void Clock_reset(Clock *clock);

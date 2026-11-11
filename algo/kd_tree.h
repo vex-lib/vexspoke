@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 // algo/kd_tree.h — 3-Dimensional K-D Tree for Spatial Search.
 //
@@ -13,38 +13,38 @@
 // to accelerate nearest-neighbor queries and spherical proximity searches.
 
 typedef struct KdPoint {
-    float    coord[3]; // [0] = x/horizontal, [1] = y/vertical, [2] = z/depth
-    uint64_t payload;
+    f32    coord[3]; // [0] = x/horizontal, [1] = y/vertical, [2] = z/depth
+    u64 payload;
 } KdPoint;
 
 static inline KdPoint KdPoint_0(void) { return (KdPoint) {0}; }
-static inline KdPoint KdPoint_4(float horizontal, float vertical, float depth,
-                               uint64_t payload) {
+static inline KdPoint KdPoint_4(f32 horizontal, f32 vertical, f32 depth,
+                               u64 payload) {
     return (KdPoint) { .coord = { horizontal, vertical, depth }, .payload = payload };
 }
 #define KdPoint(...) CONSTRUCTOR_DISPATCH(KdPoint, __VA_ARGS__)
 
 typedef struct KdNode {
     KdPoint        point;
-    uint8_t        axis; // 0 = X, 1 = Y, 2 = Z
+    u8        axis; // 0 = X, 1 = Y, 2 = Z
     struct KdNode *left;
     struct KdNode *right;
 } KdNode;
 
 typedef struct KdTree {
     KdNode *root;
-    size_t  count;
+    bytes  count;
 } KdTree;
 
 // Build a balanced KD-tree from an array of 3D points
-KdTree *KdTree_build(KdPoint *points, size_t count);
+KdTree *KdTree_build(KdPoint *points, bytes count);
 void    KdTree_free(KdTree *tree);
 
 // Find single nearest neighbor to query point.
 // Dest-last order: writes to outNearest and outDistanceSquared.
-bool   KdTree_nearest(const KdTree *tree, const float queryCoord[3], KdPoint *outNearest, float *outDistSq);
+bool   KdTree_nearest(const KdTree *tree, const f32 queryCoord[3], KdPoint *outNearest, f32 *outDistSq);
 
 // Find all points within radius of query point.
-size_t KdTree_queryRadius(const KdTree *tree, const float queryCoord[3], float radius, uint64_t *outPayloads, size_t maxCount);
+bytes KdTree_queryRadius(const KdTree *tree, const f32 queryCoord[3], f32 radius, u64 *outPayloads, bytes maxCount);
 
 #endif

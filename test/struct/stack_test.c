@@ -39,7 +39,7 @@ int main(void) {
     CHECK(Stack_peek(s) == 0);
 
     // Volume: a million, then unwind in reverse.
-    for (uint64_t i = 0; i < 1000000; i++)
+    for (u64 i = 0; i < 1000000; i++)
         Stack_push(s, i);
     CHECK(Stack_size(s) == 1000000);
     CHECK(Stack_peek(s) == 999999);

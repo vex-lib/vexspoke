@@ -27,7 +27,7 @@ int main(void) {
     CHECK(Long_length(p) == 8);
 
     const int64_t values[] = { 0, 1, -1, INT64_MAX, INT64_MIN };
-    for (size_t i = 0; i < sizeof values / sizeof values[0]; i++) {
+    for (bytes i = 0; i < sizeof values / sizeof values[0]; i++) {
         Long_set(p, values[i]);
         CHECK(Long_get(p) == values[i]);
     }

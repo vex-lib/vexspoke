@@ -28,14 +28,14 @@ static int g_failures = 0;
 /** Checks URL-safe base64 encoding against a fixed expected output string. */
 static void test_base64(const char *in, const char *want) {
     char out[64];
-    int64_t n = Url_base64((const uint8_t*) in, strlen(in), out, sizeof(out));
+    int64_t n = Url_base64((const u8*) in, strlen(in), out, sizeof(out));
     CHECK(n == (int64_t) strlen(want));
     CHECK(strcmp(out, want) == 0);
     // Exactly-needed capacity succeeds; one short fails.
-    size_t need = 4 * ((strlen(in) + 2) / 3);
+    bytes need = 4 * ((strlen(in) + 2) / 3);
     char exact[64];
-    CHECK(Url_base64((const uint8_t*) in, strlen(in), exact, need + 1) == (int64_t) need);
-    CHECK(Url_base64((const uint8_t*) in, strlen(in), exact, need) == -1);
+    CHECK(Url_base64((const u8*) in, strlen(in), exact, need + 1) == (int64_t) need);
+    CHECK(Url_base64((const u8*) in, strlen(in), exact, need) == -1);
 }
 
 /** Verifies default URL components and their safe initial values. */

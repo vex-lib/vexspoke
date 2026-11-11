@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "util/platform.h"
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 // spoke/bespoke.h — R2 Behavior: Unified Bespoke Bridge Hub.
 //
@@ -28,8 +28,8 @@ typedef struct Bespoke {
     BespokeState graphicsState;
     BespokeState networkingState;
     BespokeState smthState;
-    uint64_t runs;
-    uint64_t checks;
+    u64 runs;
+    u64 checks;
 } Bespoke;
 
 // --- Weak extern driver hooks (R3 graphvex / api-haven implementations) ---

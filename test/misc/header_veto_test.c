@@ -55,7 +55,7 @@ int main(void) {
     CHECK("similar null", Memory_similar(nullptr, a) == false && Memory_similar(a, nullptr) == false);
 
     // section 2 Corrupted redirect vetoes reads (header word 4: pointer).
-    uint8_t *ha = (uint8_t*) a;
+    u8 *ha = (u8*) a;
     ha[-8] ^= 0xFFu;
     CHECK("corrupt redirect kills length", Memory_length(a) == 0);
     CHECK("corrupt redirect kills type", Memory_type(a) == 0);
@@ -71,8 +71,8 @@ int main(void) {
     CHECK("restored self revives", Memory_type(a) == TYPE_STRING_ARRAY);
 
     // section 4 Interior and foreign pointers fail closed.
-    CHECK("interior pointer fails", Memory_length((uint8_t*) b + 8) == 0);
-    CHECK("interior similar fails", Memory_similar((uint8_t*) b + 8, b) == false);
+    CHECK("interior pointer fails", Memory_length((u8*) b + 8) == 0);
+    CHECK("interior similar fails", Memory_similar((u8*) b + 8, b) == false);
     void *foreign = malloc(64);
     uintptr_t fu = (uintptr_t) foreign;
     void *alignedForeign = (void*) ((fu + 15) & ~15ull);
@@ -80,17 +80,17 @@ int main(void) {
     CHECK("foreign similar fails", Memory_similar(alignedForeign, b) == false);
     free(foreign);
 
-    // section 5 Free invalidates; double free is safe; sweep skips dead.
+    // section 5 Free invalidates; d64 free is safe; sweep skips dead.
     MemoryArena_free(arena, c);
     CHECK("freed reads fail", Memory_length(c) == 0 && Memory_type(c) == 0);
     MemoryArena_free(arena, c);
-    CHECK("double free safe", Memory_length(c) == 0);
+    CHECK("d64 free safe", Memory_length(c) == 0);
     void *found[8] = {0};
-    size_t n = MemoryArena_findAll(arena, TYPE_STRING_ARRAY, found, 8);
+    bytes n = MemoryArena_findAll(arena, TYPE_STRING_ARRAY, found, 8);
     CHECK("sweep finds live only", n == 2);
 
     // section 6 Size classes recycle (slab + bump paths).
-    size_t sizes[] = { 8, 64, 300, 2000, 9000, 100000 };
+    bytes sizes[] = { 8, 64, 300, 2000, 9000, 100000 };
     void *blocks[6] = {0};
     bool allOk = true;
     for (int i = 0; i < 6; i++) {

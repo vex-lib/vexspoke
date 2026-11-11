@@ -60,7 +60,7 @@ int main(void) {
     CHECK(Array_get(a, 8) == 0);          // == count
     CHECK(Array_get(a, 999) == 0);
     CHECK(Array_get(a, SIZE_MAX) == 0);   // a negative int wraps here
-    CHECK(Array_get(a, (size_t) -1) == 0);
+    CHECK(Array_get(a, (bytes) -1) == 0);
     CHECK(Array_slot(a, 8) == nullptr);
     CHECK(Array_slot(a, SIZE_MAX) == nullptr);
     Array_set(a, 8, 5);                   // refused: must not corrupt

@@ -6,6 +6,6 @@
 // algo/spatial.h — compact spatial indexing helpers.
 
 // Interleave the low 21 bits of each coordinate into a 63-bit Morton code.
-uint64_t Spatial_morton3D(uint32_t x, uint32_t y, uint32_t z);
+u64 Spatial_morton3D(u32 x, u32 y, u32 z);
 
 #endif

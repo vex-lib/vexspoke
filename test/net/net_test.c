@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
     NetUrl_build("https", "api.anti.dev", 8443, "v1/engines", buf, sizeof(buf));
     CHECK(strcmp(buf, "https://api.anti.dev:8443/v1/engines") == 0);
 
-    CHECK(NetUrl_base64((const uint8_t*)"foobar", 6, buf, sizeof(buf)) == 8);
+    CHECK(NetUrl_base64((const u8*)"foobar", 6, buf, sizeof(buf)) == 8);
     CHECK(strcmp(buf, "Zm9vYmFy") == 0);
 
     NetUrl_basicAuth("user", "pass", buf, sizeof(buf));
@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
     JsonRef root = Json_root(&doc);
     CHECK(Json_type(&doc, root) == JSON_OBJECT);
 
-    uint32_t len = 0;
+    u32 len = 0;
     const char *name = Json_string(&doc, Json_member(&doc, root, "name"), &len);
     CHECK(len == 4 && strncmp(name, "anti", 4) == 0);
 

@@ -45,39 +45,39 @@
  * ============================================================================
  */
 
-static unsigned char *elementAt(void *values, size_t index, size_t elementSize) {
+static unsigned char *elementAt(void *values, bytes index, bytes elementSize) {
     return (unsigned char*) values + index * elementSize;
 }
 
-static const unsigned char *constElementAt(const void *values, size_t index,
-                                            size_t elementSize) {
+static const unsigned char *constElementAt(const void *values, bytes index,
+                                            bytes elementSize) {
     return (const unsigned char*) values + index * elementSize;
 }
 
-static void swapElements(void *left, void *right, size_t elementSize) {
+static void swapElements(void *left, void *right, bytes elementSize) {
     if (left == right)
         return;
     unsigned char *a = left;
     unsigned char *b = right;
-    for (size_t i = 0u; i < elementSize; ++i) {
+    for (bytes i = 0u; i < elementSize; ++i) {
         unsigned char byte = a[i];
         a[i] = b[i];
         b[i] = byte;
     }
 }
 
-static bool validComparisonRange(const void *values, size_t count,
-                                 size_t elementSize, SortCompareFn compare) {
+static bool validComparisonRange(const void *values, bytes count,
+                                 bytes elementSize, SortCompareFn compare) {
     if (count == 0u)
         return true;
     return values != nullptr && elementSize > 0u && compare != nullptr
         && count <= SIZE_MAX / elementSize;
 }
 
-static void insertionSortRange(void *values, size_t begin, size_t end,
-                               size_t elementSize, SortCompareFn compare) {
-    for (size_t i = begin + (begin < end); i < end; ++i) {
-        size_t current = i;
+static void insertionSortRange(void *values, bytes begin, bytes end,
+                               bytes elementSize, SortCompareFn compare) {
+    for (bytes i = begin + (begin < end); i < end; ++i) {
+        bytes current = i;
         while (current > begin
                && compare(constElementAt(values, current, elementSize),
                           constElementAt(values, current - 1u, elementSize)) < 0) {
@@ -88,7 +88,7 @@ static void insertionSortRange(void *values, size_t begin, size_t end,
     }
 }
 
-bool Sort_insertionSort(void *values, size_t count, size_t elementSize,
+bool Sort_insertionSort(void *values, bytes count, bytes elementSize,
                         SortCompareFn compare) {
     if (!validComparisonRange(values, count, elementSize, compare))
         return false;
@@ -96,13 +96,13 @@ bool Sort_insertionSort(void *values, size_t count, size_t elementSize,
     return true;
 }
 
-bool Sort_selectionSort(void *values, size_t count, size_t elementSize,
+bool Sort_selectionSort(void *values, bytes count, bytes elementSize,
                         SortCompareFn compare) {
     if (!validComparisonRange(values, count, elementSize, compare))
         return false;
-    for (size_t first = 0u; first < count; ++first) {
-        size_t minimum = first;
-        for (size_t candidate = first + 1u; candidate < count; ++candidate) {
+    for (bytes first = 0u; first < count; ++first) {
+        bytes minimum = first;
+        for (bytes candidate = first + 1u; candidate < count; ++candidate) {
             if (compare(constElementAt(values, candidate, elementSize),
                         constElementAt(values, minimum, elementSize)) < 0)
                 minimum = candidate;
@@ -113,13 +113,13 @@ bool Sort_selectionSort(void *values, size_t count, size_t elementSize,
     return true;
 }
 
-bool Sort_bubbleSort(void *values, size_t count, size_t elementSize,
+bool Sort_bubbleSort(void *values, bytes count, bytes elementSize,
                      SortCompareFn compare) {
     if (!validComparisonRange(values, count, elementSize, compare))
         return false;
-    for (size_t unsorted = count; unsorted > 1u; --unsorted) {
+    for (bytes unsorted = count; unsorted > 1u; --unsorted) {
         bool changed = false;
-        for (size_t i = 1u; i < unsorted; ++i) {
+        for (bytes i = 1u; i < unsorted; ++i) {
             if (compare(constElementAt(values, i, elementSize),
                         constElementAt(values, i - 1u, elementSize)) < 0) {
                 swapElements(elementAt(values, i, elementSize),
@@ -133,10 +133,10 @@ bool Sort_bubbleSort(void *values, size_t count, size_t elementSize,
     return true;
 }
 
-static void siftDown(void *values, size_t root, size_t count,
-                     size_t elementSize, SortCompareFn compare) {
+static void siftDown(void *values, bytes root, bytes count,
+                     bytes elementSize, SortCompareFn compare) {
     while (root < count / 2u) {
-        size_t child = root * 2u + 1u;
+        bytes child = root * 2u + 1u;
         if (child + 1u < count
             && compare(constElementAt(values, child, elementSize),
                        constElementAt(values, child + 1u, elementSize)) < 0)
@@ -150,22 +150,22 @@ static void siftDown(void *values, size_t root, size_t count,
     }
 }
 
-static void heapSortRange(void *values, size_t begin, size_t end,
-                          size_t elementSize, SortCompareFn compare) {
-    size_t count = end - begin;
+static void heapSortRange(void *values, bytes begin, bytes end,
+                          bytes elementSize, SortCompareFn compare) {
+    bytes count = end - begin;
     if (count < 2u)
         return;
     unsigned char *range = elementAt(values, begin, elementSize);
-    for (size_t parent = count / 2u; parent > 0u; --parent)
+    for (bytes parent = count / 2u; parent > 0u; --parent)
         siftDown(range, parent - 1u, count, elementSize, compare);
-    for (size_t remaining = count; remaining > 1u; --remaining) {
+    for (bytes remaining = count; remaining > 1u; --remaining) {
         swapElements(elementAt(range, 0u, elementSize),
                      elementAt(range, remaining - 1u, elementSize), elementSize);
         siftDown(range, 0u, remaining - 1u, elementSize, compare);
     }
 }
 
-bool Sort_heapSort(void *values, size_t count, size_t elementSize,
+bool Sort_heapSort(void *values, bytes count, bytes elementSize,
                    SortCompareFn compare) {
     if (!validComparisonRange(values, count, elementSize, compare))
         return false;
@@ -173,10 +173,10 @@ bool Sort_heapSort(void *values, size_t count, size_t elementSize,
     return true;
 }
 
-static size_t partitionRange(void *values, size_t begin, size_t end,
-                             size_t elementSize, SortCompareFn compare) {
-    size_t last = end - 1u;
-    size_t middle = begin + (last - begin) / 2u;
+static bytes partitionRange(void *values, bytes begin, bytes end,
+                             bytes elementSize, SortCompareFn compare) {
+    bytes last = end - 1u;
+    bytes middle = begin + (last - begin) / 2u;
     if (compare(constElementAt(values, begin, elementSize),
                 constElementAt(values, middle, elementSize)) > 0)
         swapElements(elementAt(values, begin, elementSize),
@@ -192,8 +192,8 @@ static size_t partitionRange(void *values, size_t begin, size_t end,
     swapElements(elementAt(values, middle, elementSize),
                  elementAt(values, last, elementSize), elementSize);
 
-    size_t boundary = begin;
-    for (size_t candidate = begin; candidate < last; ++candidate) {
+    bytes boundary = begin;
+    for (bytes candidate = begin; candidate < last; ++candidate) {
         if (compare(constElementAt(values, candidate, elementSize),
                     constElementAt(values, last, elementSize)) < 0) {
             swapElements(elementAt(values, boundary, elementSize),
@@ -206,19 +206,19 @@ static size_t partitionRange(void *values, size_t begin, size_t end,
     return boundary;
 }
 
-static void quickSortRange(void *values, size_t begin, size_t end,
-                           size_t elementSize, SortCompareFn compare,
-                           size_t depthLimit) {
+static void quickSortRange(void *values, bytes begin, bytes end,
+                           bytes elementSize, SortCompareFn compare,
+                           bytes depthLimit) {
     while (end - begin > 16u) {
         if (depthLimit == 0u) {
             heapSortRange(values, begin, end, elementSize, compare);
             return;
         }
         --depthLimit;
-        size_t pivot = partitionRange(values, begin, end, elementSize, compare);
-        size_t leftCount = pivot - begin;
-        size_t rightBegin = pivot + 1u;
-        size_t rightCount = end - rightBegin;
+        bytes pivot = partitionRange(values, begin, end, elementSize, compare);
+        bytes leftCount = pivot - begin;
+        bytes rightBegin = pivot + 1u;
+        bytes rightCount = end - rightBegin;
         if (leftCount < rightCount) {
             quickSortRange(values, begin, pivot, elementSize, compare, depthLimit);
             begin = rightBegin;
@@ -230,18 +230,18 @@ static void quickSortRange(void *values, size_t begin, size_t end,
     insertionSortRange(values, begin, end, elementSize, compare);
 }
 
-bool Sort_quickSort(void *values, size_t count, size_t elementSize,
+bool Sort_quickSort(void *values, bytes count, bytes elementSize,
                     SortCompareFn compare) {
     if (!validComparisonRange(values, count, elementSize, compare))
         return false;
-    size_t depthLimit = 0u;
-    for (size_t remaining = count; remaining > 1u; remaining >>= 1u)
+    bytes depthLimit = 0u;
+    for (bytes remaining = count; remaining > 1u; remaining >>= 1u)
         depthLimit += 2u;
     quickSortRange(values, 0u, count, elementSize, compare, depthLimit);
     return true;
 }
 
-bool Sort_mergeSort(void *values, size_t count, size_t elementSize,
+bool Sort_mergeSort(void *values, bytes count, bytes elementSize,
                     SortCompareFn compare, void *scratch) {
     if (!validComparisonRange(values, count, elementSize, compare))
         return false;
@@ -250,7 +250,7 @@ bool Sort_mergeSort(void *values, size_t count, size_t elementSize,
     if (scratch == nullptr)
         return false;
 
-    size_t byteCount = count * elementSize;
+    bytes byteCount = count * elementSize;
     uintptr_t valuesStart = (uintptr_t) values;
     uintptr_t scratchStart = (uintptr_t) scratch;
     if (valuesStart > UINTPTR_MAX - byteCount
@@ -260,14 +260,14 @@ bool Sort_mergeSort(void *values, size_t count, size_t elementSize,
         return false;
     void *source = values;
     void *destination = scratch;
-    for (size_t run = 1u; run < count;) {
-        size_t left = 0u;
+    for (bytes run = 1u; run < count;) {
+        bytes left = 0u;
         while (left < count) {
-            size_t middle = left + (run < count - left ? run : count - left);
-            size_t right = middle + (run < count - middle ? run : count - middle);
-            size_t a = left;
-            size_t b = middle;
-            size_t out = left;
+            bytes middle = left + (run < count - left ? run : count - left);
+            bytes right = middle + (run < count - middle ? run : count - middle);
+            bytes a = left;
+            bytes b = middle;
+            bytes out = left;
             while (a < middle && b < right) {
                 if (compare(constElementAt(source, a, elementSize),
                             constElementAt(source, b, elementSize)) <= 0) {
@@ -296,13 +296,13 @@ bool Sort_mergeSort(void *values, size_t count, size_t elementSize,
     return true;
 }
 
-size_t Sort_partitionInt32(int32_t *values, size_t count, int32_t pivot) {
+bytes Sort_partitionInt32(i32 *values, bytes count, i32 pivot) {
     if (values == nullptr || count == 0u)
         return 0u;
-    size_t boundary = 0u;
-    for (size_t i = 0u; i < count; ++i) {
+    bytes boundary = 0u;
+    for (bytes i = 0u; i < count; ++i) {
         if (values[i] < pivot) {
-            int32_t value = values[boundary];
+            i32 value = values[boundary];
             values[boundary] = values[i];
             values[i] = value;
             ++boundary;
@@ -311,19 +311,19 @@ size_t Sort_partitionInt32(int32_t *values, size_t count, int32_t pivot) {
     return boundary;
 }
 
-static uint64_t unsignedKeyAt(const void *values, size_t index,
-                              size_t keySize) {
-    if (keySize == sizeof(uint32_t))
-        return ((const uint32_t*) values)[index];
-    return ((const uint64_t*) values)[index];
+static u64 unsignedKeyAt(const void *values, bytes index,
+                              bytes keySize) {
+    if (keySize == sizeof(u32))
+        return ((const u32*) values)[index];
+    return ((const u64*) values)[index];
 }
 
-static bool radixSortUnsigned(void *values, size_t count, size_t keySize) {
+static bool radixSortUnsigned(void *values, bytes count, bytes keySize) {
     if (count <= 1u)
         return true;
     if (values == nullptr || count > SIZE_MAX / keySize)
         return false;
-    size_t byteCount = count * keySize;
+    bytes byteCount = count * keySize;
     void *temporary = Memory_alloc(TYPE_BYTE_ARRAY, byteCount);
     if (temporary == nullptr)
         return false;
@@ -332,22 +332,22 @@ static bool radixSortUnsigned(void *values, size_t count, size_t keySize) {
     void *destination = temporary;
     unsigned passes = (unsigned) keySize;
     for (unsigned pass = 0u; pass < passes; ++pass) {
-        size_t bucketCounts[256] = {0};
-        size_t bucketOffsets[256] = {0};
+        bytes bucketCounts[256] = {0};
+        bytes bucketOffsets[256] = {0};
         unsigned shift = pass * 8u;
-        for (size_t i = 0u; i < count; ++i) {
-            uint8_t bucket = (uint8_t) ((unsignedKeyAt(source, i, keySize) >> shift) & 0xFFu);
+        for (bytes i = 0u; i < count; ++i) {
+            u8 bucket = (u8) ((unsignedKeyAt(source, i, keySize) >> shift) & 0xFFu);
             ++bucketCounts[bucket];
         }
-        size_t offset = 0u;
-        for (size_t bucket = 0u; bucket < 256u; ++bucket) {
+        bytes offset = 0u;
+        for (bytes bucket = 0u; bucket < 256u; ++bucket) {
             bucketOffsets[bucket] = offset;
             offset += bucketCounts[bucket];
         }
-        for (size_t i = 0u; i < count; ++i) {
-            uint64_t key = unsignedKeyAt(source, i, keySize);
-            uint8_t bucket = (uint8_t) ((key >> shift) & 0xFFu);
-            size_t target = bucketOffsets[bucket]++;
+        for (bytes i = 0u; i < count; ++i) {
+            u64 key = unsignedKeyAt(source, i, keySize);
+            u8 bucket = (u8) ((key >> shift) & 0xFFu);
+            bytes target = bucketOffsets[bucket]++;
             memcpy(elementAt(destination, target, keySize),
                    constElementAt(source, i, keySize), keySize);
         }
@@ -361,24 +361,24 @@ static bool radixSortUnsigned(void *values, size_t count, size_t keySize) {
     return true;
 }
 
-bool Sort_radixSortUint32(uint32_t *values, size_t count) {
-    return radixSortUnsigned(values, count, sizeof(uint32_t));
+bool Sort_radixSortUint32(u32 *values, bytes count) {
+    return radixSortUnsigned(values, count, sizeof(u32));
 }
 
-bool Sort_radixSortUint64(uint64_t *values, size_t count) {
-    return radixSortUnsigned(values, count, sizeof(uint64_t));
+bool Sort_radixSortUint64(u64 *values, bytes count) {
+    return radixSortUnsigned(values, count, sizeof(u64));
 }
 
-bool Sort_radixSortPairsUint64(uint64_t *keys, void **values, size_t count) {
+bool Sort_radixSortPairsUint64(u64 *keys, void **values, bytes count) {
     if (count <= 1u)
         return true;
     if (keys == nullptr || values == nullptr
-        || count > SIZE_MAX / sizeof(uint64_t)
+        || count > SIZE_MAX / sizeof(u64)
         || count > SIZE_MAX / sizeof(void*))
         return false;
-    size_t keyBytes = count * sizeof(uint64_t);
-    size_t valueBytes = count * sizeof(void*);
-    uint64_t *temporaryKeys = (uint64_t*) Memory_alloc(TYPE_BYTE_ARRAY, keyBytes);
+    bytes keyBytes = count * sizeof(u64);
+    bytes valueBytes = count * sizeof(void*);
+    u64 *temporaryKeys = (u64*) Memory_alloc(TYPE_BYTE_ARRAY, keyBytes);
     void **temporaryValues = (void**) Memory_alloc(TYPE_BYTE_ARRAY, valueBytes);
     if (temporaryKeys == nullptr || temporaryValues == nullptr) {
         if (temporaryKeys != nullptr)
@@ -388,30 +388,30 @@ bool Sort_radixSortPairsUint64(uint64_t *keys, void **values, size_t count) {
         return false;
     }
 
-    uint64_t *sourceKeys = keys;
-    uint64_t *destinationKeys = temporaryKeys;
+    u64 *sourceKeys = keys;
+    u64 *destinationKeys = temporaryKeys;
     void **sourceValues = values;
     void **destinationValues = temporaryValues;
     for (unsigned pass = 0u; pass < 8u; ++pass) {
-        size_t bucketCounts[256] = {0};
-        size_t bucketOffsets[256] = {0};
+        bytes bucketCounts[256] = {0};
+        bytes bucketOffsets[256] = {0};
         unsigned shift = pass * 8u;
-        for (size_t i = 0u; i < count; ++i) {
-            uint8_t bucket = (uint8_t) ((sourceKeys[i] >> shift) & 0xFFu);
+        for (bytes i = 0u; i < count; ++i) {
+            u8 bucket = (u8) ((sourceKeys[i] >> shift) & 0xFFu);
             ++bucketCounts[bucket];
         }
-        size_t offset = 0u;
-        for (size_t bucket = 0u; bucket < 256u; ++bucket) {
+        bytes offset = 0u;
+        for (bytes bucket = 0u; bucket < 256u; ++bucket) {
             bucketOffsets[bucket] = offset;
             offset += bucketCounts[bucket];
         }
-        for (size_t i = 0u; i < count; ++i) {
-            uint8_t bucket = (uint8_t) ((sourceKeys[i] >> shift) & 0xFFu);
-            size_t target = bucketOffsets[bucket]++;
+        for (bytes i = 0u; i < count; ++i) {
+            u8 bucket = (u8) ((sourceKeys[i] >> shift) & 0xFFu);
+            bytes target = bucketOffsets[bucket]++;
             destinationKeys[target] = sourceKeys[i];
             destinationValues[target] = sourceValues[i];
         }
-        uint64_t *keySwap = sourceKeys;
+        u64 *keySwap = sourceKeys;
         sourceKeys = destinationKeys;
         destinationKeys = keySwap;
         void **valueSwap = sourceValues;

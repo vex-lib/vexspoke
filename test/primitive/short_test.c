@@ -26,8 +26,8 @@ int main(void) {
     CHECK(Short_type(p) == ID_SHORT);
     CHECK(Short_length(p) == 2);
 
-    const int16_t values[] = { 0, 1, -1, 32767, -32768 };
-    for (size_t i = 0; i < sizeof values / sizeof values[0]; i++) {
+    const  values[] = { 0, 1, -1, 32767, -32768 };
+    for (bytes i = 0; i < sizeof values / sizeof values[0]; i++) {
         Short_set(p, values[i]);
         CHECK(Short_get(p) == values[i]);
     }

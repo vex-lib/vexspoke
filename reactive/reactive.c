@@ -23,7 +23,7 @@
  * value, so a change is exactly one compare and both endpoints are exact.
  *
  * The observer lists are arena-backed, allocated lazily (an unwatched reactive
- * costs no list), and double on demand (the Dynamic Scalability & Anti-Hardcoding
+ * costs no list), and d64 on demand (the Dynamic Scalability & Anti-Hardcoding
  * Law). A removed observer leaves a reusable tombstone, so a mid-fire removal
  * never invalidates a fire.
  *
@@ -59,7 +59,7 @@
  * PRIVATE HELPERS (kept file-local, pure data + list math only):
  * ----------------------------------------------------------------------------
  *   ReactiveObserver { void *cb; void *userdata; }        // SLOT RECORD
- *   ReactiveObserverList { ReactiveObserver *items; size_t count, cap; } // SLOT RECORD
+ *   ReactiveObserverList { ReactiveObserver *items; bytes count, cap; } // SLOT RECORD
  *   listEnsure(slot) / listAdd(list, cb, userdata) / listRemove(...) / listFree(list)
  *   fireSet/fireChanged (inline over the lists)           // the fire walks
  *
@@ -81,8 +81,8 @@ typedef struct ReactiveObserver {
 // SLOT RECORD: one event's observer list (arena-backed, doubling).
 struct ReactiveObserverList {
     ReactiveObserver *items;
-    size_t count;
-    size_t cap;
+    bytes count;
+    bytes cap;
 };
 
 #define REACTIVE_ARRAY_TYPE (SUGAR_VEX | PROJ_VEXSPOKE | FORM_SINGLETON | WRAP_REACTIVE | ID_REACTIVE)
@@ -108,7 +108,7 @@ static bool listAdd(ReactiveObserverList **slot, void *cb, void *userdata) {
     ReactiveObserverList *list = listEnsure(slot);
     if (list == nullptr)
         return false;
-    for (size_t i = 0; i < (*list).count; i++) {
+    for (bytes i = 0; i < (*list).count; i++) {
         if ((*list).items[i].cb == nullptr) { // reuse a tombstone
             (*list).items[i].cb = cb;
             (*list).items[i].userdata = userdata;
@@ -116,7 +116,7 @@ static bool listAdd(ReactiveObserverList **slot, void *cb, void *userdata) {
         }
     }
     if ((*list).count >= (*list).cap) {
-        size_t newCap = ((*list).cap == 0) ? 4 : (*list).cap * 2;
+        bytes newCap = ((*list).cap == 0) ? 4 : (*list).cap * 2;
         ReactiveObserver *nb = (ReactiveObserver*) Memory_realloc((*list).items, newCap * sizeof(ReactiveObserver));
         if (nb == nullptr)
             return false;
@@ -134,7 +134,7 @@ static bool listRemove(ReactiveObserverList **slot, void *cb, void *userdata) {
     if (cb == nullptr || *slot == nullptr)
         return false;
     ReactiveObserverList *list = *slot;
-    for (size_t i = 0; i < (*list).count; i++) {
+    for (bytes i = 0; i < (*list).count; i++) {
         if ((*list).items[i].cb == cb && (*list).items[i].userdata == userdata) {
             (*list).items[i].cb = nullptr;
             (*list).items[i].userdata = nullptr;
@@ -185,14 +185,14 @@ Reactive *Reactive_1(uintptr_t initialWord) {
     return reactive;
 }
 
-Reactive *Reactive_2(const Reactive *init, size_t count) {
+Reactive *Reactive_2(const Reactive *init, bytes count) {
     if (count == 0)
         return nullptr;
     Reactive *p = (Reactive*) Memory_alloc(TYPE_REACTIVE_ARRAY, sizeof(Reactive) * count);
     if (p == nullptr)
         return nullptr;
     uintptr_t seed = (init != nullptr) ? Reactive_load((Reactive*) init) : 0u;
-    for (size_t i = 0; i < count; i++)
+    for (bytes i = 0; i < count; i++)
         Reactive_init(&p[i], seed);
     return p;
 }
@@ -225,7 +225,7 @@ uintptr_t Reactive_load(Reactive *self) {
     // the hot path stays cheap.
     ReactiveObserverList *list = (*self).onGet;
     if (list != nullptr) {
-        for (size_t i = 0; i < (*list).count; i++) {
+        for (bytes i = 0; i < (*list).count; i++) {
             ReactiveObserver o = (*list).items[i];
             if (o.cb != nullptr)
                 ((ReactiveGetFn) o.cb)(self, value, o.userdata);
@@ -279,7 +279,7 @@ void Reactive_setValueOf(Reactive *self, ReactiveValueFn valueOf) {
     (*self).valueOf = valueOf;
 }
 
-const char *Reactive_valueOf(Reactive *self, char *out, size_t cap) {
+const char *Reactive_valueOf(Reactive *self, char *out, bytes cap) {
     if (out == nullptr || cap == 0u)
         return out;
     if (self == nullptr) {
@@ -306,7 +306,7 @@ bool Reactive_drain(Reactive *self) {
     // onSet fires once for the whole batch (coalesced: last value wins).
     if ((*self).onSet != nullptr) {
         ReactiveObserverList *list = (*self).onSet;
-        for (size_t i = 0; i < (*list).count; i++) {
+        for (bytes i = 0; i < (*list).count; i++) {
             ReactiveObserver o = (*list).items[i];
             if (o.cb != nullptr)
                 ((ReactiveSetFn) o.cb)(self, value, o.userdata);
@@ -318,7 +318,7 @@ bool Reactive_drain(Reactive *self) {
         (*self).shadow = value;
         if ((*self).onChanged != nullptr) {
             ReactiveObserverList *list = (*self).onChanged;
-            for (size_t i = 0; i < (*list).count; i++) {
+            for (bytes i = 0; i < (*list).count; i++) {
                 ReactiveObserver o = (*list).items[i];
                 if (o.cb != nullptr)
                     ((ReactiveChangedFn) o.cb)(self, old, value, o.userdata);
@@ -328,7 +328,7 @@ bool Reactive_drain(Reactive *self) {
     // onNullptr fires when the drained word is empty (0 = no value bound).
     if (value == 0u && (*self).onNullptr != nullptr) {
         ReactiveObserverList *list = (*self).onNullptr;
-        for (size_t i = 0; i < (*list).count; i++) {
+        for (bytes i = 0; i < (*list).count; i++) {
             ReactiveObserver o = (*list).items[i];
             if (o.cb != nullptr)
                 ((ReactiveNullptrFn) o.cb)(self, o.userdata);
@@ -373,28 +373,28 @@ bool Reactive_unwatchNullptr(Reactive *self, ReactiveNullptrFn cb, void *userdat
 
 // GETTERS
 
-size_t Reactive_observerCount(const Reactive *self) {
+bytes Reactive_observerCount(const Reactive *self) {
     if (self == nullptr)
         return 0u;
-    size_t n = 0u;
+    bytes n = 0u;
     const ReactiveObserverList *list = (*self).onSet;
     if (list != nullptr) {
-        for (size_t i = 0; i < (*list).count; i++)
+        for (bytes i = 0; i < (*list).count; i++)
             if ((*list).items[i].cb != nullptr) n++;
     }
     list = (*self).onChanged;
     if (list != nullptr) {
-        for (size_t i = 0; i < (*list).count; i++)
+        for (bytes i = 0; i < (*list).count; i++)
             if ((*list).items[i].cb != nullptr) n++;
     }
     list = (*self).onGet;
     if (list != nullptr) {
-        for (size_t i = 0; i < (*list).count; i++)
+        for (bytes i = 0; i < (*list).count; i++)
             if ((*list).items[i].cb != nullptr) n++;
     }
     list = (*self).onNullptr;
     if (list != nullptr) {
-        for (size_t i = 0; i < (*list).count; i++)
+        for (bytes i = 0; i < (*list).count; i++)
             if ((*list).items[i].cb != nullptr) n++;
     }
     return n;

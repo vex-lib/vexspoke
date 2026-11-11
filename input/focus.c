@@ -46,16 +46,16 @@
  */
 
 
-static _Atomic uint32_t s_focusId = FOCUS_BROADCAST;
+static _Atomic u32 s_focusId = FOCUS_BROADCAST;
 
-void Focus_set(uint32_t windowId) {
+void Focus_set(u32 windowId) {
     atomic_store_explicit(&s_focusId, windowId, memory_order_release);
 }
 
-uint32_t Focus_id(void) {
+u32 Focus_id(void) {
     return atomic_load_explicit(&s_focusId, memory_order_acquire);
 }
 
-bool Focus_isFocused(uint32_t windowId) {
+bool Focus_isFocused(u32 windowId) {
     return Focus_id() == windowId;
 }

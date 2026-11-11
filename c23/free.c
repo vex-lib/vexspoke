@@ -39,19 +39,19 @@
 
 
 typedef struct DestructorEntry {
-    uint64_t     typeId;
+    u64     typeId;
     DestructorFn fn;
 } DestructorEntry;
 
 #define MAX_CUSTOM_DESTRUCTORS 64
 static DestructorEntry s_destructors[MAX_CUSTOM_DESTRUCTORS];
-static uint32_t s_destructorCount = 0;
+static u32 s_destructorCount = 0;
 
 // Registers or replaces a custom destructor for a nonzero type ID when capacity permits.
-void Destructor_register(uint64_t typeId, DestructorFn fn) {
+void Destructor_register(u64 typeId, DestructorFn fn) {
     if (fn == nullptr || typeId == 0) return;
     // Check if already registered to update
-    for (uint32_t i = 0; i < s_destructorCount; i++) {
+    for (u32 i = 0; i < s_destructorCount; i++) {
         if (s_destructors[i].typeId == typeId) {
             s_destructors[i].fn = fn;
             return;
@@ -65,8 +65,8 @@ void Destructor_register(uint64_t typeId, DestructorFn fn) {
 }
 
 // Returns the registered destructor for typeId, or nullptr when absent.
-DestructorFn Destructor_lookup(uint64_t typeId) {
-    for (uint32_t i = 0; i < s_destructorCount; i++) {
+DestructorFn Destructor_lookup(u64 typeId) {
+    for (u32 i = 0; i < s_destructorCount; i++) {
         if (s_destructors[i].typeId == typeId) {
             return s_destructors[i].fn;
         }
@@ -78,10 +78,10 @@ DestructorFn Destructor_lookup(uint64_t typeId) {
 void c23_free(void *ptr) {
     if (!ptr) return;
 
-    uint64_t typeId = Memory_type(ptr);
+    u64 typeId = Memory_type(ptr);
 
     // 1. Dynamic destructor table lookup
-    for (uint32_t i = 0; i < s_destructorCount; i++) {
+    for (u32 i = 0; i < s_destructorCount; i++) {
         if (s_destructors[i].typeId == typeId) {
             if (s_destructors[i].fn != nullptr) {
                 s_destructors[i].fn(ptr);

@@ -30,8 +30,8 @@ static bool isUnreserved(char c) {
            c == '-' || c == '.' || c == '_' || c == '~';
 }
 
-static bool appendLiteral(char *dest, size_t cap, size_t *used, const char *text) {
-    for (size_t i = 0; text[i] != '\0'; ++i) {
+static bool appendLiteral(char *dest, bytes cap, bytes *used, const char *text) {
+    for (bytes i = 0; text[i] != '\0'; ++i) {
         if (*used + 2u > cap)
             return false;
         dest[(*used)++] = text[i];
@@ -40,9 +40,9 @@ static bool appendLiteral(char *dest, size_t cap, size_t *used, const char *text
     return true;
 }
 
-static bool appendEncoded(char *dest, size_t cap, size_t *used, const char *text) {
+static bool appendEncoded(char *dest, bytes cap, bytes *used, const char *text) {
     static const char HEX[] = "0123456789ABCDEF";
-    for (size_t i = 0; text[i] != '\0'; ++i) {
+    for (bytes i = 0; text[i] != '\0'; ++i) {
         char c = text[i];
         if (isUnreserved(c)) {
             if (*used + 2u > cap)
@@ -61,9 +61,9 @@ static bool appendEncoded(char *dest, size_t cap, size_t *used, const char *text
 }
 
 bool OtpAuth_buildUri(const char *issuer, const char *account,
-                      const uint8_t *secret, size_t secretLen,
+                      const u8 *secret, bytes secretLen,
                       unsigned digits, unsigned stepSeconds,
-                      char *dest, size_t cap, bool *outTruncated) {
+                      char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated != nullptr)
         *outTruncated = false;
     if (issuer == nullptr || account == nullptr || secret == nullptr || secretLen == 0u ||
@@ -71,7 +71,7 @@ bool OtpAuth_buildUri(const char *issuer, const char *account,
         THROW("OtpAuth_buildUri: invalid input");
         return false;
     }
-    size_t used = 0u;
+    bytes used = 0u;
     char encoded[512];
     if (!Base32_encode(secret, secretLen, encoded, sizeof encoded, nullptr)) {
         THROW("OtpAuth_buildUri: secret too large to encode");
@@ -98,7 +98,7 @@ bool OtpAuth_buildUri(const char *issuer, const char *account,
         // digits or the period and hand the user a QR their app reads wrongly.
         int written = snprintf(number, sizeof number, "&algorithm=SHA1&digits=%u&period=%u",
                                digits, stepSeconds);
-        if (written < 0 || (size_t) written >= sizeof number) {
+        if (written < 0 || (bytes) written >= sizeof number) {
             THROW("OtpAuth_buildUri: query buffer too small");
             return false;
         }

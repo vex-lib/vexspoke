@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 // input/turntable.h — DJ Turntable & Jog Wheel Hardware Model.
 //
@@ -23,24 +23,24 @@ typedef enum CrossfaderCurve {
 } CrossfaderCurve;
 
 typedef struct TurntableCrossfade {
-    float left;
-    float right;
+    f32 left;
+    f32 right;
 } TurntableCrossfade;
 
 typedef struct TurntableEvent {
-    uint8_t  deckIndex;         // 0 = Deck A, 1 = Deck B, etc.
+    u8  deckIndex;         // 0 = Deck A, 1 = Deck B, etc.
     bool     platterTouched;    // True if DJ's hand is contacting the touch platter
     bool     rimTouched;        // True if outer edge nudged
-    float    angularDeltaRad;   // Radians rotated this tick (+ forward, - backward)
-    float    pitchFader;        // Pitch / tempo slider [-1.0, +1.0] (0.0 = 0% pitch)
+    f32    angularDeltaRad;   // Radians rotated this tick (+ forward, - backward)
+    f32    pitchFader;        // Pitch / tempo slider [-1.0, +1.0] (0.0 = 0% pitch)
     bool     cuePressed;        // Main cue button
     bool     playPausePressed;  // Play/pause motor button
-    uint8_t  hotCueIndex;       // 1..8 hot cue button triggered (0 = none)
-    uint64_t timestampUs;
+    u8  hotCueIndex;       // 1..8 hot cue button triggered (0 = none)
+    u64 timestampUs;
 } TurntableEvent;
 
-static inline TurntableEvent TurntableEvent_3(uint8_t deckIndex, bool platterTouched,
-                                               float angularDeltaRadians) {
+static inline TurntableEvent TurntableEvent_3(u8 deckIndex, bool platterTouched,
+                                               f32 angularDeltaRadians) {
     return (TurntableEvent) { .deckIndex = deckIndex, .platterTouched = platterTouched,
         .angularDeltaRad = angularDeltaRadians };
 }
@@ -48,28 +48,28 @@ static inline TurntableEvent TurntableEvent_3(uint8_t deckIndex, bool platterTou
 static inline void TurntableEvent_setPlatterTouched(TurntableEvent *event, bool touched) {
     if (event) (*event).platterTouched = touched;
 }
-static inline void TurntableEvent_setAngularDelta(TurntableEvent *event, float radians) {
+static inline void TurntableEvent_setAngularDelta(TurntableEvent *event, f32 radians) {
     if (event) (*event).angularDeltaRad = radians;
 }
 
 typedef struct TurntableState {
-    uint8_t      deckIndex;
+    u8      deckIndex;
     bool         platterTouched;     // In scratch mode when touched
     bool         isPlaying;          // Motor active
     TurntableRpm targetRpm;
-    float        currentAngularVelocityRadPerSec;
-    float        pitchFader;         // Current tempo slider
-    float        playheadSeconds;
-    float        cuePositionSeconds;
-    float        hotCues[8];         // Saved hot cue positions in seconds (-1 = unset)
+    f32        currentAngularVelocityRadPerSec;
+    f32        pitchFader;         // Current tempo slider
+    f32        playheadSeconds;
+    f32        cuePositionSeconds;
+    f32        hotCues[8];         // Saved hot cue positions in seconds (-1 = unset)
 } TurntableState;
 
-TurntableState TurntableState_1(uint8_t deckIndex);
+TurntableState TurntableState_1(u8 deckIndex);
 #define TurntableState(...) CONSTRUCTOR_DISPATCH(TurntableState, __VA_ARGS__)
 void TurntableState_processEvent(TurntableState *state, TurntableEvent event);
-void TurntableState_tick(TurntableState *state, float deltaSeconds);
+void TurntableState_tick(TurntableState *state, f32 deltaSeconds);
 
 // Crossfader volume calculation; returns both channel volumes by value.
-TurntableCrossfade Turntable_calculateCrossfade(float position, CrossfaderCurve curve);
+TurntableCrossfade Turntable_calculateCrossfade(f32 position, CrossfaderCurve curve);
 
 #endif

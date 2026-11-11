@@ -35,7 +35,7 @@
  * STRUCT FIELDS (Mirroring security/touchid.h):
  * ----------------------------------------------------------------------------
  *   TouchIDToken {
- *     uint64_t magic[2]; // randomness, never written by the C core
+ *     u64 magic[2]; // randomness, never written by the C core
  *     bool consumed;     // set true by verify / discard
  *   }
  *

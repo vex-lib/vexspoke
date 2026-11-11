@@ -5,7 +5,7 @@
 // before the include and undefs them after.
 //
 //   VEX_TO_WORD(v)   packs the typed value into the engine's word
-//                    (the value itself for integers; a bit-cast for floats, so
+//                    (the value itself for integers; a bit-cast for f32s, so
 //                    every bit pattern round-trips; the pointer for pointer types).
 //   VEX_FROM_WORD(w) unpacks it back.
 //   VEX_VALUE_OF(out, cap, v) formats v into out — the typed valueOf() the engine
@@ -17,7 +17,7 @@
 // the block. The typed channels are trampolines over the engine's uniform channels.
 
 // The typed stringifier: bound to the engine so Reactive_valueOf finds it.
-static void VEX_CAT(VEX_NAME, _valueOf)(uintptr_t word, char *out, size_t cap) {
+static void VEX_CAT(VEX_NAME, _valueOf)(uintptr_t word, char *out, bytes cap) {
     VEX_T value = VEX_FROM_WORD(word);
     VEX_VALUE_OF(out, cap, value);
 }

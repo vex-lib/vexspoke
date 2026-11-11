@@ -1,7 +1,7 @@
 // vexspoke/test/math/strict_math_test.c — owner test for math/strict_math.
 //
 // StrictMath must be an exact IEEE 754 layer over libm. This test pins the
-// float and double twins against libm oracles at identity/normal/boundary/
+// f32 and d64 twins against libm oracles at identity/normal/boundary/
 // domain-edge inputs:
 //   - trig at 0, pi/2, pi; inverse trig at the [-1,1] domain edge and outside
 //     (NaN); sqrt at 0, 1, 4 and the negative domain (NaN);
@@ -10,7 +10,7 @@
 //   - abs/floor/ceil/round at positive, negative, zero, and half values;
 //   - clamp and lerp endpoints;
 //   - toRadians/toDegrees round trip and exact constants;
-//   - the double-precision twins mirror the float behavior.
+//   - the d64-precision twins mirror the f32 behavior.
 
 #include <stddef.h>
 #include <stdint.h>
@@ -29,11 +29,11 @@ static int g_failures = 0;
         }                                                                  \
     } while (0)
 
-#define CLOSE_F(a, b, eps) (fabs((double) (a) - (double) (b)) <= (double) (eps))
+#define CLOSE_F(a, b, eps) (fabs((d64) (a) - (d64) (b)) <= (d64) (eps))
 
-// Validates float trigonometry, inverse-trig domains, and libm parity.
+// Validates f32 trigonometry, inverse-trig domains, and libm parity.
 // Checks strict trigonometric functions against reference values.
-// Checks strict float trigonometry, inverse-domain behavior, and libm agreement.
+// Checks strict f32 trigonometry, inverse-domain behavior, and libm agreement.
 static void test_trig(void) {
     CHECK(StrictMath_sin(0.0f) == 0.0f);
     CHECK(CLOSE_F(StrictMath_sin(STRICT_MATH_HALF_PI), 1.0f, 1e-6f));
@@ -52,7 +52,7 @@ static void test_trig(void) {
 
     // Consistency with libm (the strict contract).
     for (int i = -10; i <= 10; i++) {
-        float x = (float) i * 0.3f;
+        f32 x = (f32) i * 0.3f;
         CHECK(StrictMath_sin(x) == sinf(x));
         CHECK(StrictMath_cos(x) == cosf(x));
         CHECK(StrictMath_tan(x) == tanf(x));
@@ -81,7 +81,7 @@ static void test_roots_and_powers(void) {
     CHECK(StrictMath_pow(0.0f, 0.0f) == 1.0f);
 }
 
-// Exercises float absolute, rounding, clamp, and interpolation semantics.
+// Exercises f32 absolute, rounding, clamp, and interpolation semantics.
 // Checks strict rounding operations at integral and fractional boundaries.
 // Tests absolute value, IEEE rounding, clamp, and interpolation endpoints.
 static void test_rounding(void) {
@@ -108,7 +108,7 @@ static void test_rounding(void) {
     CHECK(CLOSE_F(StrictMath_lerp(0.0f, 10.0f, 0.25f), 2.5f, 1e-6f));
 }
 
-// Checks float angle conversion round trips and canonical constants.
+// Checks f32 angle conversion round trips and canonical constants.
 // Exercises strict angle conversions and normalization behavior.
 // Checks radians/degrees conversion round trips and named constants.
 static void test_angles(void) {
@@ -117,10 +117,10 @@ static void test_angles(void) {
     CHECK(CLOSE_F(StrictMath_toRadians(90.0f), STRICT_MATH_HALF_PI, 1e-5f));
 }
 
-// Verifies the corresponding double-precision operation surface.
-// Confirms double-precision counterparts agree with their expected values.
-// Verifies double-precision StrictMath counterparts across their public operations.
-static void test_double_twins(void) {
+// Verifies the corresponding d64-precision operation surface.
+// Confirms d64-precision counterparts agree with their expected values.
+// Verifies d64-precision StrictMath counterparts across their public operations.
+static void test_f64_twins(void) {
     CHECK(StrictMath_sinD(0.0) == 0.0);
     CHECK(fabs(StrictMath_cosD(0.0) - 1.0) < 1e-15);
     CHECK(StrictMath_sqrtD(9.0) == 3.0);
@@ -143,15 +143,15 @@ static void test_double_twins(void) {
     CHECK(StrictMath_lerpD(0.0, 4.0, 0.5) == 2.0);
 }
 
-// Runs the strict float and double math contract checks.
-// Runs strict-math trigonometric, root, rounding, angle, and double-precision checks.
-// Runs the strict float and double math contract cases.
+// Runs the strict f32 and d64 math contract checks.
+// Runs strict-math trigonometric, root, rounding, angle, and d64-precision checks.
+// Runs the strict f32 and d64 math contract cases.
 int main(void) {
     test_trig();
     test_roots_and_powers();
     test_rounding();
     test_angles();
-    test_double_twins();
+    test_f64_twins();
 
     if (g_failures == 0) {
         printf("strict_math_test: all assertions held\n");

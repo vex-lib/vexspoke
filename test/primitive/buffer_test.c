@@ -29,7 +29,7 @@ int main(void) {
     CHECK(Buffer_capacity(e) == 0);
     CHECK(Buffer_bytes(e) == nullptr);
 
-    Buffer *sized = Buffer((size_t) 16);
+    Buffer *sized = Buffer((bytes) 16);
     CHECK(sized != nullptr);
     CHECK(Buffer_length(sized) == 16);
     CHECK(Buffer_capacity(sized) == 16);
@@ -37,24 +37,24 @@ int main(void) {
     CHECK(Buffer_bytes(sized)[0] == 0);
     CHECK(Buffer_bytes(sized)[15] == 0);
 
-    const uint8_t src[4] = { 1, 2, 3, 4 };
+    const u8 src[4] = { 1, 2, 3, 4 };
     Buffer *copied = Buffer(src, sizeof(src));
     CHECK(copied != nullptr);
     CHECK(Buffer_length(copied) == 4);
     CHECK(memcmp(Buffer_bytes(copied), src, 4) == 0);
     CHECK(Buffer_bytes(copied) != src);
 
-    const uint8_t more[4] = { 5, 6, 7, 8 };
+    const u8 more[4] = { 5, 6, 7, 8 };
     CHECK(Buffer_append(copied, more, sizeof(more)));
     CHECK(Buffer_length(copied) == 8);
-    uint8_t want[8] = { 1, 2, 3, 4, 5, 6, 7, 8 };
+    u8 want[8] = { 1, 2, 3, 4, 5, 6, 7, 8 };
     CHECK(memcmp(Buffer_bytes(copied), want, 8) == 0);
 
     CHECK(Buffer_setLength(copied, 3));
     CHECK(Buffer_length(copied) == 3);
     CHECK(!Buffer_setLength(copied, Buffer_capacity(copied) + 1));
 
-    size_t grown = Buffer_capacity(copied);
+    bytes grown = Buffer_capacity(copied);
     CHECK(Buffer_reserve(copied, grown + 128));
     CHECK(Buffer_capacity(copied) >= grown + 128);
     CHECK(Buffer_length(copied) == 3);

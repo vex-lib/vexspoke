@@ -11,10 +11,10 @@
  * ============================================================================
  * DEFINITION: Brain
  * ============================================================================
- * Brain primitive (Legacy: primitive/Brain.java): 16-bit bfloat16 payloads
+ * Brain primitive (Legacy: primitive/Brain.java): 16-bit bf3216 payloads
  * backed by a fixed 1024-slot BitPool for singletons and the memory arena for
  * arrays. Provides alloc/free, acquire/release get/set, compare-and-set,
- * type/length introspection, and lossy float-to-bfloat16 conversion with
+ * type/length introspection, and lossy f32-to-bf3216 conversion with
  * round-to-nearest-even bias. Lives at R2 as a leaf primitive behavior.
  * ============================================================================
  */
@@ -41,7 +41,7 @@
  *   - Brain_compareAndSet(ptr, expected, value)
  *   - Brain_type(ptr)
  *   - Brain_length(ptr)
- *   - Brain_floatToBFloat16(value)
+ *   - Brain_f32ToBFloat16(value)
  *   - Brain_bFloat16ToFloat(bits)
  *   - Brain_allocWithValue(value)
  *
@@ -71,14 +71,14 @@ void *Brain_alloc(void) {
     return BitPool_alloc(&g_brainPool, ID_BRAIN);
 }
 
-void *Brain_allocArray(size_t count) {
+void *Brain_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
-    size_t Bytes = count * sizeof(uint16_t);
-    // For compound types, elem_size 2 already accounts for stride, but sizeof(uint16_t) is placeholder
+    bytes Bytes = count * sizeof(u16);
+    // For compound types, elem_size 2 already accounts for stride, but sizeof(u16) is placeholder
     // Use elem_size for true stride where c_type is int64 placeholder
-    if (count > 1 && 2 != sizeof(uint16_t))
+    if (count > 1 && 2 != sizeof(u16))
         Bytes = count * 2;
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_BRAIN), Bytes);
 }
@@ -90,64 +90,64 @@ void Brain_free(void *ptr) {
     else Memory_free(ptr);
 }
 
-uint16_t Brain_get(void *ptr) {
+u16 Brain_get(void *ptr) {
     if (!ptr)
-        return (uint16_t) 0;
-    return *(uint16_t*) ptr;
+        return (u16) 0;
+    return *(u16*) ptr;
 }
 
-void Brain_set(void *ptr, uint16_t value) {
+void Brain_set(void *ptr, u16 value) {
     if (!ptr)
         return;
-    *(uint16_t*) ptr = value;
+    *(u16*) ptr = value;
 }
 
-uint16_t Brain_floatToBFloat16(float value) {
-    uint32_t bits;
+u16 Brain_f32ToBFloat16(f32 value) {
+    u32 bits;
     memcpy(&bits, &value, sizeof(bits));
-    uint32_t lsb = (bits >> 16) & 1u;
-    uint32_t roundingBias = 0x7FFFu + lsb;
+    u32 lsb = (bits >> 16) & 1u;
+    u32 roundingBias = 0x7FFFu + lsb;
     bits += roundingBias;
-    return (uint16_t)(bits >> 16);
+    return (u16)(bits >> 16);
 }
 
-float Brain_bFloat16ToFloat(uint16_t bits) {
-    uint32_t expanded = ((uint32_t) bits) << 16;
-    float out;
+f32 Brain_bFloat16ToFloat(u16 bits) {
+    u32 expanded = ((u32) bits) << 16;
+    f32 out;
     memcpy(&out, &expanded, sizeof(out));
     return out;
 }
 
-float Brain_getFloat(void *ptr) {
+f32 Brain_getFloat(void *ptr) {
     return Brain_bFloat16ToFloat(Brain_get(ptr));
 }
 
-void Brain_setFloat(void *ptr, float value) {
-    Brain_set(ptr, Brain_floatToBFloat16(value));
+void Brain_setFloat(void *ptr, f32 value) {
+    Brain_set(ptr, Brain_f32ToBFloat16(value));
 }
 
-bool Brain_compareAndSet(void *ptr, uint16_t expected, uint16_t value) {
+bool Brain_compareAndSet(void *ptr, u16 expected, u16 value) {
     if (!ptr)
         return false;
     // fallback to simple CAS via __atomic_compare_exchange
-    return __atomic_compare_exchange_n((uint16_t*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
+    return __atomic_compare_exchange_n((u16*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
-uint64_t Brain_type(void *ptr) {
+u64 Brain_type(void *ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_brainPool, ptr)) return BitPool_type(&g_brainPool, ptr);
     return Memory_type(ptr);
 }
 
-size_t Brain_length(void *ptr) {
+bytes Brain_length(void *ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_brainPool, ptr)) return BitPool_length(&g_brainPool, ptr);
     return Memory_length(ptr);
 }
 
-void *Brain_allocWithValue(uint16_t value) {
+void *Brain_allocWithValue(u16 value) {
     void *ptr = Brain_alloc();
     if (ptr) Brain_set(ptr, value);
     return ptr;

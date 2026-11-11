@@ -64,15 +64,15 @@
 
 // queue.c — Queue port (Legacy: struct/Queue.java).
 
-static const size_t DEFAULT_CAPACITY = 1024;
+static const bytes DEFAULT_CAPACITY = 1024;
 
 static Collection *asCollection(Queue *queue) {
     return (Collection*) queue;
 }
 
-Queue *Queue_3(uint32_t elementClass, size_t capacity, size_t count) {
-    size_t stride = Stride_get(elementClass);
-    size_t cap = capacity < DEFAULT_CAPACITY ? DEFAULT_CAPACITY : capacity;
+Queue *Queue_3(u32 elementClass, bytes capacity, bytes count) {
+    bytes stride = Stride_get(elementClass);
+    bytes cap = capacity < DEFAULT_CAPACITY ? DEFAULT_CAPACITY : capacity;
     Queue *queue = (Queue*) Memory_alloc(TYPE_QUEUE, sizeof(Queue));
     if (!queue) {
         (void) Struct_reportConstructionExhaustion("queue", sizeof(Queue));
@@ -81,17 +81,17 @@ Queue *Queue_3(uint32_t elementClass, size_t capacity, size_t count) {
 
     Collection *c = asCollection(queue);
     (*c).typeId = TYPE_QUEUE;
-    (*c).activeCount = (uint32_t)count;
+    (*c).activeCount = (u32)count;
     (*c).elementClass = elementClass;
-    (*c).stride = (uint32_t)stride;
-    (*c).capacity = (uint32_t)cap;
+    (*c).stride = (u32)stride;
+    (*c).capacity = (u32)cap;
     (*c).head = 0;
     (*c).exhaustionCount = 0;
     (*c).exhaustionReported = false;
 
-    size_t Bytes = cap * stride;
-    uint64_t bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, elementClass);
-    (*c).data = (uint8_t*) Memory_alloc(bufType, Bytes);
+    bytes Bytes = cap * stride;
+    u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, elementClass);
+    (*c).data = (u8*) Memory_alloc(bufType, Bytes);
     if (!(*c).data) {
         (void) Struct_reportConstructionExhaustion("queue", Bytes);
         Memory_free(queue);
@@ -104,34 +104,34 @@ Queue *Queue_3(uint32_t elementClass, size_t capacity, size_t count) {
 static int ensureCapacity(Collection *c) {
     if ((*c).activeCount < (*c).capacity)
         return 1;
-    size_t newCap = (*c).capacity * 2;
-    size_t Bytes = newCap * (*c).stride;
-    uint64_t bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, (*c).elementClass);
-    uint8_t *next = (uint8_t*) Memory_alloc(bufType, Bytes);
+    bytes newCap = (*c).capacity * 2;
+    bytes Bytes = newCap * (*c).stride;
+    u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, (*c).elementClass);
+    u8 *next = (u8*) Memory_alloc(bufType, Bytes);
     if (!next) {
         Collection_reportExhaustion(c, Bytes);
         return 0;
     }
 
-    size_t count = (*c).activeCount;
+    bytes count = (*c).activeCount;
     if (count > 0) {
         if ((*c).head == 0) {
             memcpy(next, (*c).data, count * (*c).stride);
         } else {
-            size_t len1 = (*c).capacity - (*c).head;
-            size_t len2 = (*c).head;
+            bytes len1 = (*c).capacity - (*c).head;
+            bytes len2 = (*c).head;
             memcpy(next, (*c).data + (*c).head * (*c).stride, len1 * (*c).stride);
             memcpy(next + len1 * (*c).stride, (*c).data, len2 * (*c).stride);
         }
     }
     Memory_free((*c).data);
     (*c).data = next;
-    (*c).capacity = (uint32_t)newCap;
+    (*c).capacity = (u32)newCap;
     (*c).head = 0;
     return 1;
 }
 
-Queue *Queue_2(uint32_t elementClass, size_t capacity) {
+Queue *Queue_2(u32 elementClass, bytes capacity) {
     return Queue_3(elementClass, capacity, 0);
 }
 
@@ -143,28 +143,28 @@ void Queue_free(Queue *queue) {
     Memory_free(queue);
 }
 
-void Queue_push(Queue *queue, uint64_t valueOrPointer) {
+void Queue_push(Queue *queue, u64 valueOrPointer) {
     if (!queue) return;
     Collection *c = asCollection(queue);
     if (!ensureCapacity(c))
         return;
-    size_t tail = ((*c).head + (*c).activeCount) % (*c).capacity;
+    bytes tail = ((*c).head + (*c).activeCount) % (*c).capacity;
     Collection_writeSlot(c, tail, valueOrPointer);
     (*c).activeCount++;
 }
 
-uint64_t Queue_pop(Queue *queue) {
+u64 Queue_pop(Queue *queue) {
     if (!queue) return 0;
     Collection *c = asCollection(queue);
     if ((*c).activeCount == 0)
         return 0;
-    uint64_t value = Collection_readSlot(c, (*c).head);
-    (*c).head = (uint32_t)(((*c).head + 1) % (*c).capacity);
+    u64 value = Collection_readSlot(c, (*c).head);
+    (*c).head = (u32)(((*c).head + 1) % (*c).capacity);
     (*c).activeCount--;
     return value;
 }
 
-uint64_t Queue_peek(Queue *queue) {
+u64 Queue_peek(Queue *queue) {
     if (!queue) return 0;
     Collection *c = asCollection(queue);
     if ((*c).activeCount == 0)
@@ -172,12 +172,12 @@ uint64_t Queue_peek(Queue *queue) {
     return Collection_readSlot(c, (*c).head);
 }
 
-uint8_t *Queue_slot(Queue *queue, size_t index) {
+u8 *Queue_slot(Queue *queue, bytes index) {
     if (!queue) return nullptr;
     Collection *c = asCollection(queue);
     if (index >= (*c).activeCount)
         return nullptr;
-    size_t phys = ((*c).head + index) % (*c).capacity;
+    bytes phys = ((*c).head + index) % (*c).capacity;
     return (*c).data + phys * (*c).stride;
 }
 
@@ -185,38 +185,38 @@ bool Queue_isEmpty(Queue *queue) {
     return Collection_isEmpty(asCollection(queue));
 }
 
-size_t Queue_size(Queue *queue) {
+bytes Queue_size(Queue *queue) {
     return Collection_size(asCollection(queue));
 }
 
 ;;TEST
-uint64_t Queue_exhaustionCount(const Queue *queue) {
+u64 Queue_exhaustionCount(const Queue *queue) {
     return Collection_exhaustionCount((const Collection*) queue);
 }
 
-size_t Queue_length(Queue *queue) {
+bytes Queue_length(Queue *queue) {
     return Collection_length(asCollection(queue));
 }
 
-size_t Queue_capacity(Queue *queue) {
+bytes Queue_capacity(Queue *queue) {
     return Collection_capacity(asCollection(queue));
 }
 
-uint32_t Queue_elementClassId(Queue *queue) {
+u32 Queue_elementClassId(Queue *queue) {
     return Collection_elementClassId(asCollection(queue));
 }
 
-size_t Queue_stride(Queue *queue) {
+bytes Queue_stride(Queue *queue) {
     return Collection_stride(asCollection(queue));
 }
 
-size_t Queue_head(Queue *queue) {
+bytes Queue_head(Queue *queue) {
     return Collection_head(asCollection(queue));
 }
 
-uint8_t *Queue_dataBuffer(Queue *queue) {
+u8 *Queue_dataBuffer(Queue *queue) {
     return Collection_dataBuffer(asCollection(queue));
 }
-Queue *Queue_1(uint32_t element_class) {
+Queue *Queue_1(u32 element_class) {
     return Queue_2(element_class, 16);
 }

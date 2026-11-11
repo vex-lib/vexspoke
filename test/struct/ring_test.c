@@ -7,7 +7,7 @@
 //   - the capacity is a hard contract: push fails exactly at full, pop fails
 //     exactly at empty, and neither silently drops or duplicates;
 //   - arbitrary element sizes (a multi-word struct copies whole);
-//   - nullptr push/pop are safe refusals; double shutdown is safe;
+//   - nullptr push/pop are safe refusals; d64 shutdown is safe;
 //   - re-init after shutdown works;
 //   - real MPMC concurrency under a bounded watchdog: every pushed value is
 //     popped exactly once, never torn, never lost, never duplicated.
@@ -70,7 +70,7 @@ static void test_init_and_bounds(void) {
     CHECK(!RingBuffer_pop(&r, &out));           // empty
     RingBuffer_shutdown(&r);
 
-    // Double shutdown is safe; re-init after shutdown is safe.
+    // d64 shutdown is safe; re-init after shutdown is safe.
     RingBuffer_shutdown(&r);
     r = RingBuffer(sizeof(int), 4); CHECK(r.slots != nullptr);
     RingBuffer_shutdown(&r);
@@ -137,8 +137,8 @@ static void test_wraparound(void) {
 
 // Elements larger than a word must copy whole, including padding.
 typedef struct Big {
-    uint64_t a;
-    uint64_t b;
+    u64 a;
+    u64 b;
     char tag[7];
 } Big;
 
@@ -147,15 +147,15 @@ static void test_wide_elements(void) {
     RingBuffer r;
     r = RingBuffer(sizeof(Big), 2); CHECK(r.slots != nullptr);
     for (int i = 0; i < 2; i++) {
-        Big b = { .a = (uint64_t) i * 11, .b = (uint64_t) i * 22, .tag = "abc" };
+        Big b = { .a = (u64) i * 11, .b = (u64) i * 22, .tag = "abc" };
         CHECK(RingBuffer_push(&r, &b));
     }
     CHECK(!RingBuffer_push(&r, &(Big){ .a = 99 }));
     for (int i = 0; i < 2; i++) {
         Big b = { 0 };
         CHECK(RingBuffer_pop(&r, &b));
-        CHECK(b.a == (uint64_t) i * 11);
-        CHECK(b.b == (uint64_t) i * 22);
+        CHECK(b.a == (u64) i * 11);
+        CHECK(b.b == (u64) i * 22);
         CHECK(b.tag[0] == 'a' && b.tag[1] == 'b' && b.tag[2] == 'c');
     }
     RingBuffer_shutdown(&r);

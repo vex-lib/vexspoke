@@ -2,6 +2,7 @@
 #define EVENT_KEY_H
 
 #include <stdint.h>
+#include "lang/primitive.h"
 
 // event/keyhandler.h — high-level listener contract for hardware key events
 // (Legacy: event/KeyEvent.java).
@@ -22,10 +23,10 @@
 
 typedef struct KeyHandler {
     void *self; // the implementing object, handed back to every callback
-    void (*onKeyDown)(void *self, int keyEvent, uint64_t exactNanos);
-    void (*onKeyUp)(void *self, int keyEvent, uint64_t exactNanos);
-    void (*onKeyRepeat)(void *self, int keyEvent, uint64_t exactNanos);
-    void (*onCharTyped)(void *self, uint32_t character); // default no-op in legacy
+    void (*onKeyDown)(void *self, int keyEvent, u64 exactNanos);
+    void (*onKeyUp)(void *self, int keyEvent, u64 exactNanos);
+    void (*onKeyRepeat)(void *self, int keyEvent, u64 exactNanos);
+    void (*onCharTyped)(void *self, u32 character); // default no-op in legacy
 } KeyHandler;
 
 #endif

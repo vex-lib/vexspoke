@@ -9,7 +9,7 @@ int main(void) {
     bool cut = true;
     // A 5-byte secret is "fooba", whose base32 form is the RFC 4648 vector MZXW6YTB,
     // so the whole URI is knowable exactly: '@' and any delimiter are escaped.
-    const uint8_t secret[] = { 'f', 'o', 'o', 'b', 'a' };
+    const u8 secret[] = { 'f', 'o', 'o', 'b', 'a' };
     assert(OtpAuth_buildUri("Darkbase", "vex@example.com", secret, sizeof secret,
                             6u, 30u, uri, sizeof uri, &cut));
     assert(!cut);

@@ -42,20 +42,20 @@ bool isEqual(const void *a, const void *b) {
     if (!a || !b)
         return false;
 
-    uint64_t ta = Memory_type((void*) a);
-    uint64_t tb = Memory_type((void*) b);
+    u64 ta = Memory_type((void*) a);
+    u64 tb = Memory_type((void*) b);
     if (ta == 0 || tb == 0)
         return false;
     if (ta != tb)
         return false;
 
-    size_t la = Memory_length((void*) a);
-    size_t lb = Memory_length((void*) b);
+    bytes la = Memory_length((void*) a);
+    bytes lb = Memory_length((void*) b);
     if (la != lb)
         return false;
 
-    const uint8_t *pa = (const uint8_t*) a;
-    const uint8_t *pb = (const uint8_t*) b;
+    const u8 *pa = (const u8*) a;
+    const u8 *pb = (const u8*) b;
     return memcmp(pa, pb, la) == 0;
 }
 
@@ -63,8 +63,8 @@ bool isEqual(const void *a, const void *b) {
 bool isEquallyNamed(struct SymbolTable *v, const char *nameA, const char *nameB) {
     if (!v || !nameA || !nameB)
         return false;
-    int32_t idA = SymbolTable_getId(v, nameA);
-    int32_t idB = SymbolTable_getId(v, nameB);
+    i32 idA = SymbolTable_getId(v, nameA);
+    i32 idB = SymbolTable_getId(v, nameB);
     if (idA < 0 || idB < 0)
         return false;
     if (SymbolTable_getClassId(v, idA) != SymbolTable_getClassId(v, idB))

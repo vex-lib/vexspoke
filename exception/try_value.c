@@ -28,7 +28,7 @@
  * STRUCT FIELDS (Mirroring exception/try_value.h):
  * ----------------------------------------------------------------------------
  *   TryValue {
- *     uint64_t value; // success payload; undefined unless code == TRY_OK
+ *     u64 value; // success payload; undefined unless code == TRY_OK
  *     TryCode  code;  // TRY_OK or the named reason
  *   }
  *
@@ -55,7 +55,7 @@
  */
 
 // Constructs a result containing the scalar payload and status code.
-TryValue TryValue_2(uint64_t value, TryCode code) {
+TryValue TryValue_2(u64 value, TryCode code) {
     TryValue self;
     self.value = value;
     self.code = code;
@@ -63,7 +63,7 @@ TryValue TryValue_2(uint64_t value, TryCode code) {
 }
 
 // Constructs a successful result carrying value.
-TryValue TryValue_ok(uint64_t value) {
+TryValue TryValue_ok(u64 value) {
     return TryValue_2(value, TRY_OK);
 }
 
@@ -73,14 +73,14 @@ TryValue TryValue_error(TryCode code) {
 }
 
 // Returns the stored scalar, or zero when self is nullptr.
-uint64_t TryValue_getValue(const TryValue *self) {
+u64 TryValue_getValue(const TryValue *self) {
     if (!self)
         return 0u;
     return (*self).value;
 }
 
 // Replaces the scalar payload when self is non-null.
-void TryValue_setValue(TryValue *self, uint64_t value) {
+void TryValue_setValue(TryValue *self, u64 value) {
     if (!self)
         return;
     (*self).value = value;
@@ -108,7 +108,7 @@ bool TryValue_isOk(const TryValue *self) {
 }
 
 // Formats a value-oriented summary into dest and reports capacity truncation.
-void TryValue_toString(const TryValue *self, char *dest, size_t cap, bool *outTruncated) {
+void TryValue_toString(const TryValue *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (!dest || cap == 0u)
@@ -126,14 +126,14 @@ void TryValue_toString(const TryValue *self, char *dest, size_t cap, bool *outTr
                            TryCode_name((*self).code),
                            TryCode_message((*self).code));
     }
-    if (written < 0 || (size_t) written >= cap) {
+    if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
     }
 }
 
 // Formats the result fields into dest and reports capacity truncation.
-void TryValue_toStringStruct(const TryValue *self, char *dest, size_t cap, bool *outTruncated) {
+void TryValue_toStringStruct(const TryValue *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (!dest || cap == 0u)
@@ -145,7 +145,7 @@ void TryValue_toStringStruct(const TryValue *self, char *dest, size_t cap, bool 
     int written = snprintf(dest, cap, "TryValue { value=%llu, code=%s }",
                            (unsigned long long) (*self).value,
                            TryCode_name((*self).code));
-    if (written < 0 || (size_t) written >= cap) {
+    if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
     }

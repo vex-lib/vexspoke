@@ -36,10 +36,10 @@
  * STRUCT FIELDS (Mirroring time/clock.h):
  * ----------------------------------------------------------------------------
  *   Clock {
- *     double timeScale; // default 1.0
- *     uint64_t baseRealMillis; // wall anchor at create/reset (informational)
- *     uint64_t lastTickRealMillis; // previous tick's real reading
- *     uint64_t virtualTimeMillis; // accumulated scaled time
+ *     d64 timeScale; // default 1.0
+ *     u64 baseRealMillis; // wall anchor at create/reset (informational)
+ *     u64 lastTickRealMillis; // previous tick's real reading
+ *     u64 virtualTimeMillis; // accumulated scaled time
  *     bool paused; // frozen when true
  *   }
  *
@@ -66,17 +66,17 @@
 
 // Wall-clock millis (legacy used System.currentTimeMillis(); kept for the
 // informational base anchor).
-static uint64_t currentTimeMillis(void) {
+static u64 currentTimeMillis(void) {
     struct timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts);
-    return (uint64_t)ts.tv_sec * 1000ULL + (uint64_t)ts.tv_nsec / 1000000ULL;
+    return (u64)ts.tv_sec * 1000ULL + (u64)ts.tv_nsec / 1000000ULL;
 }
 
 // Monotonic millis for the accrual side.
-static uint64_t monoMillis(void) {
+static u64 monoMillis(void) {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
-    return (uint64_t)ts.tv_sec * 1000ULL + (uint64_t)ts.tv_nsec / 1000000ULL;
+    return (u64)ts.tv_sec * 1000ULL + (u64)ts.tv_nsec / 1000000ULL;
 }
 
 // Returns a value-initialized clock anchored to current real and monotonic time.
@@ -92,24 +92,24 @@ Clock Clock_0(void) {
 
 // Accrues monotonic elapsed milliseconds scaled by timeScale unless paused.
 void Clock_tick(Clock *clock) {
-    uint64_t now = monoMillis();
-    uint64_t lastReal = (*clock).lastTickRealMillis;
-    uint64_t elapsedReal = now - lastReal;
+    u64 now = monoMillis();
+    u64 lastReal = (*clock).lastTickRealMillis;
+    u64 elapsedReal = now - lastReal;
     (*clock).lastTickRealMillis = now;
 
     if (!(*clock).paused)
-        (*clock).virtualTimeMillis += (uint64_t)((double)elapsedReal * (*clock).timeScale);
+        (*clock).virtualTimeMillis += (u64)((d64)elapsedReal * (*clock).timeScale);
 }
 
 // Sets the multiplier applied to elapsed real time on subsequent ticks.
-void Clock_setTimeScale(Clock *clock, double scale) {
+void Clock_setTimeScale(Clock *clock, d64 scale) {
     (*clock).timeScale = scale;
 }
 
 
 
 // Returns the configured elapsed-time multiplier.
-double Clock_timeScale(const Clock *clock) {
+d64 Clock_timeScale(const Clock *clock) {
     return (*clock).timeScale;
 }
 
@@ -124,7 +124,7 @@ bool Clock_isPaused(const Clock *clock) {
 }
 
 // Returns accumulated scaled virtual time in milliseconds.
-uint64_t Clock_virtualTimeMillis(const Clock *clock) {
+u64 Clock_virtualTimeMillis(const Clock *clock) {
     return (*clock).virtualTimeMillis;
 }
 

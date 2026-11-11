@@ -23,8 +23,8 @@ static int g_failures = 0;
 // Returns whether the supplied signed integer slice is in nondecreasing order.
 // Returns whether the supplied integer span is in nondecreasing order.
 // Returns whether the supplied int32 sequence is in nondecreasing order.
-static bool intSorted(const int32_t *data, size_t n) {
-    for (size_t i = 1; i < n; i++)
+static bool intSorted(const i32 *data, bytes n) {
+    for (bytes i = 1; i < n; i++)
         if (data[i - 1] > data[i])
             return false;
     return true;
@@ -35,8 +35,8 @@ static bool intSorted(const int32_t *data, size_t n) {
 // Verifies in-place sorting, binary-search insertion encoding, and byte operations.
 int main(void) {
     // sortInt: a scrambled buffer becomes ascending and keeps its multiset.
-    int32_t a[] = { 5, 3, 9, 1, 3, 7, 0, -2, 8, 3 };
-    size_t n = sizeof a / sizeof a[0];
+    i32 a[] = { 5, 3, 9, 1, 3, 7, 0, -2, 8, 3 };
+    bytes n = sizeof a / sizeof a[0];
     Arrays_sortInt(a, n);
     CHECK(intSorted(a, n));
     CHECK(a[0] == -2 && a[n - 1] == 9);
@@ -49,13 +49,13 @@ int main(void) {
 
     // sortLong.
     int64_t b[] = { 40, -5, 12, 7, -100, 7 };
-    size_t nb = sizeof b / sizeof b[0];
+    bytes nb = sizeof b / sizeof b[0];
     Arrays_sortLong(b, nb);
     CHECK(b[0] == -100 && b[nb - 1] == 40);
     CHECK(b[1] == -5 && b[2] == 7 && b[3] == 7);
 
     // binarySearchInt: found index; miss encodes -(insertion + 1).
-    int32_t sorted[] = { 1, 3, 5, 7, 9 };
+    i32 sorted[] = { 1, 3, 5, 7, 9 };
     CHECK(Arrays_binarySearchInt(sorted, 5, 1) == 0);
     CHECK(Arrays_binarySearchInt(sorted, 5, 9) == 4);
     CHECK(Arrays_binarySearchInt(sorted, 5, 5) == 2);
@@ -70,11 +70,11 @@ int main(void) {
     CHECK(Arrays_binarySearchLong(sortedL, 3, 25) == -3);
 
     // fill + copy.
-    uint8_t buf[16];
+    u8 buf[16];
     Arrays_fill(buf, sizeof buf, 0xAB);
-    for (size_t i = 0; i < sizeof buf; i++)
+    for (bytes i = 0; i < sizeof buf; i++)
         CHECK(buf[i] == 0xAB);
-    uint8_t dst[16];
+    u8 dst[16];
     memset(dst, 0, sizeof dst);
     Arrays_copy(buf, dst, sizeof buf);
     CHECK(memcmp(buf, dst, sizeof buf) == 0);

@@ -36,7 +36,7 @@
  */
 
 
-void *ImageMac_decode(const void *fileData, size_t fileSize, size_t *outW, size_t *outH) {
+void *ImageMac_decode(const void *fileData, bytes fileSize, bytes *outW, bytes *outH) {
     if (!fileData || fileSize == 0) return nullptr;
 
     CGDataProviderRef provider = CGDataProviderCreateWithData(nullptr, fileData, fileSize, nullptr);
@@ -53,11 +53,11 @@ void *ImageMac_decode(const void *fileData, size_t fileSize, size_t *outW, size_
 
     if (!image) return nullptr;
 
-    size_t width = CGImageGetWidth(image);
-    size_t height = CGImageGetHeight(image);
+    bytes width = CGImageGetWidth(image);
+    bytes height = CGImageGetHeight(image);
     
-    size_t bytesPerPixel = 4;
-    size_t bytesPerRow = bytesPerPixel * width;
+    bytes bytesPerPixel = 4;
+    bytes bytesPerRow = bytesPerPixel * width;
     void *rgbaData = malloc(height * bytesPerRow);
     
     if (rgbaData) {

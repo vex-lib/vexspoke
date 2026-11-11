@@ -29,12 +29,12 @@
  * STRUCT FIELDS (Mirroring security/crypto.h):
  * ----------------------------------------------------------------------------
  *   CryptoSha256 {
- *     uint32_t state[8];  // SHA-256 working state (8 x 32-bit words)
- *     uint64_t count;     // total Bytes fed (bit length for the final block)
- *     uint8_t buffer[64]; // pending input block
+ *     u32 state[8];  // SHA-256 working state (8 x 32-bit words)
+ *     u64 count;     // total Bytes fed (bit length for the final block)
+ *     u8 buffer[64]; // pending input block
  *   }
  *   CryptoRng {
- *     uint64_t s[2]; // XorShift128+ state words
+ *     u64 s[2]; // XorShift128+ state words
  *   }
  *
  * FUNCTION REGISTRY:
@@ -69,7 +69,7 @@
 // SHA-256 (NIST FIPS 180-4) Implementation
 // ============================================================================
 
-static inline uint32_t Crypto_rotr(uint32_t x, uint32_t n) {
+static inline u32 Crypto_rotr(u32 x, u32 n) {
     return (x >> n) | (x << (32 - n));
 }
 
@@ -80,7 +80,7 @@ static inline uint32_t Crypto_rotr(uint32_t x, uint32_t n) {
 #define SIG0(x)      (Crypto_rotr(x, 7) ^ Crypto_rotr(x, 18) ^ ((x) >> 3))
 #define SIG1(x)      (Crypto_rotr(x, 17) ^ Crypto_rotr(x, 19) ^ ((x) >> 10))
 
-static const uint32_t K[64] = {
+static const u32 K[64] = {
     0x428a2f98u, 0x71374491u, 0xb5c0fbcfu, 0xe9b5dba5u,
     0x3956c25bu, 0x59f111f1u, 0x923f82a4u, 0xab1c5ed5u,
     0xd807aa98u, 0x12835b01u, 0x243185beu, 0x550c7dc3u,
@@ -99,30 +99,30 @@ static const uint32_t K[64] = {
     0x90befffau, 0xa4506cebu, 0xbef9a3f7u, 0xc67178f2u
 };
 
-static void Crypto_sha256Transform(CryptoSha256 *ctx, const uint8_t data[64]) {
-    uint32_t m[64];
+static void Crypto_sha256Transform(CryptoSha256 *ctx, const u8 data[64]) {
+    u32 m[64];
     for (int i = 0; i < 16; i++) {
-        m[i] = ((uint32_t) data[i * 4] << 24) |
-               ((uint32_t) data[i * 4 + 1] << 16) |
-               ((uint32_t) data[i * 4 + 2] << 8) |
-               ((uint32_t) data[i * 4 + 3]);
+        m[i] = ((u32) data[i * 4] << 24) |
+               ((u32) data[i * 4 + 1] << 16) |
+               ((u32) data[i * 4 + 2] << 8) |
+               ((u32) data[i * 4 + 3]);
     }
     for (int i = 16; i < 64; i++) {
         m[i] = SIG1(m[i - 2]) + m[i - 7] + SIG0(m[i - 15]) + m[i - 16];
     }
 
-    uint32_t a = (*ctx).state[0];
-    uint32_t b = (*ctx).state[1];
-    uint32_t c = (*ctx).state[2];
-    uint32_t d = (*ctx).state[3];
-    uint32_t e = (*ctx).state[4];
-    uint32_t f = (*ctx).state[5];
-    uint32_t g = (*ctx).state[6];
-    uint32_t h = (*ctx).state[7];
+    u32 a = (*ctx).state[0];
+    u32 b = (*ctx).state[1];
+    u32 c = (*ctx).state[2];
+    u32 d = (*ctx).state[3];
+    u32 e = (*ctx).state[4];
+    u32 f = (*ctx).state[5];
+    u32 g = (*ctx).state[6];
+    u32 h = (*ctx).state[7];
 
     for (int i = 0; i < 64; i++) {
-        uint32_t t1 = h + EP1(e) + CH(e, f, g) + K[i] + m[i];
-        uint32_t t2 = EP0(a) + MAJ(a, b, c);
+        u32 t1 = h + EP1(e) + CH(e, f, g) + K[i] + m[i];
+        u32 t2 = EP0(a) + MAJ(a, b, c);
         h = g;
         g = f;
         f = e;
@@ -156,16 +156,16 @@ void Crypto_sha256Init(CryptoSha256 *ctx) {
     (*ctx).state[7] = 0x5be0cd19u;
 }
 
-void Crypto_sha256Update(CryptoSha256 *ctx, const void *data, size_t len) {
+void Crypto_sha256Update(CryptoSha256 *ctx, const void *data, bytes len) {
     if (ctx == nullptr || data == nullptr || len == 0) return;
 
-    const uint8_t *p = (const uint8_t*) data;
-    size_t bufIdx = (size_t) ((*ctx).count & 0x3F);
-    (*ctx).count += (uint64_t) len;
+    const u8 *p = (const u8*) data;
+    bytes bufIdx = (bytes) ((*ctx).count & 0x3F);
+    (*ctx).count += (u64) len;
 
     // Fill buffer if partially full
     if (bufIdx > 0) {
-        size_t needed = 64 - bufIdx;
+        bytes needed = 64 - bufIdx;
         if (len < needed) {
             memcpy((*ctx).buffer + bufIdx, p, len);
             return;
@@ -189,11 +189,11 @@ void Crypto_sha256Update(CryptoSha256 *ctx, const void *data, size_t len) {
     }
 }
 
-void Crypto_sha256Final(CryptoSha256 *ctx, uint8_t outDigest[CRYPTO_SHA256_DIGEST_SIZE]) {
+void Crypto_sha256Final(CryptoSha256 *ctx, u8 outDigest[CRYPTO_SHA256_DIGEST_SIZE]) {
     if (ctx == nullptr || outDigest == nullptr) return;
 
-    uint64_t bitCount = (*ctx).count * 8ULL;
-    size_t bufIdx = (size_t) ((*ctx).count & 0x3F);
+    u64 bitCount = (*ctx).count * 8ULL;
+    bytes bufIdx = (bytes) ((*ctx).count & 0x3F);
 
     // Append 0x80 bit
     (*ctx).buffer[bufIdx++] = 0x80;
@@ -209,28 +209,28 @@ void Crypto_sha256Final(CryptoSha256 *ctx, uint8_t outDigest[CRYPTO_SHA256_DIGES
 
     // Append 64-bit big-endian bit length
     for (int i = 7; i >= 0; i--) {
-        (*ctx).buffer[56 + (7 - i)] = (uint8_t) ((bitCount >> (i * 8)) & 0xFF);
+        (*ctx).buffer[56 + (7 - i)] = (u8) ((bitCount >> (i * 8)) & 0xFF);
     }
     Crypto_sha256Transform(ctx, (*ctx).buffer);
 
     // Output big-endian digest
     for (int i = 0; i < 8; i++) {
-        outDigest[i * 4]     = (uint8_t) (((*ctx).state[i] >> 24) & 0xFF);
-        outDigest[i * 4 + 1] = (uint8_t) (((*ctx).state[i] >> 16) & 0xFF);
-        outDigest[i * 4 + 2] = (uint8_t) (((*ctx).state[i] >> 8) & 0xFF);
-        outDigest[i * 4 + 3] = (uint8_t) (((*ctx).state[i]) & 0xFF);
+        outDigest[i * 4]     = (u8) (((*ctx).state[i] >> 24) & 0xFF);
+        outDigest[i * 4 + 1] = (u8) (((*ctx).state[i] >> 16) & 0xFF);
+        outDigest[i * 4 + 2] = (u8) (((*ctx).state[i] >> 8) & 0xFF);
+        outDigest[i * 4 + 3] = (u8) (((*ctx).state[i]) & 0xFF);
     }
 }
 
-void Crypto_sha256(const void *data, size_t len, uint8_t outDigest[CRYPTO_SHA256_DIGEST_SIZE]) {
+void Crypto_sha256(const void *data, bytes len, u8 outDigest[CRYPTO_SHA256_DIGEST_SIZE]) {
     CryptoSha256 ctx;
     Crypto_sha256Init(&ctx);
     Crypto_sha256Update(&ctx, data, len);
     Crypto_sha256Final(&ctx, outDigest);
 }
 
-void Crypto_sha256Hex(const void *data, size_t len, char outHex[CRYPTO_SHA256_HEX_SIZE]) {
-    uint8_t digest[CRYPTO_SHA256_DIGEST_SIZE];
+void Crypto_sha256Hex(const void *data, bytes len, char outHex[CRYPTO_SHA256_HEX_SIZE]) {
+    u8 digest[CRYPTO_SHA256_DIGEST_SIZE];
     Crypto_sha256(data, len, digest);
     Crypto_toHex(digest, CRYPTO_SHA256_DIGEST_SIZE, outHex);
 }
@@ -239,12 +239,12 @@ void Crypto_sha256Hex(const void *data, size_t len, char outHex[CRYPTO_SHA256_HE
 // Constant-Time Equality Verification
 // ============================================================================
 
-bool Crypto_constantTimeEquals(const void *a, const void *b, size_t len) {
+bool Crypto_constantTimeEquals(const void *a, const void *b, bytes len) {
     if (a == nullptr || b == nullptr) return false;
-    const volatile uint8_t *pa = (const volatile uint8_t*) a;
-    const volatile uint8_t *pb = (const volatile uint8_t*) b;
-    uint8_t diff = 0;
-    for (size_t i = 0; i < len; i++) {
+    const volatile u8 *pa = (const volatile u8*) a;
+    const volatile u8 *pb = (const volatile u8*) b;
+    u8 diff = 0;
+    for (bytes i = 0; i < len; i++) {
         diff |= (pa[i] ^ pb[i]);
     }
     return (diff == 0);
@@ -254,13 +254,13 @@ bool Crypto_constantTimeEquals(const void *a, const void *b, size_t len) {
 // Fast Relational Hash Mixers (64-bit & 32-bit)
 // ============================================================================
 
-uint64_t Crypto_hash64(const void *data, size_t len) {
+u64 Crypto_hash64(const void *data, bytes len) {
     if (data == nullptr || len == 0) return 0;
-    const uint8_t *p = (const uint8_t*) data;
+    const u8 *p = (const u8*) data;
     // FNV-1a 64-bit basis
-    uint64_t h = 0xcbf29ce484222325ULL;
-    for (size_t i = 0; i < len; i++) {
-        h ^= (uint64_t) p[i];
+    u64 h = 0xcbf29ce484222325ULL;
+    for (bytes i = 0; i < len; i++) {
+        h ^= (u64) p[i];
         h *= 0x100000001b3ULL;
     }
     // Murmur/Splitmix final avalanche mixer
@@ -272,66 +272,66 @@ uint64_t Crypto_hash64(const void *data, size_t len) {
     return h;
 }
 
-uint32_t Crypto_hash32(const void *data, size_t len) {
-    uint64_t h = Crypto_hash64(data, len);
-    return (uint32_t) (h ^ (h >> 32));
+u32 Crypto_hash32(const void *data, bytes len) {
+    u64 h = Crypto_hash64(data, len);
+    return (u32) (h ^ (h >> 32));
 }
 
 // ============================================================================
 // XorShift128+ PRNG Engine
 // ============================================================================
 
-static uint64_t splitmix64(uint64_t *seed) {
-    uint64_t z = (*seed += 0x9e3779b97f4a7c15ULL);
+static u64 splitmix64(u64 *seed) {
+    u64 z = (*seed += 0x9e3779b97f4a7c15ULL);
     z = (z ^ (z >> 30)) * 0xbf58476d1ce4e5b9ULL;
     z = (z ^ (z >> 27)) * 0x94d049bb133111ebULL;
     return z ^ (z >> 31);
 }
 
-void Crypto_rngInit(CryptoRng *rng, uint64_t seed) {
+void Crypto_rngInit(CryptoRng *rng, u64 seed) {
     if (rng == nullptr) return;
     if (seed == 0) seed = 0x853c49e6748fea9bULL;
-    uint64_t sm = seed;
+    u64 sm = seed;
     (*rng).s[0] = splitmix64(&sm);
     (*rng).s[1] = splitmix64(&sm);
 }
 
-uint64_t Crypto_rngNextU64(CryptoRng *rng) {
+u64 Crypto_rngNextU64(CryptoRng *rng) {
     if (rng == nullptr) return 0;
-    uint64_t s1 = (*rng).s[0];
-    const uint64_t s0 = (*rng).s[1];
+    u64 s1 = (*rng).s[0];
+    const u64 s0 = (*rng).s[1];
     (*rng).s[0] = s0;
     s1 ^= s1 << 23;
     (*rng).s[1] = s1 ^ s0 ^ (s1 >> 18) ^ (s0 >> 5);
     return (*rng).s[1] + s0;
 }
 
-void Crypto_rngBytes(CryptoRng *rng, void *dest, size_t len) {
+void Crypto_rngBytes(CryptoRng *rng, void *dest, bytes len) {
     if (rng == nullptr || dest == nullptr || len == 0) return;
-    uint8_t *p = (uint8_t*) dest;
+    u8 *p = (u8*) dest;
     while (len >= 8) {
-        uint64_t val = Crypto_rngNextU64(rng);
+        u64 val = Crypto_rngNextU64(rng);
         memcpy(p, &val, 8);
         p += 8;
         len -= 8;
     }
     if (len > 0) {
-        uint64_t val = Crypto_rngNextU64(rng);
+        u64 val = Crypto_rngNextU64(rng);
         memcpy(p, &val, len);
     }
 }
 
 static CryptoRng g_defaultRng = { { 0x123456789abcdef0ULL, 0xfedcba9876543210ULL } };
 
-void Crypto_prngSeed(uint64_t seed) {
+void Crypto_prngSeed(u64 seed) {
     Crypto_rngInit(&g_defaultRng, seed);
 }
 
-uint64_t Crypto_prngU64(void) {
+u64 Crypto_prngU64(void) {
     return Crypto_rngNextU64(&g_defaultRng);
 }
 
-void Crypto_prngBytes(void *dest, size_t len) {
+void Crypto_prngBytes(void *dest, bytes len) {
     Crypto_rngBytes(&g_defaultRng, dest, len);
 }
 
@@ -341,13 +341,13 @@ void Crypto_prngBytes(void *dest, size_t len) {
 
 static const char HEX_CHARS[] = "0123456789abcdef";
 
-void Crypto_toHex(const uint8_t *Bytes, size_t len, char *outHex) {
+void Crypto_toHex(const u8 *Bytes, bytes len, char *outHex) {
     if (outHex == nullptr) return;
     if (Bytes == nullptr || len == 0) {
         outHex[0] = '\0';
         return;
     }
-    for (size_t i = 0; i < len; i++) {
+    for (bytes i = 0; i < len; i++) {
         outHex[i * 2]     = HEX_CHARS[(Bytes[i] >> 4) & 0x0F];
         outHex[i * 2 + 1] = HEX_CHARS[Bytes[i] & 0x0F];
     }
@@ -361,19 +361,19 @@ static int hexVal(char c) {
     return -1;
 }
 
-size_t Crypto_fromHex(const char *hex, uint8_t *outBytes, size_t maxBytes) {
+bytes Crypto_fromHex(const char *hex, u8 *outBytes, bytes maxBytes) {
     if (hex == nullptr || outBytes == nullptr || maxBytes == 0) return 0;
-    size_t hexLen = strlen(hex);
-    size_t byteCount = hexLen / 2;
+    bytes hexLen = strlen(hex);
+    bytes byteCount = hexLen / 2;
     if (byteCount > maxBytes) byteCount = maxBytes;
 
-    for (size_t i = 0; i < byteCount; i++) {
+    for (bytes i = 0; i < byteCount; i++) {
         int hi = hexVal(hex[i * 2]);
         int lo = hexVal(hex[i * 2 + 1]);
         if (hi < 0 || lo < 0) {
             return i; // Stop at invalid hex char
         }
-        outBytes[i] = (uint8_t) ((hi << 4) | lo);
+        outBytes[i] = (u8) ((hi << 4) | lo);
     }
     return byteCount;
 }

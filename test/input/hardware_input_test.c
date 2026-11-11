@@ -12,17 +12,17 @@
 // Checks note conversion and piano note-on/note-off state transitions.
 static void test_piano_keys(void) {
     // A4 (note 69) is 440.0 Hz
-    float a4_freq = PianoKey_frequency(PIANO_A4_NOTE);
+    f32 a4_freq = PianoKey_frequency(PIANO_A4_NOTE);
 
     assert(fabsf(a4_freq - 440.0f) < 0.001f);
 
     // Middle C (note 60) is ~261.63 Hz
-    float c4_freq = PianoKey_frequency(60);
+    f32 c4_freq = PianoKey_frequency(60);
 
     assert(fabsf(c4_freq - 261.6256f) < 0.01f);
 
     // A5 (note 81) is one octave higher = 880.0 Hz
-    float a5_freq = PianoKey_frequency(81);
+    f32 a5_freq = PianoKey_frequency(81);
 
     assert(fabsf(a5_freq - 880.0f) < 0.001f);
 

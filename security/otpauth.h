@@ -22,8 +22,8 @@
 // &algorithm=SHA1&digits=<6..8>&period=<step>` into `dest` (NUL-terminated).
 // False with *outTruncated set when `cap` cannot hold it, or on invalid input.
 bool OtpAuth_buildUri(const char *issuer, const char *account,
-                      const uint8_t *secret, size_t secretLen,
+                      const u8 *secret, bytes secretLen,
                       unsigned digits, unsigned stepSeconds,
-                      char *dest, size_t cap, bool *outTruncated);
+                      char *dest, bytes cap, bool *outTruncated);
 
 #endif

@@ -16,18 +16,18 @@
 #define REGEX_CLASS_BYTES 32u
 
 typedef struct RegexCharClass {
-    uint8_t bits[REGEX_CLASS_BYTES];  // one bit per byte value
+    u8 bits[REGEX_CLASS_BYTES];  // one bit per byte value
 } RegexCharClass;
 
 // Zero every bit.
 void RegexCharClass_clear(RegexCharClass *cls);
 
 // Set one byte, and its opposite ASCII case when insensitive is true.
-void RegexCharClass_addByte(RegexCharClass *cls, uint8_t byte, bool insensitive);
+void RegexCharClass_addByte(RegexCharClass *cls, u8 byte, bool insensitive);
 
 // Set an inclusive byte range, folding both cases when insensitive is true.
 // lo > hi is refused (the caller validates ranges; this stays total).
-void RegexCharClass_addRange(RegexCharClass *cls, uint8_t lo, uint8_t hi, bool insensitive);
+void RegexCharClass_addRange(RegexCharClass *cls, u8 lo, u8 hi, bool insensitive);
 
 // Union one of the \d \D \w \W \s \S families; an unknown letter adds nothing.
 void RegexCharClass_addPredefined(RegexCharClass *cls, char letter);
@@ -39,6 +39,6 @@ bool RegexCharClass_isPredefined(char letter);
 void RegexCharClass_negate(RegexCharClass *cls);
 
 // Test one byte.
-bool RegexCharClass_test(const RegexCharClass *cls, uint8_t byte);
+bool RegexCharClass_test(const RegexCharClass *cls, u8 byte);
 
 #endif

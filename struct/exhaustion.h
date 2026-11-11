@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "util/annotation.h"
+#include "lang/annotation.h"
 
 // struct/exhaustion.h — the shared loud-refusal seam (the Exhaustion Loudness
 // Law) for owners that own finite storage but do not embed a Collection.
@@ -21,16 +21,16 @@
 // capacity the owner hit (0 when there is no meaningful bound), so the
 // diagnostic names the request AND the bound (the Exhaustion Loudness Law).
 ;;VALIDATOR
-bool Struct_reportExhaustion(uint64_t *count, bool *reported, const char *owner,
-                             size_t requestedBytes, size_t boundBytes);
+bool Struct_reportExhaustion(u64 *count, bool *reported, const char *owner,
+                             bytes requestedBytes, bytes boundBytes);
 
 // The owner's refusal count for the current epoch.
 ;;TEST
-uint64_t Struct_exhaustionCount(const uint64_t *count);
+u64 Struct_exhaustionCount(const u64 *count);
 
 // Start a fresh epoch for the owner (count zeroed, diagnostic armed again).
 ;;TEST
-void Struct_resetExhaustion(uint64_t *count, bool *reported);
+void Struct_resetExhaustion(u64 *count, bool *reported);
 
 // --- Construction refusals (no owner instance exists yet) ---
 // A constructor that cannot allocate its struct or backing returns nullptr; the
@@ -39,11 +39,11 @@ void Struct_resetExhaustion(uint64_t *count, bool *reported);
 
 // Count a construction refusal and report the epoch's first one. Always false.
 ;;VALIDATOR
-bool Struct_reportConstructionExhaustion(const char *owner, size_t requestedBytes);
+bool Struct_reportConstructionExhaustion(const char *owner, bytes requestedBytes);
 
 // The process-wide construction-refusal count for the current epoch.
 ;;TEST
-uint64_t Struct_constructionExhaustionCount(void);
+u64 Struct_constructionExhaustionCount(void);
 
 // Start a fresh process-wide construction epoch.
 ;;TEST

@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "util/constructor.h"
-#include "re/atomic/spin.h"
+#include "lang/constructor.h"
+#include "re/atomic/atomic.h"
 
 // thread/ring.h — MPMC ring buffer API (Legacy: thread/RingBuffer.java).
 //
@@ -16,18 +16,18 @@
 
 typedef struct RingBuffer {
     SpinLock lock;       // serializes the actual copy in/_out
-    size_t capacity;        // power of two
-    size_t mask;            // capacity - 1, for slot masking
-    size_t elem_size;       // Bytes per element
-    _Atomic size_t head;    // consumer index (monotonic, never wraps back)
-    _Atomic size_t tail;    // producer index (monotonic, never wraps back)
-    uint8_t *slots;         // capacity * elem_size arena
+    bytes capacity;        // power of two
+    bytes mask;            // capacity - 1, for slot masking
+    bytes elem_size;       // Bytes per element
+    _Atomic bytes head;    // consumer index (monotonic, never wraps back)
+    _Atomic bytes tail;    // producer index (monotonic, never wraps back)
+    u8 *slots;         // capacity * elem_size arena
 } RingBuffer;
 
 // Construct a ring for elem_size-byte elements, capacity slots (rounded up to
 // pow2). A null slots pointer means invalid arguments or allocation failure.
 RingBuffer RingBuffer_0(void);
-RingBuffer RingBuffer_2(size_t elem_size, size_t capacity);
+RingBuffer RingBuffer_2(bytes elem_size, bytes capacity);
 #define RingBuffer(...) CONSTRUCTOR_DISPATCH(RingBuffer, __VA_ARGS__)
 
 void RingBuffer_shutdown(RingBuffer *ring);

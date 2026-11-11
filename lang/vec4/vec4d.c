@@ -12,11 +12,11 @@
  * ============================================================================
  * DEFINITION: Vec4d
  * ============================================================================
- * 32-byte SIMD 4D double-precision vector: horizontal/vertical/depth/w
+ * 32-byte SIMD 4D d64-precision vector: horizontal/vertical/depth/w
  * components in an alignas(32) union with x/y/z/w, right/up/front aliases,
  * and a raw data[4] view. Directional accessors expose semantic axes whose
  * inverses are exact negations. All arithmetic is dest-last and null-guarded;
- * length uses strict double sqrt over the 4-component dot product. Arena-
+ * length uses strict d64 sqrt over the 4-component dot product. Arena-
  * allocated via Memory_alloc with the ID_VEC4 type tag.
  * ============================================================================
  */
@@ -31,10 +31,10 @@
  * ----------------------------------------------------------------------------
  *   Vec4d {
  *     alignas(32) union {
- *       struct { double horizontal; double vertical; double depth; double w; };
- *       struct { double x; double y; double z; double _w; };
- *       struct { double right; double up; double front; double _w2; };
- *       double data[4];
+ *       struct { d64 horizontal; d64 vertical; d64 depth; d64 w; };
+ *       struct { d64 x; d64 y; d64 z; d64 _w; };
+ *       struct { d64 right; d64 up; d64 front; d64 _w2; };
+ *       d64 data[4];
  *     };
  *   }
  *
@@ -74,7 +74,7 @@ Vec4d *Vec4d_0(void) {
     return v;
 }
 
-Vec4d *Vec4d_4(double horizontal, double vertical, double depth, double w) {
+Vec4d *Vec4d_4(d64 horizontal, d64 vertical, d64 depth, d64 w) {
     Vec4d *v = (Vec4d*) Memory_alloc(ID_VEC4, VEC4D_BYTES);
     if (!v) return nullptr;
     (*v).horizontal = horizontal;
@@ -88,20 +88,20 @@ void Vec4d_free(Vec4d *v) {
     if (v) Memory_free(v);
 }
 
-double Vec4d_getRight(const Vec4d *v) { return v ? (*v).horizontal : 0.0; }
-void   Vec4d_setRight(Vec4d *v, double val) { if (v) (*v).horizontal = val; }
-double Vec4d_getLeft(const Vec4d *v)  { return v ? -(*v).horizontal : 0.0; }
-void   Vec4d_setLeft(Vec4d *v, double val)  { if (v) (*v).horizontal = -val; }
+d64 Vec4d_getRight(const Vec4d *v) { return v ? (*v).horizontal : 0.0; }
+void   Vec4d_setRight(Vec4d *v, d64 val) { if (v) (*v).horizontal = val; }
+d64 Vec4d_getLeft(const Vec4d *v)  { return v ? -(*v).horizontal : 0.0; }
+void   Vec4d_setLeft(Vec4d *v, d64 val)  { if (v) (*v).horizontal = -val; }
 
-double Vec4d_getUp(const Vec4d *v)   { return v ? (*v).vertical : 0.0; }
-void   Vec4d_setUp(Vec4d *v, double val)   { if (v) (*v).vertical = val; }
-double Vec4d_getDown(const Vec4d *v) { return v ? -(*v).vertical : 0.0; }
-void   Vec4d_setDown(Vec4d *v, double val) { if (v) (*v).vertical = -val; }
+d64 Vec4d_getUp(const Vec4d *v)   { return v ? (*v).vertical : 0.0; }
+void   Vec4d_setUp(Vec4d *v, d64 val)   { if (v) (*v).vertical = val; }
+d64 Vec4d_getDown(const Vec4d *v) { return v ? -(*v).vertical : 0.0; }
+void   Vec4d_setDown(Vec4d *v, d64 val) { if (v) (*v).vertical = -val; }
 
-double Vec4d_getFront(const Vec4d *v) { return v ? (*v).depth : 0.0; }
-void   Vec4d_setFront(Vec4d *v, double val) { if (v) (*v).depth = val; }
-double Vec4d_getBack(const Vec4d *v)  { return v ? -(*v).depth : 0.0; }
-void   Vec4d_setBack(Vec4d *v, double val)  { if (v) (*v).depth = -val; }
+d64 Vec4d_getFront(const Vec4d *v) { return v ? (*v).depth : 0.0; }
+void   Vec4d_setFront(Vec4d *v, d64 val) { if (v) (*v).depth = val; }
+d64 Vec4d_getBack(const Vec4d *v)  { return v ? -(*v).depth : 0.0; }
+void   Vec4d_setBack(Vec4d *v, d64 val)  { if (v) (*v).depth = -val; }
 
 void Vec4d_add(const Vec4d *a, const Vec4d *b, Vec4d *dest) {
     if (!a || !b || !dest) return;
@@ -119,7 +119,7 @@ void Vec4d_sub(const Vec4d *a, const Vec4d *b, Vec4d *dest) {
     (*dest).w = (*a).w - (*b).w;
 }
 
-void Vec4d_mul(const Vec4d *a, double scalar, Vec4d *dest) {
+void Vec4d_mul(const Vec4d *a, d64 scalar, Vec4d *dest) {
     if (!a || !dest) return;
     (*dest).horizontal = (*a).horizontal * scalar;
     (*dest).vertical = (*a).vertical * scalar;
@@ -127,7 +127,7 @@ void Vec4d_mul(const Vec4d *a, double scalar, Vec4d *dest) {
     (*dest).w = (*a).w * scalar;
 }
 
-double Vec4d_dot(const Vec4d *a, const Vec4d *b) {
+d64 Vec4d_dot(const Vec4d *a, const Vec4d *b) {
     if (!a || !b) return 0.0;
     return (*a).horizontal * (*b).horizontal +
            (*a).vertical * (*b).vertical +
@@ -135,6 +135,6 @@ double Vec4d_dot(const Vec4d *a, const Vec4d *b) {
            (*a).w * (*b).w;
 }
 
-double Vec4d_length(const Vec4d *v) {
+d64 Vec4d_length(const Vec4d *v) {
     return StrictMath_sqrtD(Vec4d_dot(v, v));
 }

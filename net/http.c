@@ -66,24 +66,24 @@
  *     int port; // 0 => 80
  *     const char *path; // default "/"
  *     const HttpHeader *headers; // header array (headerCount entries)
- *     uint32_t headerCount; // header array length
+ *     u32 headerCount; // header array length
  *     const char *body; // nullptr = no body
- *     size_t bodyLen; // message body state
- *     uint32_t timeoutMs; // connect+read budget, default 5000
+ *     bytes bodyLen; // message body state
+ *     u32 timeoutMs; // connect+read budget, default 5000
  *   }
  *   HttpResponse {
  *     bool ok; // transport-level success; status may still be 4xx
  *     int status; // HTTP status code
  *     char contentType[128]; // response MIME type
  *     char *body; // caller-owned receive buffer
- *     size_t bodyCap; // receive buffer capacity
- *     size_t bodyLen; // received body length
+ *     bytes bodyCap; // receive buffer capacity
+ *     bytes bodyLen; // received body length
  *   }
  *   HttpExchange {
  *     char method[16]; // HTTP method
  *     char path[1024]; // request path
  *     const char *body; // request body view
- *     size_t bodyLen; // request body length
+ *     bytes bodyLen; // request body length
  *   }
  *   HttpServer {
  *     int listenFd; // listen socket fd
@@ -112,7 +112,7 @@
 // buffer is safe.
 static char s_serverBody[SERVER_BODY_CAP];
 
-static void applyTimeout(int fd, uint32_t ms) {
+static void applyTimeout(int fd, u32 ms) {
     struct timeval tv = { .tv_sec = ms / 1000, .tv_usec = (suseconds_t)((ms % 1000) * 1000) };
     setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
     setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
@@ -120,19 +120,19 @@ static void applyTimeout(int fd, uint32_t ms) {
 
 // --- Client ---
 
-static bool writeAll(int fd, const char *buf, size_t len) {
-    size_t sent = 0;
+static bool writeAll(int fd, const char *buf, bytes len) {
+    bytes sent = 0;
     while (sent < len) {
         ssize_t n = send(fd, buf + sent, len - sent, 0);
         if (n <= 0) return false;
-        sent += (size_t)n;
+        sent += (bytes)n;
     }
     return true;
 }
 
 // Read one CRLF-terminated line (without CRLF) from fd.
-static bool readLine(int fd, char *out, size_t cap, size_t *lenOut) {
-    size_t n = 0;
+static bool readLine(int fd, char *out, bytes cap, bytes *lenOut) {
+    bytes n = 0;
     while (n + 1 < cap) {
         char c;
         ssize_t r = recv(fd, &c, 1, 0);
@@ -148,10 +148,10 @@ static bool readLine(int fd, char *out, size_t cap, size_t *lenOut) {
     return false;
 }
 
-static bool recvSome(int fd, char *dst, size_t cap, size_t *gotOut) {
+static bool recvSome(int fd, char *dst, bytes cap, bytes *gotOut) {
     ssize_t r = recv(fd, dst, cap, 0);
     if (r <= 0) return false;
-    *gotOut = (size_t)r;
+    *gotOut = (bytes)r;
     return true;
 }
 
@@ -168,7 +168,7 @@ static bool hasCRLF(const char *s) {
 bool Http_perform(const HttpRequest *req, HttpResponse *resp) {
     // Preserve the caller's receive buffer across the init wipe.
     char *bodyOut = resp ? (*resp).body : nullptr;
-    size_t bodyCap = resp ? (*resp).bodyCap : 0;
+    bytes bodyCap = resp ? (*resp).bodyCap : 0;
 
     memset(resp, 0, sizeof(*resp));
     (*resp).status = -1;
@@ -191,12 +191,12 @@ bool Http_perform(const HttpRequest *req, HttpResponse *resp) {
     // must not smuggle extra requests into the head block.
     if (hasCRLF(method) || hasCRLF(path) || hasCRLF((*req).host))
         return false;
-    for (uint32_t i = 0; i < (*req).headerCount && i < HTTP_MAX_HEADERS; i++) {
+    for (u32 i = 0; i < (*req).headerCount && i < HTTP_MAX_HEADERS; i++) {
         if (hasCRLF((*req).headers[i].name) || hasCRLF((*req).headers[i].value))
             return false;
     }
     int port = (*req).port > 0 ? (*req).port : Url_defaultPort(scheme);
-    uint32_t timeoutMs = (*req).timeoutMs ? (*req).timeoutMs : RECV_TIMEOUT_DEFAULT_MS;
+    u32 timeoutMs = (*req).timeoutMs ? (*req).timeoutMs : RECV_TIMEOUT_DEFAULT_MS;
 
     // --- Resolve ---
     char portStr[8];
@@ -227,22 +227,22 @@ bool Http_perform(const HttpRequest *req, HttpResponse *resp) {
                      "Connection: close\r\n"
                      "Content-Length: %zu\r\n",
                      method, path, (*req).host, (*req).bodyLen);
-    if (h < 0 || (size_t)h >= sizeof(head)) {
+    if (h < 0 || (bytes)h >= sizeof(head)) {
         close(fd);
         return false;
     }
 
-    for (uint32_t i = 0; i < (*req).headerCount && i < HTTP_MAX_HEADERS; i++) {
-        int k = snprintf(head + h, sizeof(head) - (size_t)h, "%s: %s\r\n",
+    for (u32 i = 0; i < (*req).headerCount && i < HTTP_MAX_HEADERS; i++) {
+        int k = snprintf(head + h, sizeof(head) - (bytes)h, "%s: %s\r\n",
                          (*req).headers[i].name, (*req).headers[i].value);
-        if (k < 0 || (size_t)k >= sizeof(head) - (size_t)h) {
+        if (k < 0 || (bytes)k >= sizeof(head) - (bytes)h) {
             close(fd);
             return false;
         }
         h += k;
     }
-    h += snprintf(head + h, sizeof(head) - (size_t)h, "\r\n");
-    ok = writeAll(fd, head, (size_t)h);
+    h += snprintf(head + h, sizeof(head) - (bytes)h, "\r\n");
+    ok = writeAll(fd, head, (bytes)h);
 
     // --- Send body (skip for GET-style no-body verbs) ---
     if (ok && (*req).body && (*req).bodyLen)
@@ -250,7 +250,7 @@ bool Http_perform(const HttpRequest *req, HttpResponse *resp) {
 
     // --- Status line + headers ---
     char line[2048];
-    size_t lineLen;
+    bytes lineLen;
     if (!ok || !readLine(fd, line, sizeof(line), &lineLen)) {
         close(fd);
         return false;
@@ -275,18 +275,18 @@ bool Http_perform(const HttpRequest *req, HttpResponse *resp) {
     }
 
     // --- Body ---
-    size_t total = 0;
+    bytes total = 0;
     ok = true;
     if (chunked) {
         // Each chunk: hex-size line, payload, CRLF; zero chunk terminates.
         while (true) {
             if (!readLine(fd, line, sizeof(line), &lineLen)) { ok = false; break; }
-            size_t chunkLen = (size_t)strtoul(line, nullptr, 16);
+            bytes chunkLen = (bytes)strtoul(line, nullptr, 16);
             if (chunkLen == 0) break;
             if (total + chunkLen > (*resp).bodyCap) { ok = false; break; }
-            size_t got = 0;
+            bytes got = 0;
             while (got < chunkLen && ok) {
-                size_t step;
+                bytes step;
                 if (!recvSome(fd, (*resp).body + total + got, chunkLen - got, &step)) ok = false;
                 else got += step;
             }
@@ -297,7 +297,7 @@ bool Http_perform(const HttpRequest *req, HttpResponse *resp) {
     } else {
         ssize_t r;
         while (total < (*resp).bodyCap && (r = recv(fd, (*resp).body + total, (*resp).bodyCap - total, 0)) > 0)
-            total += (size_t)r;
+            total += (bytes)r;
     }
     close(fd);
 
@@ -309,7 +309,7 @@ bool Http_perform(const HttpRequest *req, HttpResponse *resp) {
 }
 
 void Http_respond(int clientFd, int status, const char *contentType,
-                  const char *body, size_t bodyLen) {
+                  const char *body, bytes bodyLen) {
     const char *reason =
         status == 200 ? "OK" :
         status == 201 ? "Created" :
@@ -327,7 +327,7 @@ void Http_respond(int clientFd, int status, const char *contentType,
                      "\r\n",
                      status, reason, contentType ? contentType : "text/plain", bodyLen);
     if (h < 0) return;
-    if (!writeAll(clientFd, head, (size_t)h)) return;
+    if (!writeAll(clientFd, head, (bytes)h)) return;
     if (bodyLen) writeAll(clientFd, body, bodyLen);
 }
 
@@ -352,10 +352,10 @@ static void *acceptLoop(void *arg) {
         memset(&ex, 0, sizeof(ex));
 
         char line[2048];
-        size_t lineLen = 0;
-        size_t total = 0;
+        bytes lineLen = 0;
+        bytes total = 0;
         bool haveHead = false;
-        size_t contentLen = 0;
+        bytes contentLen = 0;
 
         // Slurp until end of headers, then Content-Length worth of body.
         while (total < SERVER_BODY_CAP &&
@@ -367,7 +367,7 @@ static void *acceptLoop(void *arg) {
                 continue;
             }
             if (strncasecmp(line, "Content-Length:", 15) == 0)
-                contentLen = (size_t)strtoul(line + 15, nullptr, 10);
+                contentLen = (bytes)strtoul(line + 15, nullptr, 10);
         }
         // Fail closed: attacker Content-Length must not overflow the fixed box.
         if (contentLen > SERVER_BODY_CAP) {
@@ -376,11 +376,11 @@ static void *acceptLoop(void *arg) {
             continue;
         }
         while (total < contentLen) {
-            size_t want = contentLen - total;
+            bytes want = contentLen - total;
             if (want > SERVER_BODY_CAP - total) want = SERVER_BODY_CAP - total;
             ssize_t r = recv(clientFd, s_serverBody + total, want, 0);
             if (r <= 0) break;
-            total += (size_t)r;
+            total += (bytes)r;
         }
 
         ex.body = total ? s_serverBody : nullptr;
@@ -406,7 +406,7 @@ bool HttpServer_start(HttpServer *server, int port, HttpHandler handler,
 
     struct sockaddr_in addr = { .sin_family = AF_INET,
                                 .sin_addr.s_addr = htonl(INADDR_LOOPBACK),
-                                .sin_port = htons((uint16_t)(port > 0 ? port : 0)) };
+                                .sin_port = htons((u16)(port > 0 ? port : 0)) };
     if (bind(fd, (struct sockaddr*) &addr, sizeof(addr)) != 0 || listen(fd, 4) != 0) {
         close(fd);
         return false;

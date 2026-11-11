@@ -16,7 +16,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <math.h>
-#include <float.h>
+#include <f32.h>
 
 #include "algo/bvh.h"
 
@@ -31,14 +31,14 @@ static int g_failures = 0;
     } while (0)
 
 /** Creates a cube AABB centered at the supplied coordinates with half-extent h. */
-static BvhAabb box_at(float x, float y, float z, float h) {
-    float mn[3] = { x - h, y - h, z - h };
-    float mx[3] = { x + h, y + h, z + h };
+static BvhAabb box_at(f32 x, f32 y, f32 z, f32 h) {
+    f32 mn[3] = { x - h, y - h, z - h };
+    f32 mx[3] = { x + h, y + h, z + h };
     return BvhAabb_from_points(mn, mx);
 }
 
 /** Creates a BVH primitive with the requested identity and centered cube bounds. */
-static BvhPrimitive prim(uint32_t id, float x, float y, float z, float h) {
+static BvhPrimitive prim(u32 id, f32 x, f32 y, f32 z, f32 h) {
     BvhPrimitive p;
     p.id = id;
     p.bounds = box_at(x, y, z, h);
@@ -53,13 +53,13 @@ static void test_aabb(void) {
     BvhAabb e = BvhAabb_empty();
     CHECK(e.min_point[0] == FLT_MAX && e.max_point[0] == -FLT_MAX);
 
-    float pt[3] = { 2.0f, -1.0f, 5.0f };
+    f32 pt[3] = { 2.0f, -1.0f, 5.0f };
     BvhAabb_expand_point(pt, &e);
     CHECK(e.min_point[0] == 2.0f && e.max_point[0] == 2.0f);
     CHECK(e.min_point[1] == -1.0f && e.max_point[1] == -1.0f);
     CHECK(e.min_point[2] == 5.0f && e.max_point[2] == 5.0f);
 
-    float pt2[3] = { -3.0f, 4.0f, 1.0f };
+    f32 pt2[3] = { -3.0f, 4.0f, 1.0f };
     BvhAabb_expand_point(pt2, &e);
     CHECK(e.min_point[0] == -3.0f && e.max_point[0] == 2.0f);
     CHECK(e.min_point[1] == -1.0f && e.max_point[1] == 4.0f);
@@ -81,7 +81,7 @@ static void test_aabb(void) {
 static void test_ray_aabb(void) {
     BvhAabb b = box_at(0, 0, 0, 1);            // [-1,1]^3
     BvhRay ray = { { -5, 0, 0 }, { 1, 0, 0 }, 0.0f, 100.0f };
-    float t = -1.0f;
+    f32 t = -1.0f;
     CHECK(BvhAabb_intersect_ray(&ray, &b, &t));
     CHECK(fabsf(t - 4.0f) < 1e-4f);            // enters the box at x=-1
 
@@ -128,8 +128,8 @@ static void test_tree_lifecycle(void) {
 static void test_ray_tree(void) {
     enum { N = 12 };
     BvhPrimitive prims[N];
-    for (uint32_t i = 0; i < N; i++)
-        prims[i] = prim(i, (float) i * 2.0f, 0.0f, 0.0f, 0.5f);   // boxes at x=0,2,4,...
+    for (u32 i = 0; i < N; i++)
+        prims[i] = prim(i, (f32) i * 2.0f, 0.0f, 0.0f, 0.5f);   // boxes at x=0,2,4,...
 
     BvhTree tree = BvhTree(N);
     CHECK(tree.nodes != nullptr);
@@ -169,7 +169,7 @@ static void test_degenerate(void) {
     // Five identical centroids: the split collapses to a leaf, still hittable.
     enum { N = 5 };
     BvhPrimitive prims[N];
-    for (uint32_t i = 0; i < N; i++)
+    for (u32 i = 0; i < N; i++)
         prims[i] = prim(i + 1, 3.0f, 3.0f, 3.0f, 0.5f);
 
     BvhTree tree = BvhTree(N);

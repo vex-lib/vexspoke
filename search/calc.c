@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "types.h"
 #include "math/strict_math.h"
 #include "util/annotation.h"
 
@@ -15,7 +16,7 @@
  * DEFINITION: Calc
  * ============================================================================
  * Allocation-free recursive-descent math expression parser: evaluates strings
- * like "sin(rad(90)) * atan(34) * pi" into double/float scalars with full
+ * like "sin(rad(90)) * atan(34) * pi" into d64/f32 scalars with full
  * operator precedence (+, -, *, /, %, ^), unary minus, constants (pi, e,
  * tau), and scientific/trigonometric functions. The CalcParser cursor struct
  * lives on the stack — zero heap traffic on the eval path; syntax errors
@@ -66,10 +67,10 @@ static void skip_whitespace(CalcParser *cp) {
     }
 }
 
-static double parse_expression(CalcParser *cp);
+static d64 parse_expression(CalcParser *cp);
 
 // Parses a number, parenthesized expression, constant, or supported function call.
-static double parse_primary(CalcParser *cp) {
+static d64 parse_primary(CalcParser *cp) {
     skip_whitespace(cp);
     if (*(*cp).p == '\0') {
         (*cp).hasError = true;
@@ -89,7 +90,7 @@ static double parse_primary(CalcParser *cp) {
     // Parenthesized sub-expression
     if (*(*cp).p == '(') {
         (*cp).p++;
-        double val = parse_expression(cp);
+        d64 val = parse_expression(cp);
         skip_whitespace(cp);
         if (*(*cp).p == ')') {
             (*cp).p++;
@@ -102,7 +103,7 @@ static double parse_primary(CalcParser *cp) {
     // Number literal
     if (isdigit((unsigned char)*(*cp).p) || *(*cp).p == '.') {
         char *endptr = nullptr;
-        double val = strtod((*cp).p, &endptr);
+        d64 val = strtod((*cp).p, &endptr);
         if (endptr == (*cp).p) {
             (*cp).hasError = true;
             return 0.0;
@@ -114,7 +115,7 @@ static double parse_primary(CalcParser *cp) {
     // Identifier: constant or function
     if (isalpha((unsigned char)*(*cp).p) || *(*cp).p == '_') {
         char name[32];
-        size_t n = 0;
+        bytes n = 0;
         while ((isalnum((unsigned char)*(*cp).p) || *(*cp).p == '_') && n < sizeof(name) - 1) {
             name[n++] = (char) tolower((unsigned char)*(*cp).p);
             (*cp).p++;
@@ -135,9 +136,9 @@ static double parse_primary(CalcParser *cp) {
         (*cp).p++; // consume '('
 
         // Parse arguments
-        double arg1 = parse_expression(cp);
-        double arg2 = 0.0;
-        double arg3 = 0.0;
+        d64 arg1 = parse_expression(cp);
+        d64 arg2 = 0.0;
+        d64 arg3 = 0.0;
         skip_whitespace(cp);
         if (*(*cp).p == ',') {
             (*cp).p++;
@@ -188,12 +189,12 @@ static double parse_primary(CalcParser *cp) {
 }
 
 // Parses exponentiation with right-associative precedence.
-static double parse_factor(CalcParser *cp) {
-    double base = parse_primary(cp);
+static d64 parse_factor(CalcParser *cp) {
+    d64 base = parse_primary(cp);
     skip_whitespace(cp);
     while (*(*cp).p == '^') {
         (*cp).p++;
-        double expVal = parse_factor(cp); // right-associative
+        d64 expVal = parse_factor(cp); // right-associative
         base = pow(base, expVal);
         skip_whitespace(cp);
     }
@@ -201,12 +202,12 @@ static double parse_factor(CalcParser *cp) {
 }
 
 // Parses multiplication, division, and remainder above additive precedence.
-static double parse_term(CalcParser *cp) {
-    double left = parse_factor(cp);
+static d64 parse_term(CalcParser *cp) {
+    d64 left = parse_factor(cp);
     skip_whitespace(cp);
     while (*(*cp).p == '*' || *(*cp).p == '/' || *(*cp).p == '%') {
         char op = *(*cp).p++;
-        double right = parse_factor(cp);
+        d64 right = parse_factor(cp);
         if (op == '*') {
             left *= right;
         } else if (op == '/') {
@@ -228,12 +229,12 @@ static double parse_term(CalcParser *cp) {
 }
 
 // Parses left-associative addition and subtraction expressions.
-static double parse_expression(CalcParser *cp) {
-    double left = parse_term(cp);
+static d64 parse_expression(CalcParser *cp) {
+    d64 left = parse_term(cp);
     skip_whitespace(cp);
     while (*(*cp).p == '+' || *(*cp).p == '-') {
         char op = *(*cp).p++;
-        double right = parse_term(cp);
+        d64 right = parse_term(cp);
         if (op == '+') {
             left += right;
         } else {
@@ -245,13 +246,13 @@ static double parse_expression(CalcParser *cp) {
 }
 
 // Evaluates a complete expression into outValue; leaves output unchanged on failure.
-bool Calc_eval(const char *expr, double *outValue) {
+bool Calc_eval(const char *expr, d64 *outValue) {
     if (!expr || !outValue) return false;
     CalcParser cp = { .p = expr, .hasError = false };
     skip_whitespace(&cp);
     if (*cp.p == '\0') return false;
 
-    double res = parse_expression(&cp);
+    d64 res = parse_expression(&cp);
     skip_whitespace(&cp);
     if (cp.hasError || *cp.p != '\0') {
         return false;
@@ -260,18 +261,18 @@ bool Calc_eval(const char *expr, double *outValue) {
     return true;
 }
 
-// Evaluates an expression and converts its result to float on success.
-bool Calc_evalFloat(const char *expr, float *outValue) {
+// Evaluates an expression and converts its result to f32 on success.
+bool Calc_evalFloat(const char *expr, f32 *outValue) {
     if (!outValue) return false;
-    double d = 0.0;
+    d64 d = 0.0;
     if (!Calc_eval(expr, &d)) return false;
-    *outValue = (float) d;
+    *outValue = (f32) d;
     return true;
 }
 
 // Evaluates an expression, returning fallback when parsing or evaluation fails.
-double Calc_evalWithFallback(const char *expr, double fallback) {
-    double d = 0.0;
+d64 Calc_evalWithFallback(const char *expr, d64 fallback) {
+    d64 d = 0.0;
     if (Calc_eval(expr, &d)) return d;
     return fallback;
 }

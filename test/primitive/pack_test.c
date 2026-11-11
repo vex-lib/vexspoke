@@ -27,7 +27,7 @@ int main(void) {
     CHECK(Pack_unpackByte2(Pack_packByte(1, 2)) == 2);
     CHECK(Pack_unpackByte1(Pack_packByte(-1, -2)) == -1);
     CHECK(Pack_unpackByte2(Pack_packByte(-1, -2)) == -2);
-    CHECK(Pack_unpackByte2(Pack_packByte(0x7F, 0x80)) == (int8_t) 0x80);
+    CHECK(Pack_unpackByte2(Pack_packByte(0x7F, 0x80)) == () 0x80);
 
     // Short pair -> int.
     CHECK(Pack_packShort(1, 2) == 0x00010002);

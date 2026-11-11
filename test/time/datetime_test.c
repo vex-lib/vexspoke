@@ -25,8 +25,8 @@ static int g_failures = 0;
 
 // Asserts exact epoch round-trip and all UTC date/time fields for one instant.
 // Compares all decoded UTC fields and the epoch round trip against a fixed case.
-static void expect(int64_t ms, int32_t y, int32_t mo, int32_t d,
-                   int32_t h, int32_t mi, int32_t s, int32_t milli, int32_t dow) {
+static void expect(int64_t ms, i32 y, i32 mo, i32 d,
+                   i32 h, i32 mi, i32 s, i32 milli, i32 dow) {
     DateTime dt = DateTime();
     setEpochMillis(&dt, ms);
     CHECK(DateTime_epochMillis(&dt) == ms);

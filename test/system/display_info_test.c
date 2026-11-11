@@ -50,7 +50,7 @@ int main(void) {
     CHECK(DisplayInfo_getMonitor(1) == b);
     CHECK(DisplayInfo_getMonitor(2) == nullptr);       // one past the end
 
-    size_t count = 0;
+    bytes count = 0;
     DisplayMonitor **all = DisplayInfo_getMonitors(&count);
     CHECK(count == 2);
     CHECK(all != nullptr && all[0] == a && all[1] == b);

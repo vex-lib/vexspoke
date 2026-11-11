@@ -43,38 +43,38 @@ static int g_checks = 0;
         }                                                                       \
     } while (0)
 
-static uint64_t nowMs(void) {
+static u64 nowMs(void) {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
-    return (uint64_t) ts.tv_sec * 1000u + (uint64_t) (ts.tv_nsec / 1000000);
+    return (u64) ts.tv_sec * 1000u + (u64) (ts.tv_nsec / 1000000);
 }
 
 /** The calling process's own CPU time, user + system, in milliseconds. */
-static uint64_t selfCpuMs(void) {
+static u64 selfCpuMs(void) {
     struct rusage usage;
     if (getrusage(RUSAGE_SELF, &usage) != 0)
         return 0u;
-    uint64_t user = (uint64_t) usage.ru_utime.tv_sec * 1000u +
-                    (uint64_t) (usage.ru_utime.tv_usec / 1000);
-    uint64_t system = (uint64_t) usage.ru_stime.tv_sec * 1000u +
-                      (uint64_t) (usage.ru_stime.tv_usec / 1000);
+    u64 user = (u64) usage.ru_utime.tv_sec * 1000u +
+                    (u64) (usage.ru_utime.tv_usec / 1000);
+    u64 system = (u64) usage.ru_stime.tv_sec * 1000u +
+                      (u64) (usage.ru_stime.tv_usec / 1000);
     return user + system;
 }
 
-static bool peerWrite(int fd, const void *bytes, size_t length) {
-    const uint8_t *p = (const uint8_t*) bytes;
-    size_t sent = 0u;
+static bool peerWrite(int fd, const void *bytes, bytes length) {
+    const u8 *p = (const u8*) bytes;
+    bytes sent = 0u;
     while (sent < length) {
         ssize_t n = send(fd, p + sent, length - sent, 0);
         if (n <= 0)
             return false;
-        sent += (size_t) n;
+        sent += (bytes) n;
     }
     return true;
 }
 
 /** The peer: handshake, wait out the idle window, then send one late message. */
-static int peerRun(int readyWriteFd, uint32_t quietMillis) {
+static int peerRun(int readyWriteFd, u32 quietMillis) {
     int listener = socket(AF_INET, SOCK_STREAM, 0);
     if (listener < 0)
         return 90;
@@ -105,12 +105,12 @@ static int peerRun(int readyWriteFd, uint32_t quietMillis) {
     setsockopt(peer, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
 
     char request[4096];
-    size_t used = 0u;
+    bytes used = 0u;
     while (used + 1u < sizeof(request)) {
         ssize_t n = recv(peer, request + used, 1u, 0);
         if (n <= 0)
             break;
-        used += (size_t) n;
+        used += (bytes) n;
         request[used] = '\0';
         if (used >= 4u && strstr(request, "\r\n\r\n") != nullptr)
             break;
@@ -123,7 +123,7 @@ static int peerRun(int readyWriteFd, uint32_t quietMillis) {
     if (keyEnd == nullptr)
         return 97;
     char value[64];
-    size_t keyLength = (size_t) (keyEnd - key);
+    bytes keyLength = (bytes) (keyEnd - key);
     if (keyLength + 1u > sizeof(value))
         return 98;
     memcpy(value, key, keyLength);
@@ -132,7 +132,7 @@ static int peerRun(int readyWriteFd, uint32_t quietMillis) {
     Crypto_sha1Init(&digest);
     Crypto_sha1Update(&digest, value, strlen(value));
     Crypto_sha1Update(&digest, WS_HANDSHAKE_GUID, strlen(WS_HANDSHAKE_GUID));
-    uint8_t hash[CRYPTO_SHA1_DIGEST_SIZE];
+    u8 hash[CRYPTO_SHA1_DIGEST_SIZE];
     Crypto_sha1Final(&digest, hash);
     char accept[64];
     if (Url_base64(hash, CRYPTO_SHA1_DIGEST_SIZE, accept, sizeof(accept)) <= 0)
@@ -142,8 +142,8 @@ static int peerRun(int readyWriteFd, uint32_t quietMillis) {
         "HTTP/1.1 101 Switching Protocols\r\n"
         "Upgrade: websocket\r\nConnection: Upgrade\r\n"
         "Sec-WebSocket-Accept: %s\r\n\r\n", accept);
-    if (written <= 0 || (size_t) written >= sizeof(response) ||
-        !peerWrite(peer, response, (size_t) written))
+    if (written <= 0 || (bytes) written >= sizeof(response) ||
+        !peerWrite(peer, response, (bytes) written))
         return 100;
 
     // Go quiet for the whole window the parent is measuring, then say one word.
@@ -151,7 +151,7 @@ static int peerRun(int readyWriteFd, uint32_t quietMillis) {
                               .tv_nsec = (long) ((quietMillis % 1000u) * 1000000L) };
     nanosleep(&quiet, nullptr);
     const char *late = "late";
-    uint8_t header[4] = { 0x81u, 0x04u, 0u, 0u };
+    u8 header[4] = { 0x81u, 0x04u, 0u, 0u };
     if (!peerWrite(peer, header, 2u) || !peerWrite(peer, late, 4u))
         return 101;
     // Give the client a moment to read it, then hang up.
@@ -165,7 +165,7 @@ static int peerRun(int readyWriteFd, uint32_t quietMillis) {
 /** An idle session must cost ~no CPU and must still wake on a late message. */
 static void testIdleCost(void) {
     printf("[1] idle cost: a quiet session must not burn CPU\n");
-    const uint32_t quietMillis = 3000u;
+    const u32 quietMillis = 3000u;
     int fds[2];
     if (pipe(fds) != 0) {
         CHECK(false);
@@ -193,16 +193,16 @@ static void testIdleCost(void) {
 
     // Poll for the whole quiet window. Every call sleeps in the kernel until its
     // budget expires; none of them spins.
-    uint64_t started = nowMs();
-    uint64_t cpuBefore = selfCpuMs();
-    uint32_t polls = 0u;
+    u64 started = nowMs();
+    u64 cpuBefore = selfCpuMs();
+    u32 polls = 0u;
     WebSocketMessage message = WebSocket_poll(&client, 100u);
     while (message.kind == WS_MESSAGE_NONE && nowMs() - started < quietMillis + 1500u) {
         polls++;
         message = WebSocket_poll(&client, 100u);
     }
-    uint64_t cpuSpent = selfCpuMs() - cpuBefore;
-    uint64_t elapsed = nowMs() - started;
+    u64 cpuSpent = selfCpuMs() - cpuBefore;
+    u64 elapsed = nowMs() - started;
 
     printf("  idled %llu ms over %u polls, self CPU %llu ms\n",
            (unsigned long long) elapsed, polls, (unsigned long long) cpuSpent);
@@ -252,12 +252,12 @@ static void testLiveRoundTrip(void) {
     // gateway sends its own first frame (Discord's HELLO arrives unprompted and
     // needs no credentials). So this asserts that a TEXT frame arrives at all,
     // and reports which kind of peer answered.
-    uint64_t started = nowMs();
+    u64 started = nowMs();
     WebSocketMessage message = WebSocket_poll(&client, 5000u);
     while (message.kind == WS_MESSAGE_NONE && nowMs() - started < 8000u)
         message = WebSocket_poll(&client, 500u);
     if (message.kind == WS_MESSAGE_TEXT && message.payload != nullptr) {
-        size_t shown = message.length < 120u ? message.length : 120u;
+        bytes shown = message.length < 120u ? message.length : 120u;
         bool echoed = message.length == strlen(probe) &&
                       memcmp(message.payload, probe, message.length) == 0;
         printf("  first frame: %llu Bytes%s\n", (unsigned long long) message.length,

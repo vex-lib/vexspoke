@@ -8,7 +8,7 @@
 //
 // Single Class Per File Law: StrictMath.
 //
-// Full-precision, strictly IEEE 754-compliant floating-point routines for
+// Full-precision, strictly IEEE 754-compliant f32ing-point routines for
 // physics simulations, celestial mechanics, exact trajectory integration,
 // and collision manifolds. Guaranteed bit-level conformance and error bounds.
 
@@ -21,45 +21,45 @@
 #define STRICT_MATH_RAD_TO_DEG 57.2957795130823208768
 
 // Single-precision strict routines
-float StrictMath_sin(float x);
-float StrictMath_cos(float x);
-float StrictMath_tan(float x);
-float StrictMath_asin(float x);
-float StrictMath_acos(float x);
-float StrictMath_atan(float x);
-float StrictMath_atan2(float y, float x);
-float StrictMath_sqrt(float x);
-float StrictMath_invSqrt(float x);
-float StrictMath_pow(float base, float exp);
-float StrictMath_exp(float x);
-float StrictMath_log(float x);
-float StrictMath_abs(float x);
-float StrictMath_floor(float x);
-float StrictMath_ceil(float x);
-float StrictMath_round(float x);
-float StrictMath_clamp(float val, float min, float max);
-float StrictMath_lerp(float a, float b, float t);
-float StrictMath_toRadians(float deg);
-float StrictMath_toDegrees(float rad);
+f32 StrictMath_sin(f32 x);
+f32 StrictMath_cos(f32 x);
+f32 StrictMath_tan(f32 x);
+f32 StrictMath_asin(f32 x);
+f32 StrictMath_acos(f32 x);
+f32 StrictMath_atan(f32 x);
+f32 StrictMath_atan2(f32 y, f32 x);
+f32 StrictMath_sqrt(f32 x);
+f32 StrictMath_invSqrt(f32 x);
+f32 StrictMath_pow(f32 base, f32 exp);
+f32 StrictMath_exp(f32 x);
+f32 StrictMath_log(f32 x);
+f32 StrictMath_abs(f32 x);
+f32 StrictMath_floor(f32 x);
+f32 StrictMath_ceil(f32 x);
+f32 StrictMath_round(f32 x);
+f32 StrictMath_clamp(f32 val, f32 min, f32 max);
+f32 StrictMath_lerp(f32 a, f32 b, f32 t);
+f32 StrictMath_toRadians(f32 deg);
+f32 StrictMath_toDegrees(f32 rad);
 
-// Double-precision strict routines for celestial & large-world coordinates
-double StrictMath_sinD(double x);
-double StrictMath_cosD(double x);
-double StrictMath_tanD(double x);
-double StrictMath_asinD(double x);
-double StrictMath_acosD(double x);
-double StrictMath_atanD(double x);
-double StrictMath_atan2D(double y, double x);
-double StrictMath_sqrtD(double x);
-double StrictMath_invSqrtD(double x);
-double StrictMath_powD(double base, double exp);
-double StrictMath_expD(double x);
-double StrictMath_logD(double x);
-double StrictMath_absD(double x);
-double StrictMath_floorD(double x);
-double StrictMath_ceilD(double x);
-double StrictMath_roundD(double x);
-double StrictMath_clampD(double val, double min, double max);
-double StrictMath_lerpD(double a, double b, double t);
+// d64-precision strict routines for celestial & large-world coordinates
+d64 StrictMath_sinD(d64 x);
+d64 StrictMath_cosD(d64 x);
+d64 StrictMath_tanD(d64 x);
+d64 StrictMath_asinD(d64 x);
+d64 StrictMath_acosD(d64 x);
+d64 StrictMath_atanD(d64 x);
+d64 StrictMath_atan2D(d64 y, d64 x);
+d64 StrictMath_sqrtD(d64 x);
+d64 StrictMath_invSqrtD(d64 x);
+d64 StrictMath_powD(d64 base, d64 exp);
+d64 StrictMath_expD(d64 x);
+d64 StrictMath_logD(d64 x);
+d64 StrictMath_absD(d64 x);
+d64 StrictMath_floorD(d64 x);
+d64 StrictMath_ceilD(d64 x);
+d64 StrictMath_roundD(d64 x);
+d64 StrictMath_clampD(d64 val, d64 min, d64 max);
+d64 StrictMath_lerpD(d64 a, d64 b, d64 t);
 
 #endif

@@ -108,7 +108,7 @@ bool TryPtr_isOk(const TryPtr *self) {
 }
 
 // Formats a value-oriented summary into dest and reports capacity truncation.
-void TryPtr_toString(const TryPtr *self, char *dest, size_t cap, bool *outTruncated) {
+void TryPtr_toString(const TryPtr *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (!dest || cap == 0u)
@@ -125,14 +125,14 @@ void TryPtr_toString(const TryPtr *self, char *dest, size_t cap, bool *outTrunca
                            TryCode_name((*self).code),
                            TryCode_message((*self).code));
     }
-    if (written < 0 || (size_t) written >= cap) {
+    if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
     }
 }
 
 // Formats the result fields into dest and reports capacity truncation.
-void TryPtr_toStringStruct(const TryPtr *self, char *dest, size_t cap, bool *outTruncated) {
+void TryPtr_toStringStruct(const TryPtr *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (!dest || cap == 0u)
@@ -144,7 +144,7 @@ void TryPtr_toStringStruct(const TryPtr *self, char *dest, size_t cap, bool *out
     int written = snprintf(dest, cap, "TryPtr { value=%p, code=%s }",
                            (*self).value,
                            TryCode_name((*self).code));
-    if (written < 0 || (size_t) written >= cap) {
+    if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
     }

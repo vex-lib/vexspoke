@@ -48,20 +48,20 @@
  * ----------------------------------------------------------------------------
  *   RegexVm {
  *     const RegexProgram *program;  // borrowed instruction source
- *     uint32_t *clistPc;            // current thread list: program counters
- *     uint32_t *clistCap;           // current thread list: capture rows
- *     uint32_t *clistSeen;          // current list's per-position marks
- *     uint32_t *nlistPc;            // next thread list: program counters
- *     uint32_t *nlistCap;           // next thread list: capture rows
- *     uint32_t *nlistSeen;          // next list's per-position marks
+ *     u32 *clistPc;            // current thread list: program counters
+ *     u32 *clistCap;           // current thread list: capture rows
+ *     u32 *clistSeen;          // current list's per-position marks
+ *     u32 *nlistPc;            // next thread list: program counters
+ *     u32 *nlistCap;           // next thread list: capture rows
+ *     u32 *nlistSeen;          // next list's per-position marks
  *     RegexTask *stack;             // epsilon-closure work stack
- *     size_t *caps;                 // two capture regions (2 x capRowCount)
- *     size_t *work;                 // the closure's working capture row
- *     size_t *seed;                 // the all-unset row every search starts from
- *     size_t *best;                 // the winning capture row
- *     uint32_t capStride;           // size_t slots per capture row
- *     uint32_t capRowCount;         // rows per region
- *     uint32_t stackCapacity;       // work-stack entries
+ *     bytes *caps;                 // two capture regions (2 x capRowCount)
+ *     bytes *work;                 // the closure's working capture row
+ *     bytes *seed;                 // the all-unset row every search starts from
+ *     bytes *best;                 // the winning capture row
+ *     u32 capStride;           // bytes slots per capture row
+ *     u32 capRowCount;         // rows per region
+ *     u32 stackCapacity;       // work-stack entries
  *   }
  *
  * PRIVATE HELPERS (documented here because they appear in this class layout or
@@ -69,7 +69,7 @@
  * ----------------------------------------------------------------------------
  *   RegexOptions { bool ignoreCase; bool dotall; bool multiline; }
  *     Resolved match-time options; declared in regex/vm.h.
- *   RegexTask { uint32 pc; uint32 slot; size_t value; uint8 restore; }
+ *   RegexTask { uint32 pc; uint32 slot; bytes value; uint8 restore; }
  *     One closure work item (expand a pc, or restore a capture slot).
  *   RegexList (file-local) { uint32 *pc; uint32 *cap; uint32 *seen;
  *                            uint32 count; uint32 capBase; }
@@ -98,9 +98,9 @@
  */
 
 // ASCII-only lowercase; deliberately not locale-sensitive (byte subjects).
-static uint8_t lowerByte(uint8_t c) {
-    if (c >= (uint8_t) 'A' && c <= (uint8_t) 'Z')
-        return (uint8_t)(c + 32u);
+static u8 lowerByte(u8 c) {
+    if (c >= (u8) 'A' && c <= (u8) 'Z')
+        return (u8)(c + 32u);
     return c;
 }
 
@@ -108,21 +108,21 @@ static uint8_t lowerByte(uint8_t c) {
 // per-position "already added" marks, and the half of the capture table this
 // list writes its rows into.
 typedef struct RegexList {
-    uint32_t *pc;      // thread program counters (capRowCount entries)
-    uint32_t *cap;     // thread capture rows
-    uint32_t *seen;    // per-position dedup marks (program length entries)
-    uint32_t  count;   // threads in use
-    uint32_t  capBase; // first capture row this list owns
+    u32 *pc;      // thread program counters (capRowCount entries)
+    u32 *cap;     // thread capture rows
+    u32 *seen;    // per-position dedup marks (program length entries)
+    u32  count;   // threads in use
+    u32  capBase; // first capture row this list owns
 } RegexList;
 
 // Adds a capture row from the head of this list's region.
-static size_t *capRowBase(RegexVm *vm, RegexList *list, uint32_t index) {
-    return (*vm).caps + (size_t)((*list).capBase + index) * (*vm).capStride;
+static bytes *capRowBase(RegexVm *vm, RegexList *list, u32 index) {
+    return (*vm).caps + (bytes)((*list).capBase + index) * (*vm).capStride;
 }
 
 // Does a consuming instruction accept this byte? (CHAR bytes and class bitmaps
 // were already folded at compile time.)
-static bool instMatches(const RegexCharClass *classes, const RegexInst *inst, uint8_t byte,
+static bool instMatches(const RegexCharClass *classes, const RegexInst *inst, u8 byte,
                         RegexOptions options) {
     switch ((*inst).op) {
     case REGEX_OP_CHAR:
@@ -130,7 +130,7 @@ static bool instMatches(const RegexCharClass *classes, const RegexInst *inst, ui
     case REGEX_OP_ANY:
         if (options.dotall)
             return true;
-        return byte != (uint8_t) '\n';
+        return byte != (u8) '\n';
     case REGEX_OP_CLASS:
         return RegexCharClass_test(&classes[(*inst).a], byte);
     default:
@@ -141,14 +141,14 @@ static bool instMatches(const RegexCharClass *classes, const RegexInst *inst, ui
 // Epsilon-closure: adds pc0 and everything reachable without consuming a byte,
 // starting from parentCaps. Iterative (work stack), and a capture write is
 // paired with a restore marker so sibling branches never see each other.
-static void addThread(RegexVm *vm, RegexList *list, uint32_t pc0, const size_t *parentCaps,
-                      size_t pos, const char *subject, size_t length, bool multiline) {
-    uint32_t stride = (*vm).capStride;
-    uint32_t programCount = RegexProgram_count((*vm).program);
-    size_t *work = (*vm).work;
+static void addThread(RegexVm *vm, RegexList *list, u32 pc0, const bytes *parentCaps,
+                      bytes pos, const char *subject, bytes length, bool multiline) {
+    u32 stride = (*vm).capStride;
+    u32 programCount = RegexProgram_count((*vm).program);
+    bytes *work = (*vm).work;
     RegexTask *stack = (*vm).stack;
-    uint32_t sp = 0;
-    memcpy(work, parentCaps, (size_t) stride * sizeof(size_t));
+    u32 sp = 0;
+    memcpy(work, parentCaps, (bytes) stride * sizeof(bytes));
     stack[sp].pc = pc0;
     stack[sp].restore = 0;
     sp++;
@@ -210,10 +210,10 @@ static void addThread(RegexVm *vm, RegexList *list, uint32_t pc0, const size_t *
         default: {
             // A consuming instruction (or MATCH) becomes a thread with a full
             // copy of the working captures, in this list's own region.
-            uint32_t index = (*list).count;
+            u32 index = (*list).count;
             if (index >= (*vm).capRowCount || task.pc >= programCount)
                 break; // unreachable: one row per thread slot
-            memcpy(capRowBase(vm, list, index), work, (size_t) stride * sizeof(size_t));
+            memcpy(capRowBase(vm, list, index), work, (bytes) stride * sizeof(bytes));
             (*list).pc[index] = task.pc;
             (*list).cap[index] = (*list).capBase + index;
             (*list).count = index + 1u;
@@ -223,28 +223,28 @@ static void addThread(RegexVm *vm, RegexList *list, uint32_t pc0, const size_t *
     }
 }
 
-static bool vmInitialize(RegexVm *vm, const RegexProgram *program, uint32_t groupCount) {
+static bool vmInitialize(RegexVm *vm, const RegexProgram *program, u32 groupCount) {
     memset(vm, 0, sizeof(RegexVm));
-    uint32_t n = RegexProgram_count(program);
+    u32 n = RegexProgram_count(program);
     if (n == 0)
         return false;
     (*vm).program = program;
     (*vm).capStride = 2u * (groupCount + 1u);
     (*vm).capRowCount = n;
     (*vm).stackCapacity = 4u * n + 8u;
-    (*vm).clistPc = (uint32_t*) Memory_alloc(TYPE_REGEX, (size_t) n * sizeof(uint32_t));
-    (*vm).clistCap = (uint32_t*) Memory_alloc(TYPE_REGEX, (size_t) n * sizeof(uint32_t));
-    (*vm).clistSeen = (uint32_t*) Memory_alloc(TYPE_REGEX, (size_t) n * sizeof(uint32_t));
-    (*vm).nlistPc = (uint32_t*) Memory_alloc(TYPE_REGEX, (size_t) n * sizeof(uint32_t));
-    (*vm).nlistCap = (uint32_t*) Memory_alloc(TYPE_REGEX, (size_t) n * sizeof(uint32_t));
-    (*vm).nlistSeen = (uint32_t*) Memory_alloc(TYPE_REGEX, (size_t) n * sizeof(uint32_t));
+    (*vm).clistPc = (u32*) Memory_alloc(TYPE_REGEX, (bytes) n * sizeof(u32));
+    (*vm).clistCap = (u32*) Memory_alloc(TYPE_REGEX, (bytes) n * sizeof(u32));
+    (*vm).clistSeen = (u32*) Memory_alloc(TYPE_REGEX, (bytes) n * sizeof(u32));
+    (*vm).nlistPc = (u32*) Memory_alloc(TYPE_REGEX, (bytes) n * sizeof(u32));
+    (*vm).nlistCap = (u32*) Memory_alloc(TYPE_REGEX, (bytes) n * sizeof(u32));
+    (*vm).nlistSeen = (u32*) Memory_alloc(TYPE_REGEX, (bytes) n * sizeof(u32));
     (*vm).stack = (RegexTask*) Memory_alloc(TYPE_REGEX,
-                                            (size_t)(*vm).stackCapacity * sizeof(RegexTask));
-    (*vm).caps = (size_t*) Memory_alloc(TYPE_REGEX,
-                                        2u * (size_t) n * (*vm).capStride * sizeof(size_t));
-    (*vm).work = (size_t*) Memory_alloc(TYPE_REGEX, (size_t)(*vm).capStride * sizeof(size_t));
-    (*vm).seed = (size_t*) Memory_alloc(TYPE_REGEX, (size_t)(*vm).capStride * sizeof(size_t));
-    (*vm).best = (size_t*) Memory_alloc(TYPE_REGEX, (size_t)(*vm).capStride * sizeof(size_t));
+                                            (bytes)(*vm).stackCapacity * sizeof(RegexTask));
+    (*vm).caps = (bytes*) Memory_alloc(TYPE_REGEX,
+                                        2u * (bytes) n * (*vm).capStride * sizeof(bytes));
+    (*vm).work = (bytes*) Memory_alloc(TYPE_REGEX, (bytes)(*vm).capStride * sizeof(bytes));
+    (*vm).seed = (bytes*) Memory_alloc(TYPE_REGEX, (bytes)(*vm).capStride * sizeof(bytes));
+    (*vm).best = (bytes*) Memory_alloc(TYPE_REGEX, (bytes)(*vm).capStride * sizeof(bytes));
     if (!(*vm).clistPc || !(*vm).clistCap || !(*vm).clistSeen || !(*vm).nlistPc ||
         !(*vm).nlistCap || !(*vm).nlistSeen || !(*vm).stack || !(*vm).caps ||
         !(*vm).work || !(*vm).seed || !(*vm).best) {
@@ -252,13 +252,13 @@ static bool vmInitialize(RegexVm *vm, const RegexProgram *program, uint32_t grou
         return false;
     }
     // Every capture slot starts as REGEX_UNSET (all bits set).
-    memset((*vm).caps, 0xFF, 2u * (size_t) n * (*vm).capStride * sizeof(size_t));
-    memset((*vm).seed, 0xFF, (size_t)(*vm).capStride * sizeof(size_t));
-    memset((*vm).best, 0xFF, (size_t)(*vm).capStride * sizeof(size_t));
+    memset((*vm).caps, 0xFF, 2u * (bytes) n * (*vm).capStride * sizeof(bytes));
+    memset((*vm).seed, 0xFF, (bytes)(*vm).capStride * sizeof(bytes));
+    memset((*vm).best, 0xFF, (bytes)(*vm).capStride * sizeof(bytes));
     return true;
 }
 
-RegexVm RegexVm_2(const RegexProgram *program, uint32_t groupCount) {
+RegexVm RegexVm_2(const RegexProgram *program, u32 groupCount) {
     RegexVm vm;
     memset(&vm, 0, sizeof vm);
     if (!vmInitialize(&vm, program, groupCount))
@@ -282,8 +282,8 @@ void RegexVm_free(RegexVm *vm) {
 }
 
 static bool run(RegexVm *vm, const RegexCharClass *classes, const char *subject,
-                size_t length, bool anchored, RegexOptions options, bool full) {
-    uint32_t n = (*vm).capRowCount;
+                bytes length, bool anchored, RegexOptions options, bool full) {
+    u32 n = (*vm).capRowCount;
     RegexList clist;
     clist.pc = (*vm).clistPc;
     clist.cap = (*vm).clistCap;
@@ -296,19 +296,19 @@ static bool run(RegexVm *vm, const RegexCharClass *classes, const char *subject,
     nlist.seen = (*vm).nlistSeen;
     nlist.count = 0;
     nlist.capBase = n;
-    memset(clist.seen, 0, (size_t) n * sizeof(uint32_t));
-    memset(nlist.seen, 0, (size_t) n * sizeof(uint32_t));
+    memset(clist.seen, 0, (bytes) n * sizeof(u32));
+    memset(nlist.seen, 0, (bytes) n * sizeof(u32));
 
     bool matched = false;
-    for (size_t pos = 0;; pos++) {
+    for (bytes pos = 0;; pos++) {
         if (clist.count == 0 && matched)
             break;
         if (!matched && (!anchored || pos == 0) && pos <= length)
             addThread(vm, &clist, 0, (*vm).seed, pos, subject, length, options.multiline);
         nlist.count = 0;
-        memset(nlist.seen, 0, (size_t) n * sizeof(uint32_t));
-        for (uint32_t i = 0; i < clist.count; i++) {
-            uint32_t pc = clist.pc[i];
+        memset(nlist.seen, 0, (bytes) n * sizeof(u32));
+        for (u32 i = 0; i < clist.count; i++) {
+            u32 pc = clist.pc[i];
             const RegexInst *raw = RegexProgram_at((*vm).program, pc);
             if (!raw)
                 continue;
@@ -316,16 +316,16 @@ static bool run(RegexVm *vm, const RegexCharClass *classes, const char *subject,
                 if (full && pos != length)
                     continue;
                 matched = true;
-                memcpy((*vm).best, (*vm).caps + (size_t) clist.cap[i] * (*vm).capStride,
-                       (size_t)(*vm).capStride * sizeof(size_t));
+                memcpy((*vm).best, (*vm).caps + (bytes) clist.cap[i] * (*vm).capStride,
+                       (bytes)(*vm).capStride * sizeof(bytes));
                 break;
             }
             if (pos < length) {
-                uint8_t byte = (uint8_t) subject[pos];
-                uint8_t folded = options.ignoreCase ? lowerByte(byte) : byte;
+                u8 byte = (u8) subject[pos];
+                u8 folded = options.ignoreCase ? lowerByte(byte) : byte;
                 if (instMatches(classes, raw, folded, options))
                     addThread(vm, &nlist, pc + 1u,
-                              (*vm).caps + (size_t) clist.cap[i] * (*vm).capStride,
+                              (*vm).caps + (bytes) clist.cap[i] * (*vm).capStride,
                               pos + 1u, subject, length, options.multiline);
             }
         }
@@ -339,18 +339,18 @@ static bool run(RegexVm *vm, const RegexCharClass *classes, const char *subject,
 }
 
 bool RegexVm_run(RegexVm *vm, const RegexCharClass *classes, const char *subject,
-                 size_t length, bool anchored, RegexOptions options) {
+                 bytes length, bool anchored, RegexOptions options) {
     return run(vm, classes, subject, length, anchored, options, false);
 }
 
 bool RegexVm_runFull(RegexVm *vm, const RegexCharClass *classes, const char *subject,
-                     size_t length, RegexOptions options) {
+                     bytes length, RegexOptions options) {
     return run(vm, classes, subject, length, true, options, true);
 }
 
-RegexSpan RegexVm_span(const RegexVm *vm, uint32_t group) {
-    size_t slot = 2u * (size_t) group;
-    if (slot + 1u >= (size_t)(*vm).capStride)
+RegexSpan RegexVm_span(const RegexVm *vm, u32 group) {
+    bytes slot = 2u * (bytes) group;
+    if (slot + 1u >= (bytes)(*vm).capStride)
         return RegexSpan_none();
     RegexSpan span;
     span.start = (*vm).best[slot];

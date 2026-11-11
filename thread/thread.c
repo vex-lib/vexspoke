@@ -8,7 +8,7 @@
 #include "oop/type.h"
 #include "struct/array.h"
 #include "struct/map.h"
-#include "util/annotation.h"
+#include "lang/annotation.h"
 
 ;;DEFINITION
 /**
@@ -37,7 +37,7 @@
  * ----------------------------------------------------------------------------
  *   Thread {
  *     _Atomic int state;         // 0 = STOPPED, 1 = RUNNING
- *     uint64_t typeId;           // block-header type (TYPE_THREAD_*)
+ *     u64 typeId;           // block-header type (TYPE_THREAD_*)
  *     pthread_t platform;        // native platform thread handle
  *     bool platformStarted;      // platform thread spawned flag
  *     RingBuffer queue;          // void* task slot ring
@@ -74,7 +74,7 @@
 
 typedef struct Thread {
     _Atomic int state;        // 0 = STOPPED, 1 = RUNNING
-    uint64_t typeId;          // block header type (TYPE_THREAD_*)
+    u64 typeId;          // block header type (TYPE_THREAD_*)
     pthread_t platform;
     bool platformStarted;
     RingBuffer queue;         // void* task slots
@@ -96,7 +96,7 @@ static Map *workers(void) {
     return s_workers;
 }
 
-Thread *Thread_5(uint64_t typeId, Thread_Job job, size_t queueCapacity,
+Thread *Thread_5(u64 typeId, Thread_Job job, bytes queueCapacity,
                  bool tickWhenIdle, bool core) {
     if (!job || queueCapacity == 0)
         return nullptr;
@@ -114,7 +114,7 @@ Thread *Thread_5(uint64_t typeId, Thread_Job job, size_t queueCapacity,
         Memory_free(t);
         return nullptr;
     }
-    Map_put(workers(), (uint64_t)(uintptr_t)t, 1);
+    Map_put(workers(), (u64)(uintptr_t)t, 1);
     return t;
 }
 
@@ -167,7 +167,7 @@ static void freeInternal(Thread *self, bool force) {
     atomic_store(&(*self).state, 0);
     joinPlatform(self);
     RingBuffer_shutdown(&(*self).queue);
-    Map_remove(workers(), (uint64_t)(uintptr_t)self);
+    Map_remove(workers(), (u64)(uintptr_t)self);
     Memory_free(self);
 }
 
@@ -183,7 +183,7 @@ RingBuffer *Thread_queue(Thread *self) {
     return self ? &(*self).queue : nullptr;
 }
 
-uint64_t Thread_purpose(Thread *self) {
+u64 Thread_purpose(Thread *self) {
     return self ? (*self).typeId : 0;
 }
 
@@ -210,8 +210,8 @@ static void walkPool(void (*visit)(Thread *self, bool system), bool system) {
     Array *keys = Map_keys(pool);
     if (!keys)
         return;
-    size_t count = Array_length(keys);
-    for (size_t i = 0; i < count; i++) {
+    bytes count = Array_length(keys);
+    for (bytes i = 0; i < count; i++) {
         Thread *t = (Thread*) (uintptr_t)Array_get(keys, i);
         visit(t, system);
     }
@@ -248,6 +248,21 @@ void Thread_freeAllSystem(void) {
     walkPool(visitFree, true);
 }
 
-size_t Thread_count(void) {
+bytes Thread_count(void) {
     return s_workers ? Map_size(s_workers) : 0;
+}
+
+const char *ThreadRole_name(ThreadRole role) {
+    switch (role) {
+        case THREAD_ROLE_MAIN:       return "_main";
+        case THREAD_ROLE_ENGINE:     return "engine";
+        case THREAD_ROLE_DRAW:       return "draw";
+        case THREAD_ROLE_PRESENT:    return "present";
+        case THREAD_ROLE_NETWORKING: return "networking";
+        case THREAD_ROLE_SCRIPTING:  return "scripting";
+        case THREAD_ROLE_CONSOLE:    return "console";
+        case THREAD_ROLE_UI:         return "ui";
+        case THREAD_ROLE_USER:       return "user";
+        default:                     return "none";
+    }
 }

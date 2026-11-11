@@ -11,10 +11,10 @@
 /** ========================================================================
  * MODULE: CryptoSha1 (security/sha1.c)
  * STRUCT FIELDS (Mirroring security/sha1.h)
- *   uint32_t state[5]   working hash words
- *   uint8_t  block[64]  pending input block
- *   uint64_t total      message length in bytes
- *   size_t   used       bytes currently buffered
+ *   u32 state[5]   working hash words
+ *   u8  block[64]  pending input block
+ *   u64 total      message length in bytes
+ *   bytes   used       bytes currently buffered
  * FUNCTION REGISTRY (exports)
  *   Crypto_sha1Init(ctx) / Update(ctx, data, len) / Final(ctx, outDigest)
  *   Crypto_sha1(data, len, outDigest)   one-shot
@@ -23,19 +23,19 @@
  * no allocation, no logging.
  * ======================================================================== */
 
-static uint32_t rotr(uint32_t v, unsigned bits) { return (v >> bits) | (v << (32u - bits)); }
+static u32 rotr(u32 v, unsigned bits) { return (v >> bits) | (v << (32u - bits)); }
 
-static void sha1Compress(CryptoSha1 *ctx, const uint8_t *block) {
-    uint32_t w[80];
+static void sha1Compress(CryptoSha1 *ctx, const u8 *block) {
+    u32 w[80];
     for (unsigned i = 0; i < 16u; ++i)
-        w[i] = ((uint32_t) block[i * 4] << 24) | ((uint32_t) block[i * 4 + 1] << 16) |
-               ((uint32_t) block[i * 4 + 2] << 8) | (uint32_t) block[i * 4 + 3];
+        w[i] = ((u32) block[i * 4] << 24) | ((u32) block[i * 4 + 1] << 16) |
+               ((u32) block[i * 4 + 2] << 8) | (u32) block[i * 4 + 3];
     for (unsigned i = 16u; i < 80u; ++i)
         w[i] = rotr(w[i - 3] ^ w[i - 8] ^ w[i - 14] ^ w[i - 16], 31u);
-    uint32_t a = (*ctx).state[0], b = (*ctx).state[1], c = (*ctx).state[2];
-    uint32_t d = (*ctx).state[3], e = (*ctx).state[4];
+    u32 a = (*ctx).state[0], b = (*ctx).state[1], c = (*ctx).state[2];
+    u32 d = (*ctx).state[3], e = (*ctx).state[4];
     for (unsigned i = 0; i < 80u; ++i) {
-        uint32_t f = 0, k = 0;
+        u32 f = 0, k = 0;
         if (i < 20u) {
             f = (b & c) | ((~b) & d);
             k = 0x5A827999u;
@@ -49,7 +49,7 @@ static void sha1Compress(CryptoSha1 *ctx, const uint8_t *block) {
             f = b ^ c ^ d;
             k = 0xCA62C1D6u;
         }
-        uint32_t temp = rotr(a, 27u) + f + e + k + w[i];
+        u32 temp = rotr(a, 27u) + f + e + k + w[i];
         e = d;
         d = c;
         c = rotr(b, 2u);
@@ -77,17 +77,17 @@ void Crypto_sha1Init(CryptoSha1 *ctx) {
     (*ctx).used = 0u;
 }
 
-void Crypto_sha1Update(CryptoSha1 *ctx, const void *data, size_t len) {
+void Crypto_sha1Update(CryptoSha1 *ctx, const void *data, bytes len) {
     if (ctx == nullptr || (data == nullptr && len != 0u)) {
         THROW("Crypto_sha1Update: null input");
         return;
     }
-    const uint8_t *bytes = (const uint8_t*) data;
+    const u8 *bytes = (const u8*) data;
     (*ctx).total += len;
     while (len > 0u) {
-        size_t room = CRYPTO_SHA1_BLOCK_SIZE - (*ctx).used;
-        size_t take = len < room ? len : room;
-        for (size_t i = 0; i < take; ++i)
+        bytes room = CRYPTO_SHA1_BLOCK_SIZE - (*ctx).used;
+        bytes take = len < room ? len : room;
+        for (bytes i = 0; i < take; ++i)
             (*ctx).block[(*ctx).used + i] = bytes[i];
         (*ctx).used += take;
         bytes += take;
@@ -99,26 +99,26 @@ void Crypto_sha1Update(CryptoSha1 *ctx, const void *data, size_t len) {
     }
 }
 
-void Crypto_sha1Final(CryptoSha1 *ctx, uint8_t outDigest[CRYPTO_SHA1_DIGEST_SIZE]) {
+void Crypto_sha1Final(CryptoSha1 *ctx, u8 outDigest[CRYPTO_SHA1_DIGEST_SIZE]) {
     if (ctx == nullptr || outDigest == nullptr) {
         THROW("Crypto_sha1Final: null argument");
         return;
     }
-    uint64_t bits = (*ctx).total * 8u;
-    uint8_t pad = 0x80u;
+    u64 bits = (*ctx).total * 8u;
+    u8 pad = 0x80u;
     Crypto_sha1Update(ctx, &pad, 1u);
-    uint8_t zero = 0u;
+    u8 zero = 0u;
     while ((*ctx).used != CRYPTO_SHA1_BLOCK_SIZE - 8u)
         Crypto_sha1Update(ctx, &zero, 1u);
-    uint8_t lengthBytes[8];
+    u8 lengthBytes[8];
     for (unsigned i = 0; i < 8u; ++i)
-        lengthBytes[i] = (uint8_t) (bits >> (56u - i * 8u));
+        lengthBytes[i] = (u8) (bits >> (56u - i * 8u));
     Crypto_sha1Update(ctx, lengthBytes, 8u);
     for (unsigned i = 0; i < 5u; ++i) {
-        outDigest[i * 4]     = (uint8_t) ((*ctx).state[i] >> 24);
-        outDigest[i * 4 + 1] = (uint8_t) ((*ctx).state[i] >> 16);
-        outDigest[i * 4 + 2] = (uint8_t) ((*ctx).state[i] >> 8);
-        outDigest[i * 4 + 3] = (uint8_t) (*ctx).state[i];
+        outDigest[i * 4]     = (u8) ((*ctx).state[i] >> 24);
+        outDigest[i * 4 + 1] = (u8) ((*ctx).state[i] >> 16);
+        outDigest[i * 4 + 2] = (u8) ((*ctx).state[i] >> 8);
+        outDigest[i * 4 + 3] = (u8) (*ctx).state[i];
     }
     for (unsigned i = 0; i < 5u; ++i)
         (*ctx).state[i] = 0u;
@@ -126,7 +126,7 @@ void Crypto_sha1Final(CryptoSha1 *ctx, uint8_t outDigest[CRYPTO_SHA1_DIGEST_SIZE
         (*ctx).block[i] = 0u;
 }
 
-void Crypto_sha1(const void *data, size_t len, uint8_t outDigest[CRYPTO_SHA1_DIGEST_SIZE]) {
+void Crypto_sha1(const void *data, bytes len, u8 outDigest[CRYPTO_SHA1_DIGEST_SIZE]) {
     CryptoSha1 ctx;
     Crypto_sha1Init(&ctx);
     Crypto_sha1Update(&ctx, data, len);

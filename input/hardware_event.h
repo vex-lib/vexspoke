@@ -25,8 +25,8 @@ typedef enum HardwareEventType {
 
 typedef struct HardwareEvent {
     HardwareEventType type;
-    uint32_t          deviceId;
-    uint64_t          timestampUs;
+    u32          deviceId;
+    u64          timestampUs;
     union {
         PianoKeyEvent  piano;
         TurntableEvent turntable;
@@ -36,9 +36,9 @@ typedef struct HardwareEvent {
 } HardwareEvent;
 
 // Event constructors / factory helpers
-HardwareEvent HardwareEvent_makePiano(uint32_t devId, PianoKeyEvent piano);
-HardwareEvent HardwareEvent_makeTurntable(uint32_t devId, TurntableEvent tt);
-HardwareEvent HardwareEvent_makeGesture(uint32_t devId, GestureEvent gesture);
-HardwareEvent HardwareEvent_makeGamepad(uint32_t devId, GamepadState gamepad);
+HardwareEvent HardwareEvent_makePiano(u32 devId, PianoKeyEvent piano);
+HardwareEvent HardwareEvent_makeTurntable(u32 devId, TurntableEvent tt);
+HardwareEvent HardwareEvent_makeGesture(u32 devId, GestureEvent gesture);
+HardwareEvent HardwareEvent_makeGamepad(u32 devId, GamepadState gamepad);
 
 #endif

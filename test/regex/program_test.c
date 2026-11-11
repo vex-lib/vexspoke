@@ -23,13 +23,13 @@ static int g_failures = 0;
     } while (0)
 
 // Adds a node and returns its index.
-static uint32_t addNode(RegexNodeList *nodes, uint8_t kind) {
+static u32 addNode(RegexNodeList *nodes, u8 kind) {
     return RegexNodeList_add(nodes, kind);
 }
 
 // Builds a two-child node (concat or alternation).
-static uint32_t addPair(RegexNodeList *nodes, uint8_t kind, uint32_t a, uint32_t b) {
-    uint32_t index = addNode(nodes, kind);
+static u32 addPair(RegexNodeList *nodes, u8 kind, u32 a, u32 b) {
+    u32 index = addNode(nodes, kind);
     RegexNode *node = RegexNodeList_get(nodes, index);
     (*node).a = a;
     (*node).b = b;
@@ -40,8 +40,8 @@ static uint32_t addPair(RegexNodeList *nodes, uint8_t kind, uint32_t a, uint32_t
 static void testFrame(void) {
     RegexNodeList nodes;
     nodes = RegexNodeList();
-    uint32_t character = addNode(&nodes, REGEX_NODE_CHAR);
-    (*RegexNodeList_get(&nodes, character)).byte = (uint8_t) 'a';
+    u32 character = addNode(&nodes, REGEX_NODE_CHAR);
+    (*RegexNodeList_get(&nodes, character)).byte = (u8) 'a';
 
     RegexProgram program;
     program = RegexProgram();
@@ -54,7 +54,7 @@ static void testFrame(void) {
     const RegexInst *save1 = RegexProgram_at(&program, 2);
     const RegexInst *match = RegexProgram_at(&program, 3);
     CHECK(save0 && (*save0).op == REGEX_OP_SAVE && (*save0).a == 0);
-    CHECK(body && (*body).op == REGEX_OP_CHAR && (*body).byte == (uint8_t) 'a');
+    CHECK(body && (*body).op == REGEX_OP_CHAR && (*body).byte == (u8) 'a');
     CHECK(save1 && (*save1).op == REGEX_OP_SAVE && (*save1).a == 1);
     CHECK(match && (*match).op == REGEX_OP_MATCH);
     CHECK(RegexProgram_at(&program, 4) == nullptr);
@@ -67,11 +67,11 @@ static void testFrame(void) {
 static void testConcat(void) {
     RegexNodeList nodes;
     nodes = RegexNodeList();
-    uint32_t a = addNode(&nodes, REGEX_NODE_CHAR);
-    (*RegexNodeList_get(&nodes, a)).byte = (uint8_t) 'a';
-    uint32_t b = addNode(&nodes, REGEX_NODE_CHAR);
-    (*RegexNodeList_get(&nodes, b)).byte = (uint8_t) 'b';
-    uint32_t cat = addPair(&nodes, REGEX_NODE_CONCAT, a, b);
+    u32 a = addNode(&nodes, REGEX_NODE_CHAR);
+    (*RegexNodeList_get(&nodes, a)).byte = (u8) 'a';
+    u32 b = addNode(&nodes, REGEX_NODE_CHAR);
+    (*RegexNodeList_get(&nodes, b)).byte = (u8) 'b';
+    u32 cat = addPair(&nodes, REGEX_NODE_CONCAT, a, b);
 
     RegexProgram program;
     program = RegexProgram();
@@ -79,8 +79,8 @@ static void testConcat(void) {
     CHECK(RegexProgram_count(&program) == 5);
     const RegexInst *one = RegexProgram_at(&program, 1);
     const RegexInst *two = RegexProgram_at(&program, 2);
-    CHECK(one && (*one).op == REGEX_OP_CHAR && (*one).byte == (uint8_t) 'a');
-    CHECK(two && (*two).op == REGEX_OP_CHAR && (*two).byte == (uint8_t) 'b');
+    CHECK(one && (*one).op == REGEX_OP_CHAR && (*one).byte == (u8) 'a');
+    CHECK(two && (*two).op == REGEX_OP_CHAR && (*two).byte == (u8) 'b');
 
     RegexProgram_free(&program);
     RegexNodeList_free(&nodes);
@@ -90,11 +90,11 @@ static void testConcat(void) {
 static void testAlternation(void) {
     RegexNodeList nodes;
     nodes = RegexNodeList();
-    uint32_t a = addNode(&nodes, REGEX_NODE_CHAR);
-    (*RegexNodeList_get(&nodes, a)).byte = (uint8_t) 'a';
-    uint32_t b = addNode(&nodes, REGEX_NODE_CHAR);
-    (*RegexNodeList_get(&nodes, b)).byte = (uint8_t) 'b';
-    uint32_t alt = addPair(&nodes, REGEX_NODE_ALT, a, b);
+    u32 a = addNode(&nodes, REGEX_NODE_CHAR);
+    (*RegexNodeList_get(&nodes, a)).byte = (u8) 'a';
+    u32 b = addNode(&nodes, REGEX_NODE_CHAR);
+    (*RegexNodeList_get(&nodes, b)).byte = (u8) 'b';
+    u32 alt = addPair(&nodes, REGEX_NODE_ALT, a, b);
 
     RegexProgram program;
     program = RegexProgram();
@@ -120,9 +120,9 @@ static void testQuantifiers(void) {
 
     // a* -> SAVE0, SPLIT(1->2, else 4), CHAR, JUMP->1, SAVE1, MATCH
     nodes = RegexNodeList();
-    uint32_t a = addNode(&nodes, REGEX_NODE_CHAR);
-    (*RegexNodeList_get(&nodes, a)).byte = (uint8_t) 'a';
-    uint32_t star = addNode(&nodes, REGEX_NODE_STAR);
+    u32 a = addNode(&nodes, REGEX_NODE_CHAR);
+    (*RegexNodeList_get(&nodes, a)).byte = (u8) 'a';
+    u32 star = addNode(&nodes, REGEX_NODE_STAR);
     (*RegexNodeList_get(&nodes, star)).a = a;
 
     RegexProgram program;
@@ -139,8 +139,8 @@ static void testQuantifiers(void) {
     // a+ -> SAVE0, CHAR, SPLIT(->body, else), SAVE1, MATCH
     nodes = RegexNodeList();
     a = addNode(&nodes, REGEX_NODE_CHAR);
-    (*RegexNodeList_get(&nodes, a)).byte = (uint8_t) 'a';
-    uint32_t plus = addNode(&nodes, REGEX_NODE_PLUS);
+    (*RegexNodeList_get(&nodes, a)).byte = (u8) 'a';
+    u32 plus = addNode(&nodes, REGEX_NODE_PLUS);
     (*RegexNodeList_get(&nodes, plus)).a = a;
     program = RegexProgram();
     CHECK(RegexProgram_build(&program, &nodes, plus));
@@ -155,8 +155,8 @@ static void testQuantifiers(void) {
     // a? -> SAVE0, SPLIT(body, else), CHAR, SAVE1, MATCH
     nodes = RegexNodeList();
     a = addNode(&nodes, REGEX_NODE_CHAR);
-    (*RegexNodeList_get(&nodes, a)).byte = (uint8_t) 'a';
-    uint32_t quest = addNode(&nodes, REGEX_NODE_QUEST);
+    (*RegexNodeList_get(&nodes, a)).byte = (u8) 'a';
+    u32 quest = addNode(&nodes, REGEX_NODE_QUEST);
     (*RegexNodeList_get(&nodes, quest)).a = a;
     program = RegexProgram();
     CHECK(RegexProgram_build(&program, &nodes, quest));
@@ -172,9 +172,9 @@ static void testQuantifiers(void) {
 static void testGroupAndRepeat(void) {
     RegexNodeList nodes;
     nodes = RegexNodeList();
-    uint32_t a = addNode(&nodes, REGEX_NODE_CHAR);
-    (*RegexNodeList_get(&nodes, a)).byte = (uint8_t) 'a';
-    uint32_t group = addNode(&nodes, REGEX_NODE_GROUP);
+    u32 a = addNode(&nodes, REGEX_NODE_CHAR);
+    (*RegexNodeList_get(&nodes, a)).byte = (u8) 'a';
+    u32 group = addNode(&nodes, REGEX_NODE_GROUP);
     RegexNode *groupNode = RegexNodeList_get(&nodes, group);
     (*groupNode).a = a;
     (*groupNode).group = 1;
@@ -194,8 +194,8 @@ static void testGroupAndRepeat(void) {
     // a{2,3} -> two mandatory copies then one optional copy (three CHARs).
     nodes = RegexNodeList();
     a = addNode(&nodes, REGEX_NODE_CHAR);
-    (*RegexNodeList_get(&nodes, a)).byte = (uint8_t) 'a';
-    uint32_t repeat = addNode(&nodes, REGEX_NODE_REPEAT);
+    (*RegexNodeList_get(&nodes, a)).byte = (u8) 'a';
+    u32 repeat = addNode(&nodes, REGEX_NODE_REPEAT);
     RegexNode *repeatNode = RegexNodeList_get(&nodes, repeat);
     (*repeatNode).a = a;
     (*repeatNode).repMin = 2;
@@ -205,7 +205,7 @@ static void testGroupAndRepeat(void) {
     // SAVE0, CHAR, CHAR, SPLIT, CHAR, SAVE1, MATCH
     CHECK(RegexProgram_count(&program) == 7);
     int chars = 0;
-    for (uint32_t i = 0; i < RegexProgram_count(&program); i++) {
+    for (u32 i = 0; i < RegexProgram_count(&program); i++) {
         const RegexInst *inst = RegexProgram_at(&program, i);
         if ((*inst).op == REGEX_OP_CHAR)
             chars++;
@@ -217,7 +217,7 @@ static void testGroupAndRepeat(void) {
     // {2,} -> two mandatory copies then a star of the body.
     nodes = RegexNodeList();
     a = addNode(&nodes, REGEX_NODE_CHAR);
-    (*RegexNodeList_get(&nodes, a)).byte = (uint8_t) 'a';
+    (*RegexNodeList_get(&nodes, a)).byte = (u8) 'a';
     repeat = addNode(&nodes, REGEX_NODE_REPEAT);
     repeatNode = RegexNodeList_get(&nodes, repeat);
     (*repeatNode).a = a;
@@ -237,7 +237,7 @@ static void testGroupAndRepeat(void) {
 static void testRefusal(void) {
     RegexNodeList nodes;
     nodes = RegexNodeList();
-    uint32_t character = addNode(&nodes, REGEX_NODE_CHAR);
+    u32 character = addNode(&nodes, REGEX_NODE_CHAR);
 
     RegexProgram program;
     program = RegexProgram();
@@ -250,8 +250,8 @@ static void testRefusal(void) {
     // defence, so it is driven directly here.
     nodes = RegexNodeList();
     character = addNode(&nodes, REGEX_NODE_CHAR);
-    (*RegexNodeList_get(&nodes, character)).byte = (uint8_t) 'a';
-    uint32_t repeat = addNode(&nodes, REGEX_NODE_REPEAT);
+    (*RegexNodeList_get(&nodes, character)).byte = (u8) 'a';
+    u32 repeat = addNode(&nodes, REGEX_NODE_REPEAT);
     RegexNode *repeatNode = RegexNodeList_get(&nodes, repeat);
     (*repeatNode).a = character;
     (*repeatNode).repMin = 0;
@@ -268,7 +268,7 @@ static void testRefusal(void) {
     CHECK(RegexProgram_build(&program, &nodes, character));
     CHECK(RegexProgram_count(&program) == 4);
     RegexProgram_free(&program);
-    RegexProgram_free(&program); // double free is a no-op
+    RegexProgram_free(&program); // d64 free is a no-op
     CHECK(program.insts == nullptr);
 
     RegexNodeList_free(&nodes);

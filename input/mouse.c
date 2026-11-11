@@ -3,7 +3,7 @@
 //
 // Button slots mirror the Key state table (same 40-byte layout): 16 x 40-byte
 // off-heap slots, one per button, with windowed-tap settlement — clicks are
-// OFFERED while `now < pendingUntil` and settle (SINGLE/DOUBLE/TRIPLE) once
+// OFFERED while `now < pendingUntil` and settle (SINGLE/d64/TRIPLE) once
 // the tap window closes. longPressFired is the one-shot hold latch.
 //
 // Wire format is byte-for-byte the legacy packing; the dispatcher classifies
@@ -38,7 +38,7 @@
  * bounded 16-byte ring (legacy 64-bit wire format plus target window id) and
  * dispatched to global and per-window listener registries. Button slots
  * mirror the Key state table layout (16 x 40-byte slots) with windowed-tap
- * settlement so clicks settle into SINGLE/DOUBLE/TRIPLE once the tap window
+ * settlement so clicks settle into SINGLE/d64/TRIPLE once the tap window
  * closes. Listener registries grow exponentially, arena-backed, per the
  * Dynamic Scalability & Anti-Hardcoding Law. Lives at R2 as a leaf input
  * behavior; the R1 window pump pushes events, the game thread dispatches.
@@ -57,25 +57,25 @@
  * STRUCT FIELDS (local to this file):
  * ----------------------------------------------------------------------------
  *   InputEvent {
- *     uint64_t packed;           // legacy 64-bit mouse event packing
- *     uint32_t windowId;         // target window (0 = broadcast)
- *     uint32_t pad;              // alignment padding
+ *     u64 packed;           // legacy 64-bit mouse event packing
+ *     u32 windowId;         // target window (0 = broadcast)
+ *     u32 pad;              // alignment padding
  *   }
  *   ButtonSlot {
- *     uint64_t pressTime;        // last press timestamp
- *     uint64_t lastReleaseTime;  // last release timestamp
- *     uint64_t pendingUntil;     // click window close; clicks settle once now >= pendingUntil
- *     uint64_t lastHoldDuration; // hold length accumulator
- *     int32_t taps;              // click-count state
- *     uint8_t lastTapMods;       // wire modifier mask at last press (change breaks sequence)
- *     uint8_t longPressFired;    // one-shot LONG_PRESS latch, cleared on release
- *     uint8_t pad[2];            // alignment padding
+ *     u64 pressTime;        // last press timestamp
+ *     u64 lastReleaseTime;  // last release timestamp
+ *     u64 pendingUntil;     // click window close; clicks settle once now >= pendingUntil
+ *     u64 lastHoldDuration; // hold length accumulator
+ *     i32 taps;              // click-count state
+ *     u8 lastTapMods;       // wire modifier mask at last press (change breaks sequence)
+ *     u8 longPressFired;    // one-shot LONG_PRESS latch, cleared on release
+ *     u8 pad[2];            // alignment padding
  *   }
  *
  * PRIVATE HELPERS (kept file-local pure-data only, each with full fields):
  * ----------------------------------------------------------------------------
  *   WinRow {
- *     uint32_t windowId;         // opaque OS window tag (0 never attached)
+ *     u32 windowId;         // opaque OS window tag (0 never attached)
  *     const MouseHandler **items;  // arena-allocated listener segment, doubling
  *     int count;                 // live listener count
  *     int cap;                   // allocated segment capacity
@@ -133,39 +133,39 @@
 
 // One queued event: the legacy 64-bit packing plus the window it belongs to.
 typedef struct {
-    uint64_t packed;
-    uint32_t windowId;
-    uint32_t pad;
+    u64 packed;
+    u32 windowId;
+    u32 pad;
 } InputEvent;
 
 _Static_assert(sizeof(InputEvent) == 16, "input event must stay 16 Bytes");
 
 typedef struct {
-    uint64_t pressTime;
-    uint64_t lastReleaseTime;
-    uint64_t pendingUntil;     // click window close; clicks settle once now >= pendingUntil
-    uint64_t lastHoldDuration;
-    int32_t taps;
-    uint8_t lastTapMods;       // wire modifier mask at last press (change breaks sequence)
-    uint8_t longPressFired;    // one-shot LONG_PRESS latch, cleared on release
-    uint8_t pad[2];            // alignment padding
+    u64 pressTime;
+    u64 lastReleaseTime;
+    u64 pendingUntil;     // click window close; clicks settle once now >= pendingUntil
+    u64 lastHoldDuration;
+    i32 taps;
+    u8 lastTapMods;       // wire modifier mask at last press (change breaks sequence)
+    u8 longPressFired;    // one-shot LONG_PRESS latch, cleared on release
+    u8 pad[2];            // alignment padding
 } ButtonSlot;
 
 _Static_assert(sizeof(ButtonSlot) == 40, "button slot must stay 40 Bytes");
 
 static ButtonSlot s_slots[BUTTON_COUNT];
-static double s_posX = 0.0;
-static double s_posY = 0.0;
+static d64 s_posX = 0.0;
+static d64 s_posY = 0.0;
 static RingBuffer s_queue;
 static bool s_ready = false;
 
 // --- PRIVATE HELPERS: growable listener registries ---
 // The Dynamic Scalability & Anti-Hardcoding Law: registries start at zero
-// allocations and double exponentially, arena-backed. windowId is an opaque
+// allocations and d64 exponentially, arena-backed. windowId is an opaque
 // OS tag (0 = FOCUS_BROADCAST, reserved, never attached); broadcast events
 // fan _out to every attached row.
 typedef struct WinRow {
-    uint32_t windowId;
+    u32 windowId;
     const MouseHandler **items;  // arena-allocated segment, doubling
     int count;
     int cap;
@@ -189,10 +189,10 @@ static bool growSegment(const MouseHandler ***items, int *cap, int needed) {
     int newCap = (*cap == 0) ? 16 : *cap * 2;
     while (newCap < needed) newCap *= 2;
     const MouseHandler **nb = (const MouseHandler**) Memory_alloc(
-        TYPE_INT_POINTER, (size_t) newCap * sizeof(MouseHandler*));
+        TYPE_INT_POINTER, (bytes) newCap * sizeof(MouseHandler*));
     if (nb == nullptr) return false;
     if (*items != nullptr && *cap > 0)
-        memcpy(nb, *items, (size_t) *cap * sizeof(MouseHandler*));
+        memcpy(nb, *items, (bytes) *cap * sizeof(MouseHandler*));
     *items = nb;
     *cap = newCap;
     return true;
@@ -204,17 +204,17 @@ static bool growRows(int needed) {
     int newCap = (s_rowCap == 0) ? 8 : s_rowCap * 2;
     while (newCap < needed) newCap *= 2;
     WinRow *nb = (WinRow*) Memory_alloc(TYPE_INT_POINTER,
-        (size_t) newCap * sizeof(WinRow));
+        (bytes) newCap * sizeof(WinRow));
     if (nb == nullptr) return false;
     if (s_rows != nullptr && s_rowCap > 0)
-        memcpy(nb, s_rows, (size_t) s_rowCap * sizeof(WinRow));
+        memcpy(nb, s_rows, (bytes) s_rowCap * sizeof(WinRow));
     s_rows = nb;
     s_rowCap = newCap;
     return true;
 }
 
 // Find the row for an opaque OS window id, or NULL when not attached.
-static WinRow *rowFor(uint32_t windowId) {
+static WinRow *rowFor(u32 windowId) {
     for (int i = 0; i < s_rowCount; i++)
         if (s_rows[i].windowId == windowId)
             return &s_rows[i];
@@ -252,7 +252,7 @@ bool Mouse_removeListener(const MouseHandler *listener) {
     return false;
 }
 
-void Mouse_attachWindow(uint32_t windowId, const MouseHandler *listener) {
+void Mouse_attachWindow(u32 windowId, const MouseHandler *listener) {
     if (listener == nullptr || windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) {
@@ -267,7 +267,7 @@ void Mouse_attachWindow(uint32_t windowId, const MouseHandler *listener) {
     (*row).items[(*row).count++] = listener;
 }
 
-bool Mouse_detachWindow(uint32_t windowId, const MouseHandler *listener) {
+bool Mouse_detachWindow(u32 windowId, const MouseHandler *listener) {
     if (listener == nullptr || windowId == 0) return false;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return false;
@@ -281,7 +281,7 @@ bool Mouse_detachWindow(uint32_t windowId, const MouseHandler *listener) {
     return false;
 }
 
-void Mouse_detachWindowAll(uint32_t windowId) {
+void Mouse_detachWindowAll(u32 windowId) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row != nullptr)
@@ -297,32 +297,32 @@ static int modifierMask(void) {
     return mods;
 }
 
-static uint64_t epochMicros(void) {
+static u64 epochMicros(void) {
     return (NanoTime_elapsedNanos() / 1000ULL) & 0x3FFFFFFFFFFFULL;
 }
 
-void Mouse_pushButtonEvent(uint32_t windowId, int button, int action, uint64_t tapWindowNanos) {
+void Mouse_pushButtonEvent(u32 windowId, int button, int action, u64 tapWindowNanos) {
     if (button < 0 || button >= BUTTON_COUNT) return;
     if (!s_ready) Mouse_init();
     if (!s_ready) return;
 
     ButtonSlot *slot = &s_slots[button];
-    uint64_t now = NanoTime_now();
+    u64 now = NanoTime_now();
 
     if (action == KEY_ACTION_DOWN) {
         if ((*slot).pressTime != 0) { // OS repeat
             InputEvent ev = { .packed = (epochMicros() << 18)
-                                       | (((uint64_t)modifierMask() & 0xF) << 14)
-                                       | (((uint64_t)button & 0xFFF) << 2)
+                                       | (((u64)modifierMask() & 0xF) << 14)
+                                       | (((u64)button & 0xFFF) << 2)
                                        | KEY_ACTION_REPEAT,
                               .windowId = windowId, .pad = 0 };
             RingBuffer_push(&s_queue, &ev);
             return;
         }
-        uint64_t lastRelease = (*slot).lastReleaseTime;
+        u64 lastRelease = (*slot).lastReleaseTime;
         // A modifier-state change since the last press breaks the sequence:
-        // different modifiers => a fresh click, never an upgrade to double.
-        uint8_t modsNow = (uint8_t)(modifierMask() & 0xF);
+        // different modifiers => a fresh click, never an upgrade to d64.
+        u8 modsNow = (u8)(modifierMask() & 0xF);
         if (lastRelease != 0 && (now - lastRelease) < tapWindowNanos
             && (*slot).lastTapMods == modsNow)
             (*slot).taps++;
@@ -340,87 +340,87 @@ void Mouse_pushButtonEvent(uint32_t windowId, int button, int action, uint64_t t
     }
 
     InputEvent ev = { .packed = (epochMicros() << 18)
-                               | (((uint64_t)modifierMask() & 0xF) << 14)
-                               | (((uint64_t)button & 0xFFF) << 2)
-                               | ((uint64_t)action & 0x3),
+                               | (((u64)modifierMask() & 0xF) << 14)
+                               | (((u64)button & 0xFFF) << 2)
+                               | ((u64)action & 0x3),
                       .windowId = windowId, .pad = 0 };
     RingBuffer_push(&s_queue, &ev);
 }
 
 // Coordinates ride as int16 halves exactly like legacy (wrapping truncation).
-static uint64_t packCoords(uint64_t head, double x, double y) {
-    uint64_t packed = head;
-    packed |= (((uint64_t)(uint16_t)(int16_t)(int)x) << 16);
-    packed |= (((uint64_t)(uint16_t)(int16_t)(int)y) << 32);
+static u64 packCoords(u64 head, d64 x, d64 y) {
+    u64 packed = head;
+    packed |= (((u64)(u16)()(int)x) << 16);
+    packed |= (((u64)(u16)()(int)y) << 32);
     return packed;
 }
 
-static double coordA(uint64_t packed) {
-    return (double)(int16_t)((packed >> 16) & 0xFFFF);
+static d64 coordA(u64 packed) {
+    return (d64)()((packed >> 16) & 0xFFFF);
 }
 
-static double coordB(uint64_t packed) {
-    return (double)(int16_t)((packed >> 32) & 0xFFFF);
+static d64 coordB(u64 packed) {
+    return (d64)()((packed >> 32) & 0xFFFF);
 }
 
-void Mouse_pushMoveEvent(uint32_t windowId, double x, double y) {
+void Mouse_pushMoveEvent(u32 windowId, d64 x, d64 y) {
     if (!s_ready) Mouse_init();
     if (!s_ready) return;
     InputEvent ev = { .packed = packCoords((255ULL << 8) | 5ULL, x, y), .windowId = windowId, .pad = 0 };
     RingBuffer_push(&s_queue, &ev);
 }
 
-void Mouse_pushMoveDeltaEvent(uint32_t windowId, double dx, double dy) {
+void Mouse_pushMoveDeltaEvent(u32 windowId, d64 dx, d64 dy) {
     if (!s_ready) Mouse_init();
     if (!s_ready) return;
     InputEvent ev = { .packed = packCoords((255ULL << 8) | 9ULL, dx, dy), .windowId = windowId, .pad = 0 };
     RingBuffer_push(&s_queue, &ev);
 }
 
-void Mouse_pushDragEvent(uint32_t windowId, int button, double x, double y) {
+void Mouse_pushDragEvent(u32 windowId, int button, d64 x, d64 y) {
     if (!s_ready) Mouse_init();
     if (!s_ready) return;
-    InputEvent ev = { .packed = packCoords(((uint64_t)button << 8) | 7ULL, x, y), .windowId = windowId, .pad = 0 };
+    InputEvent ev = { .packed = packCoords(((u64)button << 8) | 7ULL, x, y), .windowId = windowId, .pad = 0 };
     RingBuffer_push(&s_queue, &ev);
 }
 
-void Mouse_pushScrollEvent(uint32_t windowId, double dx, double dy) {
+void Mouse_pushScrollEvent(u32 windowId, d64 dx, d64 dy) {
     if (!s_ready) Mouse_init();
     if (!s_ready) return;
 
     // Scroll rides at 100x resolution inside an int16 per axis.
-    double sx = dx * 100.0;
-    double sy = dy * 100.0;
+    d64 sx = dx * 100.0;
+    d64 sy = dy * 100.0;
     if (sx > 32767.0) sx = 32767.0;
     if (sx < -32768.0) sx = -32768.0;
     if (sy > 32767.0) sy = 32767.0;
     if (sy < -32768.0) sy = -32768.0;
 
-    uint64_t packed = (254ULL << 8) | 6ULL;
-    packed |= ((uint64_t)(uint16_t)(int16_t)sx) << 16;
-    packed |= ((uint64_t)(uint16_t)(int16_t)sy) << 32;
+    u64 packed = (254ULL << 8) | 6ULL;
+    packed |= ((u64)(u16)()sx) << 16;
+    packed |= ((u64)(u16)()sy) << 32;
     InputEvent ev = { .packed = packed, .windowId = windowId, .pad = 0 };
     RingBuffer_push(&s_queue, &ev);
 }
 
-void Mouse_pushZoomEvent(uint32_t windowId, double magnification) {
+void Mouse_pushZoomEvent(u32 windowId, d64 magnification) {
     if (!s_ready) Mouse_init();
     if (!s_ready) return;
 
-    float f = (float)magnification;
-    uint32_t bits;
+    f32 f = (f32)magnification;
+    u32 bits;
     memcpy(&bits, &f, sizeof(bits));
 
-    uint64_t packed = (255ULL << 8) | 8ULL;
-    packed |= ((uint64_t)bits & 0xFFFFFFFFULL) << 16;
+    u64 packed = (255ULL << 8) | 8ULL;
+    packed |= ((u64)bits & 0xFFFFFFFFULL) << 16;
     InputEvent ev = { .packed = packed, .windowId = windowId, .pad = 0 };
     RingBuffer_push(&s_queue, &ev);
 }
 
 // Deliver one motion-class event (move/delta/zoom/scroll/drag) to one
 // window's scoped list.
-static void deliverMotion(uint32_t windowId, int action8, int button,
-                          double a, double b) {
+static void deliverMotion(u32 windowId, int action8, int button,
+                          d64 a, d64 b) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return;
@@ -438,8 +438,8 @@ static void deliverMotion(uint32_t windowId, int action8, int button,
     }
 }
 
-// Zoom rides the same routing but carries float bits instead of coords.
-static void deliverZoom(uint32_t windowId, double magnification) {
+// Zoom rides the same routing but carries f32 bits instead of coords.
+static void deliverZoom(u32 windowId, d64 magnification) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return;
@@ -451,7 +451,7 @@ static void deliverZoom(uint32_t windowId, double magnification) {
 }
 
 // Deliver one button-class event to one window's scoped list.
-static void deliverButton(uint32_t windowId, int action, int mouseEvent, uint64_t exactNanos) {
+static void deliverButton(u32 windowId, int action, int mouseEvent, u64 exactNanos) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return;
@@ -472,7 +472,7 @@ void Mouse_dispatchEvents(void) {
 
     InputEvent ev;
     while (RingBuffer_pop(&s_queue, &ev)) {
-        uint64_t packed = ev.packed;
+        u64 packed = ev.packed;
         int action8 = (int)(packed & 0xFF);
         int marker = (int)((packed >> 8) & 0xFF);
 
@@ -491,8 +491,8 @@ void Mouse_dispatchEvents(void) {
                     deliverMotion(ev.windowId, 5, 0, s_posX, s_posY);
                 }
             } else if (action8 == 9) { // locked-cursor delta
-                double dx = coordA(packed);
-                double dy = coordB(packed);
+                d64 dx = coordA(packed);
+                d64 dy = coordB(packed);
                 for (int i = 0; i < s_listenerCount; i++)
                     if ((*s_listeners[i]).onMouseMoveDelta)
                         (*s_listeners[i]).onMouseMoveDelta((*s_listeners[i]).self, dx, dy);
@@ -503,10 +503,10 @@ void Mouse_dispatchEvents(void) {
                     deliverMotion(ev.windowId, 9, 0, dx, dy);
                 }
             } else if (action8 == 8) { // pinch zoom
-                uint32_t bits = (uint32_t)((packed >> 16) & 0xFFFFFFFFULL);
-                float f;
+                u32 bits = (u32)((packed >> 16) & 0xFFFFFFFFULL);
+                f32 f;
                 memcpy(&f, &bits, sizeof(f));
-                double mag = (double)f;
+                d64 mag = (d64)f;
                 for (int i = 0; i < s_listenerCount; i++)
                     if ((*s_listeners[i]).onMouseZoom)
                         (*s_listeners[i]).onMouseZoom((*s_listeners[i]).self, mag);
@@ -520,8 +520,8 @@ void Mouse_dispatchEvents(void) {
             continue;
         }
         if (marker == 254 && action8 == 6) { // scroll
-            double dx = coordA(packed) / 100.0;
-            double dy = coordB(packed) / 100.0;
+            d64 dx = coordA(packed) / 100.0;
+            d64 dy = coordB(packed) / 100.0;
             for (int i = 0; i < s_listenerCount; i++)
                 if ((*s_listeners[i]).onMouseScroll)
                     (*s_listeners[i]).onMouseScroll((*s_listeners[i]).self, dx, dy);
@@ -555,7 +555,7 @@ void Mouse_dispatchEvents(void) {
         int action = (int)(packed & 0x3);
         int button = (int)((packed >> 2) & 0xFFF);
         int modifiers = (int)((packed >> 14) & 0xF);
-        uint64_t exactNanos = NanoTime_startNanos()
+        u64 exactNanos = NanoTime_startNanos()
                             + (((packed >> 18) & 0x3FFFFFFFFFFFULL) * 1000ULL);
 
         int mappedMods = 0;
@@ -588,23 +588,23 @@ bool Mouse_isDown(int button) {
     return s_slots[button].pressTime != 0;
 }
 
-uint64_t Mouse_pressTime(int button) {
+u64 Mouse_pressTime(int button) {
     if (button < 0 || button >= BUTTON_COUNT) return 0;
     return s_slots[button].pressTime;
 }
 
-uint64_t Mouse_lastReleaseTime(int button) {
+u64 Mouse_lastReleaseTime(int button) {
     if (button < 0 || button >= BUTTON_COUNT) return 0;
     return s_slots[button].lastReleaseTime;
 }
 
-uint64_t Mouse_lastHoldDurationNanos(int button) {
+u64 Mouse_lastHoldDurationNanos(int button) {
     if (button < 0 || button >= BUTTON_COUNT) return 0;
     return s_slots[button].lastHoldDuration;
 }
 
-uint64_t Mouse_currentHoldDurationNanos(int button) {
-    uint64_t p = Mouse_pressTime(button);
+u64 Mouse_currentHoldDurationNanos(int button) {
+    u64 p = Mouse_pressTime(button);
     return p == 0 ? 0 : NanoTime_now() - p;
 }
 
@@ -628,7 +628,7 @@ MouseTapPhase Mouse_tapPhase(int button) {
     if ((*slot).taps >= 3)
         return MOUSE_TAP_TRIPLE;
     if ((*slot).taps == 2)
-        return MOUSE_TAP_DOUBLE;
+        return MOUSE_TAP_f64;
     return MOUSE_TAP_SINGLE;
 }
 
@@ -639,14 +639,14 @@ bool Mouse_isLongPressFired(int button) {
 
 void Mouse_setLongPressFired(int button, bool fired) {
     if (button < 0 || button >= BUTTON_COUNT) return;
-    s_slots[button].longPressFired = (uint8_t)(fired ? 1 : 0);
+    s_slots[button].longPressFired = (u8)(fired ? 1 : 0);
 }
 
-double Mouse_x(void) {
+d64 Mouse_x(void) {
     return s_posX;
 }
 
-double Mouse_y(void) {
+d64 Mouse_y(void) {
     return s_posY;
 }
 

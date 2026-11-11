@@ -4,48 +4,48 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 #include "struct/collection.h"
 
 // struct/deque.h — the Deque class, ported from struct/Deque.java.
-// Double-ended circular buffer over a stride-based buffer; the head field
+// d64-ended circular buffer over a stride-based buffer; the head field
 // tracks the front so addFirst/removeFirst wrap around the ring.
 
 typedef struct Deque {
     Collection collection;
 } Deque;
 
-Deque *Deque_2(uint32_t element_class, size_t capacity);
+Deque *Deque_2(u32 element_class, bytes capacity);
 
 // Deque pre-filled to count slots (legacy allocate): active_count = count.
-Deque *Deque_3(uint32_t element_class, size_t capacity, size_t count);
+Deque *Deque_3(u32 element_class, bytes capacity, bytes count);
 
 void Deque_free(Deque *deque);
 
-void Deque_addFirst(Deque *deque, uint64_t value_or_pointer);
-void Deque_addLast(Deque *deque, uint64_t value_or_pointer);
-uint64_t Deque_removeFirst(Deque *deque);
-uint64_t Deque_removeLast(Deque *deque);
-uint64_t Deque_peekFirst(Deque *deque);
-uint64_t Deque_peekLast(Deque *deque);
-uint64_t Deque_get(Deque *deque, size_t index);
-uint8_t *Deque_slot(Deque *deque, size_t index);
+void Deque_addFirst(Deque *deque, u64 value_or_pointer);
+void Deque_addLast(Deque *deque, u64 value_or_pointer);
+u64 Deque_removeFirst(Deque *deque);
+u64 Deque_removeLast(Deque *deque);
+u64 Deque_peekFirst(Deque *deque);
+u64 Deque_peekLast(Deque *deque);
+u64 Deque_get(Deque *deque, bytes index);
+u8 *Deque_slot(Deque *deque, bytes index);
 
 bool Deque_isEmpty(Deque *deque);
-size_t Deque_size(Deque *deque);
+bytes Deque_size(Deque *deque);
 // Refused-grow count since construction (the Exhaustion Loudness Law).
 ;;TEST
-uint64_t Deque_exhaustionCount(const Deque *deque);
-size_t Deque_length(Deque *deque);
-size_t Deque_capacity(Deque *deque);
-uint32_t Deque_elementClassId(Deque *deque);
-size_t Deque_stride(Deque *deque);
-size_t Deque_head(Deque *deque);
-uint8_t *Deque_dataBuffer(Deque *deque);
+u64 Deque_exhaustionCount(const Deque *deque);
+bytes Deque_length(Deque *deque);
+bytes Deque_capacity(Deque *deque);
+u32 Deque_elementClassId(Deque *deque);
+bytes Deque_stride(Deque *deque);
+bytes Deque_head(Deque *deque);
+u8 *Deque_dataBuffer(Deque *deque);
 
 
-Deque *Deque_1(uint32_t element_class);
+Deque *Deque_1(u32 element_class);
 
 #define Deque(...) CONSTRUCTOR_DISPATCH(Deque, __VA_ARGS__)
 

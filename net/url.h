@@ -15,16 +15,16 @@ int Url_defaultPort(const char *scheme);
 // Build "scheme://host[:port]/path" into _out. nullptr scheme/host/path fall
 // back to "http", "", "/". Returns length written or -1 when _out is small.
 int64_t Url_build(const char *scheme, const char *host, int port,
-                     const char *path, char *out, size_t cap);
+                     const char *path, char *out, bytes cap);
 
 // RFC 4648 base64. _out needs 4*ceil(len/3)+1 Bytes. Returns length or -1.
-int64_t Url_base64(const uint8_t *in, size_t len, char *out, size_t cap);
+int64_t Url_base64(const u8 *in, bytes len, char *out, bytes cap);
 
 // "Basic base64(user:pass)" into _out. Returns length or -1.
-int64_t Url_basicAuth(const char *user, const char *pass, char *out, size_t cap);
+int64_t Url_basicAuth(const char *user, const char *pass, char *out, bytes cap);
 
 // "Bearer token" into _out. Returns length or -1.
-int64_t Url_bearerAuth(const char *token, char *out, size_t cap);
+int64_t Url_bearerAuth(const char *token, char *out, bytes cap);
 
 // Compatibility aliases — legacy tests used NetUrl_* prefix; keep both.
 #define NetUrl_defaultPort Url_defaultPort

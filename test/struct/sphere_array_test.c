@@ -41,12 +41,12 @@ static void test_construction(void) {
     SphereArray_free(r0);
 
     const int expected[] = { 1, 7, 33 };
-    for (int32_t r = 0; r <= 2; r++) {
+    for (i32 r = 0; r <= 2; r++) {
         SphereArray *a = SphereArray(r, ID_INT);
         CHECK(a != nullptr);
         CHECK(SphereArray_radius(a) == r);
         CHECK(SphereArray_diameter(a) == 2 * r + 1);
-        CHECK(SphereArray_validVoxelCount(a) == (size_t) expected[r]);
+        CHECK(SphereArray_validVoxelCount(a) == (bytes) expected[r]);
         SphereArray_free(a);
     }
 
@@ -128,16 +128,16 @@ static void test_access_round_trip(void) {
 }
 
 typedef struct WalkStats {
-    size_t count;
-    size_t badDistance;
-    size_t nullVoxel;
-    size_t mismatchedOffset;
+    bytes count;
+    bytes badDistance;
+    bytes nullVoxel;
+    bytes mismatchedOffset;
     int64_t checksum;
 } WalkStats;
 
 // Accumulates traversal count, coordinate checks, and the visited payload checksum.
-static void walkVoxel(int32_t gx, int32_t gy, int32_t gz,
-                      int32_t dx, int32_t dy, int32_t dz,
+static void walkVoxel(i32 gx, i32 gy, i32 gz,
+                      i32 dx, i32 dy, i32 dz,
                       const void *voxel, void *userData) {
     WalkStats *s = (WalkStats*) userData;
     (*s).count++;
@@ -150,8 +150,8 @@ static void walkVoxel(int32_t gx, int32_t gy, int32_t gz,
         (*s).mismatchedOffset++;
     if (voxel != nullptr) {
         int v = 0;
-        for (size_t i = 0; i < sizeof(int); i++)
-            ((uint8_t*) &v)[i] = ((const uint8_t*) voxel)[i];
+        for (bytes i = 0; i < sizeof(int); i++)
+            ((u8*) &v)[i] = ((const u8*) voxel)[i];
         (*s).checksum += v;
     }
 }
@@ -162,9 +162,9 @@ static void test_for_each(void) {
     CHECK(a != nullptr);
 
     int fill = 1;
-    for (int32_t gz = 0; gz < SphereArray_diameter(a); gz++)
-        for (int32_t gy = 0; gy < SphereArray_diameter(a); gy++)
-            for (int32_t gx = 0; gx < SphereArray_diameter(a); gx++)
+    for (i32 gz = 0; gz < SphereArray_diameter(a); gz++)
+        for (i32 gy = 0; gy < SphereArray_diameter(a); gy++)
+            for (i32 gx = 0; gx < SphereArray_diameter(a); gx++)
                 if (SphereArray_containsGrid(a, gx, gy, gz)) {
                     int v = fill;
                     CHECK(SphereArray_setGrid(a, gx, gy, gz, &v));

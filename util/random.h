@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 #include "objects/probable.h"
 #include "objects/probable_objects.h"
@@ -27,21 +27,21 @@ typedef enum RandomEngine {
 } RandomEngine;
 
 typedef struct Random {
-    uint64_t seed;        // primary state (engine-dependent)
-    uint64_t inc;         // secondary state (PCG low word; 0 otherwise)
-    uint32_t counter;     // sequence index (murmur engine)
+    u64 seed;        // primary state (engine-dependent)
+    u64 inc;         // secondary state (PCG low word; 0 otherwise)
+    u32 counter;     // sequence index (murmur engine)
     RandomEngine engine;  // which algorithm this stream runs
 } Random;
 
 // New stream; the engine is chosen deterministically from the seed.
-Random *Random_1(uint64_t seed);
+Random *Random_1(u64 seed);
 
 // New stream seeded from the monotonic clock for casual, non-reproducible draws.
 // This is not a cryptographic source; use SecureRandom for secrets.
 Random *Random_0(void);
 
 // New stream forced onto a specific engine (tests, deterministic reproduction).
-Random *Random_2(uint64_t seed, RandomEngine engine);
+Random *Random_2(u64 seed, RandomEngine engine);
 
 // Which engine this stream runs (telemetry / tests; gameplay never needs it).
 RandomEngine Random_engine(const Random *r);
@@ -51,15 +51,15 @@ void Random_free(Random *r);
 // Shared system stream, seeded from the monotonic clock on first use.
 Random *Random_system(void);
 
-uint64_t Random_nextLong(Random *r);
-int32_t Random_nextInt(Random *r);
-float Random_nextFloat(Random *r);
-double Random_nextDouble(Random *r);
-float Random_nextNDCFloat(Random *r);
+u64 Random_nextLong(Random *r);
+i32 Random_nextInt(Random *r);
+f32 Random_nextFloat(Random *r);
+d64 Random_nextf64(Random *r);
+f32 Random_nextNDCFloat(Random *r);
 char Random_nextChar(Random *r);
 
 // True with probability weight/total (legacy getWeight).
-bool Random_getWeight(Random *r, uint32_t weight, uint32_t total);
+bool Random_getWeight(Random *r, u32 weight, u32 total);
 
 // Roll a Probable: object on a hit, 0 on a miss.
 uintptr_t Random_sample(Random *r, const Probable *probable);

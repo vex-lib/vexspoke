@@ -28,9 +28,9 @@ int main(void) {
     CHECK(Stride_get(ID_INT) == 4);
     CHECK(Stride_get(ID_FLOAT) == 4);
     CHECK(Stride_get(ID_LONG) == 8);
-    CHECK(Stride_get(ID_DOUBLE) == 8);
-    CHECK(Stride_get(ID_INT_DOUBLE) == 16);
-    CHECK(Stride_get(ID_LONG_DOUBLE) == 16);
+    CHECK(Stride_get(ID_f64) == 8);
+    CHECK(Stride_get(ID_INT_f64) == 16);
+    CHECK(Stride_get(ID_LONG_f64) == 16);
 
     // Geometry + outliers.
     CHECK(Stride_get(ID_VEC2) == 8);
@@ -43,8 +43,8 @@ int main(void) {
     CHECK(Stride_get(0x7FFFu) == 8);
 
     // A full TYPE_ id is masked to its class field before lookup.
-    CHECK(Stride_get((uint32_t) TYPE_VEC3_SINGLETON) == 12);
-    CHECK(Stride_get((uint32_t) TYPE_VEC4_SINGLETON) == 16);
+    CHECK(Stride_get((u32) TYPE_VEC3_SINGLETON) == 12);
+    CHECK(Stride_get((u32) TYPE_VEC4_SINGLETON) == 16);
 
     if (g_failures == 0) {
         printf("stride_test: all assertions held\n");

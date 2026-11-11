@@ -28,7 +28,7 @@ int main(void) {
     CHECK(SparseSet_capacity(s) >= 64);
     CHECK(SparseSet_maxEntities(s) >= 1024);
 
-    uint8_t *slot = SparseSet_add(s, 42);
+    u8 *slot = SparseSet_add(s, 42);
     CHECK(slot != nullptr);
     CHECK(SparseSet_contains(s, 42));
     CHECK(SparseSet_get(s, 42) == slot);
@@ -41,7 +41,7 @@ int main(void) {
     CHECK(SparseSet_get(s, 42) == nullptr);
 
     // Volume: 1,000 entities.
-    for (int32_t i = 0; i < 1000; i++)
+    for (i32 i = 0; i < 1000; i++)
         CHECK(SparseSet_add(s, i) != nullptr);
     CHECK(SparseSet_count(s) == 1000);
     CHECK(SparseSet_contains(s, 0));
@@ -49,9 +49,9 @@ int main(void) {
     CHECK(!SparseSet_contains(s, 1000));
 
     // Dense projections.
-    const int32_t *entities = SparseSet_denseEntities(s);
+    const i32 *entities = SparseSet_denseEntities(s);
     CHECK(entities != nullptr);
-    const uint8_t *data = SparseSet_denseData(s);
+    const u8 *data = SparseSet_denseData(s);
     CHECK(data != nullptr);
 
     // Hostile entity ids: negative and out of range are refused, not UB.

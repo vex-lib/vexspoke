@@ -4,7 +4,7 @@
 // c23/zero.h — the generic zero factory: zero(T t), typed by example.
 //
 //   int   i = zero(n);        // 0            — same type as n
-//   float f = zero(x);
+//   f32 f = zero(x);
 //   Vec3  v = zero(other);    // {0,0,0}
 //   Mat4  m = zero(model);    // every element zeroed
 //   Vec4  w = zero((*blk));   // heap block? deref it — zero of ITS class

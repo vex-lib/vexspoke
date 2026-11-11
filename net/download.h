@@ -4,14 +4,14 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct DownloadOptions {
-    uint32_t timeout_seconds;
+    u32 timeout_seconds;
     bool follow_redirects;
     bool silent;
     const char *user_agent;
@@ -22,7 +22,7 @@ static inline DownloadOptions DownloadOptions_0(void) {
         .silent = true, .user_agent = "vexgraph/1.0 (Homebrew/Tooling Client)" };
 }
 #define DownloadOptions(...) CONSTRUCTOR_DISPATCH(DownloadOptions, __VA_ARGS__)
-static inline void DownloadOptions_setTimeout(DownloadOptions *options, uint32_t seconds) {
+static inline void DownloadOptions_setTimeout(DownloadOptions *options, u32 seconds) {
     if (options) (*options).timeout_seconds = seconds;
 }
 static inline void DownloadOptions_setFollowRedirects(DownloadOptions *options, bool enabled) {
@@ -37,9 +37,9 @@ static inline void DownloadOptions_setUserAgent(DownloadOptions *options, const 
 
 typedef struct DownloadResponse {
     int exit_code;
-    uint32_t http_status;
+    u32 http_status;
     char *data;
-    size_t size;
+    bytes size;
 } DownloadResponse;
 
 static inline DownloadResponse DownloadResponse_0(void) { return (DownloadResponse) {0}; }
@@ -58,10 +58,10 @@ void DownloadResponse_free(DownloadResponse *res);
 bool Download_fetch_cached(
     const char *url,
     const char *subsystem,
-    uint64_t ttl_sec,
+    u64 ttl_sec,
     const DownloadOptions *opts,
     char *cached_path_out,
-    size_t path_cap
+    bytes path_cap
 );
 
 #ifdef __cplusplus

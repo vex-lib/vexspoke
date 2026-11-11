@@ -4,9 +4,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 #include "exception/try_code.h"
-#include "util/annotation.h"
+#include "lang/annotation.h"
 
 ;;DRAFT
 // exception/try_value.h — the scalar value-or-error return.
@@ -21,25 +21,25 @@
 // CONTRACT: `value` is valid ONLY when `code == TRY_OK`.
 
 typedef struct TryValue {
-    uint64_t value;   // success payload; undefined unless code == TRY_OK
+    u64 value;   // success payload; undefined unless code == TRY_OK
     TryCode  code;    // TRY_OK or the named reason
 } TryValue;
 
 // --- Constructors (by value: no allocation, no pointer) ---
-TryValue TryValue_2(uint64_t value, TryCode code);
-TryValue TryValue_ok(uint64_t value);
+TryValue TryValue_2(u64 value, TryCode code);
+TryValue TryValue_ok(u64 value);
 TryValue TryValue_error(TryCode code);
 #define TryValue(...) CONSTRUCTOR_DISPATCH(TryValue, __VA_ARGS__)
 
 // --- Setters / Getters (the Symmetric Getter/Setter Completeness Law) ---
-uint64_t TryValue_getValue(const TryValue *self);
-void     TryValue_setValue(TryValue *self, uint64_t value);
+u64 TryValue_getValue(const TryValue *self);
+void     TryValue_setValue(TryValue *self, u64 value);
 TryCode  TryValue_getCode(const TryValue *self);
 void     TryValue_setCode(TryValue *self, TryCode code);
 bool     TryValue_isOk(const TryValue *self);
 
 // --- String projections (the toString Law) ---
-void TryValue_toString(const TryValue *self, char *dest, size_t cap, bool *outTruncated);
-void TryValue_toStringStruct(const TryValue *self, char *dest, size_t cap, bool *outTruncated);
+void TryValue_toString(const TryValue *self, char *dest, bytes cap, bool *outTruncated);
+void TryValue_toStringStruct(const TryValue *self, char *dest, bytes cap, bool *outTruncated);
 
 #endif

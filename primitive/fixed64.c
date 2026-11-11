@@ -15,7 +15,7 @@
  * memory-arena fallback for arrays: alloc/free route through BitPool when the
  * pointer is pool-owned, otherwise through memory. get/set are plain int64
  * loads/stores; compareAndSet is a seq-cst __atomic_compare_exchange_n so
- * the primitive doubles as a lock-free counter. type/length dispatch through
+ * the primitive f64s as a lock-free counter. type/length dispatch through
  * the owning allocator so callers never pierce the pool/arena split.
  * ============================================================================
  */
@@ -68,11 +68,11 @@ void *Fixed64_alloc(void) {
     return BitPool_alloc(&g_fixed64Pool, ID_FIXED64);
 }
 
-void *Fixed64_allocArray(size_t count) {
+void *Fixed64_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
-    size_t Bytes = count * sizeof(int64_t);
+    bytes Bytes = count * sizeof(int64_t);
     // For compound types, elem_size 8 already accounts for stride, but sizeof(int64_t) is placeholder
     // Use elem_size for true stride where c_type is int64 placeholder
     if (count > 1 && 8 != sizeof(int64_t))
@@ -106,14 +106,14 @@ bool Fixed64_compareAndSet(void *ptr, int64_t expected, int64_t value) {
     return __atomic_compare_exchange_n((int64_t*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
-uint64_t Fixed64_type(void *ptr) {
+u64 Fixed64_type(void *ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_fixed64Pool, ptr)) return BitPool_type(&g_fixed64Pool, ptr);
     return Memory_type(ptr);
 }
 
-size_t Fixed64_length(void *ptr) {
+bytes Fixed64_length(void *ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_fixed64Pool, ptr)) return BitPool_length(&g_fixed64Pool, ptr);

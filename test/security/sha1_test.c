@@ -5,11 +5,11 @@
 #include "security/sha1.h"
 #include "security/crypto.h"
 
-static void hex(const uint8_t *d, size_t n, char *out) { Crypto_toHex(d, n, out); }
+static void hex(const u8 *d, bytes n, char *out) { Crypto_toHex(d, n, out); }
 
 int main(void) {
     // FIPS 180-4 / RFC 3174 vectors.
-    uint8_t d[CRYPTO_SHA1_DIGEST_SIZE];
+    u8 d[CRYPTO_SHA1_DIGEST_SIZE];
     char h[CRYPTO_SHA1_DIGEST_SIZE * 2 + 1];
 
     Crypto_sha1("", 0, d);
@@ -29,14 +29,14 @@ int main(void) {
     // Streaming in pieces must equal the one-shot form.
     CryptoSha1 ctx = CryptoSha1();
     Crypto_sha1Init(&ctx);
-    for (size_t i = 0; i < strlen(m); ++i)
+    for (bytes i = 0; i < strlen(m); ++i)
         Crypto_sha1Update(&ctx, m + i, 1);
-    uint8_t streamed[CRYPTO_SHA1_DIGEST_SIZE];
+    u8 streamed[CRYPTO_SHA1_DIGEST_SIZE];
     Crypto_sha1Final(&ctx, streamed);
     assert(memcmp(streamed, d, sizeof d) == 0);
 
     // Boundary: exactly one block, and one byte past it.
-    uint8_t block[65];
+    u8 block[65];
     memset(block, 'a', sizeof block);
     Crypto_sha1(block, 64, d);
     Crypto_sha1(block, 65, streamed);

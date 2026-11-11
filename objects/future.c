@@ -32,7 +32,7 @@
  * ----------------------------------------------------------------------------
  *   Future {
  *     atomic_bool isGiven;       // fulfillment flag (single-assignment)
- *     uint64_t value;            // resolved payload (0 until given)
+ *     u64 value;            // resolved payload (0 until given)
  *   }
  *
  * FUNCTION REGISTRY:
@@ -57,12 +57,12 @@
 // future.c — Asynchronous single-assignment Future object wrapper implementation.
 typedef struct Future {
     atomic_bool isGiven;
-    uint64_t    value;
+    u64    value;
 } Future;
 
 // Allocates one unresolved future with a zero payload.
 Future *Future_0(void) {
-    uint64_t type = Type_make(PROJ_VEXSPOKE, FORM_SINGLETON, ID_FUTURE) | WRAP2_FUTURE;
+    u64 type = Type_make(PROJ_VEXSPOKE, FORM_SINGLETON, ID_FUTURE) | WRAP2_FUTURE;
     Future *future = Memory_alloc(type, sizeof(Future));
     if (!future)
         return nullptr;
@@ -73,12 +73,12 @@ Future *Future_0(void) {
 
 
 // Allocates count future records, copying init when supplied or zeroing otherwise.
-Future *Future_2(const Future *init, size_t count) {
+Future *Future_2(const Future *init, bytes count) {
     if (count == 0) return nullptr;
     Future *p = (Future*) Memory_alloc(TYPE_FUTURE_ARRAY, sizeof(Future) * count);
     if (!p) return nullptr;
     if (init) {
-        for (size_t i = 0; i < count; i++) p[i] = *init;
+        for (bytes i = 0; i < count; i++) p[i] = *init;
     } else {
         memset(p, 0, sizeof(Future) * count);
     }
@@ -97,13 +97,13 @@ bool Future_isGiven(const Future *future) {
 }
 
 // Returns the payload, or zero for a null future.
-uint64_t Future_get(const Future *future) {
+u64 Future_get(const Future *future) {
     if (!future) return 0;
     return (*future).value;
 }
 
 // Attempts one single-assignment fulfillment; returns false if already fulfilled.
-bool Future_setDesiredValue(Future *future, uint64_t value) {
+bool Future_setDesiredValue(Future *future, u64 value) {
     if (!future) return false;
     bool expected = false;
     if (atomic_compare_exchange_strong_explicit(

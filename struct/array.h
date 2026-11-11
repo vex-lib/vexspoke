@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 #include "struct/collection.h"
 #include "exception/try_value.h"
@@ -19,29 +19,29 @@ typedef struct Array {
 } Array;
 
 // Fixed array of length elements of element_class, all zero-initialized.
-Array *Array_2(uint32_t element_class, size_t length);
+Array *Array_2(u32 element_class, bytes length);
 
 // Free the array and its data buffer.
 void Array_free(Array *array);
 
 // Get/set the value or pointer at index (bounds-checked).
-uint64_t Array_get(Array *array, size_t index);
-void Array_set(Array *array, size_t index, uint64_t value);
+u64 Array_get(Array *array, bytes index);
+void Array_set(Array *array, bytes index, u64 value);
 
 // Cold, checking accessor: the value or the named reason it is absent — the
 // `;;CHECKER` half of the pair; Array_get is the `;;HOTCODE` half.
-TryValue Array_getTry(Array *array, size_t index);
+TryValue Array_getTry(Array *array, bytes index);
 
 // Pointer to the struct element at index (bounds-checked).
-uint8_t *Array_slot(Array *array, size_t index);
+u8 *Array_slot(Array *array, bytes index);
 
 bool Array_isEmpty(Array *array);
-size_t Array_size(Array *array);
-size_t Array_length(Array *array);
-size_t Array_capacity(Array *array);
-uint32_t Array_elementClassId(Array *array);
-size_t Array_stride(Array *array);
-uint8_t *Array_dataBuffer(Array *array);
+bytes Array_size(Array *array);
+bytes Array_length(Array *array);
+bytes Array_capacity(Array *array);
+u32 Array_elementClassId(Array *array);
+bytes Array_stride(Array *array);
+u8 *Array_dataBuffer(Array *array);
 
 
 #define Array(...) CONSTRUCTOR_DISPATCH(Array, __VA_ARGS__)

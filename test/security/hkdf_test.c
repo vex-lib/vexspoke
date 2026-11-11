@@ -9,24 +9,24 @@
 #include <stdio.h>
 #include <string.h>
 
-static size_t fromHex(const char *hex, uint8_t *out, size_t cap) {
-    size_t n = 0;
+static bytes fromHex(const char *hex, u8 *out, bytes cap) {
+    bytes n = 0;
     for (const char *p = hex; p[0] != '\0' && p[1] != '\0'; p += 2) {
         unsigned byte = 0;
         assert(sscanf(p, "%2x", &byte) == 1);
         assert(n < cap);
-        out[n++] = (uint8_t) byte;
+        out[n++] = (u8) byte;
     }
     return n;
 }
 
-static void toHex(const uint8_t *bytes, size_t len, char *out) {
-    for (size_t i = 0; i < len; ++i)
+static void toHex(const u8 *bytes, bytes len, char *out) {
+    for (bytes i = 0; i < len; ++i)
         snprintf(out + i * 2u, 3u, "%02x", bytes[i]);
     out[len * 2u] = '\0';
 }
 
-static void check(const uint8_t *okm, size_t len, const char *hex) {
+static void check(const u8 *okm, bytes len, const char *hex) {
     char got[512];
     toHex(okm, len, got);
     assert(strcmp(got, hex) == 0);
@@ -34,7 +34,7 @@ static void check(const uint8_t *okm, size_t len, const char *hex) {
 
 int main(void) {
     // RFC 5869 A.1: basic.
-    uint8_t ikm[22], salt[13], info[10], prk[32], okm[82];
+    u8 ikm[22], salt[13], info[10], prk[32], okm[82];
     memset(ikm, 0x0b, sizeof ikm);
     assert(fromHex("000102030405060708090a0b0c", salt, sizeof salt) == 13u);
     assert(fromHex("f0f1f2f3f4f5f6f7f8f9", info, sizeof info) == 10u);
@@ -48,11 +48,11 @@ int main(void) {
           "34007208d5b887185865");
 
     // RFC 5869 A.2: long inputs, 82-byte output across several expand blocks.
-    uint8_t ikm2[80], salt2[80], info2[80];
+    u8 ikm2[80], salt2[80], info2[80];
     for (unsigned i = 0; i < 80u; ++i) {
-        ikm2[i] = (uint8_t) i;
-        salt2[i] = (uint8_t) (0x60u + i);
-        info2[i] = (uint8_t) (0xb0u + i);
+        ikm2[i] = (u8) i;
+        salt2[i] = (u8) (0x60u + i);
+        info2[i] = (u8) (0xb0u + i);
     }
     Hkdf(salt2, sizeof salt2, ikm2, sizeof ikm2, info2, sizeof info2, okm, 82u);
     check(okm, 82u,
@@ -68,7 +68,7 @@ int main(void) {
 
     // The RFC ceiling refuses.
     assert(HKDF_MAX_OUTPUT == 8160u);
-    uint8_t tooBig[8];
+    u8 tooBig[8];
     (void) tooBig;
 
     printf("hkdf_test: OK\n");

@@ -37,10 +37,10 @@ static int g_failures = 0;
 // Checks exact/prefix/subsequence ranking order and default candidate-index IDs.
 static void test_exact_and_prefix(void) {
     const char *cands[] = { "app", "apple", "apple pie", "banana", "pineapple" };
-    uint32_t ids[] = { 10, 20, 30, 40, 50 };
+    u32 ids[] = { 10, 20, 30, 40, 50 };
     SpotlightMatch out[8];
 
-    size_t n = Spotlight_rank("apple", cands, ids, 5, out, 8);
+    bytes n = Spotlight_rank("apple", cands, ids, 5, out, 8);
     CHECK(n == 3);                              // app excluded (no match), banana excluded
     // Exact match "apple" ranks first.
     CHECK(out[0].score == 1000);
@@ -49,13 +49,13 @@ static void test_exact_and_prefix(void) {
     CHECK(out[1].score < 1000 && out[1].score > out[2].score);
     CHECK(out[2].score > 0);
     // Descending order throughout.
-    for (size_t i = 1; i < n; i++)
+    for (bytes i = 1; i < n; i++)
         CHECK(out[i - 1].score >= out[i].score);
 
     // ids==nullptr maps to candidate index.
     n = Spotlight_rank("apple", cands, nullptr, 5, out, 8);
     CHECK(n == 3);
-    for (size_t i = 0; i < n; i++)
+    for (bytes i = 0; i < n; i++)
         CHECK(out[i].id < 5);
 }
 
@@ -70,9 +70,9 @@ static void test_tiers(void) {
         "b_a_r",        // fuzzy subsequence only
         "zzz",          // no match
     };
-    uint32_t ids[] = { 1, 2, 3, 4, 5, 6 };
+    u32 ids[] = { 1, 2, 3, 4, 5, 6 };
     SpotlightMatch out[8];
-    size_t n = Spotlight_rank("bar", cands, ids, 6, out, 8);
+    bytes n = Spotlight_rank("bar", cands, ids, 6, out, 8);
     CHECK(n == 5);
     CHECK(out[0].id == 1);                      // exact
     CHECK(out[1].id == 2);                      // prefix
@@ -89,7 +89,7 @@ static void test_tiers(void) {
 static void test_case_and_boundaries(void) {
     const char *cands[] = { "APPLE", "Apple", "apple" };
     SpotlightMatch out[4];
-    size_t n = Spotlight_rank("apple", cands, nullptr, 3, out, 4);
+    bytes n = Spotlight_rank("apple", cands, nullptr, 3, out, 4);
     CHECK(n == 3);
     CHECK(out[0].score == 1000 && out[1].score == 1000 && out[2].score == 1000);
 }
@@ -98,7 +98,7 @@ static void test_case_and_boundaries(void) {
 static void test_max_count(void) {
     const char *cands[] = { "aa", "ab", "ac", "ad" };
     SpotlightMatch out[2];
-    size_t n = Spotlight_rank("a", cands, nullptr, 4, out, 2);
+    bytes n = Spotlight_rank("a", cands, nullptr, 4, out, 2);
     CHECK(n == 4);                              // documented TOTAL match count
     CHECK(out[0].score > 0 && out[1].score > 0); // only maxCount written
 
@@ -118,7 +118,7 @@ static void test_nulls(void) {
 
 // Checks Spotlight calculation forwarding for valid, non-expression, and null inputs.
 static void test_calculate(void) {
-    double r = 0.0;
+    d64 r = 0.0;
     CHECK(Spotlight_tryCalculate("2 + 3 * 4", &r));
     CHECK(r == 14.0);
     CHECK(Spotlight_tryCalculate("10 / 4", &r));

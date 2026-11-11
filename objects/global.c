@@ -59,8 +59,8 @@ typedef struct Global {
 } Global;
 
 // Allocates one atomic global initialized to initialValue, or returns nullptr.
-Global *Global_1(uint64_t initialValue) {
-    uint64_t type = Type_make(PROJ_VEXSPOKE, FORM_SINGLETON, ID_GLOBAL) | MOD_GLOBAL;
+Global *Global_1(u64 initialValue) {
+    u64 type = Type_make(PROJ_VEXSPOKE, FORM_SINGLETON, ID_GLOBAL) | MOD_GLOBAL;
     Global *global = (Global*) Memory_alloc(type, sizeof(Global));
     if (!global)
         return nullptr;
@@ -70,12 +70,12 @@ Global *Global_1(uint64_t initialValue) {
 
 
 // Allocates count globals, copying init when supplied or zeroing otherwise.
-Global *Global_2(const Global *init, size_t count) {
+Global *Global_2(const Global *init, bytes count) {
     if (count == 0) return nullptr;
     Global *p = (Global*) Memory_alloc(TYPE_GLOBAL_ARRAY, sizeof(Global) * count);
     if (!p) return nullptr;
     if (init) {
-        for (size_t i = 0; i < count; i++) p[i] = *init;
+        for (bytes i = 0; i < count; i++) p[i] = *init;
     } else {
         memset(p, 0, sizeof(Global) * count);
     }
@@ -88,21 +88,21 @@ void Global_free(Global *global) {
 }
 
 // Loads the atomic value with acquire ordering, or returns zero for nullptr.
-uint64_t Global_get(const Global *global) {
+u64 Global_get(const Global *global) {
     if (!global) return 0;
     return atomic_load_explicit(&(*global).value, memory_order_acquire);
 }
 
 // Stores value with release ordering when global is non-null.
-void Global_set(Global *global, uint64_t value) {
+void Global_set(Global *global, u64 value) {
     if (!global) return;
     atomic_store_explicit(&(*global).value, value, memory_order_release);
 }
 
 // Atomically replaces expected with value and reports whether the comparison matched.
-bool Global_compareAndSet(Global *global, uint64_t expected, uint64_t value) {
+bool Global_compareAndSet(Global *global, u64 expected, u64 value) {
     if (!global) return false;
-    uint64_t exp = expected;
+    u64 exp = expected;
     return atomic_compare_exchange_strong_explicit(
         &(*global).value, &exp, value,
         memory_order_acq_rel, memory_order_acquire);

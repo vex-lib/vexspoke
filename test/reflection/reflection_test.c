@@ -45,8 +45,8 @@ static int g_checks = 0;
         }                                                                 \
     } while (0)
 
-// Test callable that doubles the uintptr_t-encoded argument.
-static void *doubleIt(void *arg) {
+// Test callable that f64s the uintptr_t-encoded argument.
+static void *f64It(void *arg) {
     return (void*) (uintptr_t) (((uintptr_t) arg) * 2u);
 }
 
@@ -208,7 +208,7 @@ static void testStruct(void) {
     CHECK(Struct_getSize(nullptr) == 0u);
 
     Field *f = Field("position.x", holderGet, holderSet, nullptr);
-    for (uint32_t i = 0u; i < 100u; i++)
+    for (u32 i = 0u; i < 100u; i++)
         CHECK(Struct_add(s, f) == i);
     CHECK(Struct_count(s) == 100u);
     CHECK(Struct_isEmpty(s) == false);
@@ -221,7 +221,7 @@ static void testStruct(void) {
 
     // Stable across growth: row 0's address never moves.
     Field *row0 = Struct_get(s, 0u);
-    for (uint32_t i = 100u; i < 300u; i++)
+    for (u32 i = 100u; i < 300u; i++)
         Struct_add(s, f);
     CHECK(Struct_get(s, 0u) == row0);
     CHECK(Struct_count(s) == 300u);
@@ -240,10 +240,10 @@ static void testClass(void) {
     Struct_add(layout, fx);
     Struct_add(layout, fy);
 
-    Method *m1 = Method("update", doubleIt, nullptr);
-    Method *m2 = Method("render", doubleIt, nullptr);
+    Method *m1 = Method("update", f64It, nullptr);
+    Method *m2 = Method("render", f64It, nullptr);
 
-    Class *c = Class("PlayerClass", layout, doubleIt);
+    Class *c = Class("PlayerClass", layout, f64It);
     CHECK(c != nullptr);
     if (!c) {
         Field_free(fx);
@@ -255,7 +255,7 @@ static void testClass(void) {
     }
     CHECK(Class_check(c, TYPE_REFLECT_CLASS));
     CHECK(Class_getLayout(c) == layout);
-    CHECK(Class_getConstruct(c) == doubleIt);
+    CHECK(Class_getConstruct(c) == f64It);
     CHECK(Class_construct(c, (void*) (uintptr_t) 5u) == (void*) (uintptr_t) 10u);
 
     CHECK(Class_addMethod(c, m1) == 0u);
@@ -284,8 +284,8 @@ static void testClass(void) {
 static void testStringsAndNull(void) {
     printf("[7] string projections + null-safety\n");
 
-    Variable *v = Variable("health", doubleIt, nullptr);
-    Method *m = Method("step", doubleIt, nullptr);
+    Variable *v = Variable("health", f64It, nullptr);
+    Method *m = Method("step", f64It, nullptr);
     char buf[160];
     bool truncated = true;
     Variable_toString(v, buf, sizeof(buf), &truncated);

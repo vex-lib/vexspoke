@@ -76,8 +76,8 @@ void SystemDiscovery_bootstrap(void) {
 #if defined(VEX_PLATFORM_APPLE)
     @autoreleasepool {
         // --- 1. Hardware Discovery (sysctl) ---
-        uint64_t memsize = 0;
-        size_t len = sizeof(memsize);
+        u64 memsize = 0;
+        bytes len = sizeof(memsize);
         if (sysctlbyname("hw.memsize", &memsize, &len, nullptr, 0) == 0) {
             HardwareInfo_setRamTotal(memsize);
             HardwareInfo_setRamAvailable(memsize);
@@ -122,8 +122,8 @@ void SystemDiscovery_bootstrap(void) {
                     NSString *state = (__bridge NSString*) CFDictionaryGetValue(desc, CFSTR(kIOPSPowerSourceStateKey));
                     NSNumber *charging = (__bridge NSNumber*) CFDictionaryGetValue(desc, CFSTR(kIOPSIsChargingKey));
 
-                    if (curCap && maxCap && [maxCap floatValue] > 0.0f) {
-                        HardwareInfo_setBatteryLevel([curCap floatValue] / [maxCap floatValue]);
+                    if (curCap && maxCap && [maxCap f32Value] > 0.0f) {
+                        HardwareInfo_setBatteryLevel([curCap f32Value] / [maxCap f32Value]);
                     }
                     if ([charging boolValue]) {
                         HardwareInfo_setBatteryStatus("Charging");
@@ -159,32 +159,32 @@ void SystemDiscovery_bootstrap(void) {
 
         // --- 3. Display Discovery (CoreGraphics Displays) ---
         CGDirectDisplayID displayList[16];
-        uint32_t displayCount = 0;
+        u32 displayCount = 0;
         if (CGGetActiveDisplayList(16, displayList, &displayCount) == kCGErrorSuccess && displayCount > 0) {
             CGDirectDisplayID mainDisplayId = CGMainDisplayID();
             DisplayMonitor *monitors[16] = {0};
             DisplayMonitor *primary = nullptr;
 
-            for (uint32_t i = 0; i < displayCount; i++) {
+            for (u32 i = 0; i < displayCount; i++) {
                 CGDirectDisplayID dId = displayList[i];
                 DisplayMonitor *m = DisplayMonitor();
                 if (!m) continue;
 
-                DisplayMonitor_setId(m, (uint32_t)dId);
+                DisplayMonitor_setId(m, (u32)dId);
 
                 // Current Display Mode
                 CGDisplayModeRef mode = CGDisplayCopyDisplayMode(dId);
-                int32_t curPixelW = 0, curPixelH = 0;
-                int32_t curPointW = 0, curPointH = 0;
-                int32_t refreshHz = 60;
+                i32 curPixelW = 0, curPixelH = 0;
+                i32 curPointW = 0, curPointH = 0;
+                i32 refreshHz = 60;
 
                 if (mode) {
-                    curPixelW = (int32_t)CGDisplayModeGetPixelWidth(mode);
-                    curPixelH = (int32_t)CGDisplayModeGetPixelHeight(mode);
-                    curPointW = (int32_t)CGDisplayModeGetWidth(mode);
-                    curPointH = (int32_t)CGDisplayModeGetHeight(mode);
-                    double hz = CGDisplayModeGetRefreshRate(mode);
-                    if (hz > 0.0) refreshHz = (int32_t)hz;
+                    curPixelW = (i32)CGDisplayModeGetPixelWidth(mode);
+                    curPixelH = (i32)CGDisplayModeGetPixelHeight(mode);
+                    curPointW = (i32)CGDisplayModeGetWidth(mode);
+                    curPointH = (i32)CGDisplayModeGetHeight(mode);
+                    d64 hz = CGDisplayModeGetRefreshRate(mode);
+                    if (hz > 0.0) refreshHz = (i32)hz;
                     CGDisplayModeRelease(mode);
                 }
 
@@ -194,24 +194,24 @@ void SystemDiscovery_bootstrap(void) {
                 DisplayMonitor_setPointHeight(m, curPointH);
                 DisplayMonitor_setRefreshRate(m, refreshHz);
 
-                float density = (curPointW > 0 && curPixelW > 0)
-                                    ? ((float)curPixelW / (float)curPointW)
+                f32 density = (curPointW > 0 && curPixelW > 0)
+                                    ? ((f32)curPixelW / (f32)curPointW)
                                     : 1.0f;
                 DisplayMonitor_setDpi(m, density);
 
                 // Native Hardware Panel Resolution (look for kDisplayModeNativeFlag = 0x02000000)
                 CFArrayRef allModes = CGDisplayCopyAllDisplayModes(dId, nullptr);
-                int32_t nativeW = curPixelW;
-                int32_t nativeH = curPixelH;
+                i32 nativeW = curPixelW;
+                i32 nativeH = curPixelH;
                 bool foundNative = false;
 
                 if (allModes) {
                     CFIndex modeCount = CFArrayGetCount(allModes);
                     for (CFIndex mIdx = 0; mIdx < modeCount; mIdx++) {
                         CGDisplayModeRef mRef = (CGDisplayModeRef)CFArrayGetValueAtIndex(allModes, mIdx);
-                        uint32_t flags = CGDisplayModeGetIOFlags(mRef);
-                        int32_t mw = (int32_t)CGDisplayModeGetPixelWidth(mRef);
-                        int32_t mh = (int32_t)CGDisplayModeGetPixelHeight(mRef);
+                        u32 flags = CGDisplayModeGetIOFlags(mRef);
+                        i32 mw = (i32)CGDisplayModeGetPixelWidth(mRef);
+                        i32 mh = (i32)CGDisplayModeGetPixelHeight(mRef);
 
                         // 0x02000000 is kDisplayModeNativeFlag in IOKit/CoreGraphics
                         if ((flags & 0x02000000) != 0) {
@@ -226,9 +226,9 @@ void SystemDiscovery_bootstrap(void) {
                     if (!foundNative) {
                         for (CFIndex mIdx = 0; mIdx < modeCount; mIdx++) {
                             CGDisplayModeRef mRef = (CGDisplayModeRef)CFArrayGetValueAtIndex(allModes, mIdx);
-                            uint32_t flags = CGDisplayModeGetIOFlags(mRef);
-                            int32_t mw = (int32_t)CGDisplayModeGetPixelWidth(mRef);
-                            int32_t mh = (int32_t)CGDisplayModeGetPixelHeight(mRef);
+                            u32 flags = CGDisplayModeGetIOFlags(mRef);
+                            i32 mw = (i32)CGDisplayModeGetPixelWidth(mRef);
+                            i32 mh = (i32)CGDisplayModeGetPixelHeight(mRef);
                             if ((flags & 0x00000001) != 0 || (mw * mh > nativeW * nativeH)) {
                                 nativeW = mw;
                                 nativeH = mh;
@@ -284,8 +284,8 @@ void SystemDiscovery_bootstrap(void) {
                 DisplayInfo_setNativeResolutionHeight(DisplayMonitor_getNativeHeight(primary));
                 DisplayInfo_setCurrentRefreshRate(DisplayMonitor_getRefreshRate(primary));
                 DisplayInfo_setDisplayDensity(DisplayMonitor_getDpi(primary));
-                float hwDensity = (DisplayMonitor_getPointWidth(primary) > 0 && DisplayMonitor_getNativeWidth(primary) > 0)
-                                      ? ((float)DisplayMonitor_getNativeWidth(primary) / (float)DisplayMonitor_getPointWidth(primary))
+                f32 hwDensity = (DisplayMonitor_getPointWidth(primary) > 0 && DisplayMonitor_getNativeWidth(primary) > 0)
+                                      ? ((f32)DisplayMonitor_getNativeWidth(primary) / (f32)DisplayMonitor_getPointWidth(primary))
                                       : DisplayMonitor_getDpi(primary);
                 DisplayInfo_setHardwareDensity(hwDensity);
                 DisplayInfo_setHdrSupported(DisplayMonitor_getHdrSupported(primary));

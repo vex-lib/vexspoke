@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 #include "lang/vec2.h"
 
 // input/gamepad.h — Game Controller & Joystick Hardware Model.
@@ -34,24 +34,24 @@ enum {
 };
 
 typedef struct GamepadState {
-    uint32_t buttons;       // Bitmask of active pressed buttons
+    u32 buttons;       // Bitmask of active pressed buttons
     Coord2     leftStick;     // Filtered deadzone vector [-1.0, +1.0]
     Coord2     rightStick;    // Filtered deadzone vector [-1.0, +1.0]
-    float    leftTrigger;   // Normalized trigger squeeze [0.0, 1.0]
-    float    rightTrigger;  // Normalized trigger squeeze [0.0, 1.0]
-    float    rumbleLowFreq; // Low frequency heavy rumble [0.0, 1.0]
-    float    rumbleHighFreq;// High frequency sharp rumble [0.0, 1.0]
+    f32    leftTrigger;   // Normalized trigger squeeze [0.0, 1.0]
+    f32    rightTrigger;  // Normalized trigger squeeze [0.0, 1.0]
+    f32    rumbleLowFreq; // Low frequency heavy rumble [0.0, 1.0]
+    f32    rumbleHighFreq;// High frequency sharp rumble [0.0, 1.0]
     bool     isConnected;
 } GamepadState;
 
 GamepadState GamepadState_0(void);
 #define GamepadState(...) CONSTRUCTOR_DISPATCH(GamepadState, __VA_ARGS__)
-bool GamepadState_isDown(const GamepadState *state, uint32_t buttonMask);
-static inline void GamepadState_setButtons(GamepadState *state, uint32_t buttons) {
+bool GamepadState_isDown(const GamepadState *state, u32 buttonMask);
+static inline void GamepadState_setButtons(GamepadState *state, u32 buttons) {
     if (state) (*state).buttons = buttons;
 }
 
 // Circular deadzone math; returns the filtered vector by value.
-Coord2 Gamepad_applyCircularDeadzone(Coord2 rawStick, float deadzone);
+Coord2 Gamepad_applyCircularDeadzone(Coord2 rawStick, f32 deadzone);
 
 #endif

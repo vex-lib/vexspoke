@@ -21,7 +21,7 @@ int main(void) {
     printf("  CPU Cores    : %d cores, %d threads\n",
            HardwareInfo_getCpuCoreCount(), HardwareInfo_getCpuThreadCount());
     printf("  Total RAM    : %.2f GB (%" PRIu64 " Bytes)\n",
-           (double)HardwareInfo_getRamTotal() / (1024.0 * 1024.0 * 1024.0),
+           (d64)HardwareInfo_getRamTotal() / (1024.0 * 1024.0 * 1024.0),
            HardwareInfo_getRamTotal());
     if (HardwareInfo_hasBattery()) {
         printf("  Battery      : %.0f%% (%s)\n",
@@ -39,7 +39,7 @@ int main(void) {
     printf("  Graphics API : %s\n", GraphicsInfo_getPrimaryGraphicsApi());
     printf("  Unified Mem  : %s\n", GraphicsInfo_getUnifiedMemoryEnabled() ? "Yes" : "No");
     printf("  VRAM Budget  : %.2f GB (%" PRIu64 " Bytes)\n\n",
-           (double)GraphicsInfo_getVramTotal() / (1024.0 * 1024.0 * 1024.0),
+           (d64)GraphicsInfo_getVramTotal() / (1024.0 * 1024.0 * 1024.0),
            GraphicsInfo_getVramTotal());
 
     // 3. Display Subsystem (Points vs Physical Pixels vs Native Panel Grid)
@@ -59,9 +59,9 @@ int main(void) {
     printf("    HDR Supported    : %s\n\n", DisplayInfo_getHdrSupported() ? "Yes" : "No");
 
     // List all monitors
-    size_t monitorCount = 0;
+    bytes monitorCount = 0;
     DisplayMonitor **monitors = DisplayInfo_getMonitors(&monitorCount);
-    for (size_t i = 0; i < monitorCount; i++) {
+    for (bytes i = 0; i < monitorCount; i++) {
         DisplayMonitor *m = monitors[i];
         if (!m) continue;
         printf("  [Monitor #%zu] %s (ID: %u)\n", i, DisplayMonitor_getName(m), DisplayMonitor_getId(m));

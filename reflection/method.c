@@ -101,13 +101,13 @@ void Method_free(Method *self) {
 
 // CORE FUNCTIONS
 
-uint64_t Method_kind(const Method *self) {
+u64 Method_kind(const Method *self) {
     if (self == nullptr)
         return 0u;
     return Memory_type((void*) self);
 }
 
-bool Method_check(const Method *self, uint64_t typeId) {
+bool Method_check(const Method *self, u64 typeId) {
     if (self == nullptr)
         return false;
     return Memory_type((void*) self) == typeId;
@@ -164,7 +164,7 @@ void *Method_getTarget(const Method *self) {
 
 // STRING PROJECTIONS (the toString Law)
 
-void Method_toString(const Method *self, char *dest, size_t cap, bool *outTruncated) {
+void Method_toString(const Method *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (dest == nullptr || cap == 0u)
@@ -174,13 +174,13 @@ void Method_toString(const Method *self, char *dest, size_t cap, bool *outTrunca
         return;
     }
     int written = snprintf(dest, cap, "Method(%s)", (*self).name[0] == '\0' ? "?" : (*self).name);
-    if (written < 0 || (size_t) written >= cap) {
+    if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
     }
 }
 
-void Method_toStringStruct(const Method *self, char *dest, size_t cap, bool *outTruncated) {
+void Method_toStringStruct(const Method *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (dest == nullptr || cap == 0u)
@@ -193,7 +193,7 @@ void Method_toStringStruct(const Method *self, char *dest, size_t cap, bool *out
                            (*self).name,
                            (unsigned long long) (uintptr_t) (*self).invoke,
                            (unsigned long long) (uintptr_t) (*self).target);
-    if (written < 0 || (size_t) written >= cap) {
+    if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
     }

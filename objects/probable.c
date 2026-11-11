@@ -31,8 +31,8 @@
  * ----------------------------------------------------------------------------
  *   Probable {
  *     uintptr_t object; // object pointer payload
- *     uint32_t weight; // weighted-choice state
- *     uint32_t total; // weighted-choice state
+ *     u32 weight; // weighted-choice state
+ *     u32 total; // weighted-choice state
  *   }
  *
  * FUNCTION REGISTRY:
@@ -58,7 +58,7 @@
  */
 
 
-Probable *Probable_3(uintptr_t object, uint32_t weight, uint32_t total) {
+Probable *Probable_3(uintptr_t object, u32 weight, u32 total) {
     Probable *p = (Probable*) Memory_alloc(TYPE_PROBABLE, sizeof(Probable));
     if (!p) return nullptr;
     (*p).object = object;
@@ -67,13 +67,13 @@ Probable *Probable_3(uintptr_t object, uint32_t weight, uint32_t total) {
     return p;
 }
 
-Probable *Probable_2(const Probable *init, size_t count) {
+Probable *Probable_2(const Probable *init, bytes count) {
     if (count == 0) return nullptr;
     Probable *p = (Probable*) Memory_alloc(TYPE_PROBABLE_ARRAY, sizeof(Probable) * count);
     if (!p) return nullptr;
     
     if (init) {
-        for (size_t i = 0; i < count; i++) {
+        for (bytes i = 0; i < count; i++) {
             p[i] = *init;
         }
     } else {
@@ -91,12 +91,12 @@ uintptr_t Probable_object(Probable *p) {
     return (*p).object;
 }
 
-uint32_t Probable_weight(Probable *p) {
+u32 Probable_weight(Probable *p) {
     if (!p) return 0;
     return (*p).weight;
 }
 
-uint32_t Probable_total(Probable *p) {
+u32 Probable_total(Probable *p) {
     if (!p) return 0;
     return (*p).total;
 }
@@ -106,12 +106,12 @@ void Probable_setObject(Probable *p, uintptr_t object) {
     (*p).object = object;
 }
 
-void Probable_setWeight(Probable *p, uint32_t weight) {
+void Probable_setWeight(Probable *p, u32 weight) {
     if (!p) return;
     (*p).weight = weight;
 }
 
-void Probable_setTotal(Probable *p, uint32_t total) {
+void Probable_setTotal(Probable *p, u32 total) {
     if (!p) return;
     (*p).total = total;
 }

@@ -4,7 +4,7 @@
 #include <stdatomic.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 // engine/loop.h — the engine loop API (Legacy: engine/EngineLoop.java).
 //

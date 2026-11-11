@@ -67,14 +67,14 @@ void *Short_alloc(void) {
     return BitPool_alloc(&g_shortPool, ID_SHORT);
 }
 
-void *Short_allocArray(size_t count) {
+void *Short_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
-    size_t Bytes = count * sizeof(int16_t);
-    // For compound types, elem_size 2 already accounts for stride, but sizeof(int16_t) is placeholder
+    bytes Bytes = count * sizeof();
+    // For compound types, elem_size 2 already accounts for stride, but sizeof() is placeholder
     // Use elem_size for true stride where c_type is int64 placeholder
-    if (count > 1 && 2 != sizeof(int16_t))
+    if (count > 1 && 2 != sizeof())
         Bytes = count * 2;
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_SHORT), Bytes);
 }
@@ -86,40 +86,40 @@ void Short_free(void *ptr) {
     else Memory_free(ptr);
 }
 
-int16_t Short_get(void *ptr) {
+ Short_get(void *ptr) {
     if (!ptr)
-        return (int16_t) 0;
-    return *(int16_t*) ptr;
+        return () 0;
+    return *(*) ptr;
 }
 
-void Short_set(void *ptr, int16_t value) {
+void Short_set(void *ptr,  value) {
     if (!ptr)
         return;
-    *(int16_t*) ptr = value;
+    *(*) ptr = value;
 }
 
-bool Short_compareAndSet(void *ptr, int16_t expected, int16_t value) {
+bool Short_compareAndSet(void *ptr,  expected,  value) {
     if (!ptr)
         return false;
     // fallback to simple CAS via __atomic_compare_exchange
-    return __atomic_compare_exchange_n((int16_t*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
+    return __atomic_compare_exchange_n((*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
-uint64_t Short_type(void *ptr) {
+u64 Short_type(void *ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_shortPool, ptr)) return BitPool_type(&g_shortPool, ptr);
     return Memory_type(ptr);
 }
 
-size_t Short_length(void *ptr) {
+bytes Short_length(void *ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_shortPool, ptr)) return BitPool_length(&g_shortPool, ptr);
     return Memory_length(ptr);
 }
 
-void *Short_allocWithValue(int16_t value) {
+void *Short_allocWithValue( value) {
     void *ptr = Short_alloc();
     if (ptr) Short_set(ptr, value);
     return ptr;

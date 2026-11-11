@@ -36,7 +36,7 @@
  * STRUCT FIELDS (Mirroring regex/charclass.h):
  * ----------------------------------------------------------------------------
  *   RegexCharClass {
- *     uint8_t bits[REGEX_CLASS_BYTES];  // one bit per byte value
+ *     u8 bits[REGEX_CLASS_BYTES];  // one bit per byte value
  *   }
  *
  * FUNCTION REGISTRY:
@@ -62,35 +62,35 @@
  */
 
 // Sets one byte's bit.
-static void setBit(RegexCharClass *cls, uint8_t byte) {
-    (*cls).bits[byte >> 3] |= (uint8_t)(1u << (byte & 7u));
+static void setBit(RegexCharClass *cls, u8 byte) {
+    (*cls).bits[byte >> 3] |= (u8)(1u << (byte & 7u));
 }
 
 // Sets a byte and, when folding, its opposite ASCII case (letters only).
-static void addFoldedByte(RegexCharClass *cls, uint8_t byte, bool insensitive) {
+static void addFoldedByte(RegexCharClass *cls, u8 byte, bool insensitive) {
     setBit(cls, byte);
     if (!insensitive)
         return;
-    if (byte >= (uint8_t) 'A' && byte <= (uint8_t) 'Z')
-        setBit(cls, (uint8_t)(byte + 32u));
-    else if (byte >= (uint8_t) 'a' && byte <= (uint8_t) 'z')
-        setBit(cls, (uint8_t)(byte - 32u));
+    if (byte >= (u8) 'A' && byte <= (u8) 'Z')
+        setBit(cls, (u8)(byte + 32u));
+    else if (byte >= (u8) 'a' && byte <= (u8) 'z')
+        setBit(cls, (u8)(byte - 32u));
 }
 
 void RegexCharClass_clear(RegexCharClass *cls) {
-    for (uint32_t i = 0; i < REGEX_CLASS_BYTES; i++)
+    for (u32 i = 0; i < REGEX_CLASS_BYTES; i++)
         (*cls).bits[i] = 0;
 }
 
-void RegexCharClass_addByte(RegexCharClass *cls, uint8_t byte, bool insensitive) {
+void RegexCharClass_addByte(RegexCharClass *cls, u8 byte, bool insensitive) {
     addFoldedByte(cls, byte, insensitive);
 }
 
-void RegexCharClass_addRange(RegexCharClass *cls, uint8_t lo, uint8_t hi, bool insensitive) {
+void RegexCharClass_addRange(RegexCharClass *cls, u8 lo, u8 hi, bool insensitive) {
     if (hi < lo)
         return;
-    for (uint32_t c = (uint32_t) lo; c <= (uint32_t) hi; c++)
-        addFoldedByte(cls, (uint8_t) c, insensitive);
+    for (u32 c = (u32) lo; c <= (u32) hi; c++)
+        addFoldedByte(cls, (u8) c, insensitive);
 }
 
 bool RegexCharClass_isPredefined(char letter) {
@@ -101,42 +101,42 @@ bool RegexCharClass_isPredefined(char letter) {
 void RegexCharClass_addPredefined(RegexCharClass *cls, char letter) {
     switch (letter) {
     case 'd':
-        for (uint32_t c = '0'; c <= '9'; c++)
-            setBit(cls, (uint8_t) c);
+        for (u32 c = '0'; c <= '9'; c++)
+            setBit(cls, (u8) c);
         break;
     case 'D':
-        for (uint32_t c = 0; c < 256u; c++)
+        for (u32 c = 0; c < 256u; c++)
             if (c < '0' || c > '9')
-                setBit(cls, (uint8_t) c);
+                setBit(cls, (u8) c);
         break;
     case 'w':
-        for (uint32_t c = '0'; c <= '9'; c++) setBit(cls, (uint8_t) c);
-        for (uint32_t c = 'A'; c <= 'Z'; c++) setBit(cls, (uint8_t) c);
-        for (uint32_t c = 'a'; c <= 'z'; c++) setBit(cls, (uint8_t) c);
-        setBit(cls, (uint8_t) '_');
+        for (u32 c = '0'; c <= '9'; c++) setBit(cls, (u8) c);
+        for (u32 c = 'A'; c <= 'Z'; c++) setBit(cls, (u8) c);
+        for (u32 c = 'a'; c <= 'z'; c++) setBit(cls, (u8) c);
+        setBit(cls, (u8) '_');
         break;
     case 'W':
-        for (uint32_t c = 0; c < 256u; c++) {
+        for (u32 c = 0; c < 256u; c++) {
             bool word = (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') ||
                         (c >= 'a' && c <= 'z') || c == '_';
             if (!word)
-                setBit(cls, (uint8_t) c);
+                setBit(cls, (u8) c);
         }
         break;
     case 's':
-        setBit(cls, (uint8_t) ' ');
-        setBit(cls, (uint8_t) '\t');
-        setBit(cls, (uint8_t) '\n');
-        setBit(cls, (uint8_t) '\r');
-        setBit(cls, (uint8_t) '\f');
-        setBit(cls, (uint8_t) '\v');
+        setBit(cls, (u8) ' ');
+        setBit(cls, (u8) '\t');
+        setBit(cls, (u8) '\n');
+        setBit(cls, (u8) '\r');
+        setBit(cls, (u8) '\f');
+        setBit(cls, (u8) '\v');
         break;
     case 'S':
-        for (uint32_t c = 0; c < 256u; c++) {
+        for (u32 c = 0; c < 256u; c++) {
             bool space = c == ' ' || c == '\t' || c == '\n' || c == '\r' ||
                          c == '\f' || c == '\v';
             if (!space)
-                setBit(cls, (uint8_t) c);
+                setBit(cls, (u8) c);
         }
         break;
     default:
@@ -145,10 +145,10 @@ void RegexCharClass_addPredefined(RegexCharClass *cls, char letter) {
 }
 
 void RegexCharClass_negate(RegexCharClass *cls) {
-    for (uint32_t i = 0; i < REGEX_CLASS_BYTES; i++)
-        (*cls).bits[i] = (uint8_t) ~(*cls).bits[i];
+    for (u32 i = 0; i < REGEX_CLASS_BYTES; i++)
+        (*cls).bits[i] = (u8) ~(*cls).bits[i];
 }
 
-bool RegexCharClass_test(const RegexCharClass *cls, uint8_t byte) {
-    return ((*cls).bits[byte >> 3] & (uint8_t)(1u << (byte & 7u))) != 0;
+bool RegexCharClass_test(const RegexCharClass *cls, u8 byte) {
+    return ((*cls).bits[byte >> 3] & (u8)(1u << (byte & 7u))) != 0;
 }

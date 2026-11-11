@@ -20,7 +20,7 @@
  * ============================================================================
  * The public face of the regex subsystem: compile a pattern once, then answer
  * "does this text look like that shape?" in time bounded by the input. It
- * exists because the vexgraph-ecosystem-gitrepo keeps needing text shapes — find/replace in
+ * exists because the ecosystem keeps needing text shapes — find/replace in
  * editors, log and manifest scanning, connector input validation, syntax
  * tooling — and neither a hand-rolled strstr nor a backtracking matcher is an
  * acceptable answer: the first cannot express the shape, the second hands a
@@ -59,16 +59,16 @@
  * ----------------------------------------------------------------------------
  *   Regex {
  *     char           *pattern;     // owned copy of the source pattern text
- *     uint32_t        flags;       // REGEX_* options used at compile time
- *     uint32_t        groupCount;  // capturing groups (group 0 is the whole match)
+ *     u32        flags;       // REGEX_* options used at compile time
+ *     u32        groupCount;  // capturing groups (group 0 is the whole match)
  *     RegexProgram    program;     // the compiled instruction stream
  *     RegexCharClass *classes;     // classCount bitmaps (engine-arena block)
- *     uint32_t        classCount;  // class bitmaps in use
+ *     u32        classCount;  // class bitmaps in use
  *   }
  *
  * PRIVATE HELPERS:
  * ----------------------------------------------------------------------------
- *   RegexText { char *dest; size_t cap; size_t used; bool truncated; }
+ *   RegexText { char *dest; bytes cap; bytes used; bool truncated; }
  *     Bounded-append cursor for the two string projections.
  *
  * FUNCTION REGISTRY:
@@ -98,13 +98,13 @@
 
 typedef struct RegexText {
     char  *dest;       // caller buffer
-    size_t cap;        // caller capacity (always > 0 here)
-    size_t used;       // bytes written, excluding the NUL
+    bytes cap;        // caller capacity (always > 0 here)
+    bytes used;       // bytes written, excluding the NUL
     bool   truncated;  // true once a write did not fit
 } RegexText;
 
 // Maps the public flag word onto the VM's resolved options.
-static RegexOptions regexOptions(uint32_t flags) {
+static RegexOptions regexOptions(u32 flags) {
     RegexOptions options;
     options.ignoreCase = (flags & REGEX_CASE_INSENSITIVE) != 0;
     options.dotall = (flags & REGEX_DOTALL) != 0;
@@ -113,9 +113,9 @@ static RegexOptions regexOptions(uint32_t flags) {
 }
 
 // Runs one anchored or unanchored search and, on success, reports spans.
-static bool runSearch(const Regex *regex, const char *subject, size_t length,
-                      bool anchored, RegexSpan *outSpans, size_t spanCapacity,
-                      size_t *outGroupCount, bool *outTruncated) {
+static bool runSearch(const Regex *regex, const char *subject, bytes length,
+                      bool anchored, RegexSpan *outSpans, bytes spanCapacity,
+                      bytes *outGroupCount, bool *outTruncated) {
     if (!regex || !subject)
         return false;
     RegexVm vm = RegexVm(&(*regex).program, (*regex).groupCount);
@@ -126,24 +126,24 @@ static bool runSearch(const Regex *regex, const char *subject, size_t length,
         ? RegexVm_runFull(&vm, (*regex).classes, subject, length, options)
         : RegexVm_run(&vm, (*regex).classes, subject, length, false, options);
     if (hit && outSpans) {
-        size_t groups = (size_t)(*regex).groupCount + 1u;
-        size_t fill = groups < spanCapacity ? groups : spanCapacity;
-        for (size_t g = 0; g < fill; g++)
-            outSpans[g] = RegexVm_span(&vm, (uint32_t) g);
+        bytes groups = (bytes)(*regex).groupCount + 1u;
+        bytes fill = groups < spanCapacity ? groups : spanCapacity;
+        for (bytes g = 0; g < fill; g++)
+            outSpans[g] = RegexVm_span(&vm, (u32) g);
         if (outTruncated && groups > spanCapacity)
             *outTruncated = true;
     }
     if (hit && outGroupCount)
-        *outGroupCount = (size_t)(*regex).groupCount + 1u;
+        *outGroupCount = (bytes)(*regex).groupCount + 1u;
     RegexVm_free(&vm);
     return hit;
 }
 
 // Appends a NUL-terminated string, flagging a truncation instead of overrunning.
 static void textAppend(RegexText *text, const char *s) {
-    size_t len = strlen(s);
+    bytes len = strlen(s);
     if ((*text).used + len >= (*text).cap) {
-        size_t room = (*text).cap > (*text).used + 1u ? (*text).cap - (*text).used - 1u : 0;
+        bytes room = (*text).cap > (*text).used + 1u ? (*text).cap - (*text).used - 1u : 0;
         if (room > 0)
             memcpy((*text).dest + (*text).used, s, room);
         (*text).used += room;
@@ -168,11 +168,11 @@ static void textPrintf(RegexText *text, const char *fmt, ...) {
 }
 
 // Writes a fixed string into a caller buffer with truncation reporting.
-static bool copyText(const char *text, char *dest, size_t cap, bool *outTruncated) {
+static bool copyText(const char *text, char *dest, bytes cap, bool *outTruncated) {
     if (!dest || cap == 0)
         return false;
-    size_t len = strlen(text);
-    size_t room = cap - 1u;
+    bytes len = strlen(text);
+    bytes room = cap - 1u;
     if (len > room) {
         memcpy(dest, text, room);
         dest[room] = '\0';
@@ -188,17 +188,17 @@ static bool copyText(const char *text, char *dest, size_t cap, bool *outTruncate
 }
 
 // Parse, emit and adopt for one already-allocated Regex.
-static bool compilePattern(Regex *regex, const char *pattern, size_t length) {
+static bool compilePattern(Regex *regex, const char *pattern, bytes length) {
     RegexParser parser = RegexParser(pattern, length,
                                      ((*regex).flags & REGEX_CASE_INSENSITIVE) != 0);
-    uint32_t root = RegexParser_parse(&parser);
+    u32 root = RegexParser_parse(&parser);
     bool ok = root != REGEX_NODE_NONE && RegexParser_ok(&parser);
     if (ok) {
         (*regex).groupCount = RegexParser_groupCount(&parser);
         ok = RegexProgram_build(&(*regex).program, RegexParser_nodes(&parser), root);
     }
     if (ok) {
-        uint32_t classCount = 0;
+        u32 classCount = 0;
         RegexCharClass *classes = RegexParser_releaseClasses(&parser, &classCount);
         (*regex).classes = classes;
         (*regex).classCount = classCount;
@@ -212,7 +212,7 @@ static bool compilePattern(Regex *regex, const char *pattern, size_t length) {
     return ok;
 }
 
-Regex *Regex_2(const char *pattern, uint32_t flags) {
+Regex *Regex_2(const char *pattern, u32 flags) {
     if (!pattern) {
         THROW("regex compile: null pattern");
         return nullptr;
@@ -226,7 +226,7 @@ Regex *Regex_2(const char *pattern, uint32_t flags) {
     (*regex).program = RegexProgram();
     (*regex).flags = flags;
 
-    size_t length = strlen(pattern);
+    bytes length = strlen(pattern);
     (*regex).pattern = (char*) Memory_alloc(TYPE_REGEX, length + 1u);
     if (!(*regex).pattern) {
         THROW("regex compile: out of memory");
@@ -263,25 +263,25 @@ const char *Regex_pattern(const Regex *regex) {
     return (*regex).pattern;
 }
 
-uint32_t Regex_flags(const Regex *regex) {
+u32 Regex_flags(const Regex *regex) {
     if (!regex)
         return 0;
     return (*regex).flags;
 }
 
-uint32_t Regex_groupCount(const Regex *regex) {
+u32 Regex_groupCount(const Regex *regex) {
     if (!regex)
         return 0;
     return (*regex).groupCount;
 }
 
-uint32_t Regex_instCount(const Regex *regex) {
+u32 Regex_instCount(const Regex *regex) {
     if (!regex)
         return 0;
     return RegexProgram_count(&(*regex).program);
 }
 
-uint32_t Regex_classCount(const Regex *regex) {
+u32 Regex_classCount(const Regex *regex) {
     if (!regex)
         return 0;
     return (*regex).classCount;
@@ -297,14 +297,14 @@ bool Regex_isMatch(const Regex *regex, const char *subject) {
 bool Regex_isFullMatch(const Regex *regex, const char *subject) {
     if (!regex || !subject)
         return false;
-    size_t length = strlen(subject);
+    bytes length = strlen(subject);
     RegexSpan whole = RegexSpan_none();
     if (!runSearch(regex, subject, length, true, &whole, 1u, nullptr, nullptr))
         return false;
     return whole.start == 0 && whole.end == length;
 }
 
-bool Regex_find(const Regex *regex, const char *subject, size_t length, RegexSpan *outMatch) {
+bool Regex_find(const Regex *regex, const char *subject, bytes length, RegexSpan *outMatch) {
     if (!outMatch || !regex || !subject)
         return false;
     RegexSpan span = RegexSpan_none();
@@ -315,8 +315,8 @@ bool Regex_find(const Regex *regex, const char *subject, size_t length, RegexSpa
     return true;
 }
 
-bool Regex_findGroups(const Regex *regex, const char *subject, size_t length,
-                      RegexSpan *outSpans, size_t spanCapacity, bool *outTruncated) {
+bool Regex_findGroups(const Regex *regex, const char *subject, bytes length,
+                      RegexSpan *outSpans, bytes spanCapacity, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (!regex || !subject || !outSpans)
@@ -324,7 +324,7 @@ bool Regex_findGroups(const Regex *regex, const char *subject, size_t length,
     return runSearch(regex, subject, length, false, outSpans, spanCapacity, nullptr, outTruncated);
 }
 
-bool Regex_toString(const Regex *regex, char *dest, size_t cap, bool *outTruncated) {
+bool Regex_toString(const Regex *regex, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (!dest || cap == 0)
@@ -349,7 +349,7 @@ bool Regex_toString(const Regex *regex, char *dest, size_t cap, bool *outTruncat
     return !text.truncated;
 }
 
-bool Regex_toStringStruct(const Regex *regex, char *dest, size_t cap, bool *outTruncated) {
+bool Regex_toStringStruct(const Regex *regex, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (!dest || cap == 0)

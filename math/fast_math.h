@@ -21,40 +21,40 @@
 #define FAST_MATH_RAD_TO_DEG 57.2957795f
 
 // Quake III 0x5f3759df fast inverse square root (1 Newton-Raphson pass).
-float FastMath_invSqrt(float x);
+f32 FastMath_invSqrt(f32 x);
 
 // Fast reciprocal approximation.
-float FastMath_inv(float x);
+f32 FastMath_inv(f32 x);
 
 // Bhaskara I rational polynomial sine (radians, wraps any periodic domain).
-float FastMath_sin(float x);
+f32 FastMath_sin(f32 x);
 
 // Bhaskara I rational polynomial cosine.
-float FastMath_cos(float x);
+f32 FastMath_cos(f32 x);
 
 // Fast tangent approximation.
-float FastMath_tan(float x);
+f32 FastMath_tan(f32 x);
 
 // Fast polynomial arc tangent.
-float FastMath_atan(float x);
-float FastMath_atan2(float y, float x);
+f32 FastMath_atan(f32 x);
+f32 FastMath_atan2(f32 y, f32 x);
 
 // Branchless absolute value (IEEE sign-bit clear).
-float FastMath_abs(float x);
+f32 FastMath_abs(f32 x);
 
-// Magic-float fast rounding (2^23 trick).
-float FastMath_round(float x);
+// Magic-f32 fast rounding (2^23 trick).
+f32 FastMath_round(f32 x);
 
 // Branchless clamp.
-float FastMath_clamp(float val, float min, float max);
+f32 FastMath_clamp(f32 val, f32 min, f32 max);
 
 // Linear interpolation.
-float FastMath_lerp(float a, float b, float t);
+f32 FastMath_lerp(f32 a, f32 b, f32 t);
 
 // Tolerance-based approximate equality.
-bool FastMath_approxEqual(float a, float b, float epsilon);
+bool FastMath_approxEqual(f32 a, f32 b, f32 epsilon);
 
-float FastMath_toRadians(float deg);
-float FastMath_toDegrees(float rad);
+f32 FastMath_toRadians(f32 deg);
+f32 FastMath_toDegrees(f32 rad);
 
 #endif

@@ -30,8 +30,8 @@
  * ----------------------------------------------------------------------------
  *   HardwareEvent {
  *     HardwareEventType type;   // event discriminator (piano/turntable/gesture/gamepad)
- *     uint32_t deviceId;        // originating device id
- *     uint64_t timestampUs;     // event timestamp in microseconds
+ *     u32 deviceId;        // originating device id
+ *     u64 timestampUs;     // event timestamp in microseconds
  *     union { ... } data;       // per-type payload (PianoKeyEvent/TurntableEvent/GestureEvent/GamepadState)
  *   }
  *
@@ -45,7 +45,7 @@
  * ============================================================================
  */
 
-HardwareEvent HardwareEvent_makePiano(uint32_t devId, PianoKeyEvent piano) {
+HardwareEvent HardwareEvent_makePiano(u32 devId, PianoKeyEvent piano) {
     HardwareEvent ev;
     memset(&ev, 0, sizeof(HardwareEvent));
     ev.type = HW_EVENT_PIANO;
@@ -55,7 +55,7 @@ HardwareEvent HardwareEvent_makePiano(uint32_t devId, PianoKeyEvent piano) {
     return ev;
 }
 
-HardwareEvent HardwareEvent_makeTurntable(uint32_t devId, TurntableEvent tt) {
+HardwareEvent HardwareEvent_makeTurntable(u32 devId, TurntableEvent tt) {
     HardwareEvent ev;
     memset(&ev, 0, sizeof(HardwareEvent));
     ev.type = HW_EVENT_TURNTABLE;
@@ -65,7 +65,7 @@ HardwareEvent HardwareEvent_makeTurntable(uint32_t devId, TurntableEvent tt) {
     return ev;
 }
 
-HardwareEvent HardwareEvent_makeGesture(uint32_t devId, GestureEvent gesture) {
+HardwareEvent HardwareEvent_makeGesture(u32 devId, GestureEvent gesture) {
     HardwareEvent ev;
     memset(&ev, 0, sizeof(HardwareEvent));
     ev.type = HW_EVENT_GESTURE;
@@ -75,7 +75,7 @@ HardwareEvent HardwareEvent_makeGesture(uint32_t devId, GestureEvent gesture) {
     return ev;
 }
 
-HardwareEvent HardwareEvent_makeGamepad(uint32_t devId, GamepadState gamepad) {
+HardwareEvent HardwareEvent_makeGamepad(u32 devId, GamepadState gamepad) {
     HardwareEvent ev;
     memset(&ev, 0, sizeof(HardwareEvent));
     ev.type = HW_EVENT_GAMEPAD;

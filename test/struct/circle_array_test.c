@@ -43,12 +43,12 @@ static void test_construction(void) {
     CircleArray_free(r0);
 
     const int expected[] = { 1, 5, 13, 29, 49 };
-    for (int32_t r = 0; r <= 4; r++) {
+    for (i32 r = 0; r <= 4; r++) {
         CircleArray *a = CircleArray(r, ID_INT);
         CHECK(a != nullptr);
         CHECK(CircleArray_radius(a) == r);
         CHECK(CircleArray_diameter(a) == 2 * r + 1);
-        CHECK(CircleArray_validCellCount(a) == (size_t) expected[r]);
+        CHECK(CircleArray_validCellCount(a) == (bytes) expected[r]);
         CircleArray_free(a);
     }
 
@@ -136,15 +136,15 @@ static void test_access_round_trip(void) {
 }
 
 typedef struct WalkStats {
-    size_t count;
-    size_t badDistance;
-    size_t nullElement;
-    size_t mismatchedOffset;
+    bytes count;
+    bytes badDistance;
+    bytes nullElement;
+    bytes mismatchedOffset;
     int64_t checksum;
 } WalkStats;
 
 // Accumulates callback count, coordinate consistency, and payload checksum.
-static void walkCell(int32_t gridX, int32_t gridY, int32_t dx, int32_t dy,
+static void walkCell(i32 gridX, i32 gridY, i32 dx, i32 dy,
                      const void *element, void *userData) {
     WalkStats *s = (WalkStats*) userData;
     (*s).count++;
@@ -157,8 +157,8 @@ static void walkCell(int32_t gridX, int32_t gridY, int32_t dx, int32_t dy,
         (*s).mismatchedOffset++;
     if (element != nullptr) {
         int v = 0;
-        for (size_t i = 0; i < sizeof(int); i++)
-            ((uint8_t*) &v)[i] = ((const uint8_t*) element)[i];
+        for (bytes i = 0; i < sizeof(int); i++)
+            ((u8*) &v)[i] = ((const u8*) element)[i];
         (*s).checksum += v;
     }
 }
@@ -171,8 +171,8 @@ static void test_for_each(void) {
     // Fill every valid cell with its linear (1 + dx + dy) to make the walk sum
     // deterministic and to prove the callback sees live data.
     int fill = 1;
-    for (int32_t gy = 0; gy < CircleArray_diameter(a); gy++) {
-        for (int32_t gx = 0; gx < CircleArray_diameter(a); gx++) {
+    for (i32 gy = 0; gy < CircleArray_diameter(a); gy++) {
+        for (i32 gx = 0; gx < CircleArray_diameter(a); gx++) {
             if (CircleArray_containsGrid(a, gx, gy)) {
                 int v = fill;
                 CHECK(CircleArray_setGrid(a, gx, gy, &v));

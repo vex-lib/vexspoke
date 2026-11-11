@@ -10,8 +10,8 @@
 #include "lang/vec2/vec2.h"
 #include "lang/vec3/vec3.h"
 #include "lang/vec3/vec3d.h"
-#include "lang/vec3/vec3_int_float.h"
-#include "lang/vec3/vec3_long_double.h"
+#include "lang/vec3/vec3_int_f32.h"
+#include "lang/vec3/vec3_long_f64.h"
 #include "lang/vec4/vec4.h"
 #include "lang/vec4/vec4d.h"
 
@@ -43,24 +43,24 @@ int main(void) {
     CHECK("Y_UP_RIGHT Z sign is negative (Right-handed)", b1.sign[2] == -1);
 
     // 2. Strict Math vs Fast Math
-    float s_sin = StrictMath_sin((float) STRICT_MATH_HALF_PI);
+    f32 s_sin = StrictMath_sin((f32) STRICT_MATH_HALF_PI);
     CHECK("strict sin(pi/2) is 1.0", fabsf(s_sin - 1.0f) < 1e-6f);
 
-    float f_sin = FastMath_sin(FAST_MATH_HALF_PI);
+    f32 f_sin = FastMath_sin(FAST_MATH_HALF_PI);
     CHECK("fast sin(pi/2) is ~1.0", fabsf(f_sin - 1.0f) < 0.01f);
 
-    float inv_strict = StrictMath_invSqrt(16.0f);
-    float inv_fast = FastMath_invSqrt(16.0f);
+    f32 inv_strict = StrictMath_invSqrt(16.0f);
+    f32 inv_fast = FastMath_invSqrt(16.0f);
     CHECK("strict invSqrt(16) is 0.25", fabsf(inv_strict - 0.25f) < 1e-6f);
     CHECK("fast invSqrt(16) is ~0.25", fabsf(inv_fast - 0.25f) < 0.01f);
 
     // 3. Unified Math Facade
-    CHECK("Math_sin is strict by default", fabsf(Math_sin((float)MATH_HALF_PI) - 1.0f) < 1e-6f);
+    CHECK("Math_sin is strict by default", fabsf(Math_sin((f32)MATH_HALF_PI) - 1.0f) < 1e-6f);
     CHECK("Math_fast_sin uses approximation", fabsf(Math_fast_sin(FAST_MATH_HALF_PI) - 1.0f) < 0.01f);
     CHECK("Math_fast_invSqrt is fast approx", fabsf(Math_fast_invSqrt(4.0f) - 0.5f) < 0.01f);
 
     // 4. Coord3 Spatial Semantics & Directional Inverses
-    Coord3 v = { .horizontal = 14.0f, .vertical = 5.0f, .depth = 28.0f, .frame = (uint32_t) COORD_FRAME_DEFAULT };
+    Coord3 v = { .horizontal = 14.0f, .vertical = 5.0f, .depth = 28.0f, .frame = (u32) COORD_FRAME_DEFAULT };
 
     // Nuance check: if front coordinate is 28, getBack() must be -28!
     CHECK("Coord3 getFront is 28", Coord3_getFront(&v) == 28.0f);
@@ -87,8 +87,8 @@ int main(void) {
     CHECK("v_gl getY is 5", Coord3_getY(&v_gl) == 5.0f);
     CHECK("v_gl getZ is -28 (negated depth)", Coord3_getZ(&v_gl) == -28.0f);
 
-    // 5. Vec3d Double Precision
-    Vec3d vd = { .horizontal = 100.0, .vertical = 200.0, .depth = 300.0, .frame = (uint64_t) COORD_FRAME_DEFAULT };
+    // 5. Vec3d d64 Precision
+    Vec3d vd = { .horizontal = 100.0, .vertical = 200.0, .depth = 300.0, .frame = (u64) COORD_FRAME_DEFAULT };
     CHECK("Vec3d getFront is 300", Vec3d_getFront(&vd) == 300.0);
     CHECK("Vec3d getBack is -300", Vec3d_getBack(&vd) == -300.0);
 
@@ -100,7 +100,7 @@ int main(void) {
     vif.vertical.local = 50.0f;
     vif.depth.sector = 0;
     vif.depth.local = 250.0f;
-    vif.frame = (uint32_t) COORD_FRAME_DEFAULT;
+    vif.frame = (u32) COORD_FRAME_DEFAULT;
     Vec3IntFloat_rebalance(&vif, 100.0f);
     CHECK("vif horizontal sector rebalanced to 1", vif.horizontal.sector == 1);
     CHECK("vif horizontal local rebalanced to 50", vif.horizontal.local == 50.0f);

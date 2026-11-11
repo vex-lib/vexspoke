@@ -11,16 +11,16 @@
 // Pure utilities over DateTime: leap years, month lengths, Zeller's
 // congruence for weekday queries, and add-days/months/years mutations.
 
-bool Calendar_isLeapYear(int32_t year);
+bool Calendar_isLeapYear(i32 year);
 
 // 0 for an _out-of-range month, else 28/29/30/31.
-int32_t Calendar_daysInMonth(int32_t year, int32_t month);
+i32 Calendar_daysInMonth(i32 year, i32 month);
 
 // ISO-8601 weekday (1=Monday .. 7=Sunday) via Zeller's congruence.
-int32_t Calendar_dayOfWeek(int32_t year, int32_t month, int32_t day);
+i32 Calendar_dayOfWeek(i32 year, i32 month, i32 day);
 
-void Calendar_addDays(DateTime *dt, int32_t days);
-void Calendar_addMonths(DateTime *dt, int32_t months);
-void Calendar_addYears(DateTime *dt, int32_t years);
+void Calendar_addDays(DateTime *dt, i32 days);
+void Calendar_addMonths(DateTime *dt, i32 months);
+void Calendar_addYears(DateTime *dt, i32 years);
 
 #endif

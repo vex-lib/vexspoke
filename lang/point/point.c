@@ -30,8 +30,8 @@
  *
  * STRUCT FIELDS (Mirroring lang/point/point.h):
  * ----------------------------------------------------------------------------
- *   int32_t x;       // horizontal pixel position (native pixels)
- *   int32_t y;       // vertical pixel position (native pixels, Y-down)
+ *   i32 x;       // horizontal pixel position (native pixels)
+ *   i32 y;       // vertical pixel position (native pixels, Y-down)
  *
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
@@ -45,8 +45,8 @@
  *   - Point_set(p, x, y)
  *
  * Getters:
- *   - Point_getX(p)                    : int32_t
- *   - Point_getY(p)                    : int32_t
+ *   - Point_getX(p)                    : i32
+ *   - Point_getY(p)                    : i32
  *
  * Core Functions:
  *   - Point_copy(src, dest)
@@ -58,7 +58,7 @@
  *   - Point_max(a, b.sh, dest)
  *   - Point_distanceSquared(a, b.sh)      : int64_t
  *   - Point_manhattanDistance(a, b.sh)    : int64_t
- *   - Point_distance(a, b.sh)             : double
+ *   - Point_distance(a, b.sh)             : d64
  *   - Point_equals(a, b.sh)               : bool
  * ============================================================================
  */
@@ -72,7 +72,7 @@ Point *Point_0(void) {
     return p;
 }
 
-Point *Point_2(int32_t x, int32_t y) {
+Point *Point_2(i32 x, i32 y) {
     Point *p = (Point*) Memory_alloc(ID_POINT, POINT_BYTES);
     if (!p) return nullptr;
     (*p).x = x;
@@ -85,17 +85,17 @@ void Point_free(Point *p) {
 }
 
 // SETTERS
-void Point_setX(Point *p, int32_t x) { if (p) (*p).x = x; }
-void Point_setY(Point *p, int32_t y) { if (p) (*p).y = y; }
-void Point_set(Point *p, int32_t x, int32_t y) {
+void Point_setX(Point *p, i32 x) { if (p) (*p).x = x; }
+void Point_setY(Point *p, i32 y) { if (p) (*p).y = y; }
+void Point_set(Point *p, i32 x, i32 y) {
     if (!p) return;
     (*p).x = x;
     (*p).y = y;
 }
 
 // GETTERS
-int32_t Point_getX(const Point *p) { return p ? (*p).x : 0; }
-int32_t Point_getY(const Point *p) { return p ? (*p).y : 0; }
+i32 Point_getX(const Point *p) { return p ? (*p).x : 0; }
+i32 Point_getY(const Point *p) { return p ? (*p).y : 0; }
 
 // CORE FUNCTIONS
 void Point_copy(const Point *src, Point *dest) {
@@ -116,7 +116,7 @@ void Point_sub(const Point *a, const Point *b, Point *dest) {
     (*dest).y = (*a).y - (*b).y;
 }
 
-void Point_scale(const Point *a, int32_t scalar, Point *dest) {
+void Point_scale(const Point *a, i32 scalar, Point *dest) {
     if (!a || !dest) return;
     (*dest).x = (*a).x * scalar;
     (*dest).y = (*a).y * scalar;
@@ -156,10 +156,10 @@ int64_t Point_manhattanDistance(const Point *a, const Point *b) {
     return dx + dy;
 }
 
-double Point_distance(const Point *a, const Point *b) {
+d64 Point_distance(const Point *a, const Point *b) {
     int64_t sq = Point_distanceSquared(a, b);
     if (sq == 0) return 0.0;
-    return StrictMath_sqrtD((double) sq);
+    return StrictMath_sqrtD((d64) sq);
 }
 
 bool Point_equals(const Point *a, const Point *b) {

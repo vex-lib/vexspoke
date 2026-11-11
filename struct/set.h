@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 #include "struct/collection.h"
 #include "struct/list.h"
@@ -20,17 +20,17 @@ typedef struct Set {
 } Set;
 
 // Empty set for element_class with initial slot capacity (min 4, power of two).
-Set *Set_2(uint32_t element_class, size_t capacity);
+Set *Set_2(u32 element_class, bytes capacity);
 
 void Set_free(Set *set);
 
 // Add an element; returns 1 if inserted, 0 if already present.
-int Set_add(Set *set, uint64_t element);
+int Set_add(Set *set, u64 element);
 
-bool Set_contains(Set *set, uint64_t element);
+bool Set_contains(Set *set, u64 element);
 
 // Remove an element; returns 1 if removed, 0 if absent.
-int Set_remove(Set *set, uint64_t element);
+int Set_remove(Set *set, u64 element);
 
 // Export all elements into a List of element_class.
 List *Set_toList(Set *set);
@@ -39,16 +39,16 @@ List *Set_toList(Set *set);
 List *Set_toSortedList(Set *set);
 
 bool Set_isEmpty(Set *set);
-size_t Set_size(Set *set);
+bytes Set_size(Set *set);
 // Refused-grow count since construction (the Exhaustion Loudness Law).
 ;;TEST
-uint64_t Set_exhaustionCount(const Set *set);
-size_t Set_capacity(Set *set);
-uint32_t Set_elementClassId(Set *set);
-uint8_t *Set_dataBuffer(Set *set);
+u64 Set_exhaustionCount(const Set *set);
+bytes Set_capacity(Set *set);
+u32 Set_elementClassId(Set *set);
+u8 *Set_dataBuffer(Set *set);
 
 
-Set *Set_1(uint32_t element_class);
+Set *Set_1(u32 element_class);
 
 #define Set(...) CONSTRUCTOR_DISPATCH(Set, __VA_ARGS__)
 

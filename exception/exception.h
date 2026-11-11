@@ -6,7 +6,7 @@
 #include <stddef.h>
 #include <stdarg.h>
 
-#include "util/constructor.h"
+#include "lang/constructor.h"
 #include "oop/type.h"
 
 // Categories of runtime exceptions
@@ -21,7 +21,7 @@ typedef enum ExceptionCategory {
 } ExceptionCategory;
 
 typedef struct Exception {
-    uint64_t type;              // TYPE_EXCEPTION_SINGLETON
+    u64 type;              // TYPE_EXCEPTION_SINGLETON
     ExceptionCategory category;
     const char *site;           // e.g. "GraphicsLoop::setGraphicsLoop"
     const char *file;           // __FILE__

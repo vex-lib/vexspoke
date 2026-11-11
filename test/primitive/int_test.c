@@ -30,8 +30,8 @@ int main(void) {
     CHECK(Int_type(p) == ID_INT);
     CHECK(Int_length(p) == 4);
 
-    const int32_t values[] = { 0, 1, -1, 2147483647, (int32_t) (-2147483647 - 1) };
-    for (size_t i = 0; i < sizeof values / sizeof values[0]; i++) {
+    const i32 values[] = { 0, 1, -1, 2147483647, (i32) (-2147483647 - 1) };
+    for (bytes i = 0; i < sizeof values / sizeof values[0]; i++) {
         Int_set(p, values[i]);
         CHECK(Int_get(p) == values[i]);
     }

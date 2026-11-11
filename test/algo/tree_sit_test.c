@@ -32,14 +32,14 @@ static int g_failures = 0;
     } while (0)
 
 typedef struct Trace {
-    int32_t ids[64];
+    i32 ids[64];
     int     depths[64];
-    size_t  count;
+    bytes  count;
     int     stop_after;
 } Trace;
 
 /** Records visited node indices and depths into the test's bounded observation buffer. */
-static bool record(const TreeSitTree *tree, int32_t node_idx, int depth, void *user_data) {
+static bool record(const TreeSitTree *tree, i32 node_idx, int depth, void *user_data) {
     (void) tree;
     Trace *t = (Trace*) user_data;
     if ((*t).count < 64) {
@@ -53,7 +53,7 @@ static bool record(const TreeSitTree *tree, int32_t node_idx, int depth, void *u
 }
 
 /** Constructs a half-open test span from its start and end offsets. */
-static TreeSitSpan span(uint32_t s, uint32_t e) {
+static TreeSitSpan span(u32 s, u32 e) {
     TreeSitSpan sp = { s, e, 0, 0, 0, 0 };
     return sp;
 }
@@ -128,7 +128,7 @@ static void test_linking(void) {
 
     // An out-of-range parent (>= new index) leaves the node unlinked; walking
     // never reaches it.
-    CHECK(TreeSitTree_add_node(99, 8, "floating", span(0, 5), &t) == 6);
+    CHECK(TreeSitTree_add_node(99, 8, "f32ing", span(0, 5), &t) == 6);
 
     Trace tr = { 0 };
     CHECK(TreeSitTree_walk_preorder(&t, record, &tr));

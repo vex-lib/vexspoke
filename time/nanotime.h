@@ -20,13 +20,13 @@
 void NanoTime_init(void);
 
 // Raw monotonic nanos (unrelated to the epoch; never goes backwards).
-uint64_t NanoTime_now(void);
+u64 NanoTime_now(void);
 
 // The engine epoch captured at init (0 before init).
-uint64_t NanoTime_startNanos(void);
+u64 NanoTime_startNanos(void);
 
 // Nanos since the engine epoch (0 before init).
-uint64_t NanoTime_elapsedNanos(void);
+u64 NanoTime_elapsedNanos(void);
 
 // --- Tickable timer (Legacy: NanoTime.allocate/tick) ---
 //
@@ -35,11 +35,11 @@ uint64_t NanoTime_elapsedNanos(void);
 // shape deltaTime and totalTime exactly like the simulation experienced them.
 
 typedef struct NanoTimer {
-    uint64_t startNanos;
-    uint64_t lastNanos;
-    uint64_t currentNanos;
-    double deltaTime;  // seconds, Clock-scaled
-    double totalTime;  // seconds, accumulated scaled
+    u64 startNanos;
+    u64 lastNanos;
+    u64 currentNanos;
+    d64 deltaTime;  // seconds, Clock-scaled
+    d64 totalTime;  // seconds, accumulated scaled
 } NanoTimer;
 
 // Anchor all fields at now; deltas zero.
@@ -50,9 +50,9 @@ void NanoTimer_reset(NanoTimer *timer);
 void NanoTimer_tick(NanoTimer *timer);
 void NanoTimer_tickWithClock(NanoTimer *timer, const Clock *clock);
 
-double NanoTimer_deltaTime(const NanoTimer *timer);
-double NanoTimer_totalTime(const NanoTimer *timer);
-uint64_t NanoTimer_deltaNanos(const NanoTimer *timer);
-uint64_t NanoTimer_elapsedNanosOf(const NanoTimer *timer); // since start
+d64 NanoTimer_deltaTime(const NanoTimer *timer);
+d64 NanoTimer_totalTime(const NanoTimer *timer);
+u64 NanoTimer_deltaNanos(const NanoTimer *timer);
+u64 NanoTimer_elapsedNanosOf(const NanoTimer *timer); // since start
 
 #endif

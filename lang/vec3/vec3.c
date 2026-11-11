@@ -16,7 +16,7 @@
  * ============================================================================
  * Coordinate-agnostic 3D spatial vector: horizontal/vertical/depth components
  * with the owning CoordFrame stored as true embedded metadata in the 4th
- * float slot, preserving 16-byte SIMD alignment for NEON/SSE. Directional
+ * f32 slot, preserving 16-byte SIMD alignment for NEON/SSE. Directional
  * accessors (right/left/up/down/front/back) expose semantic axes whose
  * inverses are exact negations, while frame-mapped X/Y/Z accessors translate
  * through CoordFrame axis index/sign tables. All arithmetic is dest-last and
@@ -45,10 +45,10 @@
  * ----------------------------------------------------------------------------
  *   Coord3 {
  *     alignas(16) union {
- *       struct { float horizontal; float vertical; float depth; uint32_t frame; };
- *       struct { float x; float y; float z; uint32_t _frame; };
- *       struct { float right; float up; float front; uint32_t _f; };
- *       float data[4];
+ *       struct { f32 horizontal; f32 vertical; f32 depth; u32 frame; };
+ *       struct { f32 x; f32 y; f32 z; u32 _frame; };
+ *       struct { f32 right; f32 up; f32 front; u32 _f; };
+ *       f32 data[4];
  *     };
  *   }
  *
@@ -100,27 +100,27 @@ Coord3 *Coord3_0(void) {
     (*v).horizontal = 0.0f;
     (*v).vertical = 0.0f;
     (*v).depth = 0.0f;
-    (*v).frame = (uint32_t) COORD_FRAME_DEFAULT;
+    (*v).frame = (u32) COORD_FRAME_DEFAULT;
     return v;
 }
 
-Coord3 *Coord3_3(float horizontal, float vertical, float depth) {
+Coord3 *Coord3_3(f32 horizontal, f32 vertical, f32 depth) {
     Coord3 *v = (Coord3*) Memory_alloc(ID_VEC3, VEC3_BYTES);
     if (!v) return nullptr;
     (*v).horizontal = horizontal;
     (*v).vertical = vertical;
     (*v).depth = depth;
-    (*v).frame = (uint32_t) COORD_FRAME_DEFAULT;
+    (*v).frame = (u32) COORD_FRAME_DEFAULT;
     return v;
 }
 
-Coord3 *Coord3_4(float horizontal, float vertical, float depth, CoordFrame frame) {
+Coord3 *Coord3_4(f32 horizontal, f32 vertical, f32 depth, CoordFrame frame) {
     Coord3 *v = (Coord3*) Memory_alloc(ID_VEC3, VEC3_BYTES);
     if (!v) return nullptr;
     (*v).horizontal = horizontal;
     (*v).vertical = vertical;
     (*v).depth = depth;
-    (*v).frame = CoordFrame_isValid(frame) ? (uint32_t) frame : (uint32_t) COORD_FRAME_DEFAULT;
+    (*v).frame = CoordFrame_isValid(frame) ? (u32) frame : (u32) COORD_FRAME_DEFAULT;
     return v;
 }
 
@@ -128,20 +128,20 @@ void Coord3_free(Coord3 *v) {
     if (v) Memory_free(v);
 }
 
-float Coord3_getRight(const Coord3 *v) { return v ? (*v).horizontal : 0.0f; }
-void  Coord3_setRight(Coord3 *v, float val) { if (v) (*v).horizontal = val; }
-float Coord3_getLeft(const Coord3 *v) { return v ? -(*v).horizontal : 0.0f; }
-void  Coord3_setLeft(Coord3 *v, float val) { if (v) (*v).horizontal = -val; }
+f32 Coord3_getRight(const Coord3 *v) { return v ? (*v).horizontal : 0.0f; }
+void  Coord3_setRight(Coord3 *v, f32 val) { if (v) (*v).horizontal = val; }
+f32 Coord3_getLeft(const Coord3 *v) { return v ? -(*v).horizontal : 0.0f; }
+void  Coord3_setLeft(Coord3 *v, f32 val) { if (v) (*v).horizontal = -val; }
 
-float Coord3_getUp(const Coord3 *v) { return v ? (*v).vertical : 0.0f; }
-void  Coord3_setUp(Coord3 *v, float val) { if (v) (*v).vertical = val; }
-float Coord3_getDown(const Coord3 *v) { return v ? -(*v).vertical : 0.0f; }
-void  Coord3_setDown(Coord3 *v, float val) { if (v) (*v).vertical = -val; }
+f32 Coord3_getUp(const Coord3 *v) { return v ? (*v).vertical : 0.0f; }
+void  Coord3_setUp(Coord3 *v, f32 val) { if (v) (*v).vertical = val; }
+f32 Coord3_getDown(const Coord3 *v) { return v ? -(*v).vertical : 0.0f; }
+void  Coord3_setDown(Coord3 *v, f32 val) { if (v) (*v).vertical = -val; }
 
-float Coord3_getFront(const Coord3 *v) { return v ? (*v).depth : 0.0f; }
-void  Coord3_setFront(Coord3 *v, float val) { if (v) (*v).depth = val; }
-float Coord3_getBack(const Coord3 *v) { return v ? -(*v).depth : 0.0f; }
-void  Coord3_setBack(Coord3 *v, float val) { if (v) (*v).depth = -val; }
+f32 Coord3_getFront(const Coord3 *v) { return v ? (*v).depth : 0.0f; }
+void  Coord3_setFront(Coord3 *v, f32 val) { if (v) (*v).depth = val; }
+f32 Coord3_getBack(const Coord3 *v) { return v ? -(*v).depth : 0.0f; }
+void  Coord3_setBack(Coord3 *v, f32 val) { if (v) (*v).depth = -val; }
 
 CoordFrame Coord3_getFrame(const Coord3 *v) {
     return v ? (CoordFrame) (*v).frame : COORD_FRAME_DEFAULT;
@@ -149,65 +149,65 @@ CoordFrame Coord3_getFrame(const Coord3 *v) {
 
 void Coord3_setFrame(Coord3 *v, CoordFrame frame) {
     if (v && CoordFrame_isValid(frame)) {
-        (*v).frame = (uint32_t) frame;
+        (*v).frame = (u32) frame;
     }
 }
 
-float Coord3_getXInFrame(const Coord3 *v, CoordFrame frame) {
+f32 Coord3_getXInFrame(const Coord3 *v, CoordFrame frame) {
     if (!v) return 0.0f;
     return CoordFrame_getAxisSign(frame, 0) * (*v).data[CoordFrame_getAxisIndex(frame, 0)];
 }
 
-float Coord3_getYInFrame(const Coord3 *v, CoordFrame frame) {
+f32 Coord3_getYInFrame(const Coord3 *v, CoordFrame frame) {
     if (!v) return 0.0f;
     return CoordFrame_getAxisSign(frame, 1) * (*v).data[CoordFrame_getAxisIndex(frame, 1)];
 }
 
-float Coord3_getZInFrame(const Coord3 *v, CoordFrame frame) {
+f32 Coord3_getZInFrame(const Coord3 *v, CoordFrame frame) {
     if (!v) return 0.0f;
     return CoordFrame_getAxisSign(frame, 2) * (*v).data[CoordFrame_getAxisIndex(frame, 2)];
 }
 
-float Coord3_getX(const Coord3 *v) {
+f32 Coord3_getX(const Coord3 *v) {
     if (!v) return 0.0f;
     return Coord3_getXInFrame(v, (CoordFrame) (*v).frame);
 }
 
-void Coord3_setX(Coord3 *v, float x) {
+void Coord3_setX(Coord3 *v, f32 x) {
     if (!v) return;
     CoordFrame f = (CoordFrame) (*v).frame;
-    int8_t idx = CoordFrame_getAxisIndex(f, 0);
-    float sign = CoordFrame_getAxisSign(f, 0);
+     idx = CoordFrame_getAxisIndex(f, 0);
+    f32 sign = CoordFrame_getAxisSign(f, 0);
     (*v).data[idx] = x * sign;
 }
 
-float Coord3_getY(const Coord3 *v) {
+f32 Coord3_getY(const Coord3 *v) {
     if (!v) return 0.0f;
     return Coord3_getYInFrame(v, (CoordFrame) (*v).frame);
 }
 
-void Coord3_setY(Coord3 *v, float y) {
+void Coord3_setY(Coord3 *v, f32 y) {
     if (!v) return;
     CoordFrame f = (CoordFrame) (*v).frame;
-    int8_t idx = CoordFrame_getAxisIndex(f, 1);
-    float sign = CoordFrame_getAxisSign(f, 1);
+     idx = CoordFrame_getAxisIndex(f, 1);
+    f32 sign = CoordFrame_getAxisSign(f, 1);
     (*v).data[idx] = y * sign;
 }
 
-float Coord3_getZ(const Coord3 *v) {
+f32 Coord3_getZ(const Coord3 *v) {
     if (!v) return 0.0f;
     return Coord3_getZInFrame(v, (CoordFrame) (*v).frame);
 }
 
-void Coord3_setZ(Coord3 *v, float z) {
+void Coord3_setZ(Coord3 *v, f32 z) {
     if (!v) return;
     CoordFrame f = (CoordFrame) (*v).frame;
-    int8_t idx = CoordFrame_getAxisIndex(f, 2);
-    float sign = CoordFrame_getAxisSign(f, 2);
+     idx = CoordFrame_getAxisIndex(f, 2);
+    f32 sign = CoordFrame_getAxisSign(f, 2);
     (*v).data[idx] = z * sign;
 }
 
-void Coord3_set(Coord3 *v, float horizontal, float vertical, float depth) {
+void Coord3_set(Coord3 *v, f32 horizontal, f32 vertical, f32 depth) {
     if (!v) return;
     (*v).horizontal = horizontal;
     (*v).vertical = vertical;
@@ -228,14 +228,14 @@ void Coord3_toFrame(const Coord3 *src, CoordFrame targetFrame, Coord3 *dest) {
         targetFrame = COORD_FRAME_DEFAULT;
     }
     // Extract semantic directions from src
-    float r = (*src).horizontal;
-    float u = (*src).vertical;
-    float f = (*src).depth;
+    f32 r = (*src).horizontal;
+    f32 u = (*src).vertical;
+    f32 f = (*src).depth;
 
     (*dest).horizontal = r;
     (*dest).vertical = u;
     (*dest).depth = f;
-    (*dest).frame = (uint32_t) targetFrame;
+    (*dest).frame = (u32) targetFrame;
 }
 
 void Coord3_add(const Coord3 *a, const Coord3 *b, Coord3 *dest) {
@@ -254,7 +254,7 @@ void Coord3_sub(const Coord3 *a, const Coord3 *b, Coord3 *dest) {
     (*dest).frame = (*a).frame;
 }
 
-void Coord3_mul(const Coord3 *a, float scalar, Coord3 *dest) {
+void Coord3_mul(const Coord3 *a, f32 scalar, Coord3 *dest) {
     if (!a || !dest) return;
     (*dest).horizontal = (*a).horizontal * scalar;
     (*dest).vertical = (*a).vertical * scalar;
@@ -262,16 +262,16 @@ void Coord3_mul(const Coord3 *a, float scalar, Coord3 *dest) {
     (*dest).frame = (*a).frame;
 }
 
-void Coord3_div(const Coord3 *a, float scalar, Coord3 *dest) {
+void Coord3_div(const Coord3 *a, f32 scalar, Coord3 *dest) {
     if (!a || !dest || scalar == 0.0f) return;
-    float inv = 1.0f / scalar;
+    f32 inv = 1.0f / scalar;
     (*dest).horizontal = (*a).horizontal * inv;
     (*dest).vertical = (*a).vertical * inv;
     (*dest).depth = (*a).depth * inv;
     (*dest).frame = (*a).frame;
 }
 
-float Coord3_dot(const Coord3 *a, const Coord3 *b) {
+f32 Coord3_dot(const Coord3 *a, const Coord3 *b) {
     if (!a || !b) return 0.0f;
     return (*a).horizontal * (*b).horizontal +
            (*a).vertical * (*b).vertical +
@@ -280,28 +280,28 @@ float Coord3_dot(const Coord3 *a, const Coord3 *b) {
 
 void Coord3_cross(const Coord3 *a, const Coord3 *b, Coord3 *dest) {
     if (!a || !b || !dest) return;
-    float x1 = (*a).horizontal, y1 = (*a).vertical, z1 = (*a).depth;
-    float x2 = (*b).horizontal, y2 = (*b).vertical, z2 = (*b).depth;
+    f32 x1 = (*a).horizontal, y1 = (*a).vertical, z1 = (*a).depth;
+    f32 x2 = (*b).horizontal, y2 = (*b).vertical, z2 = (*b).depth;
     (*dest).horizontal = y1 * z2 - z1 * y2;
     (*dest).vertical = z1 * x2 - x1 * z2;
     (*dest).depth = x1 * y2 - y1 * x2;
     (*dest).frame = (*a).frame;
 }
 
-float Coord3_lengthSquared(const Coord3 *v) {
+f32 Coord3_lengthSquared(const Coord3 *v) {
     if (!v) return 0.0f;
     return (*v).horizontal * (*v).horizontal +
            (*v).vertical * (*v).vertical +
            (*v).depth * (*v).depth;
 }
 
-float Coord3_length(const Coord3 *v) {
+f32 Coord3_length(const Coord3 *v) {
     return StrictMath_sqrt(Coord3_lengthSquared(v));
 }
 
 void Coord3_normalize(const Coord3 *src, Coord3 *dest) {
     if (!src || !dest) return;
-    float lenSq = Coord3_lengthSquared(src);
+    f32 lenSq = Coord3_lengthSquared(src);
     if (lenSq < 1e-12f) {
         (*dest).horizontal = 0.0f;
         (*dest).vertical = 0.0f;
@@ -309,13 +309,13 @@ void Coord3_normalize(const Coord3 *src, Coord3 *dest) {
         (*dest).frame = (*src).frame;
         return;
     }
-    float invLen = StrictMath_invSqrt(lenSq);
+    f32 invLen = StrictMath_invSqrt(lenSq);
     Coord3_mul(src, invLen, dest);
 }
 
 void Coord3_fastNormalize(const Coord3 *src, Coord3 *dest) {
     if (!src || !dest) return;
-    float lenSq = Coord3_lengthSquared(src);
+    f32 lenSq = Coord3_lengthSquared(src);
     if (lenSq < 1e-8f) {
         (*dest).horizontal = 0.0f;
         (*dest).vertical = 0.0f;
@@ -323,48 +323,48 @@ void Coord3_fastNormalize(const Coord3 *src, Coord3 *dest) {
         (*dest).frame = (*src).frame;
         return;
     }
-    float invLen = FastMath_invSqrt(lenSq);
+    f32 invLen = FastMath_invSqrt(lenSq);
     Coord3_mul(src, invLen, dest);
 }
 
-float Coord3_distance(const Coord3 *a, const Coord3 *b) {
+f32 Coord3_distance(const Coord3 *a, const Coord3 *b) {
     if (!a || !b) return 0.0f;
-    float dx = (*a).horizontal - (*b).horizontal;
-    float dy = (*a).vertical - (*b).vertical;
-    float dz = (*a).depth - (*b).depth;
+    f32 dx = (*a).horizontal - (*b).horizontal;
+    f32 dy = (*a).vertical - (*b).vertical;
+    f32 dz = (*a).depth - (*b).depth;
     return StrictMath_sqrt(dx * dx + dy * dy + dz * dz);
 }
 
-float Coord3_angle(const Coord3 *a, const Coord3 *b) {
+f32 Coord3_angle(const Coord3 *a, const Coord3 *b) {
     if (!a || !b) return 0.0f;
-    float d = Coord3_dot(a, b);
-    float l = Coord3_length(a) * Coord3_length(b);
+    f32 d = Coord3_dot(a, b);
+    f32 l = Coord3_length(a) * Coord3_length(b);
     if (l < 1e-12f) return 0.0f;
-    float cosVal = StrictMath_clamp(d / l, -1.0f, 1.0f);
+    f32 cosVal = StrictMath_clamp(d / l, -1.0f, 1.0f);
     return StrictMath_acos(cosVal);
 }
 
 void Coord3_project(const Coord3 *vector, const Coord3 *onto, Coord3 *dest) {
     if (!vector || !onto || !dest) return;
-    float ontoLenSq = Coord3_lengthSquared(onto);
+    f32 ontoLenSq = Coord3_lengthSquared(onto);
     if (ontoLenSq < 1e-12f) {
         Coord3_set(dest, 0.0f, 0.0f, 0.0f);
         return;
     }
-    float scale = Coord3_dot(vector, onto) / ontoLenSq;
+    f32 scale = Coord3_dot(vector, onto) / ontoLenSq;
     Coord3_mul(onto, scale, dest);
 }
 
 void Coord3_reflect(const Coord3 *incident, const Coord3 *normal, Coord3 *dest) {
     if (!incident || !normal || !dest) return;
-    float factor = 2.0f * Coord3_dot(incident, normal);
+    f32 factor = 2.0f * Coord3_dot(incident, normal);
     (*dest).horizontal = (*incident).horizontal - factor * (*normal).horizontal;
     (*dest).vertical = (*incident).vertical - factor * (*normal).vertical;
     (*dest).depth = (*incident).depth - factor * (*normal).depth;
     (*dest).frame = (*incident).frame;
 }
 
-void Coord3_clamp(const Coord3 *src, float min_val, float max_val, Coord3 *dest) {
+void Coord3_clamp(const Coord3 *src, f32 min_val, f32 max_val, Coord3 *dest) {
     if (!src || !dest) return;
     (*dest).horizontal = StrictMath_clamp((*src).horizontal, min_val, max_val);
     (*dest).vertical = StrictMath_clamp((*src).vertical, min_val, max_val);
@@ -380,7 +380,7 @@ void Coord3_abs(const Coord3 *src, Coord3 *dest) {
     (*dest).frame = (*src).frame;
 }
 
-void Coord3_lerp(const Coord3 *a, const Coord3 *b, float t, Coord3 *dest) {
+void Coord3_lerp(const Coord3 *a, const Coord3 *b, f32 t, Coord3 *dest) {
     if (!a || !b || !dest) return;
     (*dest).horizontal = StrictMath_lerp((*a).horizontal, (*b).horizontal, t);
     (*dest).vertical = StrictMath_lerp((*a).vertical, (*b).vertical, t);

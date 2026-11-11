@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 // regex/nodelist.h — the RegexNodeList: the flat AST a parse produces and the
 // program builder walks. Single Class Per File Law: RegexNodeList (owning the
@@ -41,22 +41,22 @@ typedef enum RegexNodeKind {
 
 // SLOT RECORD: one AST node, owned by exactly one RegexNodeList, behaviorless.
 typedef struct RegexNode {
-    uint8_t  kind;      // RegexNodeKind
-    uint8_t  byte;      // literal byte for REGEX_NODE_CHAR (already folded)
-    uint16_t reserved;  // keeps the record naturally aligned
-    uint32_t a;         // first child / class index
-    uint32_t b;         // second child (concatenation, alternation)
-    uint32_t repMin;    // REGEX_NODE_REPEAT lower bound
-    uint32_t repMax;    // REGEX_NODE_REPEAT upper bound (REGEX_REP_INF = none)
-    uint32_t group;     // capturing group number (0 = non-capturing)
-    uint32_t clsIndex;  // class bitmap index for REGEX_NODE_CLASS
+    u8  kind;      // RegexNodeKind
+    u8  byte;      // literal byte for REGEX_NODE_CHAR (already folded)
+    u16 reserved;  // keeps the record naturally aligned
+    u32 a;         // first child / class index
+    u32 b;         // second child (concatenation, alternation)
+    u32 repMin;    // REGEX_NODE_REPEAT lower bound
+    u32 repMax;    // REGEX_NODE_REPEAT upper bound (REGEX_REP_INF = none)
+    u32 group;     // capturing group number (0 = non-capturing)
+    u32 clsIndex;  // class bitmap index for REGEX_NODE_CLASS
 } RegexNode;
 
 // A flat, growable array of nodes in the engine arena.
 typedef struct RegexNodeList {
     RegexNode *nodes;    // engine-arena block of `capacity` nodes
-    uint32_t   count;    // nodes in use
-    uint32_t   capacity; // nodes allocated
+    u32   count;    // nodes in use
+    u32   capacity; // nodes allocated
 } RegexNodeList;
 
 // Create an empty list; allocates nothing.
@@ -65,13 +65,13 @@ RegexNodeList RegexNodeList_0(void);
 
 // Append a zeroed node of the given kind. Returns its index, or
 // REGEX_NODE_NONE when the arena refused growth.
-uint32_t RegexNodeList_add(RegexNodeList *list, uint8_t kind);
+u32 RegexNodeList_add(RegexNodeList *list, u8 kind);
 
 // Borrowed mutable node, or nullptr when index is out of range.
-RegexNode *RegexNodeList_get(RegexNodeList *list, uint32_t index);
+RegexNode *RegexNodeList_get(RegexNodeList *list, u32 index);
 
 // Borrowed read-only node, or nullptr when index is out of range.
-const RegexNode *RegexNodeList_at(const RegexNodeList *list, uint32_t index);
+const RegexNode *RegexNodeList_at(const RegexNodeList *list, u32 index);
 
 // Release the node block and zero the list.
 void RegexNodeList_free(RegexNodeList *list);

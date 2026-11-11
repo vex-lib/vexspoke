@@ -6,7 +6,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "re/atomic/spin.h"
+#include "re/atomic/atomic.h"
 #include "struct/collection.h"
 
 // struct/chunked_list.h — the ChunkedList class: a never-moved radix-paged list.
@@ -104,37 +104,37 @@
 //
 // INTENTIONAL(vex): the *_LAYER_DEFAULT sentinels are FourCCs with the high bit
 // of the first byte set ('T' | 0x80 = 0xD4 = Ô), so they read NEGATIVE as
-// int32_t on every platform and can never collide with a real fan-out — the
+// i32 on every platform and can never collide with a real fan-out — the
 // same author sugar as SIZE_AUTO ("åuto", 0xE575746F). Do not "normalize" them
 // to round numbers; the sign IS the sentinel.
-#define CHUNKED_LIST_TWO_LAYER_DEFAULT ((int32_t) 0xD4574F21)   // "ÔWO!"
-#define CHUNKED_LIST_THREE_LAYER_DEFAULT ((int32_t) 0xD4485245) // "ÔHRE"
+#define CHUNKED_LIST_TWO_LAYER_DEFAULT ((i32) 0xD4574F21)   // "ÔWO!"
+#define CHUNKED_LIST_THREE_LAYER_DEFAULT ((i32) 0xD4485245) // "ÔHRE"
 
 typedef struct ChunkedList {
     // --- ChunkedList core (embed-first: a ChunkedList* is a Collection*) ---
     Collection collection;     // gate-maintained mirror; quiesced reads only under concurrency
     // --- ChunkedList paging part (radix page table; rows never move) ---
     _Atomic(void*) directory;  // current root generation (COW; generations never freed mid-run)
-    _Atomic uint32_t chunkCount; // published leaves (lock-free reader bound)
-    _Atomic uint32_t committed;  // published rows (lock-free reader bound)
-    uint32_t rowsPerChunk;     // rows per leaf (power of two, >= 1; geometry)
-    uint32_t rowShift;         // log2(rowsPerChunk)
-    uint32_t rowMask;          // rowsPerChunk - 1
-    uint32_t chunkBytes;       // byte budget of one leaf (>= 16)
-    uint32_t levels;           // pointer hops root..leaf (>= 2)
-    uint32_t *radices;         // [levels] fan-out per depth; [0] = initial root slots
-    uint32_t *shifts;          // [levels] bit offset of each depth's digit ([levels-1] == 0)
-    uint32_t *masks;           // [levels] radix-1 per depth ([0] unused: the root is growable)
+    _Atomic u32 chunkCount; // published leaves (lock-free reader bound)
+    _Atomic u32 committed;  // published rows (lock-free reader bound)
+    u32 rowsPerChunk;     // rows per leaf (power of two, >= 1; geometry)
+    u32 rowShift;         // log2(rowsPerChunk)
+    u32 rowMask;          // rowsPerChunk - 1
+    u32 chunkBytes;       // byte budget of one leaf (>= 16)
+    u32 levels;           // pointer hops root..leaf (>= 2)
+    u32 *radices;         // [levels] fan-out per depth; [0] = initial root slots
+    u32 *shifts;          // [levels] bit offset of each depth's digit ([levels-1] == 0)
+    u32 *masks;           // [levels] radix-1 per depth ([0] unused: the root is growable)
     // --- ChunkedList gate part (serializes every mutation step) ---
     SpinLock lock;             // claim + growth + commit; try-locked, 100ms bounded
 } ChunkedList;
 
 // Constructors (byte-budget form: a 2-level table)
-ChunkedList *ChunkedList_1(uint32_t elementClass);
-ChunkedList *ChunkedList_2(uint32_t elementClass, uint32_t chunkBytes);
+ChunkedList *ChunkedList_1(u32 elementClass);
+ChunkedList *ChunkedList_2(u32 elementClass, u32 chunkBytes);
 // Explicit stride for row layouts the Struct registry does not know
 // (e.g. a graphvex-side row struct holding its own atomics).
-ChunkedList *ChunkedList_3(uint32_t elementClass, uint32_t stride, uint32_t chunkBytes);
+ChunkedList *ChunkedList_3(u32 elementClass, u32 stride, u32 chunkBytes);
 
 // Radix form: build a table of `count` levels from `radices[]` (outer to leaf).
 // radices[0] is the initial root slot count (the root still grows); the LAST
@@ -144,14 +144,14 @@ ChunkedList *ChunkedList_3(uint32_t elementClass, uint32_t stride, uint32_t chun
 // Non-power-of-two radices are rounded DOWN to a power of two (min 1). `stride`
 // 0 falls back to Stride_get(elementClass), then sizeof(void*). Page leaf =
 // largest power of two <= VEX_CHUNKED_PAGE_BYTES / stride.
-ChunkedList *ChunkedList_paged(uint32_t elementClass, uint32_t stride, const int32_t *radices, size_t count);
+ChunkedList *ChunkedList_paged(u32 elementClass, u32 stride, const i32 *radices, bytes count);
 
 // Variadic convenience: ChunkedList(elementClass, stride, r0, ..., leafRows).
 // At least one radix/sentinel is required.
 #define ChunkedList(elementClass, stride, ...)                                   \
     ChunkedList_paged((elementClass), (stride),                                  \
-        (const int32_t[]){ __VA_ARGS__ },                                        \
-        sizeof((const int32_t[]){ __VA_ARGS__ }) / sizeof(int32_t))
+        (const i32[]){ __VA_ARGS__ },                                        \
+        sizeof((const i32[]){ __VA_ARGS__ }) / sizeof(i32))
 
 // Core functions
 // Requires quiescence: no concurrent readers or writers.
@@ -160,49 +160,49 @@ void ChunkedList_free(ChunkedList *self);
 // serializes claim, growth and commit, so every row is handed out exactly
 // once. Null on OOM, lock timeout, or index exhaustion. The returned pointer
 // stays valid until ChunkedList_free.
-uint8_t *ChunkedList_addSlot(ChunkedList *self);
+u8 *ChunkedList_addSlot(ChunkedList *self);
 // Pre-allocate room for `rows` without activating any. Thread-safe growth gate
 // (cold path). False on OOM or lock timeout; the list is left untouched.
-bool ChunkedList_reserve(ChunkedList *self, uint32_t rows);
+bool ChunkedList_reserve(ChunkedList *self, u32 rows);
 // Snapshot rows into a flat caller buffer (the arraycopy seam, dest-last per
 // the Dest-Last Law): false + *outTruncated when destCap cannot hold every
 // active row (the Truncation-Never-Silent clause). Lock-free; safe
 // concurrently with writers (copies a prefix of the published rows).
-bool ChunkedList_packInto(const ChunkedList *self, uint8_t *dest, size_t destCap, uint32_t *outRows, bool *outTruncated);
+bool ChunkedList_packInto(const ChunkedList *self, u8 *dest, bytes destCap, u32 *outRows, bool *outTruncated);
 // Stable row address, lock-free: null when the index is at or above the
 // published count. A null below the observed size is a publication defect.
-uint8_t *ChunkedList_slot(const ChunkedList *self, uint32_t index);
+u8 *ChunkedList_slot(const ChunkedList *self, u32 index);
 // Leaf base address, lock-free: null when the leaf is not published.
-uint8_t *ChunkedList_getChunk(const ChunkedList *self, uint32_t chunkIndex);
+u8 *ChunkedList_getChunk(const ChunkedList *self, u32 chunkIndex);
 // Next leaf in the chain, lock-free: null at the tail (or on a null/foreign
 // leaf). Every leaf carries an 8-byte tail link, so a sequential sweep follows
 // the chain (one pointer load per leaf) instead of recomputing the page walk
 // per chunk — the indexable unrolled list.
-uint8_t *ChunkedList_nextChunk(const ChunkedList *self, const uint8_t *chunk);
+u8 *ChunkedList_nextChunk(const ChunkedList *self, const u8 *chunk);
 // Walk every published leaf in chain order. Lock-free; safe concurrently with
 // writers (visits a prefix of the published leaves).
-typedef void (*ChunkedListChunkFn)(uint8_t *chunk, uint32_t chunkIndex, void *userdata);
+typedef void (*ChunkedListChunkFn)(u8 *chunk, u32 chunkIndex, void *userdata);
 void ChunkedList_forEachChunk(const ChunkedList *self, ChunkedListChunkFn fn, void *userdata);
 
 // Setters
 // Byte budget for the leaf. Setup-time only: never concurrently with any other
 // call. No-op once the first leaf exists or the gate is contended.
-void ChunkedList_setChunkBytes(ChunkedList *self, uint32_t chunkBytes);
+void ChunkedList_setChunkBytes(ChunkedList *self, u32 chunkBytes);
 
 // Getters (all lock-free atomic loads; safe concurrently with writers)
-uint32_t ChunkedList_size(const ChunkedList *self);
-uint32_t ChunkedList_length(const ChunkedList *self);
-uint32_t ChunkedList_capacity(const ChunkedList *self);
+u32 ChunkedList_size(const ChunkedList *self);
+u32 ChunkedList_length(const ChunkedList *self);
+u32 ChunkedList_capacity(const ChunkedList *self);
 bool ChunkedList_isEmpty(const ChunkedList *self);
 // Refused-directory-grow count since construction (the Exhaustion Loudness Law).
 ;;TEST
-uint64_t ChunkedList_exhaustionCount(const ChunkedList *self);
-uint32_t ChunkedList_elementClassId(const ChunkedList *self);
-uint32_t ChunkedList_stride(const ChunkedList *self);
-uint32_t ChunkedList_getChunkCount(const ChunkedList *self);
-uint32_t ChunkedList_getRowsPerChunk(const ChunkedList *self);
-uint32_t ChunkedList_getChunkBytes(const ChunkedList *self);
+u64 ChunkedList_exhaustionCount(const ChunkedList *self);
+u32 ChunkedList_elementClassId(const ChunkedList *self);
+u32 ChunkedList_stride(const ChunkedList *self);
+u32 ChunkedList_getChunkCount(const ChunkedList *self);
+u32 ChunkedList_getRowsPerChunk(const ChunkedList *self);
+u32 ChunkedList_getChunkBytes(const ChunkedList *self);
 // Number of pointer hops from the root to a leaf (2 for the byte-budget form).
-uint32_t ChunkedList_getLevels(const ChunkedList *self);
+u32 ChunkedList_getLevels(const ChunkedList *self);
 
 #endif

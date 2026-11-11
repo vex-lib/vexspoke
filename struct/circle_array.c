@@ -36,17 +36,17 @@
  * ----------------------------------------------------------------------------
  *   CircleArray {
  *     Collection collection; // base collection header (typeId, activeCount, etc.)
- *     int32_t    radius;     // radius in cells
- *     int32_t    diameter;   // 2 * radius + 1
+ *     i32    radius;     // radius in cells
+ *     i32    diameter;   // 2 * radius + 1
  *   }
  *   Collection {
- *     uint64_t typeId;       // mirror of the block-header type (for debug)
- *     uint32_t activeCount;  // number of live elements
- *     uint32_t elementClass; // class of elements (Map: key class)
- *     uint32_t stride;       // Bytes per element (Map: val class)
- *     uint32_t capacity;     // element capacity (or slot capacity)
- *     uint32_t head;         // circular head index (Deque/Queue); else 0
- *     uint8_t *data;         // element / slot buffer
+ *     u64 typeId;       // mirror of the block-header type (for debug)
+ *     u32 activeCount;  // number of live elements
+ *     u32 elementClass; // class of elements (Map: key class)
+ *     u32 stride;       // Bytes per element (Map: val class)
+ *     u32 capacity;     // element capacity (or slot capacity)
+ *     u32 head;         // circular head index (Deque/Queue); else 0
+ *     u8 *data;         // element / slot buffer
  *   }
  *
  * FUNCTION REGISTRY:
@@ -74,13 +74,13 @@
  * ============================================================================
  */
 
-CircleArray *CircleArray_3(int32_t radius, uint32_t elementClass, size_t stride) {
+CircleArray *CircleArray_3(i32 radius, u32 elementClass, bytes stride) {
     if (radius < 0) {
         return nullptr;
     }
-    int32_t diameter = 2 * radius + 1;
-    size_t totalCells = (size_t) diameter * (size_t) diameter;
-    size_t dataBytes = totalCells * stride;
+    i32 diameter = 2 * radius + 1;
+    bytes totalCells = (bytes) diameter * (bytes) diameter;
+    bytes dataBytes = totalCells * stride;
 
     CircleArray *self = (CircleArray*) Memory_alloc(TYPE_CIRCLE_ARRAY, sizeof(CircleArray));
     if (self == nullptr) {
@@ -88,7 +88,7 @@ CircleArray *CircleArray_3(int32_t radius, uint32_t elementClass, size_t stride)
         return nullptr;
     }
 
-    uint8_t *data = (uint8_t*) Memory_alloc(TYPE_BYTE_ARRAY, dataBytes);
+    u8 *data = (u8*) Memory_alloc(TYPE_BYTE_ARRAY, dataBytes);
     if (data == nullptr) {
         (void) Struct_reportConstructionExhaustion("circle_array", dataBytes);
         Memory_free(self);
@@ -99,8 +99,8 @@ CircleArray *CircleArray_3(int32_t radius, uint32_t elementClass, size_t stride)
     Collection *coll = &(*self).collection;
     (*coll).typeId = TYPE_CIRCLE_ARRAY;
     (*coll).elementClass = elementClass;
-    (*coll).stride = (uint32_t) stride;
-    (*coll).capacity = (uint32_t) totalCells;
+    (*coll).stride = (u32) stride;
+    (*coll).capacity = (u32) totalCells;
     (*coll).head = 0;
     (*coll).exhaustionCount = 0;
     (*coll).exhaustionReported = false;
@@ -110,10 +110,10 @@ CircleArray *CircleArray_3(int32_t radius, uint32_t elementClass, size_t stride)
 
     // Calculate active count: number of valid cells where Pythagorean inequality holds
     int64_t rSq = (int64_t) radius * (int64_t) radius;
-    uint32_t active = 0;
-    for (int32_t gy = 0; gy < diameter; gy++) {
+    u32 active = 0;
+    for (i32 gy = 0; gy < diameter; gy++) {
         int64_t dy = (int64_t) gy - (int64_t) radius;
-        for (int32_t gx = 0; gx < diameter; gx++) {
+        for (i32 gx = 0; gx < diameter; gx++) {
             int64_t dx = (int64_t) gx - (int64_t) radius;
             if (dx * dx + dy * dy <= rSq) {
                 active++;
@@ -125,8 +125,8 @@ CircleArray *CircleArray_3(int32_t radius, uint32_t elementClass, size_t stride)
     return self;
 }
 
-CircleArray *CircleArray_2(int32_t radius, uint32_t elementClass) {
-    size_t stride = Stride_get(elementClass);
+CircleArray *CircleArray_2(i32 radius, u32 elementClass) {
+    bytes stride = Stride_get(elementClass);
     if (stride == 0) {
         stride = 8;
     }
@@ -145,38 +145,38 @@ void CircleArray_free(CircleArray *self) {
     Memory_free(self);
 }
 
-int32_t CircleArray_radius(const CircleArray *self) {
+i32 CircleArray_radius(const CircleArray *self) {
     if (self == nullptr) return 0;
     return (*self).radius;
 }
 
-int32_t CircleArray_diameter(const CircleArray *self) {
+i32 CircleArray_diameter(const CircleArray *self) {
     if (self == nullptr) return 0;
     return (*self).diameter;
 }
 
-size_t CircleArray_validCellCount(const CircleArray *self) {
+bytes CircleArray_validCellCount(const CircleArray *self) {
     if (self == nullptr) return 0;
     const Collection *coll = &(*self).collection;
-    return (size_t) (*coll).activeCount;
+    return (bytes) (*coll).activeCount;
 }
 
-int64_t CircleArray_distanceSquaredOffset(int32_t dx, int32_t dy) {
+int64_t CircleArray_distanceSquaredOffset(i32 dx, i32 dy) {
     int64_t x = (int64_t) dx;
     int64_t y = (int64_t) dy;
     return x * x + y * y;
 }
 
-int64_t CircleArray_distanceSquaredGrid(const CircleArray *self, int32_t gridX, int32_t gridY) {
+int64_t CircleArray_distanceSquaredGrid(const CircleArray *self, i32 gridX, i32 gridY) {
     if (self == nullptr) return -1;
     int64_t dx = (int64_t) gridX - (int64_t) (*self).radius;
     int64_t dy = (int64_t) gridY - (int64_t) (*self).radius;
     return dx * dx + dy * dy;
 }
 
-bool CircleArray_containsOffset(const CircleArray *self, int32_t dx, int32_t dy) {
+bool CircleArray_containsOffset(const CircleArray *self, i32 dx, i32 dy) {
     if (self == nullptr) return false;
-    int32_t r = (*self).radius;
+    i32 r = (*self).radius;
     if (dx < -r || dx > r || dy < -r || dy > r) {
         return false;
     }
@@ -185,9 +185,9 @@ bool CircleArray_containsOffset(const CircleArray *self, int32_t dx, int32_t dy)
     return distSq <= rSq;
 }
 
-bool CircleArray_containsGrid(const CircleArray *self, int32_t gridX, int32_t gridY) {
+bool CircleArray_containsGrid(const CircleArray *self, i32 gridX, i32 gridY) {
     if (self == nullptr) return false;
-    int32_t d = (*self).diameter;
+    i32 d = (*self).diameter;
     if (gridX < 0 || gridX >= d || gridY < 0 || gridY >= d) {
         return false;
     }
@@ -196,77 +196,77 @@ bool CircleArray_containsGrid(const CircleArray *self, int32_t gridX, int32_t gr
     return distSq <= rSq;
 }
 
-uint8_t *CircleArray_slotGrid(CircleArray *self, int32_t gridX, int32_t gridY) {
+u8 *CircleArray_slotGrid(CircleArray *self, i32 gridX, i32 gridY) {
     if (!CircleArray_containsGrid(self, gridX, gridY)) {
         return nullptr;
     }
-    size_t index = (size_t) gridY * (size_t) (*self).diameter + (size_t) gridX;
+    bytes index = (bytes) gridY * (bytes) (*self).diameter + (bytes) gridX;
     const Collection *coll = &(*self).collection;
-    return (*coll).data + (index * (size_t) (*coll).stride);
+    return (*coll).data + (index * (bytes) (*coll).stride);
 }
 
-uint8_t *CircleArray_slotOffset(CircleArray *self, int32_t dx, int32_t dy) {
+u8 *CircleArray_slotOffset(CircleArray *self, i32 dx, i32 dy) {
     if (self == nullptr) return nullptr;
-    int32_t gridX = dx + (*self).radius;
-    int32_t gridY = dy + (*self).radius;
+    i32 gridX = dx + (*self).radius;
+    i32 gridY = dy + (*self).radius;
     return CircleArray_slotGrid(self, gridX, gridY);
 }
 
-bool CircleArray_getGrid(void *dest, const CircleArray *self, int32_t gridX, int32_t gridY) {
+bool CircleArray_getGrid(void *dest, const CircleArray *self, i32 gridX, i32 gridY) {
     if (self == nullptr || dest == nullptr) return false;
     if (!CircleArray_containsGrid(self, gridX, gridY)) {
         return false;
     }
-    size_t index = (size_t) gridY * (size_t) (*self).diameter + (size_t) gridX;
+    bytes index = (bytes) gridY * (bytes) (*self).diameter + (bytes) gridX;
     const Collection *coll = &(*self).collection;
-    size_t stride = (size_t) (*coll).stride;
-    const uint8_t *src = (*coll).data + (index * stride);
+    bytes stride = (bytes) (*coll).stride;
+    const u8 *src = (*coll).data + (index * stride);
     memcpy(dest, src, stride);
     return true;
 }
 
-bool CircleArray_setGrid(CircleArray *self, int32_t gridX, int32_t gridY, const void *src) {
+bool CircleArray_setGrid(CircleArray *self, i32 gridX, i32 gridY, const void *src) {
     if (self == nullptr || src == nullptr) return false;
     if (!CircleArray_containsGrid(self, gridX, gridY)) {
         return false;
     }
-    size_t index = (size_t) gridY * (size_t) (*self).diameter + (size_t) gridX;
+    bytes index = (bytes) gridY * (bytes) (*self).diameter + (bytes) gridX;
     Collection *coll = &(*self).collection;
-    size_t stride = (size_t) (*coll).stride;
-    uint8_t *dest = (*coll).data + (index * stride);
+    bytes stride = (bytes) (*coll).stride;
+    u8 *dest = (*coll).data + (index * stride);
     memcpy(dest, src, stride);
     return true;
 }
 
-bool CircleArray_getOffset(void *dest, const CircleArray *self, int32_t dx, int32_t dy) {
+bool CircleArray_getOffset(void *dest, const CircleArray *self, i32 dx, i32 dy) {
     if (self == nullptr) return false;
-    int32_t gridX = dx + (*self).radius;
-    int32_t gridY = dy + (*self).radius;
+    i32 gridX = dx + (*self).radius;
+    i32 gridY = dy + (*self).radius;
     return CircleArray_getGrid(dest, self, gridX, gridY);
 }
 
-bool CircleArray_setOffset(CircleArray *self, int32_t dx, int32_t dy, const void *src) {
+bool CircleArray_setOffset(CircleArray *self, i32 dx, i32 dy, const void *src) {
     if (self == nullptr) return false;
-    int32_t gridX = dx + (*self).radius;
-    int32_t gridY = dy + (*self).radius;
+    i32 gridX = dx + (*self).radius;
+    i32 gridY = dy + (*self).radius;
     return CircleArray_setGrid(self, gridX, gridY, src);
 }
 
 void CircleArray_forEach(const CircleArray *self, CircleArrayCellFn callback, void *userData) {
     if (self == nullptr || callback == nullptr) return;
-    int32_t r = (*self).radius;
-    int32_t d = (*self).diameter;
+    i32 r = (*self).radius;
+    i32 d = (*self).diameter;
     int64_t rSq = (int64_t) r * (int64_t) r;
     const Collection *coll = &(*self).collection;
-    size_t stride = (size_t) (*coll).stride;
-    for (int32_t gy = 0; gy < d; gy++) {
-        int32_t dy = gy - r;
+    bytes stride = (bytes) (*coll).stride;
+    for (i32 gy = 0; gy < d; gy++) {
+        i32 dy = gy - r;
         int64_t dySq = (int64_t) dy * (int64_t) dy;
-        for (int32_t gx = 0; gx < d; gx++) {
-            int32_t dx = gx - r;
+        for (i32 gx = 0; gx < d; gx++) {
+            i32 dx = gx - r;
             if ((int64_t) dx * (int64_t) dx + dySq <= rSq) {
-                size_t index = (size_t) gy * (size_t) d + (size_t) gx;
-                const uint8_t *element = (*coll).data + (index * stride);
+                bytes index = (bytes) gy * (bytes) d + (bytes) gx;
+                const u8 *element = (*coll).data + (index * stride);
                 callback(gx, gy, dx, dy, element, userData);
             }
         }

@@ -27,8 +27,8 @@
  * ============================================================================
  */
 
-static uint64_t spreadAxisBits(uint32_t coordinate) {
-    uint64_t value = coordinate & 0x1FFFFFu;
+static u64 spreadAxisBits(u32 coordinate) {
+    u64 value = coordinate & 0x1FFFFFu;
     value = (value | (value << 32u)) & 0x1F00000000FFFFull;
     value = (value | (value << 16u)) & 0x1F0000FF0000FFull;
     value = (value | (value << 8u)) & 0x100F00F00F00F00Full;
@@ -37,7 +37,7 @@ static uint64_t spreadAxisBits(uint32_t coordinate) {
     return value;
 }
 
-uint64_t Spatial_morton3D(uint32_t x, uint32_t y, uint32_t z) {
+u64 Spatial_morton3D(u32 x, u32 y, u32 z) {
     return (spreadAxisBits(x) << 2u)
         | (spreadAxisBits(y) << 1u)
         | spreadAxisBits(z);

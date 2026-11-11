@@ -2,11 +2,11 @@
 
 #include <stdint.h>
 
-#include "re/atomic/spin.h"
+#include "re/atomic/atomic.h"
 #include "nio/mem.h"
 #include "oop/type.h"
 #include "struct/map.h"
-#include "util/annotation.h"
+#include "lang/annotation.h"
 
 ;;DEFINITION
 /**
@@ -73,7 +73,7 @@ static void reactive_job(Thread *self, void *task) {
     SpinLock_lock(&s_lock);
     Map *q = queued();
     if (q != nullptr)
-        Map_remove(q, (uint64_t)(uintptr_t) box);
+        Map_remove(q, (u64)(uintptr_t) box);
     SpinLock_unlock(&s_lock);
     Reactive_drain(box);                     // observers run HERE, on the reactive thread
 }
@@ -117,7 +117,7 @@ void ReactiveThread_shutdown(void) {
 static bool queueBox(Thread *worker, Reactive *box) {
     if (worker == nullptr || box == nullptr)
         return false;
-    uint64_t key = (uint64_t)(uintptr_t) box;
+    u64 key = (u64)(uintptr_t) box;
     SpinLock_lock(&s_lock);
     Map *q = queued();
     bool already = (q != nullptr) && Map_containsKey(q, key);
@@ -162,7 +162,7 @@ void ReactiveThread_release(Reactive *box) {
     Reactive_setDelivery(box, nullptr);
     SpinLock_lock(&s_lock);
     if (s_queued != nullptr)
-        Map_remove(s_queued, (uint64_t)(uintptr_t) box);
+        Map_remove(s_queued, (u64)(uintptr_t) box);
     SpinLock_unlock(&s_lock);
 }
 
@@ -170,14 +170,14 @@ bool ReactiveThread_isQueued(const Reactive *box) {
     if (box == nullptr)
         return false;
     SpinLock_lock(&s_lock);
-    bool q = (s_queued != nullptr) && Map_containsKey(s_queued, (uint64_t)(uintptr_t) box);
+    bool q = (s_queued != nullptr) && Map_containsKey(s_queued, (u64)(uintptr_t) box);
     SpinLock_unlock(&s_lock);
     return q;
 }
 
-size_t ReactiveThread_pending(void) {
+bytes ReactiveThread_pending(void) {
     SpinLock_lock(&s_lock);
-    size_t n = (s_queued != nullptr) ? Map_size(s_queued) : 0;
+    bytes n = (s_queued != nullptr) ? Map_size(s_queued) : 0;
     SpinLock_unlock(&s_lock);
     return n;
 }

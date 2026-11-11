@@ -50,7 +50,7 @@ void ReactiveThread_release(Reactive *box);
 // True while the box is waiting in the queue (not yet drained).
 bool ReactiveThread_isQueued(const Reactive *box);
 // Boxes waiting in the shared queue.
-size_t ReactiveThread_pending(void);
+bytes ReactiveThread_pending(void);
 
 void ReactiveThread_stop(Thread *worker);
 void ReactiveThread_free(Thread *worker);   // refuses the core

@@ -25,20 +25,20 @@
 
 // Encrypt plaintextLen bytes into ciphertext and write the 16-byte tag. aad may
 // be null only when aadLen is 0; plaintext may be null only when plaintextLen is 0.
-bool ChaCha20Poly1305_encrypt(const uint8_t key[CHACHA20POLY1305_KEY_SIZE],
-                              const uint8_t nonce[CHACHA20POLY1305_NONCE_SIZE],
-                              const uint8_t *aad, size_t aadLen,
-                              const uint8_t *plaintext, size_t plaintextLen,
-                              uint8_t *ciphertext, uint8_t tag[CHACHA20POLY1305_TAG_SIZE]);
+bool ChaCha20Poly1305_encrypt(const u8 key[CHACHA20POLY1305_KEY_SIZE],
+                              const u8 nonce[CHACHA20POLY1305_NONCE_SIZE],
+                              const u8 *aad, bytes aadLen,
+                              const u8 *plaintext, bytes plaintextLen,
+                              u8 *ciphertext, u8 tag[CHACHA20POLY1305_TAG_SIZE]);
 
 // Verify the tag, then decrypt ciphertextLen bytes into plaintext. On a tag
 // mismatch the plaintext buffer is zeroed and false is returned; a forged
 // message never yields plaintext.
-bool ChaCha20Poly1305_decrypt(const uint8_t key[CHACHA20POLY1305_KEY_SIZE],
-                              const uint8_t nonce[CHACHA20POLY1305_NONCE_SIZE],
-                              const uint8_t *aad, size_t aadLen,
-                              const uint8_t *ciphertext, size_t ciphertextLen,
-                              const uint8_t tag[CHACHA20POLY1305_TAG_SIZE],
-                              uint8_t *plaintext);
+bool ChaCha20Poly1305_decrypt(const u8 key[CHACHA20POLY1305_KEY_SIZE],
+                              const u8 nonce[CHACHA20POLY1305_NONCE_SIZE],
+                              const u8 *aad, bytes aadLen,
+                              const u8 *ciphertext, bytes ciphertextLen,
+                              const u8 tag[CHACHA20POLY1305_TAG_SIZE],
+                              u8 *plaintext);
 
 #endif

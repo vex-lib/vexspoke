@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 #include "struct/collection.h"
 
 // struct/sphere_array.h — 3D Spherical Voxel Matrix evaluated via 3D Pythagorean Theorem.
@@ -15,39 +15,39 @@
 
 typedef struct SphereArray {
     Collection collection;   // Base collection header (typeId, activeCount, etc.)
-    int32_t    radius;       // Radius in voxels
-    int32_t    diameter;     // 2 * radius + 1
+    i32    radius;       // Radius in voxels
+    i32    diameter;     // 2 * radius + 1
 } SphereArray;
 
 // Allocation
-SphereArray *SphereArray_2(int32_t radius, uint32_t elementClass);
-SphereArray *SphereArray_3(int32_t radius, uint32_t elementClass, size_t stride);
+SphereArray *SphereArray_2(i32 radius, u32 elementClass);
+SphereArray *SphereArray_3(i32 radius, u32 elementClass, bytes stride);
 #define SphereArray(...) CONSTRUCTOR_DISPATCH(SphereArray, __VA_ARGS__)
 void SphereArray_free(SphereArray *self);
 
-int32_t SphereArray_radius(const SphereArray *self);
-int32_t SphereArray_diameter(const SphereArray *self);
-size_t  SphereArray_validVoxelCount(const SphereArray *self);
+i32 SphereArray_radius(const SphereArray *self);
+i32 SphereArray_diameter(const SphereArray *self);
+bytes  SphereArray_validVoxelCount(const SphereArray *self);
 
 // 3D Pythagorean containment tests
-bool SphereArray_containsGrid(const SphereArray *self, int32_t gx, int32_t gy, int32_t gz);
-bool SphereArray_containsOffset(const SphereArray *self, int32_t dx, int32_t dy, int32_t dz);
-int64_t SphereArray_distanceSquaredGrid(const SphereArray *self, int32_t gx, int32_t gy, int32_t gz);
-int64_t SphereArray_distanceSquaredOffset(int32_t dx, int32_t dy, int32_t dz);
+bool SphereArray_containsGrid(const SphereArray *self, i32 gx, i32 gy, i32 gz);
+bool SphereArray_containsOffset(const SphereArray *self, i32 dx, i32 dy, i32 dz);
+int64_t SphereArray_distanceSquaredGrid(const SphereArray *self, i32 gx, i32 gy, i32 gz);
+int64_t SphereArray_distanceSquaredOffset(i32 dx, i32 dy, i32 dz);
 
 // Voxel access by grid coordinates [0, diameter - 1] (get output first, set input last)
-bool SphereArray_getGrid(void *dest, const SphereArray *self, int32_t gx, int32_t gy, int32_t gz);
-bool SphereArray_setGrid(SphereArray *self, int32_t gx, int32_t gy, int32_t gz, const void *src);
+bool SphereArray_getGrid(void *dest, const SphereArray *self, i32 gx, i32 gy, i32 gz);
+bool SphereArray_setGrid(SphereArray *self, i32 gx, i32 gy, i32 gz, const void *src);
 
 // Voxel access by center-relative offsets [-radius, radius]
-bool SphereArray_getOffset(void *dest, const SphereArray *self, int32_t dx, int32_t dy, int32_t dz);
-bool SphereArray_setOffset(SphereArray *self, int32_t dx, int32_t dy, int32_t dz, const void *src);
+bool SphereArray_getOffset(void *dest, const SphereArray *self, i32 dx, i32 dy, i32 dz);
+bool SphereArray_setOffset(SphereArray *self, i32 dx, i32 dy, i32 dz, const void *src);
 
-uint8_t *SphereArray_slotGrid(SphereArray *self, int32_t gx, int32_t gy, int32_t gz);
-uint8_t *SphereArray_slotOffset(SphereArray *self, int32_t dx, int32_t dy, int32_t dz);
+u8 *SphereArray_slotGrid(SphereArray *self, i32 gx, i32 gy, i32 gz);
+u8 *SphereArray_slotOffset(SphereArray *self, i32 dx, i32 dy, i32 dz);
 
 // Iteration callback across all valid spherical voxels
-typedef void (*SphereArrayVoxelFn)(int32_t gx, int32_t gy, int32_t gz, int32_t dx, int32_t dy, int32_t dz, const void *voxel, void *userData);
+typedef void (*SphereArrayVoxelFn)(i32 gx, i32 gy, i32 gz, i32 dx, i32 dy, i32 dz, const void *voxel, void *userData);
 void SphereArray_forEach(const SphereArray *self, SphereArrayVoxelFn callback, void *userData);
 
 #endif

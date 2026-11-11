@@ -9,9 +9,9 @@
 #include <stdatomic.h>
 #include <string.h>
 
-#include "re/atomic/spin.h"
+#include "re/atomic/atomic.h"
 #include "struct/exhaustion.h"
-#include "util/annotation.h"
+#include "lang/annotation.h"
 #include "nio/mem.h"
 #include "oop/stride.h"
 #include "oop/type.h"
@@ -63,16 +63,16 @@
  *   ChunkedList {
  *     Collection collection;     // gate-maintained mirror; quiesced reads only under concurrency
  *     _Atomic(void*) directory;  // current root generation (COW; generations never freed mid-run)
- *     _Atomic uint32_t chunkCount; // published leaves (lock-free reader bound)
- *     _Atomic uint32_t committed;  // published rows (lock-free reader bound)
- *     uint32_t rowsPerChunk;     // rows per leaf (power of two, >= 1; geometry)
- *     uint32_t rowShift;         // log2(rowsPerChunk)
- *     uint32_t rowMask;          // rowsPerChunk - 1
- *     uint32_t chunkBytes;       // byte budget of one leaf (>= 16)
- *     uint32_t levels;           // pointer hops root..leaf (>= 2)
- *     uint32_t *radices;         // [levels] fan-out per depth; [0] = initial root slots
- *     uint32_t *shifts;          // [levels] bit offset of each depth's digit
- *     uint32_t *masks;           // [levels] radix-1 per depth
+ *     _Atomic u32 chunkCount; // published leaves (lock-free reader bound)
+ *     _Atomic u32 committed;  // published rows (lock-free reader bound)
+ *     u32 rowsPerChunk;     // rows per leaf (power of two, >= 1; geometry)
+ *     u32 rowShift;         // log2(rowsPerChunk)
+ *     u32 rowMask;          // rowsPerChunk - 1
+ *     u32 chunkBytes;       // byte budget of one leaf (>= 16)
+ *     u32 levels;           // pointer hops root..leaf (>= 2)
+ *     u32 *radices;         // [levels] fan-out per depth; [0] = initial root slots
+ *     u32 *shifts;          // [levels] bit offset of each depth's digit
+ *     u32 *masks;           // [levels] radix-1 per depth
  *     SpinLock lock;             // claim + growth + commit; try-locked, 100ms bounded
  *   }
  *
@@ -80,9 +80,9 @@
  * ----------------------------------------------------------------------------
  *   ChunkDir {                // one root generation (COW snapshot unit)
  *     struct ChunkDir *prev;  // previous generation, freed at teardown
- *     uint32_t capacity;      // depth-1 slots in THIS generation
- *     uint32_t pad;           // explicit padding so slots[] is 8-byte aligned
- *     _Atomic(uint8_t*) slots[]; // depth-1 objects (nodes or leaves)
+ *     u32 capacity;      // depth-1 slots in THIS generation
+ *     u32 pad;           // explicit padding so slots[] is 8-byte aligned
+ *     _Atomic(u8*) slots[]; // depth-1 objects (nodes or leaves)
  *   }
  *   pow2Rows(stride, chunkBytes)      // largest power-of-two rows for a budget
  *   pow2Floor(n)                      // largest power of two <= n (min 1)
@@ -146,49 +146,49 @@
 
 typedef struct ChunkDir {
     struct ChunkDir *prev; // previous generation (freed last at teardown)
-    uint32_t capacity;     // depth-1 slots in THIS generation
-    uint32_t pad;          // explicit padding so slots[] is 8-byte aligned
-    _Atomic(uint8_t*) slots[]; // depth-1 objects (internal nodes or leaves)
+    u32 capacity;     // depth-1 slots in THIS generation
+    u32 pad;          // explicit padding so slots[] is 8-byte aligned
+    _Atomic(u8*) slots[]; // depth-1 objects (internal nodes or leaves)
 } ChunkDir;
 
 // Largest power of two rows that fits a byte budget (min 1). The loop test
 // divides instead of shifting so it cannot wrap on large budgets.
-static uint32_t pow2Rows(size_t stride, uint32_t chunkBytes) {
+static u32 pow2Rows(bytes stride, u32 chunkBytes) {
     if (stride == 0u)
         return 1u;
-    uint32_t rows = (uint32_t)(chunkBytes / stride);
+    u32 rows = (u32)(chunkBytes / stride);
     if (rows == 0u)
         return 1u;
-    uint32_t p = 1u;
+    u32 p = 1u;
     while (p <= (rows >> 1))
         p <<= 1u;
     return p;
 }
 
-static uint32_t shiftOf(uint32_t rows) {
+static u32 shiftOf(u32 rows) {
     if (rows == 0u)
         return 0u;
-    uint32_t shift = 0;
+    u32 shift = 0;
     while ((1u << shift) < rows)
         shift++;
     return shift;
 }
 
 // Largest power of two <= n (min 1).
-static uint32_t pow2Floor(uint32_t n) {
+static u32 pow2Floor(u32 n) {
     if (n <= 1u)
         return 1u;
-    uint32_t p = 1u;
+    u32 p = 1u;
     while (p <= (n >> 1))
         p <<= 1u;
     return p;
 }
 
 // Default radix-form leaf: one page of rows.
-static uint32_t pageLeafRows(size_t stride) {
+static u32 pageLeafRows(bytes stride) {
     if (stride == 0u)
         stride = 1u;
-    return pow2Floor((uint32_t)(VEX_CHUNKED_PAGE_BYTES / stride));
+    return pow2Floor((u32)(VEX_CHUNKED_PAGE_BYTES / stride));
 }
 
 static ChunkDir *directoryOf(const ChunkedList *self) {
@@ -196,26 +196,26 @@ static ChunkDir *directoryOf(const ChunkedList *self) {
 }
 
 // Shift/mask digit at a depth. Depth 0 (the root) is unmasked: it is growable.
-static inline uint32_t digitOf(const ChunkedList *self, uint32_t index, uint32_t depth) {
-    uint32_t v = index >> (*self).shifts[depth];
+static inline u32 digitOf(const ChunkedList *self, u32 index, u32 depth) {
+    u32 v = index >> (*self).shifts[depth];
     return depth == 0u ? v : (v & (*self).masks[depth]);
 }
 
 // Lock-free leaf resolve by row index (no offset): null when not published yet.
-static uint8_t *leafAtRow(const ChunkedList *self, uint32_t index) {
+static u8 *leafAtRow(const ChunkedList *self, u32 index) {
     ChunkDir *dir = directoryOf(self);
     if (!dir)
         return nullptr;
-    uint32_t d0 = digitOf(self, index, 0u);
+    u32 d0 = digitOf(self, index, 0u);
     if (d0 >= (*dir).capacity)
         return nullptr;
-    uint8_t *node = atomic_load_explicit(&(*dir).slots[d0], memory_order_acquire);
+    u8 *node = atomic_load_explicit(&(*dir).slots[d0], memory_order_acquire);
     if (!node)
         return nullptr;
-    uint32_t levels = (*self).levels;
-    for (uint32_t depth = 1u; depth < levels - 1u; depth++) {
-        _Atomic(uint8_t*) *children = (_Atomic(uint8_t*) *) node;
-        uint32_t digit = digitOf(self, index, depth);
+    u32 levels = (*self).levels;
+    for (u32 depth = 1u; depth < levels - 1u; depth++) {
+        _Atomic(u8*) *children = (_Atomic(u8*) *) node;
+        u32 digit = digitOf(self, index, depth);
         node = atomic_load_explicit(&children[digit], memory_order_acquire);
         if (!node)
             return nullptr;
@@ -226,39 +226,39 @@ static uint8_t *leafAtRow(const ChunkedList *self, uint32_t index) {
 // Lock-free stable row resolve: null when the row is not published yet.
 // Callers bound index by the committed count first; the committed store lands
 // only after the leaf publish, so index < committed implies non-null here.
-static uint8_t *rowAt(const ChunkedList *self, uint32_t index) {
-    uint8_t *leaf = leafAtRow(self, index);
+static u8 *rowAt(const ChunkedList *self, u32 index) {
+    u8 *leaf = leafAtRow(self, index);
     if (!leaf)
         return nullptr;
     const Collection *coll = &(*self).collection;
-    size_t stride = (*coll).stride;
-    return leaf + (size_t)(index & (*self).rowMask) * stride;
+    bytes stride = (*coll).stride;
+    return leaf + (bytes)(index & (*self).rowMask) * stride;
 }
 
 // Byte offset of a leaf's tail link: the row Bytes rounded UP to 8 Bytes so the
 // link is naturally aligned. The link is written once (when the next leaf is
 // created) and read with acquire/release.
-static size_t leafLinkOffset(const ChunkedList *self) {
+static bytes leafLinkOffset(const ChunkedList *self) {
     const Collection *coll = &(*self).collection;
-    size_t rowsBytes = (size_t)(*self).rowsPerChunk * (size_t)(*coll).stride;
-    return (rowsBytes + (size_t)(VEX_CHUNKED_LINK_BYTES - 1u)) & ~(size_t)(VEX_CHUNKED_LINK_BYTES - 1u);
+    bytes rowsBytes = (bytes)(*self).rowsPerChunk * (bytes)(*coll).stride;
+    return (rowsBytes + (bytes)(VEX_CHUNKED_LINK_BYTES - 1u)) & ~(bytes)(VEX_CHUNKED_LINK_BYTES - 1u);
 }
 
 // Allocate + zero one node at `depth`: an internal pointer array, or a leaf of
 // rows at the deepest depth (plus the tail link).
-static uint8_t *nodeAlloc(const ChunkedList *self, uint32_t depth) {
-    uint32_t radix = (*self).radices[depth];
+static u8 *nodeAlloc(const ChunkedList *self, u32 depth) {
+    u32 radix = (*self).radices[depth];
     if (depth == (*self).levels - 1u) {
-        size_t Bytes = leafLinkOffset(self) + (size_t)VEX_CHUNKED_LINK_BYTES;
+        bytes Bytes = leafLinkOffset(self) + (bytes)VEX_CHUNKED_LINK_BYTES;
         const Collection *coll = &(*self).collection;
-        uint64_t chunkType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, (*coll).elementClass);
-        uint8_t *leaf = (uint8_t*) Memory_alloc(chunkType, Bytes);
+        u64 chunkType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, (*coll).elementClass);
+        u8 *leaf = (u8*) Memory_alloc(chunkType, Bytes);
         if (leaf)
             memset(leaf, 0, Bytes);
         return leaf;
     }
-    size_t Bytes = (size_t)radix * sizeof(_Atomic(uint8_t*));
-    uint8_t *node = (uint8_t*) Memory_alloc(TYPE_CHUNKED_LIST, Bytes);
+    bytes Bytes = (bytes)radix * sizeof(_Atomic(u8*));
+    u8 *node = (u8*) Memory_alloc(TYPE_CHUNKED_LIST, Bytes);
     if (node)
         memset(node, 0, Bytes);
     return node;
@@ -269,11 +269,11 @@ static uint8_t *nodeAlloc(const ChunkedList *self, uint32_t depth) {
 // held by the caller: exactly one grower, so chunkCount only moves here.
 static bool dirGrow(ChunkedList *self) {
     ChunkDir *old = directoryOf(self);
-    uint32_t oldCap = old ? (*old).capacity : 0u;
+    u32 oldCap = old ? (*old).capacity : 0u;
     if (oldCap > (UINT32_MAX / 2u))
         return false;
-    uint32_t newCap = oldCap == 0u ? VEX_CHUNKED_DIR_INIT : oldCap * 2u;
-    size_t Bytes = sizeof(ChunkDir) + (size_t)newCap * sizeof(_Atomic(uint8_t*));
+    u32 newCap = oldCap == 0u ? VEX_CHUNKED_DIR_INIT : oldCap * 2u;
+    bytes Bytes = sizeof(ChunkDir) + (bytes)newCap * sizeof(_Atomic(u8*));
     ChunkDir *next = (ChunkDir*) Memory_alloc(TYPE_CHUNKED_LIST, Bytes);
     if (!next) {
         // Loud, counted refusal through the embedded Collection mirror.
@@ -284,10 +284,10 @@ static bool dirGrow(ChunkedList *self) {
     (*next).prev = old;
     (*next).capacity = newCap;
     (*next).pad = 0u;
-    memset(&(*next).slots[0], 0, (size_t)newCap * sizeof(_Atomic(uint8_t*)));
+    memset(&(*next).slots[0], 0, (bytes)newCap * sizeof(_Atomic(u8*)));
 
-    uint32_t have = old ? (*old).capacity : 0u;
-    for (uint32_t i = 0; i < have; i++)
+    u32 have = old ? (*old).capacity : 0u;
+    for (u32 i = 0; i < have; i++)
         atomic_store_explicit(&(*next).slots[i], atomic_load_explicit(&(*old).slots[i], memory_order_relaxed), memory_order_relaxed);
 
     atomic_store_explicit(&(*self).directory, next, memory_order_release);
@@ -295,7 +295,7 @@ static bool dirGrow(ChunkedList *self) {
 }
 
 // Grow the root until depth-1 slot `slot` exists. Gate held.
-static bool ensureRootSlotLocked(ChunkedList *self, uint32_t slot) {
+static bool ensureRootSlotLocked(ChunkedList *self, u32 slot) {
     ChunkDir *dir = directoryOf(self);
     while (!dir || slot >= (*dir).capacity) {
         if (!dirGrow(self))
@@ -310,46 +310,46 @@ static bool ensureRootSlotLocked(ChunkedList *self, uint32_t slot) {
 // Create + publish one leaf, walking (and creating) its internal path. Gate
 // held by the caller. Rows are zeroed before publish (acquire/release handoff).
 static bool chunkAddLocked(ChunkedList *self) {
-    uint32_t leafIndex = atomic_load(&(*self).chunkCount);
+    u32 leafIndex = atomic_load(&(*self).chunkCount);
     if (leafIndex == UINT32_MAX)
         return false;
-    uint32_t index = leafIndex << (*self).rowShift;
-    uint32_t levels = (*self).levels;
+    u32 index = leafIndex << (*self).rowShift;
+    u32 levels = (*self).levels;
 
-    uint32_t d0 = digitOf(self, index, 0u);
+    u32 d0 = digitOf(self, index, 0u);
     if (!ensureRootSlotLocked(self, d0))
         return false;
     ChunkDir *dir = directoryOf(self);
     if (!dir)
         return false;
 
-    _Atomic(uint8_t*) *slot = &(*dir).slots[d0];
-    uint8_t *newLeaf = nullptr;
-    for (uint32_t depth = 1u; depth < levels; depth++) {
+    _Atomic(u8*) *slot = &(*dir).slots[d0];
+    u8 *newLeaf = nullptr;
+    for (u32 depth = 1u; depth < levels; depth++) {
         if (depth == levels - 1u) {
-            uint8_t *leaf = nodeAlloc(self, depth);
+            u8 *leaf = nodeAlloc(self, depth);
             if (!leaf)
                 return false;
             atomic_store_explicit(slot, leaf, memory_order_release);
             newLeaf = leaf;
             break;
         }
-        uint8_t *node = atomic_load_explicit(slot, memory_order_acquire);
+        u8 *node = atomic_load_explicit(slot, memory_order_acquire);
         if (!node) {
             node = nodeAlloc(self, depth);
             if (!node)
                 return false;
             atomic_store_explicit(slot, node, memory_order_release);
         }
-        _Atomic(uint8_t*) *children = (_Atomic(uint8_t*) *) node;
-        uint32_t digit = digitOf(self, index, depth);
+        _Atomic(u8*) *children = (_Atomic(u8*) *) node;
+        u32 digit = digitOf(self, index, depth);
         slot = &children[digit];
     }
 
     // Extend the chunk -> chunk chain: the previous leaf's tail link points at
     // the new leaf (published release, after the new leaf is fully zeroed).
     if (newLeaf && leafIndex > 0u) {
-        uint8_t *prev = leafAtRow(self, (leafIndex - 1u) << (*self).rowShift);
+        u8 *prev = leafAtRow(self, (leafIndex - 1u) << (*self).rowShift);
         if (prev) {
             _Atomic(void*) *link = (_Atomic(void*) *) (prev + leafLinkOffset(self));
             atomic_store_explicit(link, newLeaf, memory_order_release);
@@ -357,14 +357,14 @@ static bool chunkAddLocked(ChunkedList *self) {
     }
 
     atomic_store(&(*self).chunkCount, leafIndex + 1u);
-    uint64_t cap = ((uint64_t)leafIndex + 1u) * (uint64_t)(*self).rowsPerChunk;
+    u64 cap = ((u64)leafIndex + 1u) * (u64)(*self).rowsPerChunk;
     Collection *c = (Collection*) self;
-    (*c).capacity = cap > (uint64_t)UINT32_MAX ? UINT32_MAX : (uint32_t)cap;
+    (*c).capacity = cap > (u64)UINT32_MAX ? UINT32_MAX : (u32)cap;
     return true;
 }
 
 // Growth gate body: publish leaves until `needChunks` exist. Gate held.
-static bool ensureChunksLocked(ChunkedList *self, uint32_t needChunks) {
+static bool ensureChunksLocked(ChunkedList *self, u32 needChunks) {
     while (atomic_load(&(*self).chunkCount) < needChunks)
         if (!chunkAddLocked(self))
             return false;
@@ -372,7 +372,7 @@ static bool ensureChunksLocked(ChunkedList *self, uint32_t needChunks) {
 }
 
 // Growth gate: bounded 100ms try-lock, drop-degrade false on contention or OOM.
-static bool ensureChunks(ChunkedList *self, uint32_t needChunks) {
+static bool ensureChunks(ChunkedList *self, u32 needChunks) {
     if (needChunks <= atomic_load(&(*self).chunkCount))
         return true;
     if (!SpinLock_tryLockTimeout(&(*self).lock, VEX_CHUNKED_LOCK_NANOS))
@@ -386,17 +386,17 @@ static bool ensureChunks(ChunkedList *self, uint32_t needChunks) {
 
 // Recompute the shift/mask tables from radices (geometry change, gate held).
 static void recomputeGeometry(ChunkedList *self) {
-    uint32_t levels = (*self).levels;
-    uint32_t *radices = (*self).radices;
-    uint32_t *shifts = (*self).shifts;
-    uint32_t *masks = (*self).masks;
-    uint32_t rows = radices[levels - 1u];
+    u32 levels = (*self).levels;
+    u32 *radices = (*self).radices;
+    u32 *shifts = (*self).shifts;
+    u32 *masks = (*self).masks;
+    u32 rows = radices[levels - 1u];
     (*self).rowsPerChunk = rows;
     (*self).rowShift = shiftOf(rows);
     (*self).rowMask = rows - 1u;
     shifts[levels - 1u] = 0u;
     masks[levels - 1u] = rows - 1u;
-    for (uint32_t d = levels - 1u; d > 0u; d--) {
+    for (u32 d = levels - 1u; d > 0u; d--) {
         shifts[d - 1u] = shifts[d] + shiftOf(radices[d]);
         masks[d - 1u] = (d - 1u) == 0u ? 0u : (radices[d - 1u] - 1u);
     }
@@ -404,14 +404,14 @@ static void recomputeGeometry(ChunkedList *self) {
 
 // Shared builder: allocate the struct + geometry tables, zero the counters.
 // `chunkBytes` 0 derives the leaf byte size from rows*stride.
-static ChunkedList *buildPaged(uint32_t elementClass, size_t stride, const uint32_t *radixIn, uint32_t levels, uint32_t chunkBytes) {
+static ChunkedList *buildPaged(u32 elementClass, bytes stride, const u32 *radixIn, u32 levels, u32 chunkBytes) {
     if (levels < 2u)
         levels = 2u;
     if (stride == 0u)
         stride = Stride_get(elementClass);
     if (stride == 0u)
         stride = sizeof(void*);
-    if (stride > (size_t)UINT32_MAX)
+    if (stride > (bytes)UINT32_MAX)
         return nullptr;
 
     ChunkedList *self = (ChunkedList*) Memory_alloc(TYPE_CHUNKED_LIST, sizeof(ChunkedList));
@@ -421,19 +421,19 @@ static ChunkedList *buildPaged(uint32_t elementClass, size_t stride, const uint3
     }
     memset(self, 0, sizeof(*self));
 
-    uint32_t *radices = (uint32_t*) Memory_alloc(TYPE_CHUNKED_LIST, (size_t)levels * sizeof(uint32_t));
-    uint32_t *shifts = (uint32_t*) Memory_alloc(TYPE_CHUNKED_LIST, (size_t)levels * sizeof(uint32_t));
-    uint32_t *masks = (uint32_t*) Memory_alloc(TYPE_CHUNKED_LIST, (size_t)levels * sizeof(uint32_t));
+    u32 *radices = (u32*) Memory_alloc(TYPE_CHUNKED_LIST, (bytes)levels * sizeof(u32));
+    u32 *shifts = (u32*) Memory_alloc(TYPE_CHUNKED_LIST, (bytes)levels * sizeof(u32));
+    u32 *masks = (u32*) Memory_alloc(TYPE_CHUNKED_LIST, (bytes)levels * sizeof(u32));
     if (!radices || !shifts || !masks) {
-        (void) Struct_reportConstructionExhaustion("chunked_list", (size_t)levels * sizeof(uint32_t) * 3u);
+        (void) Struct_reportConstructionExhaustion("chunked_list", (bytes)levels * sizeof(u32) * 3u);
         Memory_free(radices);
         Memory_free(shifts);
         Memory_free(masks);
         Memory_free(self);
         return nullptr;
     }
-    for (uint32_t d = 0u; d < levels; d++) {
-        uint32_t r = radixIn[d];
+    for (u32 d = 0u; d < levels; d++) {
+        u32 r = radixIn[d];
         radices[d] = r == 0u ? 1u : pow2Floor(r);
     }
     (*self).levels = levels;
@@ -443,8 +443,8 @@ static ChunkedList *buildPaged(uint32_t elementClass, size_t stride, const uint3
     recomputeGeometry(self);
 
     if (chunkBytes == 0u) {
-        uint64_t b = (uint64_t)radices[levels - 1u] * (uint64_t)stride;
-        chunkBytes = b > (uint64_t)UINT32_MAX ? UINT32_MAX : (uint32_t)b;
+        u64 b = (u64)radices[levels - 1u] * (u64)stride;
+        chunkBytes = b > (u64)UINT32_MAX ? UINT32_MAX : (u32)b;
     }
     if (chunkBytes < 16u)
         chunkBytes = 16u;
@@ -454,7 +454,7 @@ static ChunkedList *buildPaged(uint32_t elementClass, size_t stride, const uint3
     (*c).typeId = TYPE_CHUNKED_LIST;
     (*c).activeCount = 0;
     (*c).elementClass = elementClass;
-    (*c).stride = (uint32_t)stride;
+    (*c).stride = (u32)stride;
     (*c).capacity = 0;
     (*c).head = 0;
     (*c).exhaustionCount = 0;
@@ -469,57 +469,57 @@ static ChunkedList *buildPaged(uint32_t elementClass, size_t stride, const uint3
 }
 
 // The 2-level byte-budget form (the historical shape).
-ChunkedList *ChunkedList_3(uint32_t elementClass, uint32_t stride, uint32_t chunkBytes) {
+ChunkedList *ChunkedList_3(u32 elementClass, u32 stride, u32 chunkBytes) {
     if (stride == 0u)
         stride = Stride_get(elementClass);
     if (stride == 0u)
         stride = sizeof(void*);
-    if (stride > (size_t)UINT32_MAX)
+    if (stride > (bytes)UINT32_MAX)
         return nullptr;
     if (chunkBytes < 16u)
         chunkBytes = 16u;
-    uint32_t rows = pow2Rows(stride, chunkBytes);
-    uint32_t radixIn[2] = { VEX_CHUNKED_DIR_INIT, rows };
+    u32 rows = pow2Rows(stride, chunkBytes);
+    u32 radixIn[2] = { VEX_CHUNKED_DIR_INIT, rows };
     return buildPaged(elementClass, stride, radixIn, 2u, chunkBytes);
 }
 
 // Recursive teardown: free a depth-`depth` object and everything under it.
-static void freeSubtree(uint8_t *node, const ChunkedList *self, uint32_t depth) {
+static void freeSubtree(u8 *node, const ChunkedList *self, u32 depth) {
     if (!node)
         return;
     if (depth == (*self).levels - 1u) {
         Memory_free(node);
         return;
     }
-    _Atomic(uint8_t*) *children = (_Atomic(uint8_t*) *) node;
-    uint32_t radix = (*self).radices[depth];
-    for (uint32_t i = 0u; i < radix; i++)
+    _Atomic(u8*) *children = (_Atomic(u8*) *) node;
+    u32 radix = (*self).radices[depth];
+    for (u32 i = 0u; i < radix; i++)
         freeSubtree(atomic_load_explicit(&children[i], memory_order_relaxed), self, depth + 1u);
     Memory_free(node);
 }
 
 // CONSTRUCTORS
 
-ChunkedList *ChunkedList_1(uint32_t elementClass) {
+ChunkedList *ChunkedList_1(u32 elementClass) {
     return ChunkedList_3(elementClass, Stride_get(elementClass), VEX_CHUNKED_BYTES_DEFAULT);
 }
 
-ChunkedList *ChunkedList_2(uint32_t elementClass, uint32_t chunkBytes) {
+ChunkedList *ChunkedList_2(u32 elementClass, u32 chunkBytes) {
     return ChunkedList_3(elementClass, Stride_get(elementClass), chunkBytes);
 }
 
-ChunkedList *ChunkedList_paged(uint32_t elementClass, uint32_t stride, const int32_t *radices, size_t count) {
+ChunkedList *ChunkedList_paged(u32 elementClass, u32 stride, const i32 *radices, bytes count) {
     if (stride == 0u)
-        stride = (uint32_t) Stride_get(elementClass);
+        stride = (u32) Stride_get(elementClass);
     if (stride == 0u)
-        stride = (uint32_t) sizeof(void*);
+        stride = (u32) sizeof(void*);
 
-    size_t cap = count > 3u ? count : 3u;
-    uint32_t *shape = (uint32_t*) Memory_alloc(TYPE_CHUNKED_LIST, cap * sizeof(uint32_t));
+    bytes cap = count > 3u ? count : 3u;
+    u32 *shape = (u32*) Memory_alloc(TYPE_CHUNKED_LIST, cap * sizeof(u32));
     if (!shape)
         return nullptr;
 
-    uint32_t levels = 2u;
+    u32 levels = 2u;
     bool preset = count >= 1u && radices[0] < 0;
     if (preset) {
         // A *_LAYER_DEFAULT sentinel selects the shape; explicit numbers after
@@ -533,23 +533,23 @@ ChunkedList *ChunkedList_paged(uint32_t elementClass, uint32_t stride, const int
             return nullptr;
         }
         shape[0] = VEX_CHUNKED_DIR_INIT;
-        for (uint32_t d = 1u; d + 1u < levels; d++)
+        for (u32 d = 1u; d + 1u < levels; d++)
             shape[d] = VEX_CHUNKED_INTERNAL_RADIX_DEFAULT;
         shape[levels - 1u] = pageLeafRows(stride);
-        for (size_t k = 1u; k < count; k++) {
-            if (radices[k] > 0 && k < (size_t)levels)
-                shape[k] = (uint32_t) radices[k];
+        for (bytes k = 1u; k < count; k++) {
+            if (radices[k] > 0 && k < (bytes)levels)
+                shape[k] = (u32) radices[k];
         }
     } else {
-        levels = count < 2u ? 2u : (uint32_t) count;
+        levels = count < 2u ? 2u : (u32) count;
         if (levels > cap) {
             Memory_free(shape);
             return nullptr;
         }
-        for (uint32_t d = 0u; d < levels; d++) {
-            int32_t v = d < (uint32_t) count ? radices[d] : 0;
+        for (u32 d = 0u; d < levels; d++) {
+            i32 v = d < (u32) count ? radices[d] : 0;
             if (v > 0)
-                shape[d] = (uint32_t) v;
+                shape[d] = (u32) v;
             else
                 shape[d] = d == 0u ? VEX_CHUNKED_DIR_INIT : 1u;
         }
@@ -567,7 +567,7 @@ void ChunkedList_free(ChunkedList *self) {
         return;
     ChunkDir *dir = directoryOf(self);
     if (dir) {
-        for (uint32_t i = 0u; i < (*dir).capacity; i++)
+        for (u32 i = 0u; i < (*dir).capacity; i++)
             freeSubtree(atomic_load_explicit(&(*dir).slots[i], memory_order_relaxed), self, 1u);
     }
     while (dir) {
@@ -581,16 +581,16 @@ void ChunkedList_free(ChunkedList *self) {
     Memory_free(self);
 }
 
-uint8_t *ChunkedList_addSlot(ChunkedList *self) {
+u8 *ChunkedList_addSlot(ChunkedList *self) {
     if (!self)
         return nullptr;
     if (!SpinLock_tryLockTimeout(&(*self).lock, VEX_CHUNKED_LOCK_NANOS))
         return nullptr;
 
-    uint8_t *row = nullptr;
-    uint32_t index = atomic_load(&(*self).committed);
+    u8 *row = nullptr;
+    u32 index = atomic_load(&(*self).committed);
     if (index != UINT32_MAX) {
-        uint32_t needChunks = (index >> (*self).rowShift) + 1u;
+        u32 needChunks = (index >> (*self).rowShift) + 1u;
         if (ensureChunksLocked(self, needChunks)) {
             row = rowAt(self, index);
             if (row) {
@@ -606,14 +606,14 @@ uint8_t *ChunkedList_addSlot(ChunkedList *self) {
     return row;
 }
 
-bool ChunkedList_reserve(ChunkedList *self, uint32_t rows) {
+bool ChunkedList_reserve(ChunkedList *self, u32 rows) {
     if (!self)
         return false;
-    uint32_t needChunks = (uint32_t)(((uint64_t)rows + (*self).rowsPerChunk - 1u) >> (*self).rowShift);
+    u32 needChunks = (u32)(((u64)rows + (*self).rowsPerChunk - 1u) >> (*self).rowShift);
     return ensureChunks(self, needChunks);
 }
 
-bool ChunkedList_packInto(const ChunkedList *self, uint8_t *dest, size_t destCap, uint32_t *outRows, bool *outTruncated) {
+bool ChunkedList_packInto(const ChunkedList *self, u8 *dest, bytes destCap, u32 *outRows, bool *outTruncated) {
     if (outRows)
         *outRows = 0u;
     if (outTruncated)
@@ -621,16 +621,16 @@ bool ChunkedList_packInto(const ChunkedList *self, uint8_t *dest, size_t destCap
     if (!self || !dest)
         return false;
 
-    uint32_t rows = atomic_load(&(*self).committed);
+    u32 rows = atomic_load(&(*self).committed);
     const Collection *coll = &(*self).collection;
-    size_t stride = (*coll).stride;
-    size_t fit = stride == 0 ? 0 : destCap / stride;
-    bool truncated = (size_t)rows > fit;
-    uint32_t copy = truncated ? (uint32_t)fit : rows;
+    bytes stride = (*coll).stride;
+    bytes fit = stride == 0 ? 0 : destCap / stride;
+    bool truncated = (bytes)rows > fit;
+    u32 copy = truncated ? (u32)fit : rows;
 
-    uint8_t *out = dest;
-    for (uint32_t i = 0; i < copy; i++) {
-        uint8_t *row = rowAt(self, i);
+    u8 *out = dest;
+    for (u32 i = 0; i < copy; i++) {
+        u8 *row = rowAt(self, i);
         if (!row) {
             copy = i;
             truncated = true;
@@ -647,7 +647,7 @@ bool ChunkedList_packInto(const ChunkedList *self, uint8_t *dest, size_t destCap
     return !truncated;
 }
 
-uint8_t *ChunkedList_slot(const ChunkedList *self, uint32_t index) {
+u8 *ChunkedList_slot(const ChunkedList *self, u32 index) {
     if (!self)
         return nullptr;
     if (index >= atomic_load(&(*self).committed))
@@ -655,7 +655,7 @@ uint8_t *ChunkedList_slot(const ChunkedList *self, uint32_t index) {
     return rowAt(self, index);
 }
 
-uint8_t *ChunkedList_getChunk(const ChunkedList *self, uint32_t chunkIndex) {
+u8 *ChunkedList_getChunk(const ChunkedList *self, u32 chunkIndex) {
     if (!self)
         return nullptr;
     if (chunkIndex > (UINT32_MAX >> (*self).rowShift))
@@ -663,18 +663,18 @@ uint8_t *ChunkedList_getChunk(const ChunkedList *self, uint32_t chunkIndex) {
     return leafAtRow(self, chunkIndex << (*self).rowShift);
 }
 
-uint8_t *ChunkedList_nextChunk(const ChunkedList *self, const uint8_t *chunk) {
+u8 *ChunkedList_nextChunk(const ChunkedList *self, const u8 *chunk) {
     if (!self || !chunk)
         return nullptr;
     const _Atomic(void*) *link = (const _Atomic(void*) *) (chunk + leafLinkOffset(self));
-    return (uint8_t*) atomic_load_explicit(link, memory_order_acquire);
+    return (u8*) atomic_load_explicit(link, memory_order_acquire);
 }
 
 void ChunkedList_forEachChunk(const ChunkedList *self, ChunkedListChunkFn fn, void *userdata) {
     if (!self || !fn)
         return;
-    uint8_t *chunk = ChunkedList_getChunk(self, 0u);
-    uint32_t index = 0u;
+    u8 *chunk = ChunkedList_getChunk(self, 0u);
+    u32 index = 0u;
     while (chunk != nullptr) {
         fn(chunk, index, userdata);
         chunk = ChunkedList_nextChunk(self, chunk);
@@ -684,7 +684,7 @@ void ChunkedList_forEachChunk(const ChunkedList *self, ChunkedListChunkFn fn, vo
 
 // SETTERS
 
-void ChunkedList_setChunkBytes(ChunkedList *self, uint32_t chunkBytes) {
+void ChunkedList_setChunkBytes(ChunkedList *self, u32 chunkBytes) {
     if (!self)
         return;
     if (!SpinLock_tryLockTimeout(&(*self).lock, VEX_CHUNKED_LOCK_NANOS))
@@ -693,7 +693,7 @@ void ChunkedList_setChunkBytes(ChunkedList *self, uint32_t chunkBytes) {
         if (chunkBytes < 16u)
             chunkBytes = 16u;
         const Collection *coll = &(*self).collection;
-        uint32_t rows = pow2Rows((size_t)(*coll).stride, chunkBytes);
+        u32 rows = pow2Rows((bytes)(*coll).stride, chunkBytes);
         (*self).chunkBytes = chunkBytes;
         (*self).radices[(*self).levels - 1u] = rows;
         recomputeGeometry(self);
@@ -703,23 +703,23 @@ void ChunkedList_setChunkBytes(ChunkedList *self, uint32_t chunkBytes) {
 
 // GETTERS
 
-uint32_t ChunkedList_size(const ChunkedList *self) {
+u32 ChunkedList_size(const ChunkedList *self) {
     if (!self)
         return 0u;
     return atomic_load(&(*self).committed);
 }
 
-uint32_t ChunkedList_length(const ChunkedList *self) {
+u32 ChunkedList_length(const ChunkedList *self) {
     return ChunkedList_size(self);
 }
 
-uint32_t ChunkedList_capacity(const ChunkedList *self) {
+u32 ChunkedList_capacity(const ChunkedList *self) {
     if (!self)
         return 0u;
-    uint64_t cap = (uint64_t)atomic_load(&(*self).chunkCount) * (uint64_t)(*self).rowsPerChunk;
-    if (cap > (uint64_t)UINT32_MAX)
+    u64 cap = (u64)atomic_load(&(*self).chunkCount) * (u64)(*self).rowsPerChunk;
+    if (cap > (u64)UINT32_MAX)
         return UINT32_MAX;
-    return (uint32_t)cap;
+    return (u32)cap;
 }
 
 bool ChunkedList_isEmpty(const ChunkedList *self) {
@@ -729,36 +729,36 @@ bool ChunkedList_isEmpty(const ChunkedList *self) {
 }
 
 ;;TEST
-uint64_t ChunkedList_exhaustionCount(const ChunkedList *self) {
+u64 ChunkedList_exhaustionCount(const ChunkedList *self) {
     return self ? Collection_exhaustionCount(&(*self).collection) : 0;
 }
 
-uint32_t ChunkedList_elementClassId(const ChunkedList *self) {
+u32 ChunkedList_elementClassId(const ChunkedList *self) {
     if (self == nullptr) return 0u;
     const Collection *coll = &(*self).collection;
     return (*coll).elementClass;
 }
 
-uint32_t ChunkedList_stride(const ChunkedList *self) {
+u32 ChunkedList_stride(const ChunkedList *self) {
     if (self == nullptr) return 0u;
     const Collection *coll = &(*self).collection;
     return (*coll).stride;
 }
 
-uint32_t ChunkedList_getChunkCount(const ChunkedList *self) {
+u32 ChunkedList_getChunkCount(const ChunkedList *self) {
     if (!self)
         return 0u;
     return atomic_load(&(*self).chunkCount);
 }
 
-uint32_t ChunkedList_getRowsPerChunk(const ChunkedList *self) {
+u32 ChunkedList_getRowsPerChunk(const ChunkedList *self) {
     return self ? (*self).rowsPerChunk : 0u;
 }
 
-uint32_t ChunkedList_getChunkBytes(const ChunkedList *self) {
+u32 ChunkedList_getChunkBytes(const ChunkedList *self) {
     return self ? (*self).chunkBytes : 0u;
 }
 
-uint32_t ChunkedList_getLevels(const ChunkedList *self) {
+u32 ChunkedList_getLevels(const ChunkedList *self) {
     return self ? (*self).levels : 0u;
 }

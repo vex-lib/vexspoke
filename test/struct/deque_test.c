@@ -45,7 +45,7 @@ int main(void) {
     CHECK(Deque_peekFirst(d) == 0);
 
     // Volume from the last end, then drain from the front.
-    for (uint64_t i = 0; i < 1000000; i++)
+    for (u64 i = 0; i < 1000000; i++)
         Deque_addLast(d, i);
     CHECK(Deque_size(d) == 1000000);
     CHECK(Deque_peekFirst(d) == 0);

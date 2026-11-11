@@ -35,8 +35,8 @@
  * ----------------------------------------------------------------------------
  *   Struct {
  *     char name[24];     // folded name (atom grammar)
- *     uint32_t count;    // live fields (== row count)
- *     uint32_t size;     // entity row byte stride (0 = unknown)
+ *     u32 count;    // live fields (== row count)
+ *     u32 size;     // entity row byte stride (0 = unknown)
  *     ChunkedList *fields; // never-moved Field rows
  *   }
  *
@@ -56,7 +56,7 @@
 static bool ensureFields(Struct *self) {
     if ((*self).fields)
         return true;
-    ChunkedList *fields = ChunkedList(ID_REFLECT_FIELD, (uint32_t) sizeof(Field), CHUNKED_LIST_TWO_LAYER_DEFAULT);
+    ChunkedList *fields = ChunkedList(ID_REFLECT_FIELD, (u32) sizeof(Field), CHUNKED_LIST_TWO_LAYER_DEFAULT);
     if (!fields)
         return false;
     (*self).fields = fields;
@@ -109,31 +109,31 @@ void Struct_free(Struct *self) {
 
 // CORE FUNCTIONS
 
-uint64_t Struct_kind(const Struct *self) {
+u64 Struct_kind(const Struct *self) {
     if (self == nullptr)
         return 0u;
     return Memory_type((void*) self);
 }
 
-bool Struct_check(const Struct *self, uint64_t typeId) {
+bool Struct_check(const Struct *self, u64 typeId) {
     if (self == nullptr)
         return false;
     return Memory_type((void*) self) == typeId;
 }
 
-uint32_t Struct_add(Struct *self, const Field *field) {
+u32 Struct_add(Struct *self, const Field *field) {
     if (self == nullptr || field == nullptr || (*self).fields == nullptr)
         return REFLECT_STRUCT_INDEX_NONE;
     Field *row = (Field*) ChunkedList_addSlot((*self).fields);
     if (row == nullptr)
         return REFLECT_STRUCT_INDEX_NONE;
     memcpy(row, field, sizeof(Field));
-    uint32_t index = ChunkedList_size((*self).fields) - 1u;
+    u32 index = ChunkedList_size((*self).fields) - 1u;
     (*self).count = index + 1u;
     return index;
 }
 
-Field *Struct_get(const Struct *self, uint32_t index) {
+Field *Struct_get(const Struct *self, u32 index) {
     if (self == nullptr || (*self).fields == nullptr)
         return nullptr;
     if (index >= (*self).count)
@@ -144,8 +144,8 @@ Field *Struct_get(const Struct *self, uint32_t index) {
 void Struct_forEach(Struct *self, StructVisitFn fn, void *userdata) {
     if (self == nullptr || fn == nullptr || (*self).fields == nullptr)
         return;
-    uint32_t n = (*self).count;
-    for (uint32_t i = 0u; i < n; i++) {
+    u32 n = (*self).count;
+    for (u32 i = 0u; i < n; i++) {
         Field *row = (Field*) ChunkedList_slot((*self).fields, i);
         if (row)
             fn(row, i, userdata);
@@ -165,7 +165,7 @@ bool Struct_setName(Struct *self, const char *name) {
     return true;
 }
 
-void Struct_setSize(Struct *self, uint32_t size) {
+void Struct_setSize(Struct *self, u32 size) {
     if (self != nullptr)
         (*self).size = size;
 }
@@ -176,11 +176,11 @@ const char *Struct_getName(const Struct *self) {
     return self ? (*self).name : nullptr;
 }
 
-uint32_t Struct_count(const Struct *self) {
+u32 Struct_count(const Struct *self) {
     return self ? (*self).count : 0u;
 }
 
-uint32_t Struct_getSize(const Struct *self) {
+u32 Struct_getSize(const Struct *self) {
     return self ? (*self).size : 0u;
 }
 
@@ -192,7 +192,7 @@ bool Struct_isEmpty(const Struct *self) {
 
 // STRING PROJECTIONS (the toString Law)
 
-void Struct_toString(const Struct *self, char *dest, size_t cap, bool *outTruncated) {
+void Struct_toString(const Struct *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (dest == nullptr || cap == 0u)
@@ -203,13 +203,13 @@ void Struct_toString(const Struct *self, char *dest, size_t cap, bool *outTrunca
     }
     int written = snprintf(dest, cap, "Struct(%s, fields=%u)",
                            (*self).name[0] == '\0' ? "?" : (*self).name, (*self).count);
-    if (written < 0 || (size_t) written >= cap) {
+    if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
     }
 }
 
-void Struct_toStringStruct(const Struct *self, char *dest, size_t cap, bool *outTruncated) {
+void Struct_toStringStruct(const Struct *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (dest == nullptr || cap == 0u)
@@ -221,7 +221,7 @@ void Struct_toStringStruct(const Struct *self, char *dest, size_t cap, bool *out
     int written = snprintf(dest, cap, "Struct { name=\"%s\", count=%u, size=%u, fields=0x%llx }",
                            (*self).name, (*self).count, (*self).size,
                            (unsigned long long) (uintptr_t) (*self).fields);
-    if (written < 0 || (size_t) written >= cap) {
+    if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
     }

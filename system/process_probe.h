@@ -18,7 +18,7 @@
 // Non-macOS platforms answer false; see ;;INTENTION in process_probe.c.
 
 typedef struct ProcessProbe {
-    uint32_t reserved; // signature; no mutable state
+    u32 reserved; // signature; no mutable state
 } ProcessProbe;
 
 // --- Constructor ---

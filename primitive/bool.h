@@ -7,7 +7,7 @@
 
 #include "re/nio/bit_pool.h"
 
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 // primitive/bool.h — Bool primitive (Legacy: primitive/Bool.java).
 // Delegates to Bit8 width pool (1B stride).
@@ -17,13 +17,13 @@ extern BitPool g_boolPool;
 bool Bool_init(void);
 void Bool_shutdown(void);
 void *Bool_alloc(void);
-void *Bool_allocArray(size_t count);
+void *Bool_allocArray(bytes count);
 void Bool_free(void *ptr);
 bool Bool_get(void *ptr);
 void Bool_set(void *ptr, bool value);
 bool Bool_compareAndSet(void *ptr, bool expected, bool value);
-uint64_t Bool_type(void *ptr);
-size_t Bool_length(void *ptr);
+u64 Bool_type(void *ptr);
+bytes Bool_length(void *ptr);
 
 
 // Ergonomic constructors — Bool() and Bool(value)

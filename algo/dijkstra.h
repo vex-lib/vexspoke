@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 
 // algo/dijkstra.h — Shortest-Path Graph Solver.
 //
@@ -15,36 +15,36 @@
 #define DIJKSTRA_INFINITY 1e30f
 
 typedef struct DijkstraEdge {
-    uint32_t target;
-    float    weight;
+    u32 target;
+    f32    weight;
 } DijkstraEdge;
 
 typedef struct DijkstraNode {
-    uint32_t      edgeCount;
-    uint32_t      edgeCapacity;
+    u32      edgeCount;
+    u32      edgeCapacity;
     DijkstraEdge *edges;
 } DijkstraNode;
 
 typedef struct DijkstraGraph {
-    uint32_t      nodeCount;
+    u32      nodeCount;
     DijkstraNode *nodes;
 } DijkstraGraph;
 
-DijkstraGraph *Dijkstra_1(uint32_t nodeCount);
+DijkstraGraph *Dijkstra_1(u32 nodeCount);
 #define Dijkstra(...) CONSTRUCTOR_DISPATCH(Dijkstra, __VA_ARGS__)
 void           Dijkstra_free(DijkstraGraph *graph);
 
-bool Dijkstra_addEdge(DijkstraGraph *graph, uint32_t from, uint32_t to, float weight);
-bool Dijkstra_addBiEdge(DijkstraGraph *graph, uint32_t a, uint32_t b, float weight);
+bool Dijkstra_addEdge(DijkstraGraph *graph, u32 from, u32 to, f32 weight);
+bool Dijkstra_addBiEdge(DijkstraGraph *graph, u32 a, u32 b, f32 weight);
 
 // Solve shortest path from start to goal.
 // Dest-last order: writes node indices into outPath and path length into outTotalDist.
 // Returns number of nodes in the path (0 if unreachable).
-size_t Dijkstra_shortestPath(const DijkstraGraph *graph,
-                             uint32_t             startNode,
-                             uint32_t             goalNode,
-                             uint32_t            *outPath,
-                             size_t               maxPathNodes,
-                             float               *outTotalDistance);
+bytes Dijkstra_shortestPath(const DijkstraGraph *graph,
+                             u32             startNode,
+                             u32             goalNode,
+                             u32            *outPath,
+                             bytes               maxPathNodes,
+                             f32               *outTotalDistance);
 
 #endif

@@ -18,7 +18,7 @@
  *   Compatibility no-ops; never acquire/clear a terminal.
  * Output: void Console_log(const char *message)
  *   Borrowed NUL-terminated text, controls escaped, one final newline.
- * Output: void Console_logString(uint8_t *message)
+ * Output: void Console_logString(u8 *message)
  *   Takes ownership of a live R2 string block; releases it after output.
  * PRIVATE BEHAVIOR: log writes printable bytes; escapes controls as \\xHH.
  * CONTRACT: cold caller-thread stdio; null rejects once with THROW. A write
@@ -51,7 +51,7 @@ void Console_log(const char *message) {
         THROW("Console log: output failed");
 }
 
-void Console_logString(uint8_t *message) {
+void Console_logString(u8 *message) {
     Console_log(string_get(message));
     string_free(message);
 }

@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "util/constructor.h"
+#include "lang/constructor.h"
 #include "relational/variable_slot.h"
 
 // reflection/method.h — the Method metadata record.
@@ -38,8 +38,8 @@ Method *Method_3(const char *name, MethodFn invoke, void *target);
 #define Method(...) CONSTRUCTOR_DISPATCH(Method, __VA_ARGS__)
 void Method_free(Method *self);
 
-uint64_t Method_kind(const Method *self);
-bool Method_check(const Method *self, uint64_t typeId);
+u64 Method_kind(const Method *self);
+bool Method_check(const Method *self, u64 typeId);
 void *Method_call(Method *self, void *arg);
 
 bool Method_setName(Method *self, const char *name);
@@ -49,7 +49,7 @@ MethodFn Method_getInvoke(const Method *self);
 void Method_setTarget(Method *self, void *target);
 void *Method_getTarget(const Method *self);
 
-void Method_toString(const Method *self, char *dest, size_t cap, bool *outTruncated);
-void Method_toStringStruct(const Method *self, char *dest, size_t cap, bool *outTruncated);
+void Method_toString(const Method *self, char *dest, bytes cap, bool *outTruncated);
+void Method_toStringStruct(const Method *self, char *dest, bytes cap, bool *outTruncated);
 
 #endif

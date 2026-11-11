@@ -1,5 +1,5 @@
 #include <assert.h>
-#include <float.h>
+#include <f32.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,28 +15,28 @@
 #include "nio/mem.h"
 
 static void test_radix_sort(void) {
-    uint32_t a32[256];
+    u32 a32[256];
     for (int i = 0; i < 256; i++) {
-        a32[i] = (uint32_t) ((255 - i) * 179424673u + 37u);
+        a32[i] = (u32) ((255 - i) * 179424673u + 37u);
     }
     assert(Sort_radixSortUint32(a32, 256u));
     for (int i = 0; i < 255; i++) {
         assert(a32[i] <= a32[i + 1]);
     }
 
-    uint64_t a64[256];
+    u64 a64[256];
     for (int i = 0; i < 256; i++) {
-        a64[i] = ((uint64_t) (255 - i) << 32) | (uint64_t) ((i * 31337) ^ 0xDEADBEEFULL);
+        a64[i] = ((u64) (255 - i) << 32) | (u64) ((i * 31337) ^ 0xDEADBEEFULL);
     }
     assert(Sort_radixSortUint64(a64, 256u));
     for (int i = 0; i < 255; i++) {
         assert(a64[i] <= a64[i + 1]);
     }
 
-    uint64_t keys[64];
+    u64 keys[64];
     void *values[64];
     for (int i = 0; i < 64; i++) {
-        keys[i] = (uint64_t) (63 - i);
+        keys[i] = (u64) (63 - i);
         values[i] = (void*) (uintptr_t) (i * 10);
     }
     assert(Sort_radixSortPairsUint64(keys, values, 64u));
@@ -60,9 +60,9 @@ static void test_dijkstra(void) {
     Dijkstra_addEdge(g, 3, 4, 6.0f);
     Dijkstra_addEdge(g, 4, 5, 9.0f);
 
-    uint32_t path[8];
-    float total_dist = 0.0f;
-    size_t path_len = Dijkstra_shortestPath(g, 0, 5, path, 8, &total_dist);
+    u32 path[8];
+    f32 total_dist = 0.0f;
+    bytes path_len = Dijkstra_shortestPath(g, 0, 5, path, 8, &total_dist);
 
     // Shortest path from 0 to 5: 0 -> 2 -> 5 with cost 9 + 2 = 11.0
     assert(fabsf(total_dist - 11.0f) < 0.001f);
@@ -93,25 +93,25 @@ static void test_geometry_constructors(void) {
 static void test_kd_tree(void) {
     KdPoint pts[10];
     for (int i = 0; i < 10; i++) {
-        pts[i].coord[0] = (float) i;
-        pts[i].coord[1] = (float) (i * 2);
-        pts[i].coord[2] = (float) (i * 3);
-        pts[i].payload = (uint64_t) i;
+        pts[i].coord[0] = (f32) i;
+        pts[i].coord[1] = (f32) (i * 2);
+        pts[i].coord[2] = (f32) (i * 3);
+        pts[i].payload = (u64) i;
     }
 
     KdTree *tree = KdTree_build(pts, 10);
     assert(tree != nullptr);
 
-    float query[3] = { 3.1f, 5.9f, 9.1f };
+    f32 query[3] = { 3.1f, 5.9f, 9.1f };
     KdPoint nearest;
-    float dist_sq = 0.0f;
+    f32 dist_sq = 0.0f;
 
     bool found = KdTree_nearest(tree, query, &nearest, &dist_sq);
     assert(found == true);
     assert(nearest.payload == 3); // (3, 6, 9) is closest
 
-    uint64_t payloads[10];
-    size_t count = KdTree_queryRadius(tree, query, 5.0f, payloads, 10);
+    u64 payloads[10];
+    bytes count = KdTree_queryRadius(tree, query, 5.0f, payloads, 10);
     assert(count > 0);
 
     KdTree_free(tree);
@@ -122,17 +122,17 @@ static void test_bvh(void) {
 
     // Primitive 0: box around (0, 0, 5)
     prims[0].id = 100;
-    prims[0].bounds = BvhAabb_from_points((float[3]){-1.0f, -1.0f, 4.0f}, (float[3]){1.0f, 1.0f, 6.0f});
+    prims[0].bounds = BvhAabb_from_points((f32[3]){-1.0f, -1.0f, 4.0f}, (f32[3]){1.0f, 1.0f, 6.0f});
     prims[0].centroid[0] = 0.0f; prims[0].centroid[1] = 0.0f; prims[0].centroid[2] = 5.0f;
 
     // Primitive 1: box around (10, 10, 5)
     prims[1].id = 101;
-    prims[1].bounds = BvhAabb_from_points((float[3]){9.0f, 9.0f, 4.0f}, (float[3]){11.0f, 11.0f, 6.0f});
+    prims[1].bounds = BvhAabb_from_points((f32[3]){9.0f, 9.0f, 4.0f}, (f32[3]){11.0f, 11.0f, 6.0f});
     prims[1].centroid[0] = 10.0f; prims[1].centroid[1] = 10.0f; prims[1].centroid[2] = 5.0f;
 
     // Primitive 2: box around (-10, -10, 5)
     prims[2].id = 102;
-    prims[2].bounds = BvhAabb_from_points((float[3]){-11.0f, -11.0f, 4.0f}, (float[3]){-9.0f, -9.0f, 6.0f});
+    prims[2].bounds = BvhAabb_from_points((f32[3]){-11.0f, -11.0f, 4.0f}, (f32[3]){-9.0f, -9.0f, 6.0f});
     prims[2].centroid[0] = -10.0f; prims[2].centroid[1] = -10.0f; prims[2].centroid[2] = 5.0f;
 
     BvhTree tree = BvhTree(3u);
@@ -158,7 +158,7 @@ static void test_bvh(void) {
     BvhTree_destroy(&tree);
 }
 
-static bool tree_sit_counter(const TreeSitTree *tree, int32_t node_idx, int depth, void *user_data) {
+static bool tree_sit_counter(const TreeSitTree *tree, i32 node_idx, int depth, void *user_data) {
     (void) tree;
     (void) node_idx;
     (void) depth;
@@ -172,18 +172,18 @@ static void test_tree_sit(void) {
     assert(tree.nodes != nullptr);
 
     TreeSitSpan root_span = {0, 100, 1, 0, 10, 0};
-    int32_t root = TreeSitTree_add_node(-1, 1, "module", root_span, &tree);
+    i32 root = TreeSitTree_add_node(-1, 1, "module", root_span, &tree);
     assert(root == 0);
 
     TreeSitSpan f1_span = {0, 40, 1, 0, 4, 0};
-    int32_t f1 = TreeSitTree_add_node(root, 2, "func1", f1_span, &tree);
+    i32 f1 = TreeSitTree_add_node(root, 2, "func1", f1_span, &tree);
 
     TreeSitSpan stmt_span = {10, 25, 2, 4, 2, 19};
-    int32_t st = TreeSitTree_add_node(f1, 3, "return", stmt_span, &tree);
+    i32 st = TreeSitTree_add_node(f1, 3, "return", stmt_span, &tree);
     assert(st == 2);
 
     TreeSitSpan f2_span = {41, 100, 5, 0, 10, 0};
-    int32_t f2 = TreeSitTree_add_node(root, 2, "func2", f2_span, &tree);
+    i32 f2 = TreeSitTree_add_node(root, 2, "func2", f2_span, &tree);
     assert(f2 == 3);
 
     int count_pre = 0;
@@ -196,7 +196,7 @@ static void test_tree_sit(void) {
 
     assert(TreeSitTree_count_kind(&tree, 2) == 2); // 2 functions
 
-    int32_t found = TreeSitTree_find_by_byte(&tree, 15);
+    i32 found = TreeSitTree_find_by_byte(&tree, 15);
     assert(found == st); // inside return statement
 
     TreeSitTree_destroy(&tree);

@@ -10,11 +10,11 @@
 const char *GraphicsInfo_getGpuName(void);
 void        GraphicsInfo_setGpuName(const char *val);
 
-int32_t     GraphicsInfo_getGpuVendorId(void);
-void        GraphicsInfo_setGpuVendorId(int32_t val);
+i32     GraphicsInfo_getGpuVendorId(void);
+void        GraphicsInfo_setGpuVendorId(i32 val);
 
-int32_t     GraphicsInfo_getGpuDeviceId(void);
-void        GraphicsInfo_setGpuDeviceId(int32_t val);
+i32     GraphicsInfo_getGpuDeviceId(void);
+void        GraphicsInfo_setGpuDeviceId(i32 val);
 
 const char *GraphicsInfo_getPrimaryGraphicsApi(void);
 void        GraphicsInfo_setPrimaryGraphicsApi(const char *val);
@@ -31,13 +31,13 @@ void        GraphicsInfo_setMeshShadersEnabled(bool val);
 bool        GraphicsInfo_getHardwareRayTracingEnabled(void);
 void        GraphicsInfo_setHardwareRayTracingEnabled(bool val);
 
-int32_t     GraphicsInfo_getMaxTextureSize(void);
-void        GraphicsInfo_setMaxTextureSize(int32_t val);
+i32     GraphicsInfo_getMaxTextureSize(void);
+void        GraphicsInfo_setMaxTextureSize(i32 val);
 
-uint64_t    GraphicsInfo_getVramTotal(void);
-void        GraphicsInfo_setVramTotal(uint64_t val);
+u64    GraphicsInfo_getVramTotal(void);
+void        GraphicsInfo_setVramTotal(u64 val);
 
-uint64_t    GraphicsInfo_getVramAvailable(void);
-void        GraphicsInfo_setVramAvailable(uint64_t val);
+u64    GraphicsInfo_getVramAvailable(void);
+void        GraphicsInfo_setVramAvailable(u64 val);
 
 #endif

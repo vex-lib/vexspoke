@@ -38,7 +38,7 @@
  * STRUCT FIELDS (Mirroring system/app_detect.h — exactly this file's
  * class):
  * ----------------------------------------------------------------------------
- *   uint32_t reserved;   // singleton marker; no mutable state — all data
+ *   u32 reserved;   // singleton marker; no mutable state — all data
  *                        // lives in the static const AppSlot rows
  *
  * SLOT RECORD (AppSlot — Rule 3 co-location, zero behavior of its own):
@@ -81,8 +81,8 @@
 
 #include "system/data/apps.inc"
 
-static const uint32_t kKnownAppCount =
-    (uint32_t)(sizeof(kKnownApps) / sizeof(kKnownApps[0]));
+static const u32 kKnownAppCount =
+    (u32)(sizeof(kKnownApps) / sizeof(kKnownApps[0]));
 
 static AppDetect sAppDetectShared; // zero-init singleton
 
@@ -95,17 +95,17 @@ AppDetect *AppDetect_shared(void) {
 // CORE FUNCTIONS
 
 bool AppDetect_which(const AppDetect *self, const char *name,
-                     char *outBuf, size_t outCap) {
+                     char *outBuf, bytes outCap) {
     if (!self || !name || (*name) == '\0' || !outBuf || outCap == 0)
         return false;
     const char *path = getenv("PATH");
     if (!path)
         return false;
-    const size_t nameLen = strlen(name);
+    const bytes nameLen = strlen(name);
     const char *dir = path;
     for (;;) {
         const char *sep = strchr(dir, ':');
-        const size_t dirLen = sep ? (size_t)(sep - dir) : strlen(dir);
+        const bytes dirLen = sep ? (bytes)(sep - dir) : strlen(dir);
         if (dirLen + 1 + nameLen + 1 <= outCap) {
             memcpy(outBuf, dir, dirLen);
             outBuf[dirLen] = '/';
@@ -133,7 +133,7 @@ bool AppDetect_isAppBundle(const AppDetect *self, const char *name) {
         return false;
     // Exact bundle as given, then display-style case of the first letter.
     char bundle[512];
-    const size_t n = strlen(name);
+    const bytes n = strlen(name);
     if (n + 6 > sizeof(bundle))
         return false; // "/Applications/" + name + ".app"
     memcpy(bundle, "/Applications/", 14);
@@ -172,7 +172,7 @@ static bool slotProcessRunning(const AppDetect *self, const AppSlot *slot) {
         const char *start = p;
         while ((*p) != '\0' && (*p) != ' ')
             p++;
-        const size_t len = (size_t)(p - start);
+        const bytes len = (bytes)(p - start);
         char buf[256]; // proc basenames are well under this
         if (len < sizeof(buf)) {
             memcpy(buf, start, len);
@@ -191,13 +191,13 @@ bool AppDetect_isRunning(const AppDetect *self, const AppSlot *slot) {
     return slotProcessRunning(self, slot);
 }
 
-uint32_t AppDetect_count(const AppDetect *self) {
+u32 AppDetect_count(const AppDetect *self) {
     if (!self)
         return 0;
     return kKnownAppCount;
 }
 
-const AppSlot *AppDetect_at(const AppDetect *self, uint32_t i) {
+const AppSlot *AppDetect_at(const AppDetect *self, u32 i) {
     if (!self || i >= kKnownAppCount)
         return nullptr;
     return &kKnownApps[i];
@@ -206,7 +206,7 @@ const AppSlot *AppDetect_at(const AppDetect *self, uint32_t i) {
 const AppSlot *AppDetect_get(const AppDetect *self, const char *name) {
     if (!self || !name || (*name) == '\0')
         return nullptr;
-    for (uint32_t i = 0; i < kKnownAppCount; i++) {
+    for (u32 i = 0; i < kKnownAppCount; i++) {
         if (strcmp(kKnownApps[i].name, name) == 0)
             return &kKnownApps[i];
     }

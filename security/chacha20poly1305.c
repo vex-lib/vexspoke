@@ -40,25 +40,25 @@
  * allocation, no logging beyond the cold rejection.
  * ======================================================================== */
 
-static void pad16(Poly1305 *ctx, size_t len) {
-    size_t remainder = len % 16u;
+static void pad16(Poly1305 *ctx, bytes len) {
+    bytes remainder = len % 16u;
     if (remainder != 0u) {
-        static const uint8_t zeros[16] = {0};
+        static const u8 zeros[16] = {0};
         Poly1305_update(ctx, zeros, 16u - remainder);
     }
 }
 
-static void store64le(uint8_t *p, uint64_t v) {
+static void store64le(u8 *p, u64 v) {
     for (unsigned i = 0; i < 8u; ++i)
-        p[i] = (uint8_t) (v >> (8u * i));
+        p[i] = (u8) (v >> (8u * i));
 }
 
-static void mac(const uint8_t key[CHACHA20POLY1305_KEY_SIZE],
-                const uint8_t nonce[CHACHA20POLY1305_NONCE_SIZE],
-                const uint8_t *aad, size_t aadLen,
-                const uint8_t *ciphertext, size_t len,
-                uint8_t tag[CHACHA20POLY1305_TAG_SIZE]) {
-    uint8_t polyKey[CHACHA20_BLOCK_SIZE];
+static void mac(const u8 key[CHACHA20POLY1305_KEY_SIZE],
+                const u8 nonce[CHACHA20POLY1305_NONCE_SIZE],
+                const u8 *aad, bytes aadLen,
+                const u8 *ciphertext, bytes len,
+                u8 tag[CHACHA20POLY1305_TAG_SIZE]) {
+    u8 polyKey[CHACHA20_BLOCK_SIZE];
     ChaCha20_block(polyKey, key, 0u, nonce);
     Poly1305 ctx;
     Poly1305_init(&ctx, polyKey);
@@ -68,19 +68,19 @@ static void mac(const uint8_t key[CHACHA20POLY1305_KEY_SIZE],
     if (len > 0u)
         Poly1305_update(&ctx, ciphertext, len);
     pad16(&ctx, len);
-    uint8_t lengths[16];
-    store64le(lengths, (uint64_t) aadLen);
-    store64le(lengths + 8, (uint64_t) len);
+    u8 lengths[16];
+    store64le(lengths, (u64) aadLen);
+    store64le(lengths + 8, (u64) len);
     Poly1305_update(&ctx, lengths, sizeof lengths);
     Poly1305_final(&ctx, tag);
     memset(polyKey, 0, sizeof polyKey);
 }
 
-bool ChaCha20Poly1305_encrypt(const uint8_t key[CHACHA20POLY1305_KEY_SIZE],
-                              const uint8_t nonce[CHACHA20POLY1305_NONCE_SIZE],
-                              const uint8_t *aad, size_t aadLen,
-                              const uint8_t *plaintext, size_t plaintextLen,
-                              uint8_t *ciphertext, uint8_t tag[CHACHA20POLY1305_TAG_SIZE]) {
+bool ChaCha20Poly1305_encrypt(const u8 key[CHACHA20POLY1305_KEY_SIZE],
+                              const u8 nonce[CHACHA20POLY1305_NONCE_SIZE],
+                              const u8 *aad, bytes aadLen,
+                              const u8 *plaintext, bytes plaintextLen,
+                              u8 *ciphertext, u8 tag[CHACHA20POLY1305_TAG_SIZE]) {
     if (key == nullptr || nonce == nullptr || tag == nullptr ||
         (aad == nullptr && aadLen != 0u) ||
         (plaintext == nullptr && plaintextLen != 0u) ||
@@ -95,12 +95,12 @@ bool ChaCha20Poly1305_encrypt(const uint8_t key[CHACHA20POLY1305_KEY_SIZE],
     return true;
 }
 
-bool ChaCha20Poly1305_decrypt(const uint8_t key[CHACHA20POLY1305_KEY_SIZE],
-                              const uint8_t nonce[CHACHA20POLY1305_NONCE_SIZE],
-                              const uint8_t *aad, size_t aadLen,
-                              const uint8_t *ciphertext, size_t ciphertextLen,
-                              const uint8_t tag[CHACHA20POLY1305_TAG_SIZE],
-                              uint8_t *plaintext) {
+bool ChaCha20Poly1305_decrypt(const u8 key[CHACHA20POLY1305_KEY_SIZE],
+                              const u8 nonce[CHACHA20POLY1305_NONCE_SIZE],
+                              const u8 *aad, bytes aadLen,
+                              const u8 *ciphertext, bytes ciphertextLen,
+                              const u8 tag[CHACHA20POLY1305_TAG_SIZE],
+                              u8 *plaintext) {
     if (key == nullptr || nonce == nullptr || tag == nullptr ||
         (aad == nullptr && aadLen != 0u) ||
         (ciphertext == nullptr && ciphertextLen != 0u) ||
@@ -108,7 +108,7 @@ bool ChaCha20Poly1305_decrypt(const uint8_t key[CHACHA20POLY1305_KEY_SIZE],
         THROW("ChaCha20Poly1305_decrypt: null key, nonce, tag or buffer");
         return false;
     }
-    uint8_t expected[CHACHA20POLY1305_TAG_SIZE];
+    u8 expected[CHACHA20POLY1305_TAG_SIZE];
     mac(key, nonce, aad, aadLen, ciphertext, ciphertextLen, expected);
     bool authentic = Crypto_constantTimeEquals(expected, tag, sizeof expected);
     memset(expected, 0, sizeof expected);

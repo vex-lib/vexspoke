@@ -9,14 +9,14 @@
  * ============================================================================
  * DEFINITION: StrictMath
  * ============================================================================
- * Strict IEEE 754 math engine: full-precision float and double routines
+ * Strict IEEE 754 math engine: full-precision f32 and d64 routines
  * (trig, inverse trig, sqrt, invSqrt, pow, exp, log, abs, floor, ceil,
  * round, clamp, lerp, radians/degrees) with guaranteed bit-level conformance
  * for physics, trajectory integration, and orbital mechanics. Exists because
  * FastMath's approximations are unacceptable where error bounds must be
  * exact. memory: zero state, zero allocation; pure functions over scalar
- * float/double values. Lifetime: stateless; the D-suffixed twins cover
- * double precision for celestial/large-world coordinates.
+ * f32/d64 values. Lifetime: stateless; the D-suffixed twins cover
+ * d64 precision for celestial/large-world coordinates.
  * ============================================================================
  */
 
@@ -25,11 +25,11 @@
  * ============================================================================
  * CLASS: StrictMath (math/strict_math.c — defined in math/strict_math.h)
  * ============================================================================
- * Full-precision floating-point functions conforming strictly to IEEE 754.
+ * Full-precision f32ing-point functions conforming strictly to IEEE 754.
  * Guaranteed accuracy, bit-exact roundings, and rigorous domain checks for
  * rigid-body physics, trajectory integration, and orbital mechanics.
  *
- * STRUCT FIELDS: none — procedural (operates on scalar float/double values (pure IEEE 754 functions))
+ * STRUCT FIELDS: none — procedural (operates on scalar f32/d64 values (pure IEEE 754 functions))
  *
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
@@ -40,166 +40,166 @@
  *   - StrictMath_abs(x) / floor(x) / ceil(x) / round(x)
  *   - StrictMath_clamp(val, min, max) / lerp(a, b.sh, t)
  *   - StrictMath_toRadians(deg) / toDegrees(rad)
- *   - StrictMath_sinD(x) ... StrictMath_lerpD(a, b.sh, t)  (double-precision twins)
+ *   - StrictMath_sinD(x) ... StrictMath_lerpD(a, b.sh, t)  (d64-precision twins)
  * ============================================================================
  */
 
-float StrictMath_sin(float x) {
+f32 StrictMath_sin(f32 x) {
     return sinf(x);
 }
 
-float StrictMath_cos(float x) {
+f32 StrictMath_cos(f32 x) {
     return cosf(x);
 }
 
-float StrictMath_tan(float x) {
+f32 StrictMath_tan(f32 x) {
     return tanf(x);
 }
 
-float StrictMath_asin(float x) {
+f32 StrictMath_asin(f32 x) {
     return asinf(x);
 }
 
-float StrictMath_acos(float x) {
+f32 StrictMath_acos(f32 x) {
     return acosf(x);
 }
 
-float StrictMath_atan(float x) {
+f32 StrictMath_atan(f32 x) {
     return atanf(x);
 }
 
-float StrictMath_atan2(float y, float x) {
+f32 StrictMath_atan2(f32 y, f32 x) {
     return atan2f(y, x);
 }
 
-float StrictMath_sqrt(float x) {
+f32 StrictMath_sqrt(f32 x) {
     return sqrtf(x);
 }
 
-float StrictMath_invSqrt(float x) {
+f32 StrictMath_invSqrt(f32 x) {
     if (x <= 0.0f)
         return 0.0f;
     return 1.0f / sqrtf(x);
 }
 
-float StrictMath_pow(float base, float exp) {
+f32 StrictMath_pow(f32 base, f32 exp) {
     return powf(base, exp);
 }
 
-float StrictMath_exp(float x) {
+f32 StrictMath_exp(f32 x) {
     return expf(x);
 }
 
-float StrictMath_log(float x) {
+f32 StrictMath_log(f32 x) {
     return logf(x);
 }
 
-float StrictMath_abs(float x) {
+f32 StrictMath_abs(f32 x) {
     return fabsf(x);
 }
 
-float StrictMath_floor(float x) {
+f32 StrictMath_floor(f32 x) {
     return floorf(x);
 }
 
-float StrictMath_ceil(float x) {
+f32 StrictMath_ceil(f32 x) {
     return ceilf(x);
 }
 
-float StrictMath_round(float x) {
+f32 StrictMath_round(f32 x) {
     return roundf(x);
 }
 
-float StrictMath_clamp(float val, float min, float max) {
+f32 StrictMath_clamp(f32 val, f32 min, f32 max) {
     if (val < min) return min;
     if (val > max) return max;
     return val;
 }
 
-float StrictMath_lerp(float a, float b, float t) {
+f32 StrictMath_lerp(f32 a, f32 b, f32 t) {
     return a + t * (b - a);
 }
 
-float StrictMath_toRadians(float deg) {
-    return deg * (float) STRICT_MATH_DEG_TO_RAD;
+f32 StrictMath_toRadians(f32 deg) {
+    return deg * (f32) STRICT_MATH_DEG_TO_RAD;
 }
 
-float StrictMath_toDegrees(float rad) {
-    return rad * (float) STRICT_MATH_RAD_TO_DEG;
+f32 StrictMath_toDegrees(f32 rad) {
+    return rad * (f32) STRICT_MATH_RAD_TO_DEG;
 }
 
-double StrictMath_sinD(double x) {
+d64 StrictMath_sinD(d64 x) {
     return sin(x);
 }
 
-double StrictMath_cosD(double x) {
+d64 StrictMath_cosD(d64 x) {
     return cos(x);
 }
 
-double StrictMath_tanD(double x) {
+d64 StrictMath_tanD(d64 x) {
     return tan(x);
 }
 
-double StrictMath_asinD(double x) {
+d64 StrictMath_asinD(d64 x) {
     return asin(x);
 }
 
-double StrictMath_acosD(double x) {
+d64 StrictMath_acosD(d64 x) {
     return acos(x);
 }
 
-double StrictMath_atanD(double x) {
+d64 StrictMath_atanD(d64 x) {
     return atan(x);
 }
 
-double StrictMath_atan2D(double y, double x) {
+d64 StrictMath_atan2D(d64 y, d64 x) {
     return atan2(y, x);
 }
 
-double StrictMath_sqrtD(double x) {
+d64 StrictMath_sqrtD(d64 x) {
     return sqrt(x);
 }
 
-double StrictMath_invSqrtD(double x) {
+d64 StrictMath_invSqrtD(d64 x) {
     if (x <= 0.0)
         return 0.0;
     return 1.0 / sqrt(x);
 }
 
-double StrictMath_powD(double base, double exp) {
+d64 StrictMath_powD(d64 base, d64 exp) {
     return pow(base, exp);
 }
 
-double StrictMath_expD(double x) {
+d64 StrictMath_expD(d64 x) {
     return exp(x);
 }
 
-double StrictMath_logD(double x) {
+d64 StrictMath_logD(d64 x) {
     return log(x);
 }
 
-double StrictMath_absD(double x) {
+d64 StrictMath_absD(d64 x) {
     return fabs(x);
 }
 
-double StrictMath_floorD(double x) {
+d64 StrictMath_floorD(d64 x) {
     return floor(x);
 }
 
-double StrictMath_ceilD(double x) {
+d64 StrictMath_ceilD(d64 x) {
     return ceil(x);
 }
 
-double StrictMath_roundD(double x) {
+d64 StrictMath_roundD(d64 x) {
     return round(x);
 }
 
-double StrictMath_clampD(double val, double min, double max) {
+d64 StrictMath_clampD(d64 val, d64 min, d64 max) {
     if (val < min) return min;
     if (val > max) return max;
     return val;
 }
 
-double StrictMath_lerpD(double a, double b, double t) {
+d64 StrictMath_lerpD(d64 a, d64 b, d64 t) {
     return a + t * (b - a);
 }

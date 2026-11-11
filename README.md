@@ -48,7 +48,7 @@ The result is a lock-free, cache-coherent core with predictable, microsecond-lev
 
 `vexspoke` is the **R2 CPU computation and behavior** owner: math, algorithms,
 synchronization and behavior APIs. Its cooperating R2 storage owner is
-[Relational Engine](https://github.com/vexgraph-ecosystem/relational-engine):
+[Relational Engine](https://github.com/vex-lib/relational-engine):
 memory allocation/storage, stable row chunks, variable bindings and native C
 search over Rust-owned spans. R1 `hotcwap` supervises their lifetimes.
 

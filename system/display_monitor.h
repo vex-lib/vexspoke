@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "util/constructor.h"
+#include "lang/constructor.h"
 #include <stddef.h>
 
 // system/display_monitor.h — single display monitor representation (Legacy: system/DisplayMonitor.java)
@@ -16,41 +16,41 @@ typedef struct DisplayMonitor DisplayMonitor;
 DisplayMonitor *DisplayMonitor_0(void);
 void            DisplayMonitor_free(DisplayMonitor *monitor);
 
-uint32_t        DisplayMonitor_getId(const DisplayMonitor *m);
-void            DisplayMonitor_setId(DisplayMonitor *m, uint32_t id);
+u32        DisplayMonitor_getId(const DisplayMonitor *m);
+void            DisplayMonitor_setId(DisplayMonitor *m, u32 id);
 
 const char     *DisplayMonitor_getName(const DisplayMonitor *m);
 void            DisplayMonitor_setName(DisplayMonitor *m, const char *name);
 
 // Active Physical Pixel Resolution (actual framebuffer pixels)
-int32_t         DisplayMonitor_getCurrentWidth(const DisplayMonitor *m);
-void            DisplayMonitor_setCurrentWidth(DisplayMonitor *m, int32_t val);
+i32         DisplayMonitor_getCurrentWidth(const DisplayMonitor *m);
+void            DisplayMonitor_setCurrentWidth(DisplayMonitor *m, i32 val);
 
-int32_t         DisplayMonitor_getCurrentHeight(const DisplayMonitor *m);
-void            DisplayMonitor_setCurrentHeight(DisplayMonitor *m, int32_t val);
+i32         DisplayMonitor_getCurrentHeight(const DisplayMonitor *m);
+void            DisplayMonitor_setCurrentHeight(DisplayMonitor *m, i32 val);
 
 // Logical Point Resolution (AppKit / UI layout coordinates)
-int32_t         DisplayMonitor_getPointWidth(const DisplayMonitor *m);
-void            DisplayMonitor_setPointWidth(DisplayMonitor *m, int32_t val);
+i32         DisplayMonitor_getPointWidth(const DisplayMonitor *m);
+void            DisplayMonitor_setPointWidth(DisplayMonitor *m, i32 val);
 
-int32_t         DisplayMonitor_getPointHeight(const DisplayMonitor *m);
-void            DisplayMonitor_setPointHeight(DisplayMonitor *m, int32_t val);
+i32         DisplayMonitor_getPointHeight(const DisplayMonitor *m);
+void            DisplayMonitor_setPointHeight(DisplayMonitor *m, i32 val);
 
 // Native Physical Panel Resolution (hardware panel pixel grid)
-int32_t         DisplayMonitor_getNativeWidth(const DisplayMonitor *m);
-void            DisplayMonitor_setNativeWidth(DisplayMonitor *m, int32_t val);
+i32         DisplayMonitor_getNativeWidth(const DisplayMonitor *m);
+void            DisplayMonitor_setNativeWidth(DisplayMonitor *m, i32 val);
 
-int32_t         DisplayMonitor_getNativeHeight(const DisplayMonitor *m);
-void            DisplayMonitor_setNativeHeight(DisplayMonitor *m, int32_t val);
+i32         DisplayMonitor_getNativeHeight(const DisplayMonitor *m);
+void            DisplayMonitor_setNativeHeight(DisplayMonitor *m, i32 val);
 
-int32_t         DisplayMonitor_getRefreshRate(const DisplayMonitor *m);
-void            DisplayMonitor_setRefreshRate(DisplayMonitor *m, int32_t val);
+i32         DisplayMonitor_getRefreshRate(const DisplayMonitor *m);
+void            DisplayMonitor_setRefreshRate(DisplayMonitor *m, i32 val);
 
 bool            DisplayMonitor_getHdrSupported(const DisplayMonitor *m);
 void            DisplayMonitor_setHdrSupported(DisplayMonitor *m, bool val);
 
-float           DisplayMonitor_getDpi(const DisplayMonitor *m);
-void            DisplayMonitor_setDpi(DisplayMonitor *m, float val);
+f32           DisplayMonitor_getDpi(const DisplayMonitor *m);
+void            DisplayMonitor_setDpi(DisplayMonitor *m, f32 val);
 
 
 #define DisplayMonitor(...) CONSTRUCTOR_DISPATCH(DisplayMonitor, __VA_ARGS__)

@@ -47,7 +47,7 @@ int main(void) {
     Array_free(keys);
 
     // Volume: 100,000 keys.
-    for (uint64_t i = 0; i < 100000; i++)
+    for (u64 i = 0; i < 100000; i++)
         Map_put(m, 1000 + i, i);
     CHECK(Map_size(m) == 100001);
     CHECK(Map_get(m, 1000) == 0);

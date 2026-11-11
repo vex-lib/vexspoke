@@ -22,20 +22,20 @@
  * return; no allocation, no logging on success.
  * ======================================================================== */
 
-static void hmacSha1Block(const uint8_t *key, size_t keyLen, const uint8_t *data, size_t dataLen,
-                          uint8_t out[HMAC_SHA1_DIGEST_SIZE]) {
-    uint8_t pad[HMAC_SHA1_BLOCK_SIZE];
-    uint8_t inner[HMAC_SHA1_DIGEST_SIZE];
-    uint8_t ipad[HMAC_SHA1_BLOCK_SIZE];
-    uint8_t opad[HMAC_SHA1_BLOCK_SIZE];
-    for (size_t i = 0; i < HMAC_SHA1_BLOCK_SIZE; ++i)
+static void hmacSha1Block(const u8 *key, bytes keyLen, const u8 *data, bytes dataLen,
+                          u8 out[HMAC_SHA1_DIGEST_SIZE]) {
+    u8 pad[HMAC_SHA1_BLOCK_SIZE];
+    u8 inner[HMAC_SHA1_DIGEST_SIZE];
+    u8 ipad[HMAC_SHA1_BLOCK_SIZE];
+    u8 opad[HMAC_SHA1_BLOCK_SIZE];
+    for (bytes i = 0; i < HMAC_SHA1_BLOCK_SIZE; ++i)
         pad[i] = 0u;
     if (keyLen > HMAC_SHA1_BLOCK_SIZE)
         Crypto_sha1(key, keyLen, pad);
     else
-        for (size_t i = 0; i < keyLen; ++i)
+        for (bytes i = 0; i < keyLen; ++i)
             pad[i] = key[i];
-    for (size_t i = 0; i < HMAC_SHA1_BLOCK_SIZE; ++i) {
+    for (bytes i = 0; i < HMAC_SHA1_BLOCK_SIZE; ++i) {
         ipad[i] = pad[i] ^ 0x36u;
         opad[i] = pad[i] ^ 0x5Cu;
     }
@@ -48,17 +48,17 @@ static void hmacSha1Block(const uint8_t *key, size_t keyLen, const uint8_t *data
     Crypto_sha1Update(&ctx, opad, HMAC_SHA1_BLOCK_SIZE);
     Crypto_sha1Update(&ctx, inner, HMAC_SHA1_DIGEST_SIZE);
     Crypto_sha1Final(&ctx, out);
-    for (size_t i = 0; i < HMAC_SHA1_BLOCK_SIZE; ++i) {
+    for (bytes i = 0; i < HMAC_SHA1_BLOCK_SIZE; ++i) {
         pad[i] = 0u;
         ipad[i] = 0u;
         opad[i] = 0u;
     }
-    for (size_t i = 0; i < HMAC_SHA1_DIGEST_SIZE; ++i)
+    for (bytes i = 0; i < HMAC_SHA1_DIGEST_SIZE; ++i)
         inner[i] = 0u;
 }
 
-void Hmac_sha1(const uint8_t *key, size_t keyLen, const uint8_t *data, size_t dataLen,
-               uint8_t out[HMAC_SHA1_DIGEST_SIZE]) {
+void Hmac_sha1(const u8 *key, bytes keyLen, const u8 *data, bytes dataLen,
+               u8 out[HMAC_SHA1_DIGEST_SIZE]) {
     if ((key == nullptr && keyLen != 0u) || (data == nullptr && dataLen != 0u) || out == nullptr) {
         THROW("Hmac_sha1: null input");
         return;
@@ -66,24 +66,24 @@ void Hmac_sha1(const uint8_t *key, size_t keyLen, const uint8_t *data, size_t da
     hmacSha1Block(key, keyLen, data, dataLen, out);
 }
 
-void Hmac_sha256(const uint8_t *key, size_t keyLen, const uint8_t *data, size_t dataLen,
-                 uint8_t out[HMAC_SHA256_DIGEST_SIZE]) {
+void Hmac_sha256(const u8 *key, bytes keyLen, const u8 *data, bytes dataLen,
+                 u8 out[HMAC_SHA256_DIGEST_SIZE]) {
     if ((key == nullptr && keyLen != 0u) || (data == nullptr && dataLen != 0u) || out == nullptr) {
         THROW("Hmac_sha256: null input");
         return;
     }
-    uint8_t pad[HMAC_SHA256_BLOCK_SIZE];
-    uint8_t inner[HMAC_SHA256_DIGEST_SIZE];
-    uint8_t ipad[HMAC_SHA256_BLOCK_SIZE];
-    uint8_t opad[HMAC_SHA256_BLOCK_SIZE];
-    for (size_t i = 0; i < HMAC_SHA256_BLOCK_SIZE; ++i)
+    u8 pad[HMAC_SHA256_BLOCK_SIZE];
+    u8 inner[HMAC_SHA256_DIGEST_SIZE];
+    u8 ipad[HMAC_SHA256_BLOCK_SIZE];
+    u8 opad[HMAC_SHA256_BLOCK_SIZE];
+    for (bytes i = 0; i < HMAC_SHA256_BLOCK_SIZE; ++i)
         pad[i] = 0u;
     if (keyLen > HMAC_SHA256_BLOCK_SIZE)
         Crypto_sha256(key, keyLen, pad);
     else
-        for (size_t i = 0; i < keyLen; ++i)
+        for (bytes i = 0; i < keyLen; ++i)
             pad[i] = key[i];
-    for (size_t i = 0; i < HMAC_SHA256_BLOCK_SIZE; ++i) {
+    for (bytes i = 0; i < HMAC_SHA256_BLOCK_SIZE; ++i) {
         ipad[i] = pad[i] ^ 0x36u;
         opad[i] = pad[i] ^ 0x5Cu;
     }
@@ -96,11 +96,11 @@ void Hmac_sha256(const uint8_t *key, size_t keyLen, const uint8_t *data, size_t 
     Crypto_sha256Update(&ctx, opad, HMAC_SHA256_BLOCK_SIZE);
     Crypto_sha256Update(&ctx, inner, HMAC_SHA256_DIGEST_SIZE);
     Crypto_sha256Final(&ctx, out);
-    for (size_t i = 0; i < HMAC_SHA256_BLOCK_SIZE; ++i) {
+    for (bytes i = 0; i < HMAC_SHA256_BLOCK_SIZE; ++i) {
         pad[i] = 0u;
         ipad[i] = 0u;
         opad[i] = 0u;
     }
-    for (size_t i = 0; i < HMAC_SHA256_DIGEST_SIZE; ++i)
+    for (bytes i = 0; i < HMAC_SHA256_DIGEST_SIZE; ++i)
         inner[i] = 0u;
 }

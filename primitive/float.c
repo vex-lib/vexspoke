@@ -1,4 +1,4 @@
-#include "primitive/vex-float.h"
+#include "primitive/vex-f32.h"
 
 #include <string.h>
 
@@ -24,11 +24,11 @@
 ;;OVERVIEW
 /**
  * ============================================================================
- * MODULE: Float (primitive/float.c)
+ * MODULE: Float (primitive/f32.c)
  * ============================================================================
  * Float primitive (Legacy: primitive/Float.java).
  *
- * STRUCT FIELDS: none — procedural (operates on BitPool/memory blocks of float payloads)
+ * STRUCT FIELDS: none — procedural (operates on BitPool/memory blocks of f32 payloads)
  *
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
@@ -54,29 +54,29 @@
  */
 
 
-BitPool g_floatPool;
+BitPool g_f32Pool;
 
 bool Float_init(void) {
-    g_floatPool = BitPool(4, 1024);
-    return BitPool_live(&g_floatPool);
+    g_f32Pool = BitPool(4, 1024);
+    return BitPool_live(&g_f32Pool);
 }
 
 void Float_shutdown(void) {
-    BitPool_shutdown(&g_floatPool);
+    BitPool_shutdown(&g_f32Pool);
 }
 
 void *Float_alloc(void) {
-    return BitPool_alloc(&g_floatPool, ID_FLOAT);
+    return BitPool_alloc(&g_f32Pool, ID_FLOAT);
 }
 
-void *Float_allocArray(size_t count) {
+void *Float_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
-    size_t Bytes = count * sizeof(float);
-    // For compound types, elem_size 4 already accounts for stride, but sizeof(float) is placeholder
+    bytes Bytes = count * sizeof(f32);
+    // For compound types, elem_size 4 already accounts for stride, but sizeof(f32) is placeholder
     // Use elem_size for true stride where c_type is int64 placeholder
-    if (count > 1 && 4 != sizeof(float))
+    if (count > 1 && 4 != sizeof(f32))
         Bytes = count * 4;
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_FLOAT), Bytes);
 }
@@ -84,47 +84,47 @@ void *Float_allocArray(size_t count) {
 void Float_free(void *ptr) {
     if (!ptr)
         return;
-    if (BitPool_contains(&g_floatPool, ptr)) BitPool_free(&g_floatPool, ptr);
+    if (BitPool_contains(&g_f32Pool, ptr)) BitPool_free(&g_f32Pool, ptr);
     else Memory_free(ptr);
 }
 
-float Float_get(void *ptr) {
+f32 Float_get(void *ptr) {
     if (!ptr)
-        return (float) 0;
-    return *(float*) ptr;
+        return (f32) 0;
+    return *(f32*) ptr;
 }
 
-void Float_set(void *ptr, float value) {
+void Float_set(void *ptr, f32 value) {
     if (!ptr)
         return;
-    *(float*) ptr = value;
+    *(f32*) ptr = value;
 }
 
-bool Float_compareAndSet(void *ptr, float expected, float value) {
+bool Float_compareAndSet(void *ptr, f32 expected, f32 value) {
     if (!ptr)
         return false;
-    int32_t expBits;
-    int32_t valBits;
+    i32 expBits;
+    i32 valBits;
     memcpy(&expBits, &expected, sizeof(expBits));
     memcpy(&valBits, &value, sizeof(valBits));
-    return __atomic_compare_exchange_n((int32_t*) ptr, &expBits, valBits, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
+    return __atomic_compare_exchange_n((i32*) ptr, &expBits, valBits, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
-uint64_t Float_type(void *ptr) {
+u64 Float_type(void *ptr) {
     if (!ptr)
         return 0;
-    if (BitPool_contains(&g_floatPool, ptr)) return BitPool_type(&g_floatPool, ptr);
+    if (BitPool_contains(&g_f32Pool, ptr)) return BitPool_type(&g_f32Pool, ptr);
     return Memory_type(ptr);
 }
 
-size_t Float_length(void *ptr) {
+bytes Float_length(void *ptr) {
     if (!ptr)
         return 0;
-    if (BitPool_contains(&g_floatPool, ptr)) return BitPool_length(&g_floatPool, ptr);
+    if (BitPool_contains(&g_f32Pool, ptr)) return BitPool_length(&g_f32Pool, ptr);
     return Memory_length(ptr);
 }
 
-void *Float_allocWithValue(float value) {
+void *Float_allocWithValue(f32 value) {
     void *ptr = Float_alloc();
     if (ptr) Float_set(ptr, value);
     return ptr;
