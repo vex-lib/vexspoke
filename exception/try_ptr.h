@@ -1,11 +1,9 @@
 #ifndef EXCEPTION_TRY_PTR_H
 #define EXCEPTION_TRY_PTR_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include "lang/constructor.h"
+#include "vex.h"
+
 #include "exception/try_code.h"
-#include "lang/annotation.h"
 
 ;;DRAFT
 // exception/try_ptr.h — the pointer value-or-error return.

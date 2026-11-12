@@ -1,12 +1,9 @@
 #ifndef STRUCT_CHUNKED_LIST_H
 #define STRUCT_CHUNKED_LIST_H
 
-#include <stdatomic.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
+#include "vex.h"
 #include "re/atomic/atomic.h"
+
 #include "struct/collection.h"
 
 // struct/chunked_list.h — the ChunkedList class: a never-moved radix-paged list.

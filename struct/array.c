@@ -1,15 +1,11 @@
-#include "struct/array.h"
-
-#include <stdio.h>
-#include <string.h>
-
+#include "vex.h"
 #include "nio/mem.h"
+
+#include "struct/array.h"
 #include "oop/stride.h"
 #include "oop/vexspoke_type.h"
 #include "struct/exhaustion.h"
-#include "util/annotation.h"
 #include "exception/try_value.h"
-#include "util/throw.h"
 
 ;;DEFINITION
 /**

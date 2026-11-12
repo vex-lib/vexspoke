@@ -1,13 +1,12 @@
-#include "struct/list.h"
+#include "vex.h"
+#include "nio/mem.h"
 
 #include <stdlib.h>
-#include <string.h>
 
-#include "nio/mem.h"
+#include "struct/list.h"
 #include "oop/stride.h"
 #include "oop/vexspoke_type.h"
 #include "struct/exhaustion.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

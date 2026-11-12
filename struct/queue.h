@@ -1,10 +1,7 @@
 #ifndef STRUCT_QUEUE_H
 #define STRUCT_QUEUE_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include "lang/constructor.h"
+#include "vex.h"
 
 #include "struct/collection.h"
 

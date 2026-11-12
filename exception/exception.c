@@ -1,8 +1,8 @@
+#include "vex.h"
+
 #include "exception.h"
-#include "util/annotation.h"
-#include <stdio.h>
+
 #include <stdlib.h>
-#include <string.h>
 
 ;;DEFINITION
 /** Exception owns formatted diagnostic strings and source metadata for a cold

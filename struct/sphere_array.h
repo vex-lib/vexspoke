@@ -1,10 +1,8 @@
 #ifndef STRUCT_SPHERE_ARRAY_H
 #define STRUCT_SPHERE_ARRAY_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include "lang/constructor.h"
+#include "vex.h"
+
 #include "struct/collection.h"
 
 // struct/sphere_array.h — 3D Spherical Voxel Matrix evaluated via 3D Pythagorean Theorem.

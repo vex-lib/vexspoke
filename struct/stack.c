@@ -1,13 +1,10 @@
-#include "struct/stack.h"
-
-#include <string.h>
-
+#include "vex.h"
 #include "nio/mem.h"
+
+#include "struct/stack.h"
 #include "oop/stride.h"
 #include "oop/vexspoke_type.h"
-#include "util/throw.h"
 #include "struct/exhaustion.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

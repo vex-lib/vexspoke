@@ -1,10 +1,8 @@
-#include "struct/sparseset.h"
-
-#include <string.h>
-
+#include "vex.h"
 #include "nio/mem.h"
+
+#include "struct/sparseset.h"
 #include "oop/vexspoke_type.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

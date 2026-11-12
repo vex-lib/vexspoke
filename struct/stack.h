@@ -1,10 +1,7 @@
 #ifndef STRUCT_STACK_H
 #define STRUCT_STACK_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include "lang/constructor.h"
+#include "vex.h"
 
 #include "struct/collection.h"
 #include "exception/try_value.h"

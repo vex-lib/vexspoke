@@ -1,10 +1,8 @@
 #ifndef STRUCT_CIRCLE_ARRAY_H
 #define STRUCT_CIRCLE_ARRAY_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include "lang/constructor.h"
+#include "vex.h"
+
 #include "struct/collection.h"
 
 // struct/circle_array.h — 2D Circular Matrix evaluated via the Pythagorean Theorem.

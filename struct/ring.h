@@ -1,10 +1,7 @@
 #ifndef THREAD_RING_H
 #define THREAD_RING_H
 
-#include <stdbool.h>
-#include <stdint.h>
-
-#include "lang/constructor.h"
+#include "vex.h"
 #include "re/atomic/atomic.h"
 
 // thread/ring.h — MPMC ring buffer API (Legacy: thread/RingBuffer.java).

@@ -1,10 +1,8 @@
-#include "struct/minheap.h"
-
-#include <string.h>
-
+#include "vex.h"
 #include "nio/mem.h"
+
+#include "struct/minheap.h"
 #include "oop/vexspoke_type.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

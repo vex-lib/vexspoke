@@ -11,11 +11,12 @@
 // Lesson 18 replaces the spinlock with per-thread slots later; this is the
 // correct, simple version that works today.
 
-#include "struct/ring.h"
+#include "vex.h"
+#include "re/atomic/atomic.h"
 
 #include <stdlib.h>
-#include <string.h>
-#include "util/annotation.h"
+
+#include "struct/ring.h"
 
 ;;DEFINITION
 /**

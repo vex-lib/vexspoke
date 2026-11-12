@@ -1,7 +1,7 @@
 #ifndef EXCEPTION_TRY_CODE_H
 #define EXCEPTION_TRY_CODE_H
 
-#include <stdbool.h>
+#include "vex.h"
 
 // exception/try_code.h — the TryCode taxonomy: the named reason a Try carries.
 //

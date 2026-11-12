@@ -1,10 +1,7 @@
 #ifndef STRUCT_EXHAUSTION_H
 #define STRUCT_EXHAUSTION_H
 
-#include <stddef.h>
-#include <stdint.h>
-
-#include "lang/annotation.h"
+#include "vex.h"
 
 // struct/exhaustion.h — the shared loud-refusal seam (the Exhaustion Loudness
 // Law) for owners that own finite storage but do not embed a Collection.

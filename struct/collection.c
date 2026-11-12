@@ -1,13 +1,10 @@
-#include "struct/collection.h"
+#include "vex.h"
+#include "nio/mem.h"
 
 #include <stdckdint.h>
-#include <stdio.h>
-#include <string.h>
 
-#include "nio/mem.h"
-#include "util/throw.h"
+#include "struct/collection.h"
 #include "struct/exhaustion.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

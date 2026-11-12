@@ -1,12 +1,10 @@
 #ifndef EXCEPTION_EXCEPTION_H
 #define EXCEPTION_EXCEPTION_H
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <stddef.h>
+#include "vex.h"
+
 #include <stdarg.h>
 
-#include "lang/constructor.h"
 #include "oop/vexspoke_type.h"
 
 // Categories of runtime exceptions

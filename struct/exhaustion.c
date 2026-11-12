@@ -1,7 +1,6 @@
-#include "struct/exhaustion.h"
+#include "vex.h"
 
-#include "util/throw.h"
-#include "util/annotation.h"
+#include "struct/exhaustion.h"
 
 ;;DEFINITION
 /**

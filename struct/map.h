@@ -1,10 +1,7 @@
 #ifndef STRUCT_MAP_H
 #define STRUCT_MAP_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include "lang/constructor.h"
+#include "vex.h"
 
 #include "struct/array.h"
 #include "struct/collection.h"

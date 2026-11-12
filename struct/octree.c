@@ -1,10 +1,8 @@
-#include "struct/octree.h"
-
-#include <string.h>
-#include <math.h>
+#include "vex.h"
 #include "nio/mem.h"
+
+#include "struct/octree.h"
 #include "oop/vexspoke_type.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

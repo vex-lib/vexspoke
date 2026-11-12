@@ -4,14 +4,11 @@
 // a page-sized leaf. Every hop is shift/mask; a leaf is a contiguous run of
 // rows. The 2-level byte-budget form is the degenerate case (root -> leaf).
 
-#include "struct/chunked_list.h"
-
-#include <stdatomic.h>
-#include <string.h>
-
+#include "vex.h"
 #include "re/atomic/atomic.h"
+
+#include "struct/chunked_list.h"
 #include "struct/exhaustion.h"
-#include "lang/annotation.h"
 #include "nio/mem.h"
 #include "oop/stride.h"
 #include "oop/vexspoke_type.h"

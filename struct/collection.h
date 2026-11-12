@@ -1,11 +1,7 @@
 #ifndef STRUCT_COLLECTION_H
 #define STRUCT_COLLECTION_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
-#include "lang/annotation.h"
+#include "vex.h"
 
 // struct/collection.h — the Collection metadata struct, ported from
 // struct/Collection.java.
