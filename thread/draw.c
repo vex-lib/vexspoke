@@ -3,7 +3,7 @@
 
 #include "util/annotation.h"
 
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 
 ;;DEFINITION
 /**

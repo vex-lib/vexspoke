@@ -1,8 +1,7 @@
 #ifndef OOP_STRIDE_H
 #define OOP_STRIDE_H
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // oop/stride.h — the Stride utility, ported from oop/Stride.java.
 //

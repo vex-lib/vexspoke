@@ -7,7 +7,7 @@
 
 #include "util/annotation.h"
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 
 ;;DEFINITION
 /**
@@ -220,7 +220,7 @@ void Struct_toStringStruct(const Struct *self, char *dest, bytes cap, bool *outT
     }
     int written = snprintf(dest, cap, "Struct { name=\"%s\", count=%u, size=%u, fields=0x%llx }",
                            (*self).name, (*self).count, (*self).size,
-                           (unsigned long long) (uintptr_t) (*self).fields);
+                           (unsigned long long) (pointer) (*self).fields);
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;

@@ -1,10 +1,7 @@
 #ifndef OBJECTS_PROBABLE_OBJECTS_H
 #define OBJECTS_PROBABLE_OBJECTS_H
 
-#include <stddef.h>
-#include <stdint.h>
-#include <stddef.h>
-#include "lang/constructor.h"
+#include "vex.h"
 
 #include "objects/probable.h"
 
@@ -44,17 +41,17 @@ u32 ProbableObjects_totalWeight(ProbableObjects *po);
 
 // Append a choice. Returns 0 without changing the pool if full or if the
 // cumulative u32 weight would overflow.
-int ProbableObjects_add(ProbableObjects *po, uintptr_t object, u32 weight);
+int ProbableObjects_add(ProbableObjects *po, pointer object, u32 weight);
 
 // Append the object/weight of an existing Probable.
 int ProbableObjects_addProbable(ProbableObjects *po, const Probable *probable);
 
 // Slot accessors (used by Random.probablePool's binary search).
-uintptr_t ProbableObjects_objectAt(ProbableObjects *po, bytes index);
+pointer ProbableObjects_objectAt(ProbableObjects *po, bytes index);
 u32 ProbableObjects_cumulativeAt(ProbableObjects *po, bytes index);
 u32 ProbableObjects_weightAt(ProbableObjects *po, bytes index);
 
 // Draw a weighted object from the pool using the system RNG.
-uintptr_t ProbableObjects_get(ProbableObjects *po);
+pointer ProbableObjects_get(ProbableObjects *po);
 
 #endif

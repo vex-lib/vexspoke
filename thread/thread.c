@@ -5,7 +5,7 @@
 #include <time.h>
 
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 #include "struct/array.h"
 #include "struct/map.h"
 #include "lang/annotation.h"
@@ -114,7 +114,7 @@ Thread *Thread_5(u64 typeId, Thread_Job job, bytes queueCapacity,
         Memory_free(t);
         return nullptr;
     }
-    Map_put(workers(), (u64)(uintptr_t)t, 1);
+    Map_put(workers(), (u64)(pointer)t, 1);
     return t;
 }
 
@@ -167,7 +167,7 @@ static void freeInternal(Thread *self, bool force) {
     atomic_store(&(*self).state, 0);
     joinPlatform(self);
     RingBuffer_shutdown(&(*self).queue);
-    Map_remove(workers(), (u64)(uintptr_t)self);
+    Map_remove(workers(), (u64)(pointer)self);
     Memory_free(self);
 }
 
@@ -212,7 +212,7 @@ static void walkPool(void (*visit)(Thread *self, bool system), bool system) {
         return;
     bytes count = Array_length(keys);
     for (bytes i = 0; i < count; i++) {
-        Thread *t = (Thread*) (uintptr_t)Array_get(keys, i);
+        Thread *t = (Thread*) (pointer)Array_get(keys, i);
         visit(t, system);
     }
     Array_free(keys);

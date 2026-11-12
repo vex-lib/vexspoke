@@ -1,10 +1,7 @@
 #ifndef OBJECTS_GLOBAL_H
 #define OBJECTS_GLOBAL_H
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <stddef.h>
-#include "lang/constructor.h"
+#include "vex.h"
 
 // objects/global.h — Atomic global pointer/variable object wrapper.
 // Ported from legacy objects/Global.java.

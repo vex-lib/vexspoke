@@ -37,12 +37,12 @@ static void test_radix_sort(void) {
     void *values[64];
     for (int i = 0; i < 64; i++) {
         keys[i] = (u64) (63 - i);
-        values[i] = (void*) (uintptr_t) (i * 10);
+        values[i] = (void*) (pointer) (i * 10);
     }
     assert(Sort_radixSortPairsUint64(keys, values, 64u));
     for (int i = 0; i < 63; i++) {
         assert(keys[i] <= keys[i + 1]);
-        assert((uintptr_t) values[i] == (uintptr_t) ((63 - keys[i]) * 10));
+        assert((pointer) values[i] == (pointer) ((63 - keys[i]) * 10));
     }
 }
 

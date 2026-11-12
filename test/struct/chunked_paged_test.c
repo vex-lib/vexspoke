@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 #include "struct/chunked_list.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 
 ;;OVERVIEW
 /**

@@ -1,9 +1,7 @@
 #ifndef UTIL_RANDOM_H
 #define UTIL_RANDOM_H
 
-#include <stdbool.h>
-#include <stdint.h>
-#include "lang/constructor.h"
+#include "vex.h"
 
 #include "objects/probable.h"
 #include "objects/probable_objects.h"
@@ -62,10 +60,10 @@ char Random_nextChar(Random *r);
 bool Random_getWeight(Random *r, u32 weight, u32 total);
 
 // Roll a Probable: object on a hit, 0 on a miss.
-uintptr_t Random_sample(Random *r, const Probable *probable);
+pointer Random_sample(Random *r, const Probable *probable);
 
 // Draw one object from a weighted ProbableObjects pool.
-uintptr_t Random_probablePool(Random *r, const ProbableObjects *pool);
+pointer Random_probablePool(Random *r, const ProbableObjects *pool);
 
 
 #define Random(...) CONSTRUCTOR_DISPATCH(Random, __VA_ARGS__)

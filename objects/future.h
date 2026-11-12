@@ -1,10 +1,7 @@
 #ifndef OBJECTS_FUTURE_H
 #define OBJECTS_FUTURE_H
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <stddef.h>
-#include "lang/constructor.h"
+#include "vex.h"
 
 // objects/future.h — Asynchronous single-assignment Future object wrapper.
 // Ported from legacy objects/Future.java.

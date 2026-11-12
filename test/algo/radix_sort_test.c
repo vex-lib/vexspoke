@@ -75,9 +75,9 @@ static void test_trivial(void) {
     CHECK(big[0] == 0x123456789abcdefull);
 
     u64 keys[1] = { 5 };
-    void *vals[1] = { (void*) (uintptr_t) 9 };
+    void *vals[1] = { (void*) (pointer) 9 };
     CHECK(Sort_radixSortPairsUint64(keys, vals, 1u));
-    CHECK(keys[0] == 5 && (uintptr_t) vals[0] == 9);
+    CHECK(keys[0] == 5 && (pointer) vals[0] == 9);
 
     // pairsU64 with a null side is a no-op, not a crash.
     u64 k2[2] = { 2, 1 };
@@ -141,7 +141,7 @@ static void test_pairs(void) {
     // Keys with duplicates; the values are distinct tags. Stability means the
     // tags of equal keys keep their original relative order.
     u64 keys[]      = { 5, 1, 5, 3, 1, 5, 0, 3 };
-    uintptr_t tags[]     = { 50, 11, 51, 31, 12, 52, 70, 32 };
+    pointer tags[]     = { 50, 11, 51, 31, 12, 52, 70, 32 };
     void *vals[8];
     for (int i = 0; i < 8; i++)
         vals[i] = (void*) tags[i];
@@ -151,10 +151,10 @@ static void test_pairs(void) {
 
     // Reconstruct the (key, tag) multiset and check stability per key.
     u64 expectKeys[] = { 0, 1, 1, 3, 3, 5, 5, 5 };
-    uintptr_t expectTags[] = { 70, 11, 12, 31, 32, 50, 51, 52 };
+    pointer expectTags[] = { 70, 11, 12, 31, 32, 50, 51, 52 };
     for (int i = 0; i < 8; i++) {
         CHECK(keys[i] == expectKeys[i]);
-        CHECK((uintptr_t) vals[i] == expectTags[i]);
+        CHECK((pointer) vals[i] == expectTags[i]);
     }
 }
 

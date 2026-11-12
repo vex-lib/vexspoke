@@ -2,7 +2,7 @@
 
 #include "math/fast_math.h"
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 #include "util/annotation.h"
 
 ;;DEFINITION

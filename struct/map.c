@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 #include "struct/exhaustion.h"
 #include "util/hash.h"
 #include "util/annotation.h"
@@ -81,11 +81,11 @@ static int isReferenceClass(u32 classId) {
 static u64 computeHash(u32 keyClass, u64 key) {
     if (key == 0) return 0;
     if (isReferenceClass(keyClass) && key >= 4096u) {
-        u64 inspected = Memory_type((void*) (uintptr_t)key);
+        u64 inspected = Memory_type((void*) (pointer)key);
         if (inspected != 0) {
-            bytes len = Memory_length((void*) (uintptr_t)key);
+            bytes len = Memory_length((void*) (pointer)key);
             if (len > 0)
-                return Hash_fnv1a64((const u8*) (uintptr_t)key, len);
+                return Hash_fnv1a64((const u8*) (pointer)key, len);
         }
     }
     return Hash_murmur3Mix64(key);
@@ -95,8 +95,8 @@ static int keysEqual(u32 keyClass, u64 k1, u64 k2) {
     if (k1 == k2) return 1;
     if (k1 == 0 || k2 == 0) return 0;
     if (isReferenceClass(keyClass) && k1 >= 4096u && k2 >= 4096u) {
-        void *p1 = (void*) (uintptr_t)k1;
-        void *p2 = (void*) (uintptr_t)k2;
+        void *p1 = (void*) (pointer)k1;
+        void *p2 = (void*) (pointer)k2;
         u64 t1 = Memory_type(p1);
         u64 t2 = Memory_type(p2);
         if (t1 != 0 && t1 == t2) {

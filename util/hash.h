@@ -1,9 +1,7 @@
 #ifndef UTIL_HASH_H
 #define UTIL_HASH_H
 
-#include <stddef.h>
-
-#include "lang/primitive.h"
+#include "vex.h"
 
 // util/hash.h — the Hash utility, ported from util/Hash.java.
 //

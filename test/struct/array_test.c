@@ -20,7 +20,7 @@
 #include "struct/array.h"
 #include "struct/collection.h"
 #include "exception/try_value.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 
 static int g_failures = 0;
 

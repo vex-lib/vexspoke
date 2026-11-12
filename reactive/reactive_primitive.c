@@ -9,7 +9,7 @@
 
 #include "util/annotation.h"
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 
 ;;DEFINITION
 /**
@@ -45,39 +45,39 @@
 
 // --- bit-cast helpers (shared by the f32/d64/IntFloat packings) ---
 
-static uintptr_t f32Bits(f32 value) {
+static pointer f32Bits(f32 value) {
     u32 bits = 0u;
     memcpy(&bits, &value, sizeof(bits));
-    return (uintptr_t) bits;
+    return (pointer) bits;
 }
 
-static f32 f32Of(uintptr_t word) {
+static f32 f32Of(pointer word) {
     u32 bits = (u32) word;
     f32 value = 0.0f;
     memcpy(&value, &bits, sizeof(value));
     return value;
 }
 
-static uintptr_t bitsOf(d64 value) {
+static pointer bitsOf(d64 value) {
     u64 bits = 0u;
     memcpy(&bits, &value, sizeof(bits));
-    return (uintptr_t) bits;
+    return (pointer) bits;
 }
 
-static d64 f64Of(uintptr_t word) {
+static d64 f64Of(pointer word) {
     u64 bits = (u64) word;
     d64 value = 0.0;
     memcpy(&value, &bits, sizeof(value));
     return value;
 }
 
-static uintptr_t intFloatBits(IntFloat value) {
+static pointer intFloatBits(IntFloat value) {
     u64 bits = 0u;
     memcpy(&bits, &value, sizeof(bits));
-    return (uintptr_t) bits;
+    return (pointer) bits;
 }
 
-static IntFloat intFloatOf(uintptr_t word) {
+static IntFloat intFloatOf(pointer word) {
     u64 bits = (u64) word;
     IntFloat value = { 0, 0.0f };
     memcpy(&value, &bits, sizeof(value));
@@ -94,7 +94,7 @@ static IntFloat intFloatZero(void) {
 #define VEX_NAME ReactiveBool
 #define VEX_T    bool
 #define VEX_TYPE_ID TYPE_REACTIVE_BOOL
-#define VEX_TO_WORD(v)   ((uintptr_t) ((v) ? 1u : 0u))
+#define VEX_TO_WORD(v)   ((pointer) ((v) ? 1u : 0u))
 #define VEX_FROM_WORD(w) ((w) != 0u)
 #define VEX_ZERO       false
 #define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%s", (v) ? "true" : "false")
@@ -110,7 +110,7 @@ static IntFloat intFloatZero(void) {
 #define VEX_NAME ReactiveByte
 #define VEX_T
 #define VEX_TYPE_ID TYPE_REACTIVE_BYTE
-#define VEX_TO_WORD(v)   ((uintptr_t) (u8) (v))
+#define VEX_TO_WORD(v)   ((pointer) (u8) (v))
 #define VEX_FROM_WORD(w) (() (u8) (w))
 #define VEX_ZERO       (() 0)
 #define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%d", (int) (v))
@@ -126,7 +126,7 @@ static IntFloat intFloatZero(void) {
 #define VEX_NAME ReactiveShort
 #define VEX_T
 #define VEX_TYPE_ID TYPE_REACTIVE_SHORT
-#define VEX_TO_WORD(v)   ((uintptr_t) (u16) (v))
+#define VEX_TO_WORD(v)   ((pointer) (u16) (v))
 #define VEX_FROM_WORD(w) (() (u16) (w))
 #define VEX_ZERO       (() 0)
 #define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%d", (int) (v))
@@ -142,7 +142,7 @@ static IntFloat intFloatZero(void) {
 #define VEX_NAME ReactiveChar
 #define VEX_T    u16
 #define VEX_TYPE_ID TYPE_REACTIVE_CHAR
-#define VEX_TO_WORD(v)   ((uintptr_t) (u16) (v))
+#define VEX_TO_WORD(v)   ((pointer) (u16) (v))
 #define VEX_FROM_WORD(w) ((u16) (w))
 #define VEX_ZERO       ((u16) 0)
 #define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%u", (unsigned) (v))
@@ -158,7 +158,7 @@ static IntFloat intFloatZero(void) {
 #define VEX_NAME ReactiveInt
 #define VEX_T    i32
 #define VEX_TYPE_ID TYPE_REACTIVE_INT
-#define VEX_TO_WORD(v)   ((uintptr_t) (u32) (v))
+#define VEX_TO_WORD(v)   ((pointer) (u32) (v))
 #define VEX_FROM_WORD(w) ((i32) (u32) (w))
 #define VEX_ZERO       ((i32) 0)
 #define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%d", (int) (v))
@@ -174,7 +174,7 @@ static IntFloat intFloatZero(void) {
 #define VEX_NAME ReactiveLong
 #define VEX_T    int64_t
 #define VEX_TYPE_ID TYPE_REACTIVE_LONG
-#define VEX_TO_WORD(v)   ((uintptr_t) (v))
+#define VEX_TO_WORD(v)   ((pointer) (v))
 #define VEX_FROM_WORD(w) ((int64_t) (w))
 #define VEX_ZERO       ((int64_t) 0)
 #define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%lld", (long long) (v))
@@ -222,7 +222,7 @@ static IntFloat intFloatZero(void) {
 #define VEX_NAME ReactiveString
 #define VEX_T    const u8 *
 #define VEX_TYPE_ID TYPE_REACTIVE_STRING
-#define VEX_TO_WORD(v)   ((uintptr_t) (v))
+#define VEX_TO_WORD(v)   ((pointer) (v))
 #define VEX_FROM_WORD(w) ((const u8*) (w))
 #define VEX_ZERO       nullptr
 #define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%s", (v) ? (const char*) (v) : "")

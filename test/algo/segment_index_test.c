@@ -6,7 +6,7 @@
 
 #include "algo/segment_index.h"
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 #include "relational/variable_hash_map.h"
 #include "relational/variable_slot.h"
 

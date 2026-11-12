@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 #include "nio/mem.h"
 #include "util/annotation.h"
 
@@ -251,8 +251,8 @@ bool Sort_mergeSort(void *values, bytes count, bytes elementSize,
         return false;
 
     bytes byteCount = count * elementSize;
-    uintptr_t valuesStart = (uintptr_t) values;
-    uintptr_t scratchStart = (uintptr_t) scratch;
+    pointer valuesStart = (pointer) values;
+    pointer scratchStart = (pointer) scratch;
     if (valuesStart > UINTPTR_MAX - byteCount
         || scratchStart > UINTPTR_MAX - byteCount
         || (valuesStart < scratchStart + byteCount

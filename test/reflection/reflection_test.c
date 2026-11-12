@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 #include "reflection/class.h"
 #include "reflection/field.h"
 #include "reflection/method.h"
@@ -45,23 +45,23 @@ static int g_checks = 0;
         }                                                                 \
     } while (0)
 
-// Test callable that f64s the uintptr_t-encoded argument.
+// Test callable that f64s the pointer-encoded argument.
 static void *f64It(void *arg) {
-    return (void*) (uintptr_t) (((uintptr_t) arg) * 2u);
+    return (void*) (pointer) (((pointer) arg) * 2u);
 }
 
 typedef struct Holder {
-    uintptr_t value;
+    pointer value;
 } Holder;
 
 // Reads the test Holder's value through the reflection getter signature.
 static void *holderGet(void *receiver) {
-    return (void*) (uintptr_t) ((*(Holder*) receiver).value);
+    return (void*) (pointer) ((*(Holder*) receiver).value);
 }
 
 // Writes the test Holder's value through the reflection setter signature.
 static void holderSet(void *receiver, void *value) {
-    (*(Holder*) receiver).value = (uintptr_t) value;
+    (*(Holder*) receiver).value = (pointer) value;
 }
 
 // Pins the byte sizes of each reflection record, including embedded fields.
@@ -131,18 +131,18 @@ static void testFieldEmbedsVariable(void) {
     // The embedded Variable is the field's first member.
     Variable *inner = Field_getVariable(f);
     CHECK(inner != nullptr);
-    CHECK((uintptr_t) inner == (uintptr_t) f);
-    CHECK(Variable_read(inner, &holder) == (void*) (uintptr_t) 0u);
+    CHECK((pointer) inner == (pointer) f);
+    CHECK(Variable_read(inner, &holder) == (void*) (pointer) 0u);
 
     CHECK(strcmp(Field_getName(f), "position.x") == 0);
     CHECK(Field_getRead(f) == holderGet);
     CHECK(Field_getSet(f) == holderSet);
     CHECK(Field_getTarget(f) == &holder);
 
-    CHECK(Field_read(f, &holder) == (void*) (uintptr_t) 0u);
-    Field_write(f, &holder, (void*) (uintptr_t) 42u);
+    CHECK(Field_read(f, &holder) == (void*) (pointer) 0u);
+    Field_write(f, &holder, (void*) (pointer) 42u);
     CHECK(holder.value == 42u);
-    CHECK(Field_read(f, &holder) == (void*) (uintptr_t) 42u);
+    CHECK(Field_read(f, &holder) == (void*) (pointer) 42u);
 
     Field_free(f);
 }
@@ -256,7 +256,7 @@ static void testClass(void) {
     CHECK(Class_check(c, TYPE_REFLECT_CLASS));
     CHECK(Class_getLayout(c) == layout);
     CHECK(Class_getConstruct(c) == f64It);
-    CHECK(Class_construct(c, (void*) (uintptr_t) 5u) == (void*) (uintptr_t) 10u);
+    CHECK(Class_construct(c, (void*) (pointer) 5u) == (void*) (pointer) 10u);
 
     CHECK(Class_addMethod(c, m1) == 0u);
     CHECK(Class_addMethod(c, m2) == 1u);
@@ -265,7 +265,7 @@ static void testClass(void) {
 
     Method *got = Class_getMethod(c, 1u);
     CHECK(strcmp(Method_getName(got), "render") == 0);
-    CHECK(Method_call(got, (void*) (uintptr_t) 3u) == (void*) (uintptr_t) 6u);
+    CHECK(Method_call(got, (void*) (pointer) 3u) == (void*) (pointer) 6u);
 
     // The layout's fields are reachable through the class.
     Struct *viaClass = Class_getLayout(c);

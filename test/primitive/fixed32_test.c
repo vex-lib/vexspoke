@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #include "primitive/fixed32.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 
 static int g_failures = 0;
 

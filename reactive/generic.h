@@ -74,13 +74,13 @@
     bool VEX_CAT(NAME, _removeOnNullptr)(NAME *self, VEX_CAT(NAME, NullptrFn) fn)
 
 #define VEX_CHANNELS_DEF(NAME, FROMW)                                       \
-    static void VEX_CAT(NAME, _setTramp)(Reactive *r, uintptr_t v, void *ud) { \
+    static void VEX_CAT(NAME, _setTramp)(Reactive *r, pointer v, void *ud) { \
         (void) r; ((VEX_CAT(NAME, SetFn)) ud)(FROMW(v));                    \
     }                                                                       \
-    static void VEX_CAT(NAME, _changedTramp)(Reactive *r, uintptr_t o, uintptr_t n, void *ud) { \
+    static void VEX_CAT(NAME, _changedTramp)(Reactive *r, pointer o, pointer n, void *ud) { \
         (void) r; (void) o; ((VEX_CAT(NAME, ChangedFn)) ud)(FROMW(n));      \
     }                                                                       \
-    static void VEX_CAT(NAME, _getTramp)(Reactive *r, uintptr_t v, void *ud) { \
+    static void VEX_CAT(NAME, _getTramp)(Reactive *r, pointer v, void *ud) { \
         (void) r; ((VEX_CAT(NAME, GetFn)) ud)(FROMW(v));                    \
     }                                                                       \
     static void VEX_CAT(NAME, _nullptrTramp)(Reactive *r, void *ud) {       \
@@ -148,7 +148,7 @@
             Memory_alloc(TYPE_REACTIVE, sizeof(VEX_RCLASS(NAME)));      \
         if (self == nullptr)                                            \
             return nullptr;                                             \
-        Reactive_init(&(*self).base, (uintptr_t) initial);              \
+        Reactive_init(&(*self).base, (pointer) initial);              \
         Reactive_setValueOf(&(*self).base, VALUEOF);                    \
         return self;                                                    \
     }                                                                   \
@@ -164,7 +164,7 @@
     void VEX_RFN(NAME, _set)(VEX_RCLASS(NAME) *self, NAME *value) {     \
         if (self == nullptr)                                            \
             return;                                                     \
-        Reactive_store(&(*self).base, (uintptr_t) value);                 \
+        Reactive_store(&(*self).base, (pointer) value);                 \
     }                                                                   \
     NAME *VEX_RFN(NAME, _get)(const VEX_RCLASS(NAME) *self) {           \
         if (self == nullptr)                                            \
@@ -176,7 +176,7 @@
 // The PLAIN one-liner: the object renders as its pointer (hex). Use when the
 // object has no textual form.
 #define IMPLEMENT_REACTIVE(NAME)                                            \
-    static void VEX_CAT(VEX_RCLASS(NAME), _valueOfPtr)(uintptr_t word, char *out, bytes cap) { \
+    static void VEX_CAT(VEX_RCLASS(NAME), _valueOfPtr)(pointer word, char *out, bytes cap) { \
         snprintf((out), (cap), "%p", (void*) word);                         \
     }                                                                       \
     VEX_IMPLEMENT_REACTIVE_BODY(NAME, VEX_CAT(VEX_RCLASS(NAME), _valueOfPtr))
@@ -185,7 +185,7 @@
 //   void STRFN(const NAME *value, char *out, bytes cap);
 // (declared before the stamp). A Label [] slot then renders real text.
 #define IMPLEMENT_REACTIVE_STR(NAME, STRFN)                                 \
-    static void VEX_CAT(VEX_RCLASS(NAME), _valueOfStr)(uintptr_t word, char *out, bytes cap) { \
+    static void VEX_CAT(VEX_RCLASS(NAME), _valueOfStr)(pointer word, char *out, bytes cap) { \
         STRFN((const NAME*) word, out, cap);                                \
     }                                                                       \
     VEX_IMPLEMENT_REACTIVE_BODY(NAME, VEX_CAT(VEX_RCLASS(NAME), _valueOfStr))

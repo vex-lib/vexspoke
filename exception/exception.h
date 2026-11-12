@@ -7,7 +7,7 @@
 #include <stdarg.h>
 
 #include "lang/constructor.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 
 // Categories of runtime exceptions
 typedef enum ExceptionCategory {

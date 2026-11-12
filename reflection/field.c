@@ -8,7 +8,7 @@
 #include "util/annotation.h"
 #include "nio/mem.h"
 #include "oop/stride.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 
 ;;DEFINITION
 /**
@@ -292,7 +292,7 @@ void Field_toStringStruct(const Field *self, char *dest, bytes cap, bool *outTru
     Variable_toString(variable, inner, sizeof(inner), &innerTruncated);
     int written = snprintf(dest, cap,
                            "Field { variable=%s, set=0x%llx, typeId=0x%llx, offset=%u, size=%u, flags=0x%x }",
-                           inner, (unsigned long long) (uintptr_t) (*self).set,
+                           inner, (unsigned long long) (pointer) (*self).set,
                            (unsigned long long) (*self).typeId, (*self).offset,
                            (*self).size, (*self).flags);
     if (written < 0 || (bytes) written >= cap || innerTruncated) {

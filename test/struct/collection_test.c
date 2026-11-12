@@ -12,7 +12,7 @@
 
 #include "struct/collection.h"
 #include "struct/array.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 
 static int g_failures = 0;
 

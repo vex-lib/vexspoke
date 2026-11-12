@@ -1,12 +1,8 @@
+#include "vex.h"
+#include "re.h"
 #include "objects/probable_objects.h"
-
-#include <string.h>
-
-#include "util/throw.h"
-#include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 #include "util/random.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**
@@ -129,7 +125,7 @@ static u8 *slotAt(ProbableObjects *po, bytes index) {
     return (*po).slots + index * SLOT_SIZE;
 }
 
-int ProbableObjects_add(ProbableObjects *po, uintptr_t object, u32 weight) {
+int ProbableObjects_add(ProbableObjects *po, pointer object, u32 weight) {
     if (!po) return 0;
     if ((*po).count >= (*po).capacity) {
         THROW("probable objects pool is full");
@@ -141,7 +137,7 @@ int ProbableObjects_add(ProbableObjects *po, uintptr_t object, u32 weight) {
     }
 
     u8 *slot = slotAt(po, (*po).count);
-    *(uintptr_t*) slot = object;
+    *(pointer*) slot = object;
 
     u32 running = (*po).totalWeight + weight;
     *(u32*) (slot + 8) = running;
@@ -157,9 +153,9 @@ int ProbableObjects_addProbable(ProbableObjects *po, const Probable *probable) {
     return ProbableObjects_add(po, (*probable).object, (*probable).weight);
 }
 
-uintptr_t ProbableObjects_objectAt(ProbableObjects *po, bytes index) {
+pointer ProbableObjects_objectAt(ProbableObjects *po, bytes index) {
     if (!po || index >= (*po).count) return 0;
-    return *(uintptr_t*) slotAt(po, index);
+    return *(pointer*) slotAt(po, index);
 }
 
 u32 ProbableObjects_cumulativeAt(ProbableObjects *po, bytes index) {
@@ -172,6 +168,6 @@ u32 ProbableObjects_weightAt(ProbableObjects *po, bytes index) {
     return *(u32*) (slotAt(po, index) + 12);
 }
 
-uintptr_t ProbableObjects_get(ProbableObjects *po) {
+pointer ProbableObjects_get(ProbableObjects *po) {
     return Random_probablePool(Random_system(), po);
 }

@@ -57,7 +57,7 @@ int main(void) {
     CHECK(ProbableObjects_cumulativeAt(po, 1) == 3);
 
     // A draw lands on one of the pool's objects.
-    uintptr_t drawn = ProbableObjects_get(po);
+    pointer drawn = ProbableObjects_get(po);
     CHECK(drawn == 100 || drawn == 200);
 
     // A zero-weight first slot must never capture zero-based target 0.
@@ -120,7 +120,7 @@ int main(void) {
     ProbableObjects_free(boundary);
 
     // addProbable copies object + weight.
-    Probable *pr = Probable_3((uintptr_t) 500, 5, 5);
+    Probable *pr = Probable_3((pointer) 500, 5, 5);
     CHECK(ProbableObjects_addProbable(po, pr) == 1);
     CHECK(ProbableObjects_size(po) == 3);
     CHECK(ProbableObjects_totalWeight(po) == 8);

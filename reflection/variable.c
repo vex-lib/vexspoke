@@ -7,7 +7,7 @@
 
 #include "util/annotation.h"
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 
 ;;DEFINITION
 /**
@@ -191,8 +191,8 @@ void Variable_toStringStruct(const Variable *self, char *dest, bytes cap, bool *
     }
     int written = snprintf(dest, cap, "Variable { name=\"%s\", read=0x%llx, target=0x%llx }",
                            (*self).name,
-                           (unsigned long long) (uintptr_t) (*self).read,
-                           (unsigned long long) (uintptr_t) (*self).target);
+                           (unsigned long long) (pointer) (*self).read,
+                           (unsigned long long) (pointer) (*self).target);
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;

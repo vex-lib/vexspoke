@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #include "vex.h"
-#include "re/type/type.h"
+#include "re/type/re_type.h"
 
 // 0x0036 is the next free Vexspoke class after ID_PROCESS_SPAWN (0x0035).
 #define TYPE_FRAME_INBOX_SINGLETON Type_make(PROJ_VEXSPOKE, FORM_SINGLETON, 0x0036u)

@@ -41,11 +41,11 @@ typedef void (*ReactiveDeliverFn)(Reactive *self);
 // typed reactive (int -> "%d", f32 -> "%g", string -> the Bytes, …) so a
 // type-erased consumer (a Label's [] slot) can render any reactive as text — a
 // valueOf() in the reactive section.
-typedef void (*ReactiveValueFn)(uintptr_t word, char *out, bytes cap);
+typedef void (*ReactiveValueFn)(pointer word, char *out, bytes cap);
 
 struct Reactive {
-    _Atomic(uintptr_t) value;  // the live word (scalar, or ptr to an immutable block)
-    uintptr_t shadow;          // owner-affine: the last drained word
+    _Atomic(pointer) value;  // the live word (scalar, or ptr to an immutable block)
+    pointer shadow;          // owner-affine: the last drained word
     _Atomic bool dirty;        // a write awaits the owner's drain
     bool active;               // runtime-active flag
     bool deliverBound;         // true: use `deliver` verbatim; false: inherit the default
@@ -57,17 +57,17 @@ struct Reactive {
     ReactiveObserverList *onNullptr; // fires when a drained word is 0 (empty)
 };
 
-typedef void (*ReactiveSetFn)(Reactive *self, uintptr_t newValue, void *userdata);
-typedef void (*ReactiveChangedFn)(Reactive *self, uintptr_t oldValue, uintptr_t newValue, void *userdata);
-typedef void (*ReactiveGetFn)(Reactive *self, uintptr_t value, void *userdata);
+typedef void (*ReactiveSetFn)(Reactive *self, pointer newValue, void *userdata);
+typedef void (*ReactiveChangedFn)(Reactive *self, pointer oldValue, pointer newValue, void *userdata);
+typedef void (*ReactiveGetFn)(Reactive *self, pointer value, void *userdata);
 typedef void (*ReactiveNullptrFn)(Reactive *self, void *userdata);
 
 // --- Constructors ---
 // Embedded init: seed the word (its own shadow starts equal, so the first drain
 // is silent). The typed reactives call this from their constructors.
-bool Reactive_init(Reactive *self, uintptr_t initialWord);
+bool Reactive_init(Reactive *self, pointer initialWord);
 // Arena-allocated conveniences (the Arity and Constructive Convenience Law).
-Reactive *Reactive_1(uintptr_t initialWord);
+Reactive *Reactive_1(pointer initialWord);
 Reactive *Reactive_2(const Reactive *init, bytes count);
 // The bare `Reactive(...)` arity chooser is retired: the token is promoted to the
 // generic family constructor `Reactive(T)` (reactive/generic.h), so a bare engine
@@ -81,13 +81,13 @@ void Reactive_free(Reactive *self);
 // Atomic acquire load — safe from any thread. Fires the onGet observers
 // immediately (on the caller's thread) when any are bound; with none bound it is
 // a single atomic load, so a bare read stays hot-path cheap.
-uintptr_t Reactive_load(Reactive *self);
+pointer Reactive_load(Reactive *self);
 // Atomic release store + dirty mark. Safe from ANY thread and NEVER fires
 // observers. For a word-sized reactive the word IS the value; for a big one it
 // is a pointer to an immutable block (see the typed facades). When a delivery
 // hook is bound (below), store ENDS by calling it — so `set` alone can schedule
 // the owner's drain, without the caller ever naming Reactive_drain.
-void Reactive_store(Reactive *self, uintptr_t word);
+void Reactive_store(Reactive *self, pointer word);
 
 // Bind the auto-delivery hook (or nullptr to clear). Owner-affine: bind before
 // producers run. thread/reactive.c binds its wake here so an adopted box fires

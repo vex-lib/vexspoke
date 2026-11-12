@@ -7,7 +7,7 @@
 
 #include "util/annotation.h"
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 #include "util/random.h"
 
 ;;DEFINITION
@@ -42,7 +42,7 @@
 #define VEX_NAME       ReactiveProbableInt
 #define VEX_T          i32
 #define VEX_TYPE_ID    TYPE_REACTIVE_PROBABLE
-#define VEX_TO_WORD(v)   ((uintptr_t) (u32) (v))
+#define VEX_TO_WORD(v)   ((pointer) (u32) (v))
 #define VEX_FROM_WORD(w) ((i32) (u32) (w))
 #define VEX_ZERO       ((i32) 0)
 #define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%d", (int) (v))

@@ -71,7 +71,7 @@ int main(void) {
     // No backend has answered yet: the seam says so instead of guessing.
     CHECK(Tls_backend() == TLS_BACKEND_NONE);
 
-    TlsConn *conn = (TlsConn*) (uintptr_t) 0x1; // must be cleared before any use
+    TlsConn *conn = (TlsConn*) (pointer) 0x1; // must be cleared before any use
     CHECK(!Tls_connect(nullptr, 443, &conn));
     CHECK(conn == nullptr);
     conn = nullptr;

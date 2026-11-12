@@ -1,7 +1,5 @@
+#include "vex.h"
 #include "util/hash.h"
-
-#include "types.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**
@@ -56,7 +54,7 @@ u64 Hash_fnv1a64(const u8 *data, bytes length) {
 
 // Mixes a pointer's integer representation into a 64-bit hash.
 u64 Hash_pointer(const void *p) {
-    return Hash_murmur3Mix64((u64) (uintptr_t) p);
+    return Hash_murmur3Mix64((u64) (pointer) p);
 }
 
 // Applies the MurmurHash3 64-bit finalizer to one word.

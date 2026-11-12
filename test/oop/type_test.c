@@ -10,7 +10,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 
 static int g_failures = 0;
 
@@ -47,7 +47,7 @@ int main(void) {
     CHECK(Type_isStruct(FORM_STRUCT_SINGLETON));
     CHECK(!Type_isStruct(0));
     CHECK(!Type_isStruct(FORM_SINGLETON));
-    CHECK(Type_isStructSingleton(TYPE_SHELF));
+    CHECK(Type_isStructSingleton(SPOKE_TYPE_VARIABLE_SLOT));
     CHECK(Type_isStructArray(FORM_STRUCT_ARRAY));
     CHECK(Type_isStructSOA(FORM_ARRAY_SOA));
     CHECK(Type_isStructAOS(FORM_ARRAY_AOS));

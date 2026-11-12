@@ -1,10 +1,7 @@
 #ifndef NET_JSON_H
 #define NET_JSON_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include "lang/constructor.h"
+#include "vex.h"
 
 // net/json.h — off-heap JSON documents (Legacy: net/JSON.java).
 //

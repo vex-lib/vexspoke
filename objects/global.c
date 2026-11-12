@@ -1,11 +1,7 @@
-#include <string.h>
+#include "vex.h"
+#include "re.h"
 #include "objects/global.h"
-
-#include <stdatomic.h>
-
-#include "nio/mem.h"
-#include "oop/type.h"
-#include "util/annotation.h"
+#include "oop/vexspoke_type.h"
 
 ;;DEFINITION
 /**

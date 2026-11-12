@@ -8,7 +8,7 @@
 
 #include "util/annotation.h"
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 
 ;;DEFINITION
 /**
@@ -43,8 +43,8 @@
  * STRUCT FIELDS (Mirroring reactive/reactive.h):
  * ----------------------------------------------------------------------------
  *   Reactive {
- *     _Atomic(uintptr_t) value; // the live word
- *     uintptr_t shadow;         // owner-affine: the last drained word
+ *     _Atomic(pointer) value; // the live word
+ *     pointer shadow;         // owner-affine: the last drained word
  *     _Atomic bool dirty;       // a write awaits the owner's drain
  *     bool active;              // runtime-active flag
  *     bool deliverBound;        // true: own hook; false: inherit the default
@@ -160,7 +160,7 @@ static ReactiveDeliverFn s_defaultDelivery = nullptr;
 
 // CONSTRUCTORS
 
-bool Reactive_init(Reactive *self, uintptr_t initialWord) {
+bool Reactive_init(Reactive *self, pointer initialWord) {
     if (self == nullptr)
         return false;
     atomic_init(&(*self).value, initialWord);
@@ -177,7 +177,7 @@ bool Reactive_init(Reactive *self, uintptr_t initialWord) {
     return true;
 }
 
-Reactive *Reactive_1(uintptr_t initialWord) {
+Reactive *Reactive_1(pointer initialWord) {
     Reactive *reactive = (Reactive*) Memory_alloc(REACTIVE_ARRAY_TYPE, sizeof(Reactive));
     if (reactive == nullptr)
         return nullptr;
@@ -191,7 +191,7 @@ Reactive *Reactive_2(const Reactive *init, bytes count) {
     Reactive *p = (Reactive*) Memory_alloc(TYPE_REACTIVE_ARRAY, sizeof(Reactive) * count);
     if (p == nullptr)
         return nullptr;
-    uintptr_t seed = (init != nullptr) ? Reactive_load((Reactive*) init) : 0u;
+    pointer seed = (init != nullptr) ? Reactive_load((Reactive*) init) : 0u;
     for (bytes i = 0; i < count; i++)
         Reactive_init(&p[i], seed);
     return p;
@@ -216,10 +216,10 @@ void Reactive_free(Reactive *self) {
 
 // CORE FUNCTIONS
 
-uintptr_t Reactive_load(Reactive *self) {
+pointer Reactive_load(Reactive *self) {
     if (self == nullptr)
         return 0u;
-    uintptr_t value = atomic_load_explicit(&(*self).value, memory_order_acquire);
+    pointer value = atomic_load_explicit(&(*self).value, memory_order_acquire);
     // onGet is the ONE-FIRE READ: it fires immediately, on the reader's thread,
     // every time the value is read. No observers bound -> a bare atomic load, so
     // the hot path stays cheap.
@@ -234,7 +234,7 @@ uintptr_t Reactive_load(Reactive *self) {
     return value;
 }
 
-void Reactive_store(Reactive *self, uintptr_t word) {
+void Reactive_store(Reactive *self, pointer word) {
     if (self == nullptr)
         return;
     // Any thread: move the word, mark dirty, fire nothing.
@@ -286,7 +286,7 @@ const char *Reactive_valueOf(Reactive *self, char *out, bytes cap) {
         out[0] = '\0';
         return out;
     }
-    uintptr_t word = atomic_load_explicit(&(*self).value, memory_order_acquire);
+    pointer word = atomic_load_explicit(&(*self).value, memory_order_acquire);
     if ((*self).valueOf != nullptr)
         (*self).valueOf(word, out, cap);
     else
@@ -301,8 +301,8 @@ bool Reactive_drain(Reactive *self) {
     // release store, so the load below observes the written word.
     if (!atomic_exchange_explicit(&(*self).dirty, false, memory_order_acq_rel))
         return false; // nothing written since the last drain
-    uintptr_t value = atomic_load_explicit(&(*self).value, memory_order_acquire);
-    uintptr_t old = (*self).shadow;
+    pointer value = atomic_load_explicit(&(*self).value, memory_order_acquire);
+    pointer old = (*self).shadow;
     // onSet fires once for the whole batch (coalesced: last value wins).
     if ((*self).onSet != nullptr) {
         ReactiveObserverList *list = (*self).onSet;

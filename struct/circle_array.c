@@ -3,7 +3,7 @@
 #include <string.h>
 #include "nio/mem.h"
 #include "oop/stride.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 #include "struct/exhaustion.h"
 #include "util/annotation.h"
 

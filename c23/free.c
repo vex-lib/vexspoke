@@ -2,7 +2,7 @@
 #undef free // We need the real free() for Memory_free later if we call it directly, though we actually call Memory_free here.
 
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 #include "objects/probable.h"
 #include "util/annotation.h"
 

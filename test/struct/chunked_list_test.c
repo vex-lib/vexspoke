@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdatomic.h>
 #include "struct/chunked_list.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 
 // vexspoke/test/chunked_list_test.c — never-moved chunked list verifier.
 //

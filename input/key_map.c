@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 #include "input/key.h"
 #include "input/mouse.h"
 #include "util/annotation.h"

@@ -4,7 +4,7 @@
 #include "util/annotation.h"
 
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 
 ;;DEFINITION
 /**

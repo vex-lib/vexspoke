@@ -1,11 +1,11 @@
 #ifndef OOP_TYPE_H
 #define OOP_TYPE_H
 
-#include <stdint.h>
+#include "vex.h"
 
-#include "re/type/type.h"
+#include "re/type/re_type.h"
 
-// oop/type.h — vexspoke's OWN class registry (the One Type Registry Law).
+// oop/vexspoke_type.h — vexspoke's OWN class registry (the One Type Registry Law).
 //
 // The shared type ALGEBRA — the mask constants, SUGAR_VEX, FORM_*/PROJ_*/
 // MOD_*/WRAP* constants, ARCH_*, Type_make/Type_class/Type_form/Type_project,
@@ -64,7 +64,7 @@
 #define ID_FIXED32      0x0033u
 #define ID_WS_CLIENT    0x0034u
 #define ID_PROCESS_SPAWN 0x0035u
-#define ID_STRING_POOL  0x0036u
+#define SPOKE_ID_STRING_POOL  0x0036u
 #define ID_CIRCLE_ARRAY 0x0037u
 #define ID_SPHERE_ARRAY 0x0038u
 #define ID_OCTREE       0x0039u
@@ -174,14 +174,12 @@
 #define TYPE_EXCEPTION_SINGLETON    (SUGAR_VEX | PROJ_VEXSPOKE | FORM_SINGLETON | ID_EXCEPTION)
 
 // --- REFLECTION CLASSES (the 32-byte name box atom) ---
-#define ID_VARIABLE_SLOT 0x008Cu
-#define ID_VARIABLE_HASH_MAP 0x008Du
-#define ID_SHELF 0x008Eu
-#define ID_SHELF_NODE 0x008Fu
+#define SPOKE_ID_VARIABLE_SLOT 0x008Cu
+#define SPOKE_ID_VARIABLE_HASH_MAP 0x008Du
 #define ID_SEGMENT_INDEX 0x0090u
 #define ID_SEGMENT_ENTRY 0x0091u
 #define ID_SEGMENT_POSTING 0x0092u
-#define ID_VARIABLE_MINI_MAP 0x0093u
+#define SPOKE_ID_VARIABLE_MINI_MAP 0x0093u
 #define ID_REFLECT_CLASS 0x0094u
 #define ID_REFLECT_FIELD 0x0095u
 #define ID_REFLECT_VARIABLE 0x0096u
@@ -202,11 +200,10 @@
 #define ID_REACTIVE_BYTE 0x00A6u
 #define ID_REACTIVE_PROBABLE 0x00A7u
 
-#define TYPE_VARIABLE_SLOT          (SUGAR_VEX | PROJ_VEXSPOKE | FORM_STRUCT_SINGLETON | ID_VARIABLE_SLOT)
-#define TYPE_VARIABLE_HASH_MAP      (SUGAR_VEX | PROJ_VEXSPOKE | FORM_STRUCT_SINGLETON | ID_VARIABLE_HASH_MAP)
-#define TYPE_SHELF                  (SUGAR_VEX | PROJ_VEXSPOKE | FORM_STRUCT_SINGLETON | ID_SHELF)
+#define SPOKE_TYPE_VARIABLE_SLOT          (SUGAR_VEX | PROJ_VEXSPOKE | FORM_STRUCT_SINGLETON | SPOKE_ID_VARIABLE_SLOT)
+#define SPOKE_TYPE_VARIABLE_HASH_MAP      (SUGAR_VEX | PROJ_VEXSPOKE | FORM_STRUCT_SINGLETON | SPOKE_ID_VARIABLE_HASH_MAP)
 #define TYPE_SEGMENT_INDEX          (SUGAR_VEX | PROJ_VEXSPOKE | FORM_STRUCT_SINGLETON | ID_SEGMENT_INDEX)
-#define TYPE_VARIABLE_MINI_MAP      (SUGAR_VEX | PROJ_VEXSPOKE | FORM_STRUCT_SINGLETON | ID_VARIABLE_MINI_MAP)
+#define SPOKE_TYPE_VARIABLE_MINI_MAP      (SUGAR_VEX | PROJ_VEXSPOKE | FORM_STRUCT_SINGLETON | SPOKE_ID_VARIABLE_MINI_MAP)
 #define TYPE_REFLECT_CLASS          (SUGAR_VEX | PROJ_VEXSPOKE | FORM_STRUCT_SINGLETON | ID_REFLECT_CLASS)
 #define TYPE_REFLECT_FIELD          (SUGAR_VEX | PROJ_VEXSPOKE | FORM_STRUCT_SINGLETON | ID_REFLECT_FIELD)
 #define TYPE_REFLECT_VARIABLE       (SUGAR_VEX | PROJ_VEXSPOKE | FORM_STRUCT_SINGLETON | ID_REFLECT_VARIABLE)
@@ -229,8 +226,8 @@
 
 // --- DOWNSTREAM CLASS SPACE (owned per project, NOT listed here) ---
 // Each project numbers its classes from 1 in its own *-type.h: darkbase-engine
-// (src/darkbase-engine/type.h) and samplerate (src/oop/type.h) ship real registries
-// today; darling's src/c23/darling-type.h is still an empty draft, and
+// (engine/oop/darkbase_type.h) and samplerate (oop/samplerate_type.h) ship real
+// registries today; darling's src/c23/darling-type.h is still an empty draft, and
 // graphvex/hotcwap ship no registry file yet. This file keeps vexspoke-owned
 // IDs only, in the
 // legacy 1-based list that predates the project byte (vexspoke primitives
@@ -248,7 +245,7 @@
 #define TYPE_f64_ARRAY   (SUGAR_VEX | PROJ_VEXSPOKE | FORM_ARRAY     | ID_f64)
 #define TYPE_BYTE_ARRAY     (SUGAR_VEX | PROJ_VEXSPOKE | FORM_ARRAY     | ID_BYTE)
 #define TYPE_STRING_ARRAY   (SUGAR_VEX | PROJ_VEXSPOKE | FORM_ARRAY     | ID_STRING)
-#define TYPE_STRING_POOL    (SUGAR_VEX | PROJ_VEXSPOKE | FORM_ARRAY     | ID_STRING_POOL)
+#define SPOKE_TYPE_STRING_POOL    (SUGAR_VEX | PROJ_VEXSPOKE | FORM_ARRAY     | SPOKE_ID_STRING_POOL)
 
 #define TYPE_SPIN_LOCK               (SUGAR_VEX | PROJ_VEXSPOKE | FORM_SINGLETON | ID_SPINLOCK)
 #define TYPE_RING_BUFFER             (SUGAR_VEX | PROJ_VEXSPOKE | FORM_ARRAY     | ID_RING_BUFFER)
@@ -290,7 +287,7 @@
 #define TYPE_REACTIVE                (SUGAR_VEX | PROJ_VEXSPOKE | FORM_SINGLETON | WRAP_REACTIVE | ID_REACTIVE)
 #define TYPE_REACTIVE_ARRAY          (SUGAR_VEX | PROJ_VEXSPOKE | FORM_ARRAY | WRAP_REACTIVE | ID_REACTIVE)
 #define TYPE_PROBABLE_OBJECTS        (SUGAR_VEX | PROJ_VEXSPOKE | FORM_SINGLETON | WRAP2_PROBABLE_OBJECTS | ID_PROBABLE_OBJECTS)
-#define TYPE_FILE_SINGLETON          (SUGAR_VEX | PROJ_VEXSPOKE | FORM_SINGLETON | ID_FILE)
+#define SPOKE_TYPE_FILE_SINGLETON          (SUGAR_VEX | PROJ_VEXSPOKE | FORM_SINGLETON | ID_FILE)
 #define TYPE_WS_CLIENT_SINGLETON     (SUGAR_VEX | PROJ_VEXSPOKE | FORM_SINGLETON | ID_WS_CLIENT)
 #define TYPE_PROCESS_SPAWN_SINGLETON (SUGAR_VEX | PROJ_VEXSPOKE | FORM_SINGLETON | ID_PROCESS_SPAWN)
 #define TYPE_COMMAND_SINGLETON       (SUGAR_VEX | PROJ_VEXSPOKE | FORM_SINGLETON | ID_COMMAND)

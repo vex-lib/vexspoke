@@ -16,22 +16,22 @@ static int g_failures = 0;
 
 // Checks Probable fields, weighted draw behavior, and null-safe accessors.
 int main(void) {
-    Probable *p = Probable_3((uintptr_t) 0xABCD, 3, 10);
+    Probable *p = Probable_3((pointer) 0xABCD, 3, 10);
     CHECK(p != nullptr);
-    CHECK(Probable_object(p) == (uintptr_t) 0xABCD);
+    CHECK(Probable_object(p) == (pointer) 0xABCD);
     CHECK(Probable_weight(p) == 3);
     CHECK(Probable_total(p) == 10);
 
-    Probable_setObject(p, (uintptr_t) 0x1234);
-    CHECK(Probable_object(p) == (uintptr_t) 0x1234);
+    Probable_setObject(p, (pointer) 0x1234);
+    CHECK(Probable_object(p) == (pointer) 0x1234);
     Probable_setWeight(p, 7);
     CHECK(Probable_weight(p) == 7);
     Probable_setTotal(p, 10);
     CHECK(Probable_total(p) == 10);
 
     // Probable_get rolls the weighted choice: object on a hit, 0 on a miss.
-    uintptr_t v = Probable_get(p);
-    CHECK(v == (uintptr_t) 0x1234 || v == 0);
+    pointer v = Probable_get(p);
+    CHECK(v == (pointer) 0x1234 || v == 0);
 
     Probable_free(p);
 

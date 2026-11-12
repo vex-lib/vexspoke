@@ -4,7 +4,7 @@
 #include "input/key.h"
 #include "input/mouse.h"
 #include "input/touch.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 #include "util/annotation.h"
 
 ;;DEFINITION

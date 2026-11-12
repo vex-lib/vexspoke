@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 
 ;;OVERVIEW
 /**
@@ -74,7 +74,7 @@ int main(void) {
     CHECK("interior pointer fails", Memory_length((u8*) b + 8) == 0);
     CHECK("interior similar fails", Memory_similar((u8*) b + 8, b) == false);
     void *foreign = malloc(64);
-    uintptr_t fu = (uintptr_t) foreign;
+    pointer fu = (pointer) foreign;
     void *alignedForeign = (void*) ((fu + 15) & ~15ull);
     CHECK("foreign fails", Memory_length(alignedForeign) == 0 && Memory_type(alignedForeign) == 0);
     CHECK("foreign similar fails", Memory_similar(alignedForeign, b) == false);

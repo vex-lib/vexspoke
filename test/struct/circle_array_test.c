@@ -19,7 +19,7 @@
 #include <stdio.h>
 
 #include "struct/circle_array.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 
 static int g_failures = 0;
 

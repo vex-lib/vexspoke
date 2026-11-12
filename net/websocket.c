@@ -1,12 +1,12 @@
 #include "net/websocket.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 
 #include "util/annotation.h"
 #include "util/throw.h"
 #include "lang/str.h"
 #include "net/url.h"
 #include "re/nio/mem.h"
-#include "vexspoke/oop/type.h"
+#include "vexspoke/oop/vexspoke_type.h"
 #include "security/secure_random.h"
 #include "security/sha1.h"
 

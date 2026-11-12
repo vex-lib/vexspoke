@@ -9,7 +9,7 @@
 #include "util/annotation.h"
 #include "util/throw.h"
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 #include "regex/parser.h"
 #include "regex/vm.h"
 

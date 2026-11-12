@@ -1,7 +1,5 @@
+#include "vex.h"
 #include "util/arrays.h"
-
-#include <string.h>
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

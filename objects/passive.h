@@ -1,9 +1,7 @@
 #ifndef OBJECTS_PASSIVE_H
 #define OBJECTS_PASSIVE_H
 
-#include <stdint.h>
-#include <stddef.h>
-#include "lang/constructor.h"
+#include "vex.h"
 
 // objects/passive.h — Lazy-evaluated / computed Passive object wrapper.
 // Ported from legacy objects/Passive.java.

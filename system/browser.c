@@ -59,7 +59,7 @@ bool Browser_openUrl(const Browser *self, const char *url) {
 
 #if defined(VEX_PLATFORM_WINDOWS)
     HINSTANCE instance = ShellExecuteA(nullptr, "open", url, nullptr, nullptr, SW_SHOWNORMAL);
-    return (uintptr_t) instance > 32u;
+    return (pointer) instance > 32u;
 #else
     const char *program =
 #if defined(VEX_PLATFORM_APPLE)

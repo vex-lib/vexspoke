@@ -1,7 +1,6 @@
+#include "vex.h"
 #include "oop/stride.h"
-
-#include "oop/type.h"
-#include "util/annotation.h"
+#include "oop/vexspoke_type.h"
 
 ;;DEFINITION
 /**

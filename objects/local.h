@@ -1,9 +1,7 @@
 #ifndef OBJECTS_LOCAL_H
 #define OBJECTS_LOCAL_H
 
-#include <stdint.h>
-#include <stddef.h>
-#include "lang/constructor.h"
+#include "vex.h"
 
 // objects/local.h — Thread-local variable slot table object wrapper.
 // Ported from legacy objects/Local.java. The slot table is arena-backed

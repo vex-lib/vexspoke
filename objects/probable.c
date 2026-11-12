@@ -1,10 +1,8 @@
+#include "vex.h"
+#include "re.h"
 #include "objects/probable.h"
-
-#include <string.h>
-#include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 #include "util/random.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**
@@ -30,7 +28,7 @@
  * STRUCT FIELDS (Mirroring objects/probable.h):
  * ----------------------------------------------------------------------------
  *   Probable {
- *     uintptr_t object; // object pointer payload
+ *     pointer object; // object pointer payload
  *     u32 weight; // weighted-choice state
  *     u32 total; // weighted-choice state
  *   }
@@ -58,7 +56,7 @@
  */
 
 
-Probable *Probable_3(uintptr_t object, u32 weight, u32 total) {
+Probable *Probable_3(pointer object, u32 weight, u32 total) {
     Probable *p = (Probable*) Memory_alloc(TYPE_PROBABLE, sizeof(Probable));
     if (!p) return nullptr;
     (*p).object = object;
@@ -86,7 +84,7 @@ void Probable_free(Probable *p) {
     Memory_free(p);
 }
 
-uintptr_t Probable_object(Probable *p) {
+pointer Probable_object(Probable *p) {
     if (!p) return 0;
     return (*p).object;
 }
@@ -101,7 +99,7 @@ u32 Probable_total(Probable *p) {
     return (*p).total;
 }
 
-void Probable_setObject(Probable *p, uintptr_t object) {
+void Probable_setObject(Probable *p, pointer object) {
     if (!p) return;
     (*p).object = object;
 }
@@ -116,6 +114,6 @@ void Probable_setTotal(Probable *p, u32 total) {
     (*p).total = total;
 }
 
-uintptr_t Probable_get(Probable *p) {
+pointer Probable_get(Probable *p) {
     return Random_sample(Random_system(), p);
 }

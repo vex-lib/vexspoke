@@ -19,7 +19,7 @@
 
 #include "exception/try_code.h"
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 #include "struct/stack.h"
 
 static int g_failures = 0;

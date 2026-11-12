@@ -7,7 +7,7 @@
 
 #include "util/annotation.h"
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 
 ;;DEFINITION
 /**
@@ -249,9 +249,9 @@ void Class_toStringStruct(const Class *self, char *dest, bytes cap, bool *outTru
     }
     int written = snprintf(dest, cap, "Class { name=\"%s\", construct=0x%llx, layout=0x%llx, methods=0x%llx, methodCount=%u }",
                            (*self).name,
-                           (unsigned long long) (uintptr_t) (*self).construct,
-                           (unsigned long long) (uintptr_t) (*self).layout,
-                           (unsigned long long) (uintptr_t) (*self).methods,
+                           (unsigned long long) (pointer) (*self).construct,
+                           (unsigned long long) (pointer) (*self).layout,
+                           (unsigned long long) (pointer) (*self).methods,
                            (*self).methodCount);
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)

@@ -49,14 +49,14 @@ typedef struct SegmentPosting {
 // SLOT RECORD (owned by SegmentIndex, behaviorless): one indexed entry.
 typedef struct SegmentEntry {
     char name[SEGMENT_NAME_BYTES]; // folded dotted name
-    uintptr_t payload;             // caller's value (the reflection search stores the VariableSlot*)
+    pointer payload;             // caller's value (the reflection search stores the VariableSlot*)
     u32 segments;             // segment count
     u32 pad;                  // explicit padding
 } SegmentEntry;
 
 // One ranked result.
 typedef struct SegmentMatch {
-    uintptr_t payload; // the entry's payload
+    pointer payload; // the entry's payload
     u32 entry;    // entry id
     u32 start;    // segment position where the match begins
     u32 tier;     // SEGMENT_MATCH_*
@@ -89,7 +89,7 @@ void SegmentIndex_free(SegmentIndex *index);
 void SegmentIndex_clear(SegmentIndex *index);
 // Index a name (folded + segmented + posted). Returns the entry id, or
 // SEGMENT_ENTRY_NONE on an invalid name or OOM.
-u32 SegmentIndex_add(SegmentIndex *index, const char *name, uintptr_t payload);
+u32 SegmentIndex_add(SegmentIndex *index, const char *name, pointer payload);
 // (Re)build the whole index from every live map entry, payload = the VariableSlot*.
 // Returns the entry count.
 bytes SegmentIndex_buildFrom(SegmentIndex *index, VariableHashMap *map);

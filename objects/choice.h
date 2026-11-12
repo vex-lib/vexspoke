@@ -1,10 +1,7 @@
 #ifndef OBJECTS_CHOICE_H
 #define OBJECTS_CHOICE_H
 
-#include <stddef.h>
-#include <stdint.h>
-#include <stddef.h>
-#include "lang/constructor.h"
+#include "vex.h"
 
 // objects/choice.h — Immutable deterministic choice / branch dispatcher.
 // Ported from legacy objects/Choice.java.

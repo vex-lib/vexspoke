@@ -1,8 +1,7 @@
 #ifndef UTIL_ARRAYS_H
 #define UTIL_ARRAYS_H
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // util/arrays.h — the Arrays utility, ported from util/Arrays.java.
 //

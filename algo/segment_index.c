@@ -11,7 +11,7 @@
 
 #include "util/annotation.h"
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 #include "relational/variable_slot.h"
 
 ;;DEFINITION
@@ -55,7 +55,7 @@
  *   SegmentPosting entry;    // u32 + the entry id
  *   SegmentPosting position; // u32 + the segment position
  *   SegmentEntry name;       // char[24] + the folded dotted name
- *   SegmentEntry payload;    // uintptr_t + the caller's value
+ *   SegmentEntry payload;    // pointer + the caller's value
  *   SegmentEntry segments;   // u32 + the segment count
  *   SegmentEntry pad;        // u32 + explicit row padding
  *
@@ -110,7 +110,7 @@ static const SegmentEntry *entryAt(const SegmentIndex *index, u32 entry) {
 // order, so findPosting can binary search.
 static bool postSegment(SegmentIndex *index, u32 entry, u32 position, const char *segment) {
     VariableHashMap *postings = (*index).postings;
-    uintptr_t existing = VariableHashMap_get(postings, segment);
+    pointer existing = VariableHashMap_get(postings, segment);
     ChunkedList *list = nullptr;
     if (VariableHashMap_contains(postings, segment))
         list = (ChunkedList*) existing;
@@ -118,7 +118,7 @@ static bool postSegment(SegmentIndex *index, u32 entry, u32 position, const char
         list = ChunkedList_3(ID_SEGMENT_POSTING, (u32) sizeof(SegmentPosting), VEX_CHUNKED_BYTES_DEFAULT);
         if (!list)
             return false;
-        if (!VariableHashMap_add(postings, segment, (uintptr_t) list)) {
+        if (!VariableHashMap_add(postings, segment, (pointer) list)) {
             ChunkedList_free(list);
             return false;
         }
@@ -223,12 +223,12 @@ static void buildFn(VariableSlot *slot, void *userdata) {
     const char *name = VariableSlot_getName(slot);
     if (!name)
         return;
-    SegmentIndex_add((*ctx).index, name, (uintptr_t) slot);
+    SegmentIndex_add((*ctx).index, name, (pointer) slot);
 }
 
 static void freePostingsFn(VariableSlot *slot, void *userdata) {
     (void) userdata;
-    uintptr_t value = VariableSlot_getPointer(slot);
+    pointer value = VariableSlot_getPointer(slot);
     if (value)
         ChunkedList_free((ChunkedList*) value);
 }
@@ -356,7 +356,7 @@ void SegmentIndex_clear(SegmentIndex *index) {
         (*index).active = false;
 }
 
-u32 SegmentIndex_add(SegmentIndex *index, const char *name, uintptr_t payload) {
+u32 SegmentIndex_add(SegmentIndex *index, const char *name, pointer payload) {
     if (!index || !(*index).active)
         return SEGMENT_ENTRY_NONE;
     char folded[SEGMENT_NAME_BYTES];
@@ -425,7 +425,7 @@ bytes SegmentIndex_query(const SegmentIndex *index, const char *query, SegmentMa
     const ChunkedList *lists[SEGMENT_QUERY_SEGMENTS_MAX];
     bytes rarest = 0u;
     for (bytes k = 0u; k < qn; k++) {
-        uintptr_t value = VariableHashMap_get((*index).postings, segs[k]);
+        pointer value = VariableHashMap_get((*index).postings, segs[k]);
         if (value == 0u)
             return 0u;
         lists[k] = (const ChunkedList*) value;
@@ -520,8 +520,8 @@ void SegmentIndex_toStringStruct(const SegmentIndex *index, char *dest, bytes ca
     }
     int written = snprintf(dest, cap, "SegmentIndex { active=%s, count=%u, entries=0x%llx, postings=0x%llx }",
                            (*index).active ? "true" : "false", (*index).count,
-                           (unsigned long long) (uintptr_t) (*index).entries,
-                           (unsigned long long) (uintptr_t) (*index).postings);
+                           (unsigned long long) (pointer) (*index).entries,
+                           (unsigned long long) (pointer) (*index).postings);
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;

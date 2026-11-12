@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 #include "lang/annotation.h"
 
 ;;DEFINITION
@@ -115,14 +115,14 @@ const char *string_get(const u8 *ptr) {
 bytes string_length(const u8 *ptr) {
     if (!ptr)
         return 0;
-    bytes n = Memory_length((void*) (uintptr_t)ptr);
+    bytes n = Memory_length((void*) (pointer)ptr);
     return n > 0 ? n - 1 : 0;
 }
 
 u64 string_type(const u8 *ptr) {
     if (!ptr)
         return 0;
-    return Memory_type((void*) (uintptr_t)ptr);
+    return Memory_type((void*) (pointer)ptr);
 }
 
 bool string_isArray(const u8 *ptr) {
@@ -137,7 +137,7 @@ u32 string_classId(void) {
 bytes string_capacity(const u8 *ptr) {
     if (!ptr)
         return 0;
-    return Memory_length((void*) (uintptr_t)ptr);
+    return Memory_length((void*) (pointer)ptr);
 }
 
 u8 *string_copy(const u8 *ptr) {

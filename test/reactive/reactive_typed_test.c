@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 #include "reactive/reactive_primitive.h"
 #include "reactive/reactive_object.h"
 #include "reactive/reactive_probable.h"
@@ -55,7 +55,7 @@ static void onObjectChanged(Coord3 *value) { g_objectValue = value; }
 static void onProbableChanged(i32 value) { g_probableValue = value; }
 
 // Records typed integer change notifications and their old/new payloads.
-static void onChangedInt(Reactive *r, uintptr_t o, uintptr_t n, void *ud) {
+static void onChangedInt(Reactive *r, pointer o, pointer n, void *ud) {
     (void) r;
     (void) ud;
     g_changed++;
@@ -64,7 +64,7 @@ static void onChangedInt(Reactive *r, uintptr_t o, uintptr_t n, void *ud) {
 }
 
 // Counts typed integer onSet notifications.
-static void onSetInt(Reactive *r, uintptr_t v, void *ud) {
+static void onSetInt(Reactive *r, pointer v, void *ud) {
     (void) r;
     (void) v;
     (void) ud;
@@ -77,7 +77,7 @@ static void testEmbedFirst(void) {
     ReactiveInt *h = ReactiveInt(7);
     CHECK(h != nullptr);
     if (h) {
-        CHECK((uintptr_t) h == (uintptr_t) &(*h).base);
+        CHECK((pointer) h == (pointer) &(*h).base);
         CHECK(Reactive_isActive(&(*h).base) == true);
         ReactiveInt_free(h);
     }
@@ -113,7 +113,7 @@ static void testInt(void) {
     CHECK(Reactive_drain(&(*h).base) == false);
 
     // Out-of-band: a raw engine write to the word IS the value -> detected.
-    Reactive_set(&(*h).base, (uintptr_t) (u32) 99);
+    Reactive_set(&(*h).base, (pointer) (u32) 99);
     CHECK(Reactive_drain(&(*h).base) == true);
     CHECK(g_changed == 3 && g_new == 99);
     CHECK(ReactiveInt_get(h) == 99);

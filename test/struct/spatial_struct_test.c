@@ -5,7 +5,7 @@
 #include <string.h>
 
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 #include "struct/circle_array.h"
 #include "struct/sphere_array.h"
 #include "struct/octree.h"

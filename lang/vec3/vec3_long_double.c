@@ -1,7 +1,7 @@
 #include "lang/vec3/vec3_long_f64.h"
 
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 #include "util/annotation.h"
 
 ;;DEFINITION

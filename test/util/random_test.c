@@ -113,7 +113,7 @@ int main(void) {
     CHECK(Random_getWeight(w, 10u, 10u));
     CHECK(!Random_getWeight(w, 0u, 10u));
 
-    uintptr_t token = (uintptr_t) &g_failures;
+    pointer token = (pointer) &g_failures;
     Probable *hit = Probable_3(token, 10u, 10u);
     CHECK(Random_sample(w, hit) == token);
     Probable *miss = Probable_3(token, 0u, 10u);

@@ -1,5 +1,5 @@
+#include "vex.h"
 #include "util/random.h"
-#include "util/platform.h"
 
 #include <stdlib.h>
 #include <time.h>
@@ -9,9 +9,8 @@
 #endif
 
 #include "nio/mem.h"
-#include "oop/type.h"
+#include "oop/vexspoke_type.h"
 #include "util/hash.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**
@@ -94,7 +93,7 @@ static u64 systemSeed(void) {
 #endif
     // Mix (never just shift): a shift would throw the good high bits away.
     // Fold in the stream address so two streams made in the same tick diverge.
-    return Hash_murmur3Mix64(ticks) ^ Hash_murmur3Mix64((u64)(uintptr_t) &system_rng);
+    return Hash_murmur3Mix64(ticks) ^ Hash_murmur3Mix64((u64)(pointer) &system_rng);
 }
 
 // --- Engines: one step yields one uniform uint64 ---
@@ -226,14 +225,14 @@ bool Random_getWeight(Random *r, u32 weight, u32 total) {
     return (val % total) < weight;
 }
 
-uintptr_t Random_sample(Random *r, const Probable *probable) {
+pointer Random_sample(Random *r, const Probable *probable) {
     if (!probable) return 0;
     if (Random_getWeight(r, (*probable).weight, (*probable).total))
         return (*probable).object;
     return 0;
 }
 
-uintptr_t Random_probablePool(Random *r, const ProbableObjects *pool) {
+pointer Random_probablePool(Random *r, const ProbableObjects *pool) {
     if (!pool) return 0;
     bytes count = ProbableObjects_size((ProbableObjects*) pool);
     if (count == 0) return 0;
