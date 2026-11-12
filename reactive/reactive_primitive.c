@@ -2,12 +2,10 @@
 // See reactive/reactive_primitive.h (the ;;INTENTION for the Single Class Per File
 // waiver).
 
+#include "vex.h"
+
 #include "reactive/reactive_primitive.h"
 
-#include <stdio.h>
-#include <string.h>
-
-#include "util/annotation.h"
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
 
@@ -17,9 +15,9 @@
  * DEFINITION: ReactivePrimitive (the scalar family)
  * ============================================================================
  * The ten scalar typed reactives (Bool, Byte, Short, Char, Int, Long, Float,
- * d64, String, IntFloat) stamped from reactive/reactive_tmpl.inc. Each embeds
+ * d64, String, if64) stamped from reactive/reactive_tmpl.inc. Each embeds
  * the one engine and differs ONLY in how it packs its value into the word: an
- * integer cast, a bit-cast (f32/d64/IntFloat), or a pointer (String). They
+ * integer cast, a bit-cast (f32/d64/if64), or a pointer (String). They
  * share this file by intent (see the header), since they are mechanical stamps.
  * ============================================================================
  */
@@ -43,7 +41,7 @@
  * ============================================================================
  */
 
-// --- bit-cast helpers (shared by the f32/d64/IntFloat packings) ---
+// --- bit-cast helpers (shared by the f32/d64/if64 packings) ---
 
 static pointer f32Bits(f32 value) {
     u32 bits = 0u;
@@ -71,21 +69,21 @@ static d64 f64Of(pointer word) {
     return value;
 }
 
-static pointer intFloatBits(IntFloat value) {
+static pointer if64Bits(if64 value) {
     u64 bits = 0u;
     memcpy(&bits, &value, sizeof(bits));
     return (pointer) bits;
 }
 
-static IntFloat intFloatOf(pointer word) {
+static if64 if64Of(pointer word) {
     u64 bits = (u64) word;
-    IntFloat value = { 0, 0.0f };
+    if64 value = { 0, 0.0f };
     memcpy(&value, &bits, sizeof(value));
     return value;
 }
 
-static IntFloat intFloatZero(void) {
-    IntFloat zero = { 0, 0.0f };
+static if64 if64Zero(void) {
+    if64 zero = { 0, 0.0f };
     return zero;
 }
 
@@ -108,12 +106,12 @@ static IntFloat intFloatZero(void) {
 #undef VEX_VALUE_OF
 
 #define VEX_NAME ReactiveByte
-#define VEX_T
+#define VEX_T    u8
 #define VEX_TYPE_ID TYPE_REACTIVE_BYTE
 #define VEX_TO_WORD(v)   ((pointer) (u8) (v))
-#define VEX_FROM_WORD(w) (() (u8) (w))
-#define VEX_ZERO       (() 0)
-#define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%d", (int) (v))
+#define VEX_FROM_WORD(w) ((u8) (w))
+#define VEX_ZERO       ((u8) 0)
+#define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%u", (u32) (v))
 #include "reactive/reactive_tmpl.inc"
 #undef VEX_NAME
 #undef VEX_T
@@ -124,12 +122,12 @@ static IntFloat intFloatZero(void) {
 #undef VEX_VALUE_OF
 
 #define VEX_NAME ReactiveShort
-#define VEX_T
+#define VEX_T    i16
 #define VEX_TYPE_ID TYPE_REACTIVE_SHORT
 #define VEX_TO_WORD(v)   ((pointer) (u16) (v))
-#define VEX_FROM_WORD(w) (() (u16) (w))
-#define VEX_ZERO       (() 0)
-#define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%d", (int) (v))
+#define VEX_FROM_WORD(w) ((i16) (u16) (w))
+#define VEX_ZERO       ((i16) 0)
+#define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%d", (i32) (v))
 #include "reactive/reactive_tmpl.inc"
 #undef VEX_NAME
 #undef VEX_T
@@ -145,7 +143,7 @@ static IntFloat intFloatZero(void) {
 #define VEX_TO_WORD(v)   ((pointer) (u16) (v))
 #define VEX_FROM_WORD(w) ((u16) (w))
 #define VEX_ZERO       ((u16) 0)
-#define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%u", (unsigned) (v))
+#define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%u", (u32) (v))
 #include "reactive/reactive_tmpl.inc"
 #undef VEX_NAME
 #undef VEX_T
@@ -161,7 +159,7 @@ static IntFloat intFloatZero(void) {
 #define VEX_TO_WORD(v)   ((pointer) (u32) (v))
 #define VEX_FROM_WORD(w) ((i32) (u32) (w))
 #define VEX_ZERO       ((i32) 0)
-#define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%d", (int) (v))
+#define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%d", (i32) (v))
 #include "reactive/reactive_tmpl.inc"
 #undef VEX_NAME
 #undef VEX_T
@@ -172,12 +170,12 @@ static IntFloat intFloatZero(void) {
 #undef VEX_VALUE_OF
 
 #define VEX_NAME ReactiveLong
-#define VEX_T    int64_t
+#define VEX_T    i64
 #define VEX_TYPE_ID TYPE_REACTIVE_LONG
 #define VEX_TO_WORD(v)   ((pointer) (v))
-#define VEX_FROM_WORD(w) ((int64_t) (w))
-#define VEX_ZERO       ((int64_t) 0)
-#define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%lld", (long long) (v))
+#define VEX_FROM_WORD(w) ((i64) (w))
+#define VEX_ZERO       ((i64) 0)
+#define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%" PRId64, (i64) (v))
 #include "reactive/reactive_tmpl.inc"
 #undef VEX_NAME
 #undef VEX_T
@@ -235,13 +233,13 @@ static IntFloat intFloatZero(void) {
 #undef VEX_ZERO
 #undef VEX_VALUE_OF
 
-#define VEX_NAME ReactiveIntFloat
-#define VEX_T    IntFloat
-#define VEX_TYPE_ID TYPE_REACTIVE_INT_FLOAT
-#define VEX_TO_WORD(v)   intFloatBits(v)
-#define VEX_FROM_WORD(w) intFloatOf(w)
-#define VEX_ZERO       intFloatZero()
-#define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%g", (d64) (v).scalar + (d64) (v).decimal)
+#define VEX_NAME ReactiveIf64
+#define VEX_T    if64
+#define VEX_TYPE_ID TYPE_REACTIVE_IF64
+#define VEX_TO_WORD(v)   if64Bits(v)
+#define VEX_FROM_WORD(w) if64Of(w)
+#define VEX_ZERO       if64Zero()
+#define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%g", (d64) if64_toF32(v))
 #include "reactive/reactive_tmpl.inc"
 #undef VEX_NAME
 #undef VEX_T

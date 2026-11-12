@@ -1,11 +1,8 @@
 #ifndef REACTIVE_REACTIVE_PRIMITIVE_H
 #define REACTIVE_REACTIVE_PRIMITIVE_H
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "vex.h"
 
-#include "lang/constructor.h"
-#include "primitive/int_f32.h"
 #include "reactive/generic.h"
 #include "reactive/reactive.h"
 
@@ -18,7 +15,7 @@
 //
 // Reactive(int)/Reactive(f32)/... resolve here (via the lowercase bridge in
 // generic.h). Each class is identical but for its value type and packing:
-// integer cast, f32/d64 bit-cast, the IntFloat pair, or a pointer word.
+// integer cast, f32/d64 bit-cast, the if64 pair, or a pointer word.
 
 #define VEX_NAME ReactiveBool
 #define VEX_T    bool
@@ -28,14 +25,14 @@
 #define ReactiveBool(...) CONSTRUCTOR_DISPATCH(ReactiveBool, __VA_ARGS__)
 
 #define VEX_NAME ReactiveByte
-#define VEX_T
+#define VEX_T    u8
 #include "reactive/reactive_tmpl.h"
 #undef VEX_NAME
 #undef VEX_T
 #define ReactiveByte(...) CONSTRUCTOR_DISPATCH(ReactiveByte, __VA_ARGS__)
 
 #define VEX_NAME ReactiveShort
-#define VEX_T
+#define VEX_T    i16
 #include "reactive/reactive_tmpl.h"
 #undef VEX_NAME
 #undef VEX_T
@@ -56,7 +53,7 @@
 #define ReactiveInt(...) CONSTRUCTOR_DISPATCH(ReactiveInt, __VA_ARGS__)
 
 #define VEX_NAME ReactiveLong
-#define VEX_T    int64_t
+#define VEX_T    i64
 #include "reactive/reactive_tmpl.h"
 #undef VEX_NAME
 #undef VEX_T
@@ -83,11 +80,11 @@
 #undef VEX_T
 #define ReactiveString(...) CONSTRUCTOR_DISPATCH(ReactiveString, __VA_ARGS__)
 
-#define VEX_NAME ReactiveIntFloat
-#define VEX_T    IntFloat
+#define VEX_NAME ReactiveIf64
+#define VEX_T    if64
 #include "reactive/reactive_tmpl.h"
 #undef VEX_NAME
 #undef VEX_T
-#define ReactiveIntFloat(...) CONSTRUCTOR_DISPATCH(ReactiveIntFloat, __VA_ARGS__)
+#define ReactiveIf64(...) CONSTRUCTOR_DISPATCH(ReactiveIf64, __VA_ARGS__)
 
 #endif

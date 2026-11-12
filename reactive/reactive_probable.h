@@ -1,10 +1,8 @@
 #ifndef REACTIVE_REACTIVE_PROBABLE_H
 #define REACTIVE_REACTIVE_PROBABLE_H
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "vex.h"
 
-#include "lang/constructor.h"
 #include "reactive/generic.h"
 #include "reactive/reactive.h"
 

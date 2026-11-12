@@ -1,10 +1,7 @@
 #ifndef REACTIVE_REACTIVE_H
 #define REACTIVE_REACTIVE_H
 
-#include <stdatomic.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // reactive/reactive.h — the one reactive engine.
 //

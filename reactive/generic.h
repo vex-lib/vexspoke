@@ -46,9 +46,11 @@
 #define Reactiveshort   ReactiveShort
 #define Reactivelong    ReactiveLong
 #define Reactivef32   ReactiveFloat
-#define Reactivef64  Reactivef64
+#define Reactived64  Reactivef64
 #define Reactivebool    ReactiveBool
 #define Reactivestring  ReactiveString
+#define Reactiveif64    ReactiveIf64
+#define Reactiveld128   ReactiveLd128
 
 #define ReactiveProbableint ReactiveProbableInt
 

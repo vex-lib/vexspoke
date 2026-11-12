@@ -1,11 +1,10 @@
 // reactive/reactive_probable.c — the ReactiveProbable family in one file.
 // See reactive/reactive_probable.h (the ;;INTENTION).
 
+#include "vex.h"
+
 #include "reactive/reactive_probable.h"
 
-#include <stdio.h>
-
-#include "util/annotation.h"
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
 #include "util/random.h"

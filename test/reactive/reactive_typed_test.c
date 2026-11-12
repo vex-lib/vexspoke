@@ -1,9 +1,6 @@
-#include "util/annotation.h"
+#include "vex.h"
 
 #include <math.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdint.h>
 
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
@@ -48,10 +45,10 @@ static int g_changed = 0;
 static int g_sets = 0;
 static i32 g_old = 0;
 static i32 g_new = 0;
-static Coord3 *g_objectValue = nullptr;
+static Vec3 *g_objectValue = nullptr;
 static i32 g_probableValue = 0;
 
-static void onObjectChanged(Coord3 *value) { g_objectValue = value; }
+static void onObjectChanged(Vec3 *value) { g_objectValue = value; }
 static void onProbableChanged(i32 value) { g_probableValue = value; }
 
 // Records typed integer change notifications and their old/new payloads.
@@ -197,31 +194,26 @@ static void testString(void) {
 // Checks the object-family constructor chooser, typed object rebind, and merged probable constructor.
 static void testObjectAndProbable(void) {
     printf("[6] object and probable constructor choosers\n");
-    Reactive(Coord2) *emptyVec2 = Reactive(Coord2)();
-    Reactive(Coord4) *emptyVec4 = Reactive(Coord4)();
+    Reactive(Vec2) *emptyVec2 = Reactive(Vec2)();
+    Reactive(Vec4) *emptyVec4 = Reactive(Vec4)();
     Reactive(Rectangle) *emptyRectangle = Reactive(Rectangle)();
-    Reactive(Intf64) *emptyIntf64 = Reactive(Intf64)();
-    Reactive(LongFloat) *emptyLongFloat = Reactive(LongFloat)();
-    Reactive(Longf64) *emptyLongf64 = Reactive(Longf64)();
-    CHECK(emptyVec2 && emptyVec4 && emptyRectangle && emptyIntf64
-        && emptyLongFloat && emptyLongf64);
+    Reactive(If64) *emptyIf64 = Reactive(If64)();
+    Reactive(Ld128) *emptyLd128 = Reactive(Ld128)();
+    CHECK(emptyVec2 && emptyVec4 && emptyRectangle && emptyIf64 && emptyLd128);
     ReactiveVec2_free(emptyVec2); ReactiveVec4_free(emptyVec4);
-    ReactiveRectangle_free(emptyRectangle); ReactiveIntf64_free(emptyIntf64);
-    ReactiveLongFloat_free(emptyLongFloat); ReactiveLongf64_free(emptyLongf64);
+    ReactiveRectangle_free(emptyRectangle); ReactiveIf64_free(emptyIf64);
+    ReactiveLd128_free(emptyLd128);
 
-    Coord3 *first = Coord3(1.0f, 2.0f, 3.0f);
-    Coord3 *next = Coord3(4.0f, 5.0f, 6.0f);
-    CHECK(first != nullptr && next != nullptr);
-    if (!first || !next)
-        return;
+    Vec3 first = vec3f_3(1.0f, 2.0f, 3.0f);
+    Vec3 next = vec3f_3(4.0f, 5.0f, 6.0f);
 
-    Reactive(Coord3) *position = Reactive(Coord3)(first);
+    Reactive(Vec3) *position = Reactive(Vec3)(&first);
     CHECK(position != nullptr);
     if (position) {
         CHECK(Reactive_addOnChanged(position, onObjectChanged));
-        Reactive_set(position, next);
+        Reactive_set(position, &next);
         CHECK(Reactive_drain(&(*position).base));
-        CHECK(g_objectValue == next && Reactive_get(position) == next);
+        CHECK(g_objectValue == &next && Reactive_get(position) == &next);
         CHECK(Reactive_removeOnChanged(position, onObjectChanged));
         ReactiveVec3_free(position);
     }
@@ -242,8 +234,6 @@ static void testObjectAndProbable(void) {
         ReactiveProbableInt_free(reward);
     }
 
-    Coord3_free(next);
-    Coord3_free(first);
 }
 
 // Exercises null-safe setters, getters, and destructors for each typed reactive.

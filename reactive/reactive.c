@@ -1,12 +1,9 @@
 // reactive/reactive.c — the one reactive engine.
 
+#include "vex.h"
+
 #include "reactive/reactive.h"
 
-#include <stdatomic.h>
-#include <stdio.h>
-#include <string.h>
-
-#include "util/annotation.h"
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
 
