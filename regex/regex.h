@@ -4,10 +4,13 @@
 #include "vex.h"
 
 #include "regex/charclass.h"
+#include "regex/nodelist.h"
+#include "regex/parser.h"
 #include "regex/program.h"
 #include "regex/span.h"
+#include "regex/vm.h"
 
-// regex/regex.h — the Regex class: a compiled, byte-oriented regular
+// regex/regex.h — THE regex directory header and the Regex class.
 // expression. Single Class Per File Law: Regex.
 //
 // Regex_2 is the public entry: it parses the pattern (regex/parser.c), emits a
