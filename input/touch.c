@@ -7,16 +7,15 @@
 // exponentially (the Dynamic Scalability & Anti-Hardcoding Law): window scope
 // is a row keyed by the opaque OS window id, arena-backed, doubling on demand.
 
-#include "input/touch.h"
+#include "vex.h"
 
-#include <string.h>
+#include "input/touch.h"
 
 #include "input/focus.h"
 #include "struct/ring.h"
 #include "time/nanotime.h"
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

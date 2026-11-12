@@ -4,10 +4,9 @@
 // the pump; any thread reads lock-free. No AppKit calls may happen here —
 // this module is the firewall between the game thread and the OS.
 
-#include "input/focus.h"
+#include "vex.h"
 
-#include <stdatomic.h>
-#include "util/annotation.h"
+#include "input/focus.h"
 
 ;;DEFINITION
 /**

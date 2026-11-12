@@ -1,8 +1,7 @@
 #ifndef INPUT_TOUCH_H
 #define INPUT_TOUCH_H
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "vex.h"
 
 #include "event/touchhandler.h"
 

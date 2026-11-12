@@ -1,10 +1,7 @@
 #ifndef INPUT_PIANO_KEY_H
 #define INPUT_PIANO_KEY_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include "lang/constructor.h"
+#include "vex.h"
 
 // input/piano_key.h — Musical / MIDI Keyboard Pitch & Event Model.
 //

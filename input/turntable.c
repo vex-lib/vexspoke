@@ -1,8 +1,8 @@
+#include "vex.h"
+
 #include "input/turntable.h"
 
 #include <math.h>
-#include <string.h>
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

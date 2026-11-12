@@ -1,7 +1,6 @@
-#include "input/hardware_event.h"
+#include "vex.h"
 
-#include <string.h>
-#include "util/annotation.h"
+#include "input/hardware_event.h"
 
 ;;DEFINITION
 /**

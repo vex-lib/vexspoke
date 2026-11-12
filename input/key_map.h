@@ -1,11 +1,7 @@
 #ifndef INPUT_KEY_MAP_H
 #define INPUT_KEY_MAP_H
 
-#include <stdint.h>
-#include "lang/constructor.h"
-#include <stdbool.h>
-
-#include "lang/annotation.h"
+#include "vex.h"
 
 // input/key_map.h — input binding registry (combo → fn pointer).
 //

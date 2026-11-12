@@ -17,9 +17,9 @@
 // Position is written on dispatch (move/drag), so Mouse_x()/Mouse_y() are
 // live polls instead of the dead getters the legacy shipped.
 
-#include "input/mouse.h"
+#include "vex.h"
 
-#include <string.h>
+#include "input/mouse.h"
 
 #include "input/focus.h"
 #include "input/key.h"
@@ -27,7 +27,6 @@
 #include "time/nanotime.h"
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**
@@ -350,17 +349,17 @@ void Mouse_pushButtonEvent(u32 windowId, int button, int action, u64 tapWindowNa
 // Coordinates ride as int16 halves exactly like legacy (wrapping truncation).
 static u64 packCoords(u64 head, d64 x, d64 y) {
     u64 packed = head;
-    packed |= (((u64)(u16)()(int)x) << 16);
-    packed |= (((u64)(u16)()(int)y) << 32);
+    packed |= ((u64) (u16) (i32) x) << 16;
+    packed |= ((u64) (u16) (i32) y) << 32;
     return packed;
 }
 
 static d64 coordA(u64 packed) {
-    return (d64)()((packed >> 16) & 0xFFFF);
+    return (d64) ((i16) ((packed >> 16) & 0xFFFFu));
 }
 
 static d64 coordB(u64 packed) {
-    return (d64)()((packed >> 32) & 0xFFFF);
+    return (d64) ((i16) ((packed >> 32) & 0xFFFFu));
 }
 
 void Mouse_pushMoveEvent(u32 windowId, d64 x, d64 y) {
@@ -397,8 +396,8 @@ void Mouse_pushScrollEvent(u32 windowId, d64 dx, d64 dy) {
     if (sy < -32768.0) sy = -32768.0;
 
     u64 packed = (254ULL << 8) | 6ULL;
-    packed |= ((u64)(u16)()sx) << 16;
-    packed |= ((u64)(u16)()sy) << 32;
+    packed |= ((u64) (u16) (i32) sx) << 16;
+    packed |= ((u64) (u16) (i32) sy) << 32;
     InputEvent ev = { .packed = packed, .windowId = windowId, .pad = 0 };
     RingBuffer_push(&s_queue, &ev);
 }

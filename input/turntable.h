@@ -1,10 +1,7 @@
 #ifndef INPUT_TURNTABLE_H
 #define INPUT_TURNTABLE_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include "lang/constructor.h"
+#include "vex.h"
 
 // input/turntable.h — DJ Turntable & Jog Wheel Hardware Model.
 //

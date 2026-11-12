@@ -1,8 +1,8 @@
+#include "vex.h"
+
 #include "input/gamepad.h"
 
 #include <math.h>
-#include <string.h>
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**
@@ -32,8 +32,8 @@
  * ----------------------------------------------------------------------------
  *   GamepadState {
  *     u32 buttons;       // bitmask of active pressed buttons
- *     Coord2     leftStick;     // filtered deadzone vector [-1.0, +1.0]
- *     Coord2     rightStick;    // filtered deadzone vector [-1.0, +1.0]
+ *     vec2f     leftStick;     // filtered deadzone vector [-1.0, +1.0]
+ *     vec2f     rightStick;    // filtered deadzone vector [-1.0, +1.0]
  *     f32    leftTrigger;   // normalized trigger squeeze [0.0, 1.0]
  *     f32    rightTrigger;  // normalized trigger squeeze [0.0, 1.0]
  *     f32    rumbleLowFreq; // low frequency heavy rumble [0.0, 1.0]
@@ -62,19 +62,19 @@ bool GamepadState_isDown(const GamepadState *state, u32 buttonMask) {
     return ((*state).buttons & buttonMask) == buttonMask;
 }
 
-Coord2 Gamepad_applyCircularDeadzone(Coord2 rawStick, f32 deadzone) {
+vec2f Gamepad_applyCircularDeadzone(vec2f rawStick, f32 deadzone) {
     if (deadzone <= 0.0f)
         return rawStick;
     if (deadzone >= 0.99f) {
         deadzone = 0.99f;
     }
 
-    f32 mag = sqrtf(rawStick.horizontal * rawStick.horizontal +
-                      rawStick.vertical   * rawStick.vertical);
+    f32 mag = sqrtf(rawStick.x * rawStick.x +
+                      rawStick.y * rawStick.y);
 
-    Coord2 filtered;
+    vec2f filtered;
     if (mag <= deadzone) {
-        Coord2_set(&filtered, 0.0f, 0.0f);
+        filtered = vec2f_2(0.0f, 0.0f);
         return filtered;
     }
 
@@ -85,6 +85,6 @@ Coord2 Gamepad_applyCircularDeadzone(Coord2 rawStick, f32 deadzone) {
     }
 
     f32 scale = normalizedMag / mag;
-    Coord2_set(&filtered, rawStick.horizontal * scale, rawStick.vertical * scale);
+    filtered = vec2f_2(rawStick.x * scale, rawStick.y * scale);
     return filtered;
 }

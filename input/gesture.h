@@ -1,11 +1,7 @@
 #ifndef INPUT_GESTURE_H
 #define INPUT_GESTURE_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include "lang/constructor.h"
-#include "lang/vec2.h"
+#include "vex.h"
 
 // input/gesture.h — Multi-Touch Trackpad & Gesture Hardware Model.
 //
@@ -31,10 +27,10 @@ typedef enum SwipeDirection {
 
 typedef struct GestureEvent {
     GesturePhase   phase;
-    Coord2           focalPoint;        // Normalized or pixel coordinate of gesture origin
+    vec2f            focalPoint;        // Normalized or pixel coordinate of gesture origin
     f32          magnificationDelta;// Pinch scale delta (+ zoom in, - zoom out)
     f32          rotationDeltaRad;  // Two-finger rotation angle in radians (+ CW, - CCW)
-    Coord2           scrollDelta;       // Smooth scroll delta (horizontal & vertical)
+    vec2f            scrollDelta;       // Smooth scroll delta (horizontal & vertical)
     SwipeDirection swipe;             // Discrete multi-finger swipe if detected
     u64       timestampUs;
 } GestureEvent;
@@ -53,8 +49,8 @@ static inline void GestureEvent_setMagnificationDelta(GestureEvent *event, f32 d
 typedef struct GestureState {
     f32  currentScale;       // Absolute accumulated zoom scale (default 1.0)
     f32  currentRotationRad; // Absolute accumulated rotation
-    Coord2   focalPoint;
-    Coord2   scrollVelocity;     // Inertia velocity decay
+    vec2f    focalPoint;
+    vec2f    scrollVelocity;     // Inertia velocity decay
     bool   isPinching;
     bool   isRotating;
 } GestureState;

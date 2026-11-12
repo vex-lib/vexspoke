@@ -1,8 +1,8 @@
+#include "vex.h"
+
 #include "input/gesture.h"
 
 #include <math.h>
-#include <string.h>
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**
@@ -32,18 +32,18 @@
  * ----------------------------------------------------------------------------
  *   GestureEvent {
  *     GesturePhase phase;            // BEGAN / CHANGED / ENDED / CANCELLED / MOMENTUM
- *     Coord2 focalPoint;               // gesture origin (normalized or pixel coords)
+ *     vec2f focalPoint;               // gesture origin (normalized or pixel coords)
  *     f32 magnificationDelta;      // pinch scale delta (+ zoom in, - zoom out)
  *     f32 rotationDeltaRad;        // two-finger rotation (+ CW, - CCW)
- *     Coord2 scrollDelta;              // smooth scroll delta (horizontal & vertical)
+ *     vec2f scrollDelta;              // smooth scroll delta (horizontal & vertical)
  *     SwipeDirection swipe;          // discrete multi-finger swipe if detected
  *     u64 timestampUs;          // event timestamp
  *   }
  *   GestureState {
  *     f32 currentScale;            // absolute accumulated zoom scale (default 1.0)
  *     f32 currentRotationRad;      // absolute accumulated rotation
- *     Coord2 focalPoint;               // gesture origin
- *     Coord2 scrollVelocity;           // inertia velocity decay
+ *     vec2f focalPoint;               // gesture origin
+ *     vec2f scrollVelocity;           // inertia velocity decay
  *     bool isPinching;               // pinch in progress
  *     bool isRotating;               // rotation in progress
  *   }
@@ -68,8 +68,8 @@ void GestureState_processEvent(GestureState *state, GestureEvent event) {
     if (state == nullptr) return;
 
     (*state).focalPoint = event.focalPoint;
-    Coord2 *velocity = &(*state).scrollVelocity;
-    Coord2 delta = event.scrollDelta;
+    vec2f *velocity = &(*state).scrollVelocity;
+    vec2f delta = event.scrollDelta;
 
     switch (event.phase) {
         case GESTURE_PHASE_BEGAN:
@@ -91,8 +91,8 @@ void GestureState_processEvent(GestureState *state, GestureEvent event) {
             (*state).currentRotationRad += event.rotationDeltaRad;
 
             // Update scroll velocity
-            (*velocity).horizontal = delta.horizontal;
-            (*velocity).vertical = delta.vertical;
+            (*velocity).x = delta.x;
+            (*velocity).y = delta.y;
             break;
 
         case GESTURE_PHASE_ENDED:
@@ -103,8 +103,8 @@ void GestureState_processEvent(GestureState *state, GestureEvent event) {
 
         case GESTURE_PHASE_MOMENTUM:
             // Momentum scroll tick
-            (*velocity).horizontal = delta.horizontal;
-            (*velocity).vertical = delta.vertical;
+            (*velocity).x = delta.x;
+            (*velocity).y = delta.y;
             break;
 
         default:
@@ -117,14 +117,14 @@ void GestureState_tick(GestureState *state, f32 deltaSeconds) {
 
     // Decay momentum velocity with smooth exponential friction
     f32 friction = powf(0.1f, deltaSeconds);
-    Coord2 *velocity = &(*state).scrollVelocity;
-    (*velocity).horizontal *= friction;
-    (*velocity).vertical   *= friction;
+    vec2f *velocity = &(*state).scrollVelocity;
+    (*velocity).x *= friction;
+    (*velocity).y *= friction;
 
-    if (fabsf((*velocity).horizontal) < 0.001f) {
-        (*velocity).horizontal = 0.0f;
+    if (fabsf((*velocity).x) < 0.001f) {
+        (*velocity).x = 0.0f;
     }
-    if (fabsf((*velocity).vertical) < 0.001f) {
-        (*velocity).vertical = 0.0f;
+    if (fabsf((*velocity).y) < 0.001f) {
+        (*velocity).y = 0.0f;
     }
 }

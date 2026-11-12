@@ -1,11 +1,7 @@
 #ifndef INPUT_GAMEPAD_H
 #define INPUT_GAMEPAD_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include "lang/constructor.h"
-#include "lang/vec2.h"
+#include "vex.h"
 
 // input/gamepad.h — Game Controller & Joystick Hardware Model.
 //
@@ -35,8 +31,8 @@ enum {
 
 typedef struct GamepadState {
     u32 buttons;       // Bitmask of active pressed buttons
-    Coord2     leftStick;     // Filtered deadzone vector [-1.0, +1.0]
-    Coord2     rightStick;    // Filtered deadzone vector [-1.0, +1.0]
+    vec2f      leftStick;     // Filtered deadzone vector [-1.0, +1.0]
+    vec2f      rightStick;    // Filtered deadzone vector [-1.0, +1.0]
     f32    leftTrigger;   // Normalized trigger squeeze [0.0, 1.0]
     f32    rightTrigger;  // Normalized trigger squeeze [0.0, 1.0]
     f32    rumbleLowFreq; // Low frequency heavy rumble [0.0, 1.0]
@@ -52,6 +48,6 @@ static inline void GamepadState_setButtons(GamepadState *state, u32 buttons) {
 }
 
 // Circular deadzone math; returns the filtered vector by value.
-Coord2 Gamepad_applyCircularDeadzone(Coord2 rawStick, f32 deadzone);
+vec2f Gamepad_applyCircularDeadzone(vec2f rawStick, f32 deadzone);
 
 #endif

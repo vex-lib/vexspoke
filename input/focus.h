@@ -1,8 +1,7 @@
 #ifndef INPUT_FOCUS_H
 #define INPUT_FOCUS_H
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "vex.h"
 
 // input/focus.h — THE spotlight (one focused window per machine).
 //

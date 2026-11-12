@@ -1,9 +1,8 @@
 #ifndef INPUT_HARDWARE_EVENT_H
 #define INPUT_HARDWARE_EVENT_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
+
 #include "input/piano_key.h"
 #include "input/turntable.h"
 #include "input/gesture.h"

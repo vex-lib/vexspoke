@@ -1,9 +1,6 @@
-#include "input/piano_key.h"
+#include "vex.h"
 
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
-#include "util/annotation.h"
+#include "input/piano_key.h"
 
 ;;DEFINITION
 /**

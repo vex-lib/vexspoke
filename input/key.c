@@ -17,16 +17,15 @@
 // on the game thread. The ring is the same thread/ring MPMC the rest of the
 // engine talks through.
 
-#include "input/key.h"
+#include "vex.h"
 
-#include <string.h>
+#include "input/key.h"
 
 #include "input/focus.h"
 #include "struct/ring.h"
 #include "time/nanotime.h"
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

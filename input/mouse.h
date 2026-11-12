@@ -1,8 +1,7 @@
 #ifndef INPUT_MOUSE_H
 #define INPUT_MOUSE_H
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "vex.h"
 
 #include "event/mousehandler.h"
 

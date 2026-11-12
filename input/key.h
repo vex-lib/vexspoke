@@ -1,8 +1,7 @@
 #ifndef INPUT_KEY_H
 #define INPUT_KEY_H
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "vex.h"
 
 #include "event/keyhandler.h"
 
