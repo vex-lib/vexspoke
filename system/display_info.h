@@ -1,9 +1,7 @@
 #ifndef SYSTEM_DISPLAY_INFO_H
 #define SYSTEM_DISPLAY_INFO_H
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <stddef.h>
+#include "vex.h"
 
 #include "system/display_monitor.h"
 

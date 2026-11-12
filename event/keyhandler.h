@@ -1,8 +1,7 @@
 #ifndef EVENT_KEY_H
 #define EVENT_KEY_H
 
-#include <stdint.h>
-#include "lang/primitive.h"
+#include "vex.h"
 
 // event/keyhandler.h — high-level listener contract for hardware key events
 // (Legacy: event/KeyEvent.java).

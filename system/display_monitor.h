@@ -1,10 +1,7 @@
 #ifndef SYSTEM_DISPLAY_MONITOR_H
 #define SYSTEM_DISPLAY_MONITOR_H
 
-#include <stdbool.h>
-#include <stdint.h>
-#include "lang/constructor.h"
-#include <stddef.h>
+#include "vex.h"
 
 // system/display_monitor.h — single display monitor representation (Legacy: system/DisplayMonitor.java)
 //

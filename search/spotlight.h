@@ -1,9 +1,7 @@
 #ifndef SEARCH_SPOTLIGHT_H
 #define SEARCH_SPOTLIGHT_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // search/spotlight.h — Ranked Spotlight Search & Math Query Engine.
 //

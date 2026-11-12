@@ -1,11 +1,9 @@
+#include "vex.h"
 #include "search/spotlight.h"
+#include "search/calc.h"
 
 #include <ctype.h>
 #include <stdlib.h>
-#include <string.h>
-
-#include "search/calc.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

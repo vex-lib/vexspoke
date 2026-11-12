@@ -1,8 +1,7 @@
 #ifndef REGEX_CHARCLASS_H
 #define REGEX_CHARCLASS_H
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "vex.h"
 
 // regex/charclass.h — the RegexCharClass: one 256-bit bitmap, one bit per byte
 // value. Single Class Per File Law: RegexCharClass.

@@ -1,11 +1,9 @@
 // reflection/class.c — the Class metadata record ("class { struct; methods }").
 
+#include "vex.h"
+
 #include "reflection/class.h"
 
-#include <stdio.h>
-#include <string.h>
-
-#include "util/annotation.h"
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
 

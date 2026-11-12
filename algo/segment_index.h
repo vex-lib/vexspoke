@@ -1,11 +1,8 @@
 #ifndef ALGO_SEGMENT_INDEX_H
 #define ALGO_SEGMENT_INDEX_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
-#include "lang/constructor.h"
 #include "relational/variable_hash_map.h"
 #include "relational/variable_mini_map.h"
 #include "struct/chunked_list.h"

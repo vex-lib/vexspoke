@@ -1,11 +1,8 @@
 #ifndef REGEX_REGEX_H
 #define REGEX_REGEX_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
-#include "lang/constructor.h"
 #include "regex/charclass.h"
 #include "regex/program.h"
 #include "regex/span.h"

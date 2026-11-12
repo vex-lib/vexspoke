@@ -1,14 +1,7 @@
 #ifndef PRIMITIVE_f64_H
 #define PRIMITIVE_f64_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
-#include "re/nio/bit_pool.h"
-
-#include "lang/constructor.h"
-
+#include "vex.h"
 // primitive/d64.h — d64 primitive (Legacy: primitive/d64.java).
 // Delegates to Bit64 width pool (8B stride).
 

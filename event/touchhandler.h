@@ -1,8 +1,7 @@
 #ifndef EVENT_TOUCH_H
 #define EVENT_TOUCH_H
 
-#include <stdint.h>
-#include "lang/primitive.h"
+#include "vex.h"
 
 // event/touchhandler.h — high-level listener contract for trackpad touch events
 // (Legacy: event/TouchEvent.java). Interface vtable + `self` (see event/keyhandler.h).

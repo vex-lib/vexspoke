@@ -1,14 +1,7 @@
 #ifndef PRIMITIVE_LONG_H
 #define PRIMITIVE_LONG_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
-#include "re/nio/bit_pool.h"
-
-#include "lang/constructor.h"
-
+#include "vex.h"
 // primitive/long.h — Long primitive (Legacy: primitive/Long.java).
 // Delegates to Bit64 width pool (8B stride).
 

@@ -2,10 +2,8 @@
 #define REFLECTION_METHOD_H
 
 #include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
-#include "lang/constructor.h"
 #include "relational/variable_slot.h"
 
 // reflection/method.h — the Method metadata record.

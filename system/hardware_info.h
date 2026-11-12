@@ -1,9 +1,7 @@
 #ifndef SYSTEM_HARDWARE_INFO_H
 #define SYSTEM_HARDWARE_INFO_H
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <stddef.h>
+#include "vex.h"
 
 // system/hardware_info.h — host hardware information query (Legacy: system/HardwareInfo.java)
 

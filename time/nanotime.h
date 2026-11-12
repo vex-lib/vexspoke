@@ -1,8 +1,7 @@
 #ifndef TIME_NANOTIME_H
 #define TIME_NANOTIME_H
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "vex.h"
 
 #include "time/clock.h"
 

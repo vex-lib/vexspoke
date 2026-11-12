@@ -1,3 +1,4 @@
+#include "vex.h"
 #include "system/system.h"
 
 #include "cli/console.h"
@@ -6,10 +7,8 @@
 #include "input/touch.h"
 #include "time/nanotime.h"
 #include "io/hot_file.h"
-#include "util/annotation.h"
 
 #include <stdlib.h>
-#include <string.h>
 
 extern char **environ;  // the process environment table (libc-owned)
 

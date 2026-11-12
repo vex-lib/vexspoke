@@ -4,12 +4,10 @@
 // walks the rarest segment's postings and verifies the rest with a binary
 // search. Cold path only.
 
+#include "vex.h"
+
 #include "algo/segment_index.h"
 
-#include <stdio.h>
-#include <string.h>
-
-#include "util/annotation.h"
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
 #include "relational/variable_slot.h"

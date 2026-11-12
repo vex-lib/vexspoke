@@ -1,7 +1,6 @@
+#include "vex.h"
 #include "cli/console.h"
 #include "primitive/vex-string.h"
-#include "util/throw.h"
-#include "util/annotation.h"
 #include <stdio.h>
 
 ;;DEFINITION

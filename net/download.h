@@ -1,10 +1,7 @@
 #ifndef NET_DOWNLOAD_H
 #define NET_DOWNLOAD_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include "lang/constructor.h"
+#include "vex.h"
 
 #ifdef __cplusplus
 extern "C" {

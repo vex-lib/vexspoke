@@ -1,12 +1,10 @@
+#include "vex.h"
 #include "thread/reactive.h"
-
-#include <stdint.h>
 
 #include "re/atomic/atomic.h"
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
 #include "struct/map.h"
-#include "lang/annotation.h"
 
 ;;DEFINITION
 /**

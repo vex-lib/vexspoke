@@ -1,9 +1,7 @@
+#include "vex.h"
 #include "search/find.h"
 
 #include <ctype.h>
-#include <string.h>
-
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

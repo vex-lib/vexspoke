@@ -1,14 +1,7 @@
 #ifndef PRIMITIVE_FIXED64_H
 #define PRIMITIVE_FIXED64_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
-#include "re/nio/bit_pool.h"
-
-#include "lang/constructor.h"
-
+#include "vex.h"
 // primitive/fixed64.h — Fixed64 primitive (Legacy: primitive/Fixed64.java).
 // Delegates to Bit64 width pool (8B stride).
 

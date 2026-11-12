@@ -1,10 +1,9 @@
-#include "algo/sort.h"
+#include "vex.h"
 
-#include <string.h>
+#include "algo/sort.h"
 
 #include "oop/vexspoke_type.h"
 #include "nio/mem.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

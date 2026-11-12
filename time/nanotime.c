@@ -5,10 +5,11 @@
 // consumer derives "time since engine start" from the same anchor so
 // timestamps from different threads stay comparable.
 
+#include "vex.h"
+
 #include "time/nanotime.h"
 
 #include <time.h>
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

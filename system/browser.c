@@ -1,8 +1,7 @@
-#include "util/annotation.h"
+#include "vex.h"
 #include "system/browser.h"
 #include "util/platform.h"
 
-#include <string.h>
 
 #if defined(VEX_PLATFORM_WINDOWS)
 #include <windows.h>

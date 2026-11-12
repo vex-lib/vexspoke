@@ -1,10 +1,9 @@
-#include "util/annotation.h"
+#include "vex.h"
 #include "system/app_detect.h"
 #include "system/process_probe.h"
 
 #include <ctype.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 
 ;;DEFINITION

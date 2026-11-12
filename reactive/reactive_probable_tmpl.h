@@ -1,3 +1,4 @@
+#include "vex.h"
 // reactive/reactive_probable_tmpl.h — the ReactiveProbable DECLARATION template.
 //
 // TEMPLATE, NOT A HEADER: no include guard — included once per instantiation.

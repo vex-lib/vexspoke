@@ -1,9 +1,8 @@
 #ifndef C23_FN_H
 #define C23_FN_H
 
-#include <stdint.h>
+#include "vex.h"
 
-#include "lang/constructor.h"
 
 // c23/fn.h — functions as data (the opcode-in-hand class).
 //

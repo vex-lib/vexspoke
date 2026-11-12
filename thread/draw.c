@@ -1,7 +1,6 @@
+#include "vex.h"
 #include "thread/draw.h"
 #include "thread/compute.h"
-
-#include "util/annotation.h"
 
 #include "oop/vexspoke_type.h"
 

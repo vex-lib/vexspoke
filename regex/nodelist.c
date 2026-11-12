@@ -1,10 +1,9 @@
 // regex/nodelist.c — the RegexNodeList flat AST array.
 
+#include "vex.h"
+
 #include "regex/nodelist.h"
 
-#include <string.h>
-
-#include "util/annotation.h"
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
 

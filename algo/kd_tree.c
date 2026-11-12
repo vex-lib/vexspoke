@@ -1,11 +1,9 @@
+#include "vex.h"
+
 #include "algo/kd_tree.h"
 
-#include <math.h>
-#include <stdlib.h>
-#include <string.h>
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

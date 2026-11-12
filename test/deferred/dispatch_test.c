@@ -1,8 +1,7 @@
+#include "vex.h"
 #include "deferred/dispatch.h"
-#include "util/annotation.h"
+
 #include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
 

@@ -1,8 +1,8 @@
 // regex/charclass.c — the RegexCharClass 256-bit bitmap.
 
-#include "regex/charclass.h"
+#include "vex.h"
 
-#include "util/annotation.h"
+#include "regex/charclass.h"
 
 ;;DEFINITION
 /**

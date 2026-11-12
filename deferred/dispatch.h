@@ -1,9 +1,8 @@
 #ifndef DISPATCH_DISPATCH_H
 #define DISPATCH_DISPATCH_H
 
-#include <stdatomic.h>
-#include <stdbool.h>
-#include <stddef.h>
+#include "vex.h"
+
 #include "re/atomic/atomic.h"
 
 // MPSC mailbox: producers post; one designated consumer drains on its own

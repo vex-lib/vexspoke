@@ -1,7 +1,6 @@
+#include "vex.h"
 #include "thread/networking.h"
 #include "thread/compute.h"
-
-#include "util/annotation.h"
 
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"

@@ -1,7 +1,7 @@
 #ifndef SYSTEM_DISCOVERY_H
 #define SYSTEM_DISCOVERY_H
 
-#include <stdbool.h>
+#include "vex.h"
 
 // system/discovery.h — native hardware, display, and GPU probe (Legacy: system/SystemDiscovery.java)
 

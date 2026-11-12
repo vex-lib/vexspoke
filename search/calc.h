@@ -1,7 +1,7 @@
 #ifndef SEARCH_CALC_H
 #define SEARCH_CALC_H
 
-#include "lang/primitive.h"
+#include "vex.h"
 
 // search/calc.h — String Mathematical Expression Calculation Engine.
 //

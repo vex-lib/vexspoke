@@ -5,10 +5,11 @@
 // — so unpausing never dumps a backlog of phantom milliseconds into the
 // simulation.
 
+#include "vex.h"
+
 #include "time/clock.h"
 
 #include <time.h>
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

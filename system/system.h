@@ -1,7 +1,7 @@
 #ifndef SYSTEM_SYSTEM_H
 #define SYSTEM_SYSTEM_H
 
-#include <stdbool.h>
+#include "vex.h"
 
 // system/system.h — Unified native system information, discovery, and display subsystem
 // (Legacy: darling/system/* in anti Java engine)

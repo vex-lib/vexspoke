@@ -1,10 +1,9 @@
 // regex/vm.c — the RegexVm Pike-VM simulator.
 
+#include "vex.h"
+
 #include "regex/vm.h"
 
-#include <string.h>
-
-#include "util/annotation.h"
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
 

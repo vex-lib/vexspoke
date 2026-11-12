@@ -1,11 +1,7 @@
 #ifndef ALGO_KD_TREE_H
 #define ALGO_KD_TREE_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
-#include "lang/constructor.h"
+#include "vex.h"
 
 // algo/kd_tree.h — 3-Dimensional K-D Tree for Spatial Search.
 //

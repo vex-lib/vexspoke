@@ -1,3 +1,4 @@
+#include "vex.h"
 #include "thread/event.h"
 #include "thread/compute.h"
 
@@ -5,7 +6,6 @@
 #include "input/mouse.h"
 #include "input/touch.h"
 #include "oop/vexspoke_type.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

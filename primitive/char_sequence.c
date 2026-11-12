@@ -5,12 +5,10 @@
 // the libc string measurements: no other file in the tree calls strcmp,
 // strncmp, strstr or strchr.
 
+#include "vex.h"
+
 #include "primitive/char_sequence.h"
 #include "primitive/vex-string.h"
-
-#include <string.h>
-
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

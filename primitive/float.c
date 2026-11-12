@@ -1,10 +1,8 @@
+#include "vex.h"
 #include "primitive/vex-f32.h"
-
-#include <string.h>
 
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

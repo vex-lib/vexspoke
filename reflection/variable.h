@@ -2,10 +2,8 @@
 #define REFLECTION_VARIABLE_H
 
 #include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
-#include "lang/constructor.h"
 #include "relational/variable_slot.h"
 
 // reflection/variable.h — the Variable metadata record (base of the hierarchy).

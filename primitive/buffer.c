@@ -1,11 +1,10 @@
+#include "vex.h"
 #include "primitive/buffer.h"
 
 #include <string.h>
 
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
-
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**
@@ -35,12 +34,12 @@
  * Core Functions:
  *   - Buffer_0()
  *   - Buffer_1(n)
- *   - Buffer_2(bytes, n)
+ *   - Buffer_2(data, n)
  *   - Buffer_free(self)
  *   - Buffer_bytes(self)
  *   - Buffer_length(self)
  *   - Buffer_capacity(self)
- *   - Buffer_append(self, bytes, n)
+ *   - Buffer_append(self, data, n)
  *   - Buffer_setLength(self, n)
  *   - Buffer_reserve(self, capacity)
  * ============================================================================
@@ -52,7 +51,7 @@ Buffer *Buffer_0(void) {
     if (!self)
         return nullptr;
 
-    (*self).bytes = nullptr;
+    (*self).data = nullptr;
     (*self).length = 0;
     (*self).capacity = 0;
 
@@ -66,14 +65,14 @@ Buffer *Buffer_1(bytes n) {
         return nullptr;
 
     if (n > 0) {
-        (*self).bytes = (u8*) Memory_alloc(TYPE_BYTE_ARRAY, n);
+        (*self).data = (u8*) Memory_alloc(TYPE_BYTE_ARRAY, n);
 
-        if (!(*self).bytes) {
+        if (!(*self).data) {
             Memory_free(self);
             return nullptr;
         }
 
-        memset((*self).bytes, 0, n);
+        memset((*self).data, 0, n);
         (*self).length = n;
         (*self).capacity = n;
     }
@@ -81,14 +80,14 @@ Buffer *Buffer_1(bytes n) {
     return self;
 }
 
-Buffer *Buffer_2(const u8 *bytes, bytes n) {
+Buffer *Buffer_2(const u8 *data, bytes n) {
     Buffer *self = Buffer_1(n);
 
     if (!self)
         return nullptr;
 
-    if (n > 0 && bytes)
-        memcpy((*self).bytes, bytes, n);
+    if (n > 0 && data)
+        memcpy((*self).data, data, n);
 
     return self;
 }
@@ -97,8 +96,8 @@ void Buffer_free(Buffer *self) {
     if (!self)
         return;
 
-    if ((*self).bytes)
-        Memory_free((*self).bytes);
+    if ((*self).data)
+        Memory_free((*self).data);
 
     Memory_free(self);
 }
@@ -107,7 +106,7 @@ u8 *Buffer_bytes(const Buffer *self) {
     if (!self)
         return nullptr;
 
-    return (*self).bytes;
+    return (*self).data;
 }
 
 bytes Buffer_length(const Buffer *self) {
@@ -140,25 +139,25 @@ bool Buffer_reserve(Buffer *self, bytes capacity) {
         grown *= 2;
     }
 
-    u8 *next = (u8*) Memory_realloc((*self).bytes, grown);
+    u8 *next = (u8*) Memory_realloc((*self).data, grown);
 
     if (!next)
         return false;
 
-    (*self).bytes = next;
+    (*self).data = next;
     (*self).capacity = grown;
 
     return true;
 }
 
-bool Buffer_append(Buffer *self, const u8 *bytes, bytes n) {
+bool Buffer_append(Buffer *self, const u8 *data, bytes n) {
     if (!self)
         return false;
 
     if (n == 0)
         return true;
 
-    if (!bytes)
+    if (!data)
         return false;
 
     bytes need = (*self).length + n;
@@ -169,7 +168,7 @@ bool Buffer_append(Buffer *self, const u8 *bytes, bytes n) {
     if (!Buffer_reserve(self, need))
         return false;
 
-    memcpy((*self).bytes + (*self).length, bytes, n);
+    memcpy((*self).data + (*self).length, data, n);
     (*self).length = need;
 
     return true;

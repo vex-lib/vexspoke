@@ -1,10 +1,8 @@
 #ifndef SPOKE_BESPOKE_H
 #define SPOKE_BESPOKE_H
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "vex.h"
 #include "util/platform.h"
-#include "lang/constructor.h"
 
 // spoke/bespoke.h — R2 Behavior: Unified Bespoke Bridge Hub.
 //

@@ -1,9 +1,7 @@
+#include "vex.h"
 #include "system/hardware_info.h"
 
-#include <string.h>
-
 #include "system/discovery.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

@@ -1,8 +1,6 @@
+#include "vex.h"
 #include "c23/equals.h"
 
-#include <string.h>
-
-#include "util/annotation.h"
 #include "re/nio/mem.h"
 
 ;;DEFINITION

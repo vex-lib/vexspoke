@@ -1,8 +1,7 @@
 #ifndef SYSTEM_BROWSER_H
 #define SYSTEM_BROWSER_H
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "vex.h"
 
 // system/browser.h — Default web browser launcher.
 //

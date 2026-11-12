@@ -1,9 +1,7 @@
 #ifndef PRIMITIVE_VEX_STRING_H
 #define PRIMITIVE_VEX_STRING_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // primitive/vex-string.h — the string class, ported from primitive/string.java.
 //
@@ -59,7 +57,7 @@ bool string_equalsCString(const u8 *ptr, const char *value);
 
 // — Capital String class — vex reserved word String() — file stays string.h lowercase per prefs
 // String("hello"), String(u8*), String() → ""
-#include "lang/constructor.h"
+#include "vex.h"
 #define String_0(...) string_allocate("")
 #define String_1(value) _Generic((value), const char*: string_allocate, char*: string_allocate, u8*: string_copy, const u8*: string_copy, default: string_allocate)(value)
 #define String(...) CONSTRUCTOR_DISPATCH(String, __VA_ARGS__)

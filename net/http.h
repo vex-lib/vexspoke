@@ -1,11 +1,8 @@
 #ifndef NET_HTTP_H
 #define NET_HTTP_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <pthread.h>
-#include "lang/constructor.h"
 
 // net/http.h — HTTP/1.1 client & micro server over BSD sockets
 // (Legacy: net/HTTPClient.java, net/HTTPServer.java, net/PollRequest.java).

@@ -1,10 +1,8 @@
 #ifndef REGEX_PROGRAM_H
 #define REGEX_PROGRAM_H
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "vex.h"
 
-#include "lang/constructor.h"
 #include "regex/nodelist.h"
 
 // regex/program.h — the RegexProgram: the compiled instruction array, the

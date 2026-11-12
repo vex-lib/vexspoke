@@ -1,8 +1,5 @@
+#include "vex.h"
 #include "system/discovery.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <stdatomic.h>
 #include "util/platform.h"
 
@@ -14,7 +11,6 @@
 #if defined(VEX_PLATFORM_APPLE)
 #include <sys/sysctl.h>
 #include <CoreGraphics/CoreGraphics.h>
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

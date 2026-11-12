@@ -1,11 +1,9 @@
 // reflection/struct.c — the Struct metadata record ("struct { field }").
 
+#include "vex.h"
+
 #include "reflection/struct.h"
 
-#include <stdio.h>
-#include <string.h>
-
-#include "util/annotation.h"
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
 

@@ -2,9 +2,10 @@
 // Compiles on macOS: clang -I src -framework Foundation -framework LocalAuthentication -o touchid_demo touchid_demo/test.c src/security/touchid_cocoa.m
 // Compiles stub:     clang -I src -o touchid_demo touchid_demo/test.c src/security/touchid.c
 
+#include "vex.h"
 #include "security/touchid.h" // not "security/touchid.h" bc its overriding the c secutiry
+
 #include <stdio.h>
-#include "util/annotation.h"
 
 ;;OVERVIEW
 /**

@@ -1,12 +1,9 @@
 #ifndef THREAD_COMPUTE_H
 #define THREAD_COMPUTE_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 #include "thread/thread.h"
-#include "lang/constructor.h"
 
 // thread/compute.h — the heavy-work job system (the parking lot).
 //

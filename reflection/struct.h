@@ -2,10 +2,8 @@
 #define REFLECTION_STRUCT_H
 
 #include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
-#include "lang/constructor.h"
 #include "reflection/field.h"
 #include "struct/chunked_list.h"
 

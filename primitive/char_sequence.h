@@ -1,12 +1,7 @@
 #ifndef PRIMITIVE_CHAR_SEQUENCE_H
 #define PRIMITIVE_CHAR_SEQUENCE_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
-#include "lang/constructor.h"
-
+#include "vex.h"
 // primitive/char_sequence.h — a non-owning view of text: bytes plus a length.
 //
 // The view is the safe way to look at text that is NOT NUL-terminated: a JSON

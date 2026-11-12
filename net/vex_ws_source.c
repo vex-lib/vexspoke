@@ -1,10 +1,7 @@
+#include "vex.h"
 #include "net/vex_ws_source.h"
 
-#include "util/annotation.h"
-#include "util/throw.h"
 #include "lang/str.h"
-
-#include <string.h>
 
 ;;DEFINITION
 /**
@@ -139,11 +136,11 @@ u32 VexWsSource_poll(void *handle, u64 budgetMs) {
 }
 
 /** Send one TEXT frame; a non-UTF-8 payload is refused, not re-typed. */
-bool VexWsSource_send(void *handle, const u8 *bytes, u32 length) {
+bool VexWsSource_send(void *handle, const u8 *data, u32 length) {
     VexWsSource *self = (VexWsSource*) handle;
-    if (self == nullptr || (bytes == nullptr && length != 0u))
+    if (self == nullptr || (data == nullptr && length != 0u))
         return false;
-    if (!WebSocket_writeText(&(*self).socket, (const char*) bytes, (bytes) length))
+    if (!WebSocket_writeText(&(*self).socket, (const char*) data, (bytes) length))
         return false;
     return true;
 }

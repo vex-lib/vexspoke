@@ -1,8 +1,8 @@
 // regex/span.c — the RegexSpan value helpers.
 
-#include "regex/span.h"
+#include "vex.h"
 
-#include "util/annotation.h"
+#include "regex/span.h"
 
 ;;DEFINITION
 /**

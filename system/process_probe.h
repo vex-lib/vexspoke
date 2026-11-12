@@ -1,8 +1,7 @@
 #ifndef SYSTEM_PROCESS_PROBE_H
 #define SYSTEM_PROCESS_PROBE_H
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "vex.h"
 
 // system/process_probe.h — live process & driver probing (darwin).
 //

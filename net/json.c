@@ -5,12 +5,11 @@
 // (*doc).ok once and the parse unwinds. Escaped strings decode forward into
 // the scratch arena so value views stay pointer-stable.
 
+#include "vex.h"
+
 #include "net/json.h"
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

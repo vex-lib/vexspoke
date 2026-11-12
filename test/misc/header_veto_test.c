@@ -1,9 +1,8 @@
-#include "util/annotation.h"
+#include "vex.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
 
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"

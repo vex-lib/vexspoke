@@ -1,13 +1,7 @@
 #ifndef PRIMITIVE_BUFFER_H
 #define PRIMITIVE_BUFFER_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
-#include "lang/constructor.h"
-
-#include "lang/annotation.h"
+#include "vex.h"
 
 // primitive/buffer.h — one contiguous byte block with length + capacity.
 //
@@ -20,7 +14,7 @@
 // Buffer_free. Transient scratch stays Transient_alloc; Buffer is permanent.
 
 typedef struct Buffer {
-    u8 *bytes;
+    u8 *data;
     bytes length;
     bytes capacity;
 } Buffer;
@@ -30,7 +24,7 @@ Buffer *Buffer_0(void);
 // Pre-sized buffer, zeroed, length == capacity == n.
 Buffer *Buffer_1(bytes n);
 // Copy of n bytes.
-Buffer *Buffer_2(const u8 *bytes, bytes n);
+Buffer *Buffer_2(const u8 *data, bytes n);
 
 #define BUFFER_CHOOSER(_0, _1, _2, NAME, ...) NAME
 
@@ -47,7 +41,7 @@ bytes Buffer_length(const Buffer *self);
 bytes Buffer_capacity(const Buffer *self);
 
 // Append n bytes, growing cold (doubling) as needed. False on refusal.
-bool Buffer_append(Buffer *self, const u8 *bytes, bytes n);
+bool Buffer_append(Buffer *self, const u8 *data, bytes n);
 
 // Set length explicitly (clamped to capacity, never grows).
 bool Buffer_setLength(Buffer *self, bytes n);

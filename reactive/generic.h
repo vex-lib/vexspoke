@@ -1,6 +1,8 @@
 #ifndef REACTIVE_GENERIC_H
 #define REACTIVE_GENERIC_H
 
+#include "vex.h"
+
 #include "reactive/reactive.h"
 
 // reactive/generic.h — the reactive generics surface.

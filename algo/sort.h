@@ -1,9 +1,7 @@
 #ifndef ALGO_SORT_H
 #define ALGO_SORT_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // algo/sort.h — in-place comparison sorts and unsigned radix sorts.
 //

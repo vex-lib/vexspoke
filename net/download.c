@@ -1,13 +1,11 @@
+#include "vex.h"
+
 #include "net/download.h"
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 #include <spawn.h>
 #include <sys/wait.h>
-
-#include "util/annotation.h"
 
 extern char **environ;
 

@@ -1,11 +1,8 @@
 #ifndef THREAD_THREAD_H
 #define THREAD_THREAD_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
-#include "lang/constructor.h"
 #include "struct/ring.h"
 
 // thread/thread.h — the worker-thread engine (Legacy: the six *Thread.java

@@ -1,10 +1,11 @@
-#include "vexhome.h"
-#include "lang/platform.h"
+#include "vex.h"
+
 // Vexspoke io; per-user layout policy above re File.
 
-#include <stdio.h>
+#include "io/vexhome.h"
+#include "lang/platform.h"
+
 #include <stdlib.h>
-#include <string.h>
 #include <time.h>
 
 #include "re/io/file/file.h"

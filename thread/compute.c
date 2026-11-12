@@ -1,9 +1,7 @@
+#include "vex.h"
 #include "thread/compute.h"
 
-#include <stdatomic.h>
-
 #include "oop/vexspoke_type.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

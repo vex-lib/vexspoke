@@ -1,11 +1,8 @@
 #ifndef REGEX_PARSER_H
 #define REGEX_PARSER_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
-#include "lang/constructor.h"
 #include "regex/charclass.h"
 #include "regex/nodelist.h"
 

@@ -1,14 +1,7 @@
 #ifndef PRIMITIVE_INT_H
 #define PRIMITIVE_INT_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
-#include "re/nio/bit_pool.h"
-
-#include "lang/constructor.h"
-
+#include "vex.h"
 // primitive/int.h — Int primitive (Legacy: primitive/Int.java).
 // Delegates to Bit32 width pool (4B stride).
 

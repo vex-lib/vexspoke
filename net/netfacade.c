@@ -3,11 +3,10 @@
 // Thin glue: each call is one HttpRequest + one Json_parse. All storage is
 // the caller's; nothing here allocates.
 
+#include "vex.h"
+
 #include "net/net.h"
 
-#include <stdio.h>
-#include <string.h>
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

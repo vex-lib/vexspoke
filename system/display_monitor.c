@@ -1,11 +1,10 @@
+#include "vex.h"
 #include "system/display_monitor.h"
 
 #include <stdlib.h>
-#include <string.h>
 
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

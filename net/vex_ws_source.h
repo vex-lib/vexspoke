@@ -1,11 +1,8 @@
 #ifndef NET_VEX_WS_SOURCE_H
 #define NET_VEX_WS_SOURCE_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
-#include "lang/constructor.h"
 #include "net/websocket.h"
 
 // net/vex_ws_source.h — the socket adapter behind a host's WsSource seam.

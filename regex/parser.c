@@ -1,10 +1,9 @@
 // regex/parser.c — the RegexParser: pattern bytes to a flat AST plus bitmaps.
 
+#include "vex.h"
+
 #include "regex/parser.h"
 
-#include <string.h>
-
-#include "util/annotation.h"
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
 

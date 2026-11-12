@@ -1,9 +1,7 @@
 #ifndef NET_TLS_H
 #define NET_TLS_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // net/tls.h — TLS backend seam (Legacy: net/TransportProtocol.java).
 //

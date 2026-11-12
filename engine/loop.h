@@ -1,10 +1,7 @@
 #ifndef ENGINE_LOOP_H
 #define ENGINE_LOOP_H
 
-#include <stdatomic.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include "lang/constructor.h"
+#include "vex.h"
 
 // engine/loop.h — the engine loop API (Legacy: engine/EngineLoop.java).
 //

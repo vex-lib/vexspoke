@@ -1,7 +1,7 @@
 #ifndef PRIMITIVE_PACK_H
 #define PRIMITIVE_PACK_H
 
-#include <stdint.h>
+#include "vex.h"
 
 // primitive/pack.h — bit-packing utilities (Legacy: primitive/Pack.java).
 

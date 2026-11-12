@@ -1,7 +1,7 @@
+#include "vex.h"
 #include "frame_inbox.h"
 // Vexspoke net; caller-fed bounded frame ABI preserved.
 
-#include <string.h>
 #include <time.h>
 
 #include "re/nio/mem.h"

@@ -12,15 +12,15 @@
 #define _GNU_SOURCE // strcasestr
 #endif
 
+#include "vex.h"
+
 #include "net/http.h"
 
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <poll.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <strings.h>
 #include <sys/socket.h>
 #include <time.h>
@@ -28,7 +28,6 @@
 
 #include "net/url.h"
 #include "net/tls.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

@@ -1,9 +1,7 @@
 #ifndef TIME_CLOCK_H
 #define TIME_CLOCK_H
 
-#include <stdbool.h>
-#include <stdint.h>
-#include "lang/constructor.h"
+#include "vex.h"
 
 // time/clock.h — the virtual clock (Legacy: time/Clock.java).
 //

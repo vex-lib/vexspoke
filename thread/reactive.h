@@ -1,8 +1,7 @@
 #ifndef THREAD_REACTIVE_H
 #define THREAD_REACTIVE_H
 
-#include <stdbool.h>
-#include <stddef.h>
+#include "vex.h"
 
 #include "thread/thread.h"
 #include "reactive/reactive.h"

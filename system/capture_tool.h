@@ -1,8 +1,7 @@
 #ifndef SYSTEM_CAPTURE_TOOL_H
 #define SYSTEM_CAPTURE_TOOL_H
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "vex.h"
 
 // system/capture_tool.h — screen/audio capture & streaming probe (darwin).
 //

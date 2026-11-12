@@ -1,9 +1,9 @@
+#include "vex.h"
+
 #include "algo/bvh.h"
 
-#include <f32.h>
+#include <float.h>
 #include <stdlib.h>
-
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

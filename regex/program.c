@@ -1,8 +1,9 @@
 // regex/program.c — the RegexProgram Thompson emitter.
 
+#include "vex.h"
+
 #include "regex/program.h"
 
-#include "util/annotation.h"
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
 

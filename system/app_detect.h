@@ -1,9 +1,7 @@
 #ifndef SYSTEM_APP_DETECT_H
 #define SYSTEM_APP_DETECT_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // system/app_detect.h — local application detection (R1 capability probe).
 //

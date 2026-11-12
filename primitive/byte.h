@@ -1,14 +1,7 @@
 #ifndef PRIMITIVE_BYTE_H
 #define PRIMITIVE_BYTE_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
-#include "re/nio/bit_pool.h"
-
-#include "lang/constructor.h"
-
+#include "vex.h"
 // primitive/byte.h — Byte primitive (Legacy: primitive/Byte.java).
 // Delegates to Bit8 width pool (1B stride).
 

@@ -1,8 +1,7 @@
 #ifndef REGEX_SPAN_H
 #define REGEX_SPAN_H
 
-#include <stdbool.h>
-#include <stddef.h>
+#include "vex.h"
 
 // regex/span.h — the RegexSpan value: a (start, end) byte-offset pair reported
 // by a match. Single Class Per File Law: RegexSpan, a stateless value with

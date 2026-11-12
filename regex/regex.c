@@ -1,13 +1,11 @@
 // regex/regex.c — the public Regex class: compile once, match in linear time.
 
-#include "regex/regex.h"
+#include "vex.h"
 
 #include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
 
-#include "util/annotation.h"
-#include "util/throw.h"
+#include "regex/regex.h"
+
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
 #include "regex/parser.h"

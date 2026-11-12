@@ -1,9 +1,8 @@
-#include "util/annotation.h"
+#include "vex.h"
 #include "system/process_probe.h"
 #include "util/platform.h"
 
 #include <dirent.h>
-#include <string.h>
 #include <strings.h>
 #include <unistd.h>
 

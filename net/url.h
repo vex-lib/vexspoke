@@ -1,9 +1,7 @@
 #ifndef NET_URL_H
 #define NET_URL_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // net/url.h — URI synthesis & authentication headers (Legacy:
 // net/TransportProtocol.java). Everything writes into caller buffers and

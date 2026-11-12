@@ -1,12 +1,7 @@
 #ifndef NET_WEBSOCKET_H
 #define NET_WEBSOCKET_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include "lang/primitive.h"
-
-#include "lang/constructor.h"
+#include "vex.h"
 #include "net/tls.h"
 
 // net/websocket.h — RFC 6455 WebSocket client over BSD sockets

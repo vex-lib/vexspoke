@@ -1,9 +1,7 @@
 #ifndef SEARCH_FIND_H
 #define SEARCH_FIND_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // search/find.h — IDE-Style Find Flags & Pattern Matching.
 //

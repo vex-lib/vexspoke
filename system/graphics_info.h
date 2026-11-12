@@ -1,9 +1,7 @@
 #ifndef SYSTEM_GRAPHICS_INFO_H
 #define SYSTEM_GRAPHICS_INFO_H
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <stddef.h>
+#include "vex.h"
 
 // system/graphics_info.h — GPU and graphics capabilities query (Legacy: system/GraphicsInfo.java)
 

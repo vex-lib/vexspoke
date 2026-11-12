@@ -1,7 +1,7 @@
 #ifndef ALGO_SPATIAL_H
 #define ALGO_SPATIAL_H
 
-#include <stdint.h>
+#include "vex.h"
 
 // algo/spatial.h — compact spatial indexing helpers.
 

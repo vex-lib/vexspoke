@@ -1,14 +1,11 @@
+#include "vex.h"
 #include "search/calc.h"
+#include "types.h"
+#include "math/strict_math.h"
 
 #include <ctype.h>
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-
-#include "types.h"
-#include "math/strict_math.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

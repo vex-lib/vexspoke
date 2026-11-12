@@ -1,14 +1,7 @@
 #ifndef PRIMITIVE_FIXED32_H
 #define PRIMITIVE_FIXED32_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
-#include "re/nio/bit_pool.h"
-
-#include "lang/constructor.h"
-
+#include "vex.h"
 // primitive/fixed32.h — Fixed32 primitive (Legacy: primitive/Fixed32.java).
 // Delegates to Bit32 width pool (4B stride).
 

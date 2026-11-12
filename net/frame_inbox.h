@@ -1,10 +1,6 @@
 #ifndef NET_FRAME_INBOX_H
 #define NET_FRAME_INBOX_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
 #include "vex.h"
 #include "re/type/re_type.h"
 

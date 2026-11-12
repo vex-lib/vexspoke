@@ -1,14 +1,7 @@
 #ifndef PRIMITIVE_BRAIN_H
 #define PRIMITIVE_BRAIN_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
-#include "re/nio/bit_pool.h"
-
-#include "lang/constructor.h"
-
+#include "vex.h"
 // primitive/brain.h — Brain primitive (Legacy: primitive/Brain.java).
 // Delegates to Bit16 width pool (2B stride).
 

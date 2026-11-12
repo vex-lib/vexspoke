@@ -2,11 +2,11 @@
 // net/TransportProtocol.java port). Pure byte plumbing; every writer
 // reserves room for the NUL and fails clean instead of truncating.
 
+#include "vex.h"
+
 #include "net/url.h"
 
-#include <stdio.h>
 #include <strings.h>
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

@@ -1,11 +1,9 @@
 // reflection/field.c — the Field metadata record ("field { variable }").
 
+#include "vex.h"
+
 #include "reflection/field.h"
 
-#include <stdio.h>
-#include <string.h>
-
-#include "util/annotation.h"
 #include "nio/mem.h"
 #include "oop/stride.h"
 #include "oop/vexspoke_type.h"

@@ -7,7 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "util/throw.h"
+#include "vex.h"
 
 static int failures = 0;
 

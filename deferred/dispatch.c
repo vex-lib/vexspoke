@@ -1,8 +1,7 @@
+#include "vex.h"
 #include "deferred/dispatch.h"
-#include <stdint.h>
-#include <stdio.h>
+
 #include <stdlib.h>
-#include "util/annotation.h"
 
 ;;DEFINITION
 /** The deferred-behavior mailbox. It exists so a caller can hand work to another

@@ -1,6 +1,6 @@
 #ifndef C23_FREE_H
 #define C23_FREE_H
-#include <stdint.h>
+#include "vex.h"
 
 // c23/free.h — The Relational Destructor Dispatcher.
 // 

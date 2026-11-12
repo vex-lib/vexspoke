@@ -1,12 +1,10 @@
+#include "vex.h"
 #include "net/websocket.h"
 #include "oop/vexspoke_type.h"
 
-#include "util/annotation.h"
-#include "util/throw.h"
 #include "lang/str.h"
 #include "net/url.h"
 #include "re/nio/mem.h"
-#include "vexspoke/oop/vexspoke_type.h"
 #include "security/secure_random.h"
 #include "security/sha1.h"
 
@@ -14,8 +12,6 @@
 #include <fcntl.h>
 #include <netdb.h>
 #include <poll.h>
-#include <stdio.h>
-#include <string.h>
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <time.h>
@@ -212,10 +208,10 @@ static int wsConnect(const WsTarget *target, u32 timeoutMs) {
 }
 
 /** Write a whole buffer, retrying short writes. */
-static bool wsSendAll(int fd, const u8 *bytes, bytes length) {
+static bool wsSendAll(int fd, const u8 *data, bytes length) {
     bytes sent = 0u;
     while (sent < length) {
-        ssize_t written = send(fd, bytes + sent, length - sent, 0);
+        ssize_t written = send(fd, data + sent, length - sent, 0);
         if (written <= 0)
             return false;
         sent += (bytes) written;
@@ -224,12 +220,12 @@ static bool wsSendAll(int fd, const u8 *bytes, bytes length) {
 }
 
 /** Write through whichever transport this client owns (socket or TLS). */
-static bool wsWrite(WebSocket *self, const u8 *bytes, bytes length) {
+static bool wsWrite(WebSocket *self, const u8 *data, bytes length) {
     if (self == nullptr)
         return false;
     if ((*self).tls != nullptr)
-        return Tls_send((*self).tls, (const char*) bytes, length);
-    return (*self).fd >= 0 && wsSendAll((*self).fd, bytes, length);
+        return Tls_send((*self).tls, (const char*) data, length);
+    return (*self).fd >= 0 && wsSendAll((*self).fd, data, length);
 }
 
 /** Read exactly length Bytes, retrying short reads within the transport budget. */
@@ -253,10 +249,10 @@ static bool wsReadExact(WebSocket *self, u8 *dest, bytes length) {
 }
 
 /** Index just past a complete "\r\n\r\n", or SIZE_MAX when it is absent. */
-static bytes wsFindHeaderEnd(const char *bytes, bytes length) {
+static bytes wsFindHeaderEnd(const char *data, bytes length) {
     for (bytes i = 3u; i < length; i++) {
-        if (bytes[i - 3u] == '\r' && bytes[i - 2u] == '\n' &&
-            bytes[i - 1u] == '\r' && bytes[i] == '\n')
+        if (data[i - 3u] == '\r' && data[i - 2u] == '\n' &&
+            data[i - 1u] == '\r' && data[i] == '\n')
             return i + 1u;
     }
     return SIZE_MAX;
@@ -406,10 +402,10 @@ static void wsFail(WebSocket *self, const char *reason) {
 }
 
 /** RFC 3629 validation: rejects overlong forms and surrogate halves. */
-static bool wsUtf8Valid(const u8 *bytes, bytes length) {
+static bool wsUtf8Valid(const u8 *data, bytes length) {
     bytes i = 0u;
     while (i < length) {
-        u8 lead = bytes[i];
+        u8 lead = data[i];
         if (lead < 0x80u) {
             i++;
             continue;
@@ -435,9 +431,9 @@ static bool wsUtf8Valid(const u8 *bytes, bytes length) {
         if (i + extra >= length)
             return false;
         for (bytes k = 1u; k <= extra; k++) {
-            if ((bytes[i + k] & 0xC0u) != 0x80u)
+            if ((data[i + k] & 0xC0u) != 0x80u)
                 return false;
-            codepoint = (codepoint << 6) | (u32) (bytes[i + k] & 0x3Fu);
+            codepoint = (codepoint << 6) | (u32) (data[i + k] & 0x3Fu);
         }
         if (codepoint < minimum || codepoint > 0x10FFFFu ||
             (codepoint >= 0xD800u && codepoint <= 0xDFFFu))
@@ -448,7 +444,7 @@ static bool wsUtf8Valid(const u8 *bytes, bytes length) {
 }
 
 /** Append reassembled payload Bytes, refusing anything past the message cap. */
-static bool wsAppendMessage(WebSocket *self, const u8 *bytes, bytes length) {
+static bool wsAppendMessage(WebSocket *self, const u8 *data, bytes length) {
     if (length > (*self).maxMessageBytes - (*self).messageLength) {
         wsFail(self, "message exceeds the configured cap");
         return false;
@@ -466,7 +462,7 @@ static bool wsAppendMessage(WebSocket *self, const u8 *bytes, bytes length) {
         (*self).message = grown;
         (*self).messageCap = cap;
     }
-    memcpy((*self).message + (*self).messageLength, bytes, length);
+    memcpy((*self).message + (*self).messageLength, data, length);
     (*self).messageLength += length;
     return true;
 }
@@ -973,10 +969,10 @@ bool WebSocket_writeText(WebSocket *self, const char *text, bytes length) {
 }
 
 /** Send one final binary frame. */
-bool WebSocket_writeBinary(WebSocket *self, const u8 *bytes, bytes length) {
-    if (!wsConnected(self) || (bytes == nullptr && length != 0u))
+bool WebSocket_writeBinary(WebSocket *self, const u8 *data, bytes length) {
+    if (!wsConnected(self) || (data == nullptr && length != 0u))
         return false;
-    if (!wsSendFrame(self, WEBSOCKET_BINARY, true, bytes, length)) {
+    if (!wsSendFrame(self, WEBSOCKET_BINARY, true, data, length)) {
         wsFail(self, "binary frame write failed");
         return false;
     }

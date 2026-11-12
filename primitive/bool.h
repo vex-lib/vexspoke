@@ -1,14 +1,7 @@
 #ifndef PRIMITIVE_BOOL_H
 #define PRIMITIVE_BOOL_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
-#include "re/nio/bit_pool.h"
-
-#include "lang/constructor.h"
-
+#include "vex.h"
 // primitive/bool.h — Bool primitive (Legacy: primitive/Bool.java).
 // Delegates to Bit8 width pool (1B stride).
 

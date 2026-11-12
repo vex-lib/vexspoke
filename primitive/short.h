@@ -1,14 +1,7 @@
 #ifndef PRIMITIVE_SHORT_H
 #define PRIMITIVE_SHORT_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
-#include "re/nio/bit_pool.h"
-
-#include "lang/constructor.h"
-
+#include "vex.h"
 // primitive/short.h — Short primitive (Legacy: primitive/Short.java).
 // Delegates to Bit16 width pool (2B stride).
 

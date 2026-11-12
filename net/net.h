@@ -8,6 +8,8 @@
 // client, and the micro server. Sub-modules stay includable individually; this
 // header is the door engine code uses.
 
+#include "vex.h"
+
 #include "net/frame_inbox.h"
 #include "net/http.h"
 #include "net/json.h"

@@ -1,14 +1,7 @@
 #ifndef PRIMITIVE_FLOAT_H
 #define PRIMITIVE_FLOAT_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
-#include "re/nio/bit_pool.h"
-
-#include "lang/constructor.h"
-
+#include "vex.h"
 // primitive/f32.h — Float primitive (Legacy: primitive/Float.java).
 // Delegates to Bit32 width pool (4B stride).
 

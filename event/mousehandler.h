@@ -1,8 +1,7 @@
 #ifndef EVENT_MOUSE_H
 #define EVENT_MOUSE_H
 
-#include <stdint.h>
-#include "lang/primitive.h"
+#include "vex.h"
 
 // event/mousehandler.h — high-level listener contract for mouse events
 // (Legacy: event/MouseEvent.java).
