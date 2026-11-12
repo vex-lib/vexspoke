@@ -1,10 +1,18 @@
 #ifndef EXCEPTION_EXCEPTION_H
 #define EXCEPTION_EXCEPTION_H
 
+// exception/exception.h — THE exception directory header.
+// One include for the whole exception surface: the Exception record plus the
+// Try family (try_code, try_value, try_ptr). Sub-headers stay includable
+// individually; this header is the door engine code uses.
+
 #include "vex.h"
 
 #include <stdarg.h>
 
+#include "exception/try_code.h"
+#include "exception/try_value.h"
+#include "exception/try_ptr.h"
 #include "oop/vexspoke_type.h"
 
 // Categories of runtime exceptions
