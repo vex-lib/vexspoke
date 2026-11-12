@@ -1,10 +1,7 @@
 #ifndef LANG_STR_H
 #define LANG_STR_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include "lang/constructor.h"
+#include "vex.h"
 
 // lang/str.h — the bounded string builder (the toString Law's engine).
 //

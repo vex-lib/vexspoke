@@ -1,11 +1,7 @@
 #ifndef LANG_POINT_POINT_H
 #define LANG_POINT_POINT_H
 
-#include <stddef.h>
-#include <stdint.h>
-#include <stdbool.h>
-
-#include "lang/constructor.h"
+#include "vex.h"
 
 // lang/point/point.h — Integer Pixel Point.
 //

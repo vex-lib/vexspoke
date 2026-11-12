@@ -1,10 +1,8 @@
-#include "lang/str.h"
+#include "vex.h"
 
 #include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
 
-#include "util/annotation.h"
+#include "lang/str.h"
 
 ;;DEFINITION
 /**
@@ -131,7 +129,7 @@ void Str_printf(Str *s, const char *fmt, ...) {
     }
     va_list args;
     va_start(args, fmt);
-    int written = vsnprintf((*s).dest + (*s).len, (*s).cap - (*s).len, fmt, args);
+    i32 written = vsnprintf((*s).dest + (*s).len, (*s).cap - (*s).len, fmt, args);
     va_end(args);
     if (written < 0) {
         (*s).truncated = true;

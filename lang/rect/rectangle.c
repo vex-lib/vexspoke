@@ -1,6 +1,6 @@
-#include "lang/rect/rectangle.h"
+#include "vex.h"
 
-#include "util/annotation.h"
+#include "lang/rect/rectangle.h"
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
 

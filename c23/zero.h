@@ -6,7 +6,7 @@
 //   int   i = zero(n);        // 0            — same type as n
 //   f32 f = zero(x);
 //   Vec3  v = zero(other);    // {0,0,0}
-//   Mat4  m = zero(model);    // every element zeroed
+//   mat4f m = zero(model);    // every element zeroed
 //   Vec4  w = zero((*blk));   // heap block? deref it — zero of ITS class
 //   Window *p = zero(ptr);    // nullptr — the true zero of any pointer
 //   const char *s = zero(s);  // "0"

@@ -1,11 +1,7 @@
 #ifndef LANG_RECT_RECTANGLE_H
 #define LANG_RECT_RECTANGLE_H
 
-#include <stddef.h>
-#include <stdint.h>
-#include <stdbool.h>
-
-#include "lang/constructor.h"
+#include "vex.h"
 
 // lang/rect/rectangle.h — Pixel-Space Rectangle.
 //

@@ -1,6 +1,6 @@
-#include "lang/point/point.h"
+#include "vex.h"
 
-#include "util/annotation.h"
+#include "lang/point/point.h"
 #include "math/strict_math.h"
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"

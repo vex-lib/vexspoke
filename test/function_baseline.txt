@@ -13,16 +13,6 @@ src/input/key_map.c KeyMap_setLongPressNanos
 src/io/file.c File_refreshSize
 src/io/log.c Log_initDefault
 src/io/vexhome.c VexHome_defaultLogPath
-src/lang/mat4.c Mat4_createViewMatrix
-src/lang/vec2/vec2.c Vec2_setX
-src/lang/vec3/vec3.c Vec3_setFront
-src/lang/vec3/vec3.c Vec3_setRight
-src/lang/vec3/vec3.c Vec3_setUp
-src/lang/vec3/vec3.c Vec3_setY
-src/lang/vec3/vec3.c Vec3_setZ
-src/lang/vec4/vec4.c Vec4_setFront
-src/lang/vec4/vec4.c Vec4_setRight
-src/lang/vec4/vec4.c Vec4_setUp
 src/nio/mem.c MemoryArena_free
 src/nio/mem.c Transient_getBuffer
 src/objects/choice.c Choice_2
