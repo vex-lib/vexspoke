@@ -1,9 +1,7 @@
 #ifndef SECURITY_BASE32_H
 #define SECURITY_BASE32_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // security/base32.h — RFC 4648 base32: the transport form of a TOTP setup secret.
 //
@@ -22,7 +20,7 @@ bytes Base32_encodedLength(bytes byteLen);
 bytes Base32_decodedLength(bytes charLen);
 // Write the base32 form into `dest` (NUL-terminated). False + *outTruncated when
 // `cap` cannot hold it; on refusal `dest` is left untouched.
-bool   Base32_encode(const u8 *bytes, bytes len, char *dest, bytes cap, bool *outTruncated);
+bool   Base32_encode(const u8 *data, bytes len, char *dest, bytes cap, bool *outTruncated);
 // Decode `text` into `dest`; *outLen receives the exact byte count. False on an
 // invalid character or an undersized destination.
 bool   Base32_decode(const char *text, bytes len, u8 *dest, bytes cap, bytes *outLen);

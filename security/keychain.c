@@ -1,8 +1,6 @@
+#include "vex.h"
+
 #include "security/keychain.h"
-#include "util/platform.h"
-#include "util/throw.h"
-#include "util/annotation.h"
-#include <string.h>
 
 #if defined(VEX_PLATFORM_APPLE)
 #include <CoreFoundation/CoreFoundation.h>

@@ -1,10 +1,7 @@
 #ifndef SECURITY_SHA1_H
 #define SECURITY_SHA1_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include "lang/constructor.h"
+#include "vex.h"
 
 // security/sha1.h — SHA-1 (FIPS 180-4), the same `Crypto` module family as
 // crypto.h, split out per the Single Class Per File Law.

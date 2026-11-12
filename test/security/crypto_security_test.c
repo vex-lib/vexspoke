@@ -1,8 +1,6 @@
-#include <stdio.h>
+#include "vex.h"
+
 #include <stdlib.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <string.h>
 
 #include "security/crypto.h"
 #include "security/touchid.h"

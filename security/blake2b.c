@@ -1,9 +1,6 @@
+#include "vex.h"
+
 #include "security/blake2b.h"
-
-#include <string.h>
-
-#include "util/annotation.h"
-#include "util/throw.h"
 
 ;;DEFINITION
 /** BLAKE2b is the hash Argon2 is built from, so it is the first stone of a
@@ -65,11 +62,11 @@ static const u8 BLAKE2B_SIGMA[12][16] = {
     { 14, 10, 4, 8, 9, 15, 13, 6, 1, 12, 0, 2, 11, 7, 5, 3 },
 };
 
-static u64 rotr64(u64 v, unsigned bits) {
+static u64 rotr64(u64 v, u32 bits) {
     return (v >> bits) | (v << (64u - bits));
 }
 
-static void mix(u64 *v, unsigned a, unsigned b, unsigned c, unsigned d,
+static void mix(u64 *v, u32 a, u32 b, u32 c, u32 d,
                 u64 x, u64 y) {
     v[a] = v[a] + v[b] + x;
     v[d] = rotr64(v[d] ^ v[a], 32u);
@@ -83,13 +80,13 @@ static void mix(u64 *v, unsigned a, unsigned b, unsigned c, unsigned d,
 
 static void compress(Blake2b *self, const u8 *block, bool last) {
     u64 m[16];
-    for (unsigned i = 0; i < 16u; ++i) {
+    for (u32 i = 0; i < 16u; ++i) {
         m[i] = 0u;
-        for (unsigned j = 0; j < 8u; ++j)
+        for (u32 j = 0; j < 8u; ++j)
             m[i] |= (u64) block[i * 8u + j] << (8u * j);
     }
     u64 v[16];
-    for (unsigned i = 0; i < 8u; ++i) {
+    for (u32 i = 0; i < 8u; ++i) {
         v[i] = (*self).h[i];
         v[i + 8u] = BLAKE2B_IV[i];
     }
@@ -97,7 +94,7 @@ static void compress(Blake2b *self, const u8 *block, bool last) {
     v[13] ^= (*self).t[1];
     if (last)
         v[14] = ~v[14];
-    for (unsigned r = 0; r < 12u; ++r) {
+    for (u32 r = 0; r < 12u; ++r) {
         const u8 *s = BLAKE2B_SIGMA[r];
         mix(v, 0u, 4u, 8u, 12u, m[s[0]], m[s[1]]);
         mix(v, 1u, 5u, 9u, 13u, m[s[2]], m[s[3]]);
@@ -108,7 +105,7 @@ static void compress(Blake2b *self, const u8 *block, bool last) {
         mix(v, 2u, 7u, 8u, 13u, m[s[12]], m[s[13]]);
         mix(v, 3u, 4u, 9u, 14u, m[s[14]], m[s[15]]);
     }
-    for (unsigned i = 0; i < 8u; ++i)
+    for (u32 i = 0; i < 8u; ++i)
         (*self).h[i] ^= v[i] ^ v[i + 8u];
 }
 
@@ -118,7 +115,7 @@ bool Blake2b_init(Blake2b *self, bytes outlen) {
         return false;
     }
     memset(self, 0, sizeof *self);
-    for (unsigned i = 0; i < 8u; ++i)
+    for (u32 i = 0; i < 8u; ++i)
         (*self).h[i] = BLAKE2B_IV[i];
     (*self).h[0] ^= (u64) 0x01010000u ^ (u64) outlen;
     (*self).outlen = outlen;

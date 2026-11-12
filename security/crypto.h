@@ -1,9 +1,7 @@
 #ifndef SECURITY_CRYPTO_H
 #define SECURITY_CRYPTO_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // security/crypto.h — Zero-Allocation Cryptographic & Hashing Engine.
 //

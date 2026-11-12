@@ -1,9 +1,7 @@
 #ifndef SECURITY_KEYCHAIN_H
 #define SECURITY_KEYCHAIN_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // security/keychain.h — the OS credential store.
 //

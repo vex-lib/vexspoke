@@ -1,8 +1,8 @@
+#include "vex.h"
+
 #include "security/hmac.h"
 #include "security/sha1.h"
 #include "security/crypto.h"
-#include "util/throw.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /** HMAC as RFC 2104 defines it: H((K ^ opad) || H((K ^ ipad) || message)). Both

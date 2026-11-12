@@ -1,9 +1,7 @@
 #ifndef SECURITY_CHACHA20_H
 #define SECURITY_CHACHA20_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // security/chacha20.h — ChaCha20 (RFC 8439), the stream cipher under the AEAD.
 //

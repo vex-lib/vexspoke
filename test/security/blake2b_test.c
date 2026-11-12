@@ -4,21 +4,21 @@
 // known-answer tests (unkeyed empty, keyed empty), and proves streaming equals
 // one-shot across block boundaries. A wrong BLAKE2b still returns 64 plausible
 // bytes, so only the published vectors count as evidence.
-#include "security/blake2b.h"
+#include "vex.h"
 
 #include <assert.h>
-#include <stdio.h>
-#include <string.h>
 
-static void toHex(const u8 *bytes, bytes len, char *out) {
+#include "security/blake2b.h"
+
+static void toHex(const u8 *data, bytes len, char *out) {
     for (bytes i = 0; i < len; ++i)
-        snprintf(out + i * 2u, 3u, "%02x", bytes[i]);
+        snprintf(out + i * 2u, 3u, "%02x", data[i]);
     out[len * 2u] = '\0';
 }
 
-static void checkDigest(const u8 *bytes, bytes len, const char *hex) {
+static void checkDigest(const u8 *data, bytes len, const char *hex) {
     char got[129];
-    toHex(bytes, len, got);
+    toHex(data, len, got);
     assert(strcmp(got, hex) == 0);
 }
 

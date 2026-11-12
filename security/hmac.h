@@ -1,9 +1,7 @@
 #ifndef SECURITY_HMAC_H
 #define SECURITY_HMAC_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // security/hmac.h — HMAC (RFC 2104) over the digests this module owns.
 //

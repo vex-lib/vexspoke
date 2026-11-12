@@ -1,7 +1,8 @@
 // Owner: security/totp.c — RFC 6238 TOTP: codes, clock window, replay refusal.
+#include "vex.h"
+
 #include <assert.h>
-#include <stdio.h>
-#include <string.h>
+
 #include "security/totp.h"
 
 // RFC 6238 Appendix B uses the ASCII secret "12345678901234567890" in SHA-1 mode.

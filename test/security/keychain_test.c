@@ -5,12 +5,12 @@
 // opt-in: without DARKBASE_KEYCHAIN_TEST=1 this owner returns B_TEST_SKIP rather
 // than silently claiming a write path it never exercised.
 #define _POSIX_C_SOURCE 200809L
+#include "vex.h"
+
 #include <assert.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+
 #include "security/keychain.h"
-#include "util/test_support.h"
 
 #define TEST_SERVICE "com.vexgraph.darkbase.owner-test"
 #define TEST_ACCOUNT "keychain-owner"

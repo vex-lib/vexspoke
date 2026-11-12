@@ -1,10 +1,7 @@
 #ifndef SECURITY_BLAKE2B_H
 #define SECURITY_BLAKE2B_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include "lang/constructor.h"
+#include "vex.h"
 
 // security/blake2b.h — BLAKE2b (RFC 7693), the hash Argon2 is built on.
 //

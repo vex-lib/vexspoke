@@ -1,7 +1,8 @@
 // Owner: security/password.c — PBKDF2, the slow password hash.
+#include "vex.h"
+
 #include <assert.h>
-#include <stdio.h>
-#include <string.h>
+
 #include "security/password.h"
 #include "security/hmac.h"
 #include "security/crypto.h"

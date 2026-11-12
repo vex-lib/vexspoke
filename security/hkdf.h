@@ -1,9 +1,7 @@
 #ifndef SECURITY_HKDF_H
 #define SECURITY_HKDF_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // security/hkdf.h — HKDF (RFC 5869) over HMAC-SHA256.
 //

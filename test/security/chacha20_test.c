@@ -3,11 +3,11 @@
 // Proves the section 2.3.2 block-function vector and the section 2.4.2
 // encryption vector, plus that the XOR is symmetric. A wrong ChaCha20 still
 // emits a plausible keystream, so the vectors are the only evidence.
-#include "security/chacha20.h"
+#include "vex.h"
 
 #include <assert.h>
-#include <stdio.h>
-#include <string.h>
+
+#include "security/chacha20.h"
 
 static bytes fromHex(const char *hex, u8 *out, bytes cap) {
     bytes n = 0;
@@ -20,9 +20,9 @@ static bytes fromHex(const char *hex, u8 *out, bytes cap) {
     return n;
 }
 
-static void toHex(const u8 *bytes, bytes len, char *out) {
+static void toHex(const u8 *data, bytes len, char *out) {
     for (bytes i = 0; i < len; ++i)
-        snprintf(out + i * 2u, 3u, "%02x", bytes[i]);
+        snprintf(out + i * 2u, 3u, "%02x", data[i]);
     out[len * 2u] = '\0';
 }
 

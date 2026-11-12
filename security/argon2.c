@@ -1,10 +1,8 @@
-#include "security/argon2.h"
+#include "vex.h"
 
 #include <stdlib.h>
-#include <string.h>
 
-#include "util/annotation.h"
-#include "util/throw.h"
+#include "security/argon2.h"
 #include "security/blake2b.h"
 
 ;;DEFINITION
@@ -67,7 +65,7 @@ static void storeLE32(u8 *p, u32 v) {
     p[3] = (u8) (v >> 24);
 }
 
-static u64 rotr64(u64 v, unsigned bits) {
+static u64 rotr64(u64 v, u32 bits) {
     return (v >> bits) | (v << (64u - bits));
 }
 
@@ -80,7 +78,7 @@ static void secureWipe(void *p, bytes n) {
     }
 }
 
-static void mixArgon(u64 *v, unsigned a, unsigned b, unsigned c, unsigned d) {
+static void mixArgon(u64 *v, u32 a, u32 b, u32 c, u32 d) {
     v[a] = v[a] + v[b] + 2u * (v[a] & 0xFFFFFFFFu) * (v[b] & 0xFFFFFFFFu);
     v[d] = rotr64(v[d] ^ v[a], 32u);
     v[c] = v[c] + v[d] + 2u * (v[c] & 0xFFFFFFFFu) * (v[d] & 0xFFFFFFFFu);
@@ -106,30 +104,30 @@ static void fillBlock(const u64 *prev, const u64 *ref, u64 *next,
                       bool withXor) {
     u64 r[ARGON2_BLOCK_WORDS];
     u64 tmp[ARGON2_BLOCK_WORDS];
-    for (unsigned i = 0; i < ARGON2_BLOCK_WORDS; ++i)
+    for (u32 i = 0; i < ARGON2_BLOCK_WORDS; ++i)
         r[i] = prev[i] ^ ref[i];
     memcpy(tmp, r, sizeof r);
     if (withXor)
-        for (unsigned i = 0; i < ARGON2_BLOCK_WORDS; ++i)
+        for (u32 i = 0; i < ARGON2_BLOCK_WORDS; ++i)
             tmp[i] ^= next[i];
     // The rounds are applied to R (the pre-XOR value); `tmp` is the value that
     // gets XORed back over the permutation's result. Applying the rounds to
     // `tmp` instead is the bug that only shows up from pass 1 onward.
-    for (unsigned i = 0; i < 8u; ++i)
+    for (u32 i = 0; i < 8u; ++i)
         roundP(&r[16u * i]);
-    for (unsigned j = 0; j < 8u; ++j) {
+    for (u32 j = 0; j < 8u; ++j) {
         u64 column[16];
-        for (unsigned g = 0; g < 8u; ++g) {
+        for (u32 g = 0; g < 8u; ++g) {
             column[2u * g] = r[16u * g + 2u * j];
             column[2u * g + 1u] = r[16u * g + 2u * j + 1u];
         }
         roundP(column);
-        for (unsigned g = 0; g < 8u; ++g) {
+        for (u32 g = 0; g < 8u; ++g) {
             r[16u * g + 2u * j] = column[2u * g];
             r[16u * g + 2u * j + 1u] = column[2u * g + 1u];
         }
     }
-    for (unsigned i = 0; i < ARGON2_BLOCK_WORDS; ++i)
+    for (u32 i = 0; i < ARGON2_BLOCK_WORDS; ++i)
         next[i] = tmp[i] ^ r[i];
 }
 
@@ -388,7 +386,7 @@ bool Argon2id_derive(const Argon2Params *params,
     for (u32 lane = 1; lane < lanes; ++lane) {
         const u64 *last = memory +
             (bytes) (lane * laneLength + laneLength - 1u) * ARGON2_BLOCK_WORDS;
-        for (unsigned i = 0; i < ARGON2_BLOCK_WORDS; ++i)
+        for (u32 i = 0; i < ARGON2_BLOCK_WORDS; ++i)
             finalBlock[i] ^= last[i];
     }
 

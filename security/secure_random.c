@@ -1,11 +1,8 @@
-#include "security/secure_random.h"
-#include "util/platform.h"
+#include "vex.h"
 
 #include <stdlib.h>
-#include <stddef.h>
-#include <stdint.h>
 
-#include "util/annotation.h"
+#include "security/secure_random.h"
 
 ;;DEFINITION
 /**
@@ -79,7 +76,7 @@
 #if defined(SR_BACKEND_GETRANDOM) || defined(SR_BACKEND_URANDOM)
 // POSIX fallback: bounded read loop over /dev/urandom.
 static bool fillFromUrandom(void *dest, bytes len) {
-    int fd = open("/dev/urandom", O_RDONLY);
+    i32 fd = open("/dev/urandom", O_RDONLY);
     if (fd < 0)
         return false;
     u8 *p = (u8*) dest;

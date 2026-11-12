@@ -1,11 +1,7 @@
 #ifndef SECURITY_SECURE_RANDOM_H
 #define SECURITY_SECURE_RANDOM_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
-#include "lang/constructor.h"
+#include "vex.h"
 
 // security/secure_random.h — OS-backed cryptographically secure randomness.
 //

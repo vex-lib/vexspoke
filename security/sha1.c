@@ -1,6 +1,6 @@
+#include "vex.h"
+
 #include "security/sha1.h"
-#include "util/throw.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /** SHA-1 as a streaming digest. It ships for HMAC-SHA1 in TOTP and for nothing
@@ -23,18 +23,18 @@
  * no allocation, no logging.
  * ======================================================================== */
 
-static u32 rotr(u32 v, unsigned bits) { return (v >> bits) | (v << (32u - bits)); }
+static u32 rotr(u32 v, u32 bits) { return (v >> bits) | (v << (32u - bits)); }
 
 static void sha1Compress(CryptoSha1 *ctx, const u8 *block) {
     u32 w[80];
-    for (unsigned i = 0; i < 16u; ++i)
+    for (u32 i = 0; i < 16u; ++i)
         w[i] = ((u32) block[i * 4] << 24) | ((u32) block[i * 4 + 1] << 16) |
                ((u32) block[i * 4 + 2] << 8) | (u32) block[i * 4 + 3];
-    for (unsigned i = 16u; i < 80u; ++i)
+    for (u32 i = 16u; i < 80u; ++i)
         w[i] = rotr(w[i - 3] ^ w[i - 8] ^ w[i - 14] ^ w[i - 16], 31u);
     u32 a = (*ctx).state[0], b = (*ctx).state[1], c = (*ctx).state[2];
     u32 d = (*ctx).state[3], e = (*ctx).state[4];
-    for (unsigned i = 0; i < 80u; ++i) {
+    for (u32 i = 0; i < 80u; ++i) {
         u32 f = 0, k = 0;
         if (i < 20u) {
             f = (b & c) | ((~b) & d);
@@ -82,15 +82,15 @@ void Crypto_sha1Update(CryptoSha1 *ctx, const void *data, bytes len) {
         THROW("Crypto_sha1Update: null input");
         return;
     }
-    const u8 *bytes = (const u8*) data;
+    const u8 *input = (const u8*) data;
     (*ctx).total += len;
     while (len > 0u) {
         bytes room = CRYPTO_SHA1_BLOCK_SIZE - (*ctx).used;
         bytes take = len < room ? len : room;
         for (bytes i = 0; i < take; ++i)
-            (*ctx).block[(*ctx).used + i] = bytes[i];
+            (*ctx).block[(*ctx).used + i] = input[i];
         (*ctx).used += take;
-        bytes += take;
+        input += take;
         len -= take;
         if ((*ctx).used == CRYPTO_SHA1_BLOCK_SIZE) {
             sha1Compress(ctx, (*ctx).block);
@@ -111,18 +111,18 @@ void Crypto_sha1Final(CryptoSha1 *ctx, u8 outDigest[CRYPTO_SHA1_DIGEST_SIZE]) {
     while ((*ctx).used != CRYPTO_SHA1_BLOCK_SIZE - 8u)
         Crypto_sha1Update(ctx, &zero, 1u);
     u8 lengthBytes[8];
-    for (unsigned i = 0; i < 8u; ++i)
+    for (u32 i = 0; i < 8u; ++i)
         lengthBytes[i] = (u8) (bits >> (56u - i * 8u));
     Crypto_sha1Update(ctx, lengthBytes, 8u);
-    for (unsigned i = 0; i < 5u; ++i) {
+    for (u32 i = 0; i < 5u; ++i) {
         outDigest[i * 4]     = (u8) ((*ctx).state[i] >> 24);
         outDigest[i * 4 + 1] = (u8) ((*ctx).state[i] >> 16);
         outDigest[i * 4 + 2] = (u8) ((*ctx).state[i] >> 8);
         outDigest[i * 4 + 3] = (u8) (*ctx).state[i];
     }
-    for (unsigned i = 0; i < 5u; ++i)
+    for (u32 i = 0; i < 5u; ++i)
         (*ctx).state[i] = 0u;
-    for (unsigned i = 0; i < CRYPTO_SHA1_BLOCK_SIZE; ++i)
+    for (u32 i = 0; i < CRYPTO_SHA1_BLOCK_SIZE; ++i)
         (*ctx).block[i] = 0u;
 }
 

@@ -1,9 +1,7 @@
 #ifndef SECURITY_ARGON2_H
 #define SECURITY_ARGON2_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // security/argon2.h — Argon2id (RFC 9106), the memory-hard password KDF.
 //

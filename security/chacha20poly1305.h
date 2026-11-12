@@ -1,9 +1,7 @@
 #ifndef SECURITY_CHACHA20POLY1305_H
 #define SECURITY_CHACHA20POLY1305_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // security/chacha20poly1305.h — ChaCha20-Poly1305 AEAD (RFC 8439).
 //

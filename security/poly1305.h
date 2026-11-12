@@ -1,9 +1,7 @@
 #ifndef SECURITY_POLY1305_H
 #define SECURITY_POLY1305_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // security/poly1305.h — Poly1305 (RFC 8439), the one-time authenticator.
 //

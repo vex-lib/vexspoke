@@ -4,15 +4,15 @@
 // salt sensitivity and parameter refusal. A wrong Argon2 still returns a
 // plausible 32-byte tag, so the published vector is the only evidence that
 // counts.
-#include "security/argon2.h"
+#include "vex.h"
 
 #include <assert.h>
-#include <stdio.h>
-#include <string.h>
 
-static void toHex(const u8 *bytes, bytes len, char *out) {
+#include "security/argon2.h"
+
+static void toHex(const u8 *data, bytes len, char *out) {
     for (bytes i = 0; i < len; ++i)
-        snprintf(out + i * 2u, 3u, "%02x", bytes[i]);
+        snprintf(out + i * 2u, 3u, "%02x", data[i]);
     out[len * 2u] = '\0';
 }
 

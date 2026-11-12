@@ -2,11 +2,11 @@
 //
 // Proves the section 2.5.2 vector and that streaming equals one-shot across a
 // block boundary. A wrong Poly1305 still returns 16 plausible bytes.
-#include "security/poly1305.h"
+#include "vex.h"
 
 #include <assert.h>
-#include <stdio.h>
-#include <string.h>
+
+#include "security/poly1305.h"
 
 static bytes fromHex(const char *hex, u8 *out, bytes cap) {
     bytes n = 0;
@@ -19,9 +19,9 @@ static bytes fromHex(const char *hex, u8 *out, bytes cap) {
     return n;
 }
 
-static void toHex(const u8 *bytes, bytes len, char *out) {
+static void toHex(const u8 *data, bytes len, char *out) {
     for (bytes i = 0; i < len; ++i)
-        snprintf(out + i * 2u, 3u, "%02x", bytes[i]);
+        snprintf(out + i * 2u, 3u, "%02x", data[i]);
     out[len * 2u] = '\0';
 }
 

@@ -1,9 +1,6 @@
+#include "vex.h"
+
 #include "security/chacha20poly1305.h"
-
-#include <string.h>
-
-#include "util/annotation.h"
-#include "util/throw.h"
 #include "security/chacha20.h"
 #include "security/crypto.h"
 #include "security/poly1305.h"
@@ -49,7 +46,7 @@ static void pad16(Poly1305 *ctx, bytes len) {
 }
 
 static void store64le(u8 *p, u64 v) {
-    for (unsigned i = 0; i < 8u; ++i)
+    for (u32 i = 0; i < 8u; ++i)
         p[i] = (u8) (v >> (8u * i));
 }
 

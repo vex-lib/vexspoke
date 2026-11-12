@@ -1,8 +1,8 @@
+#include "vex.h"
+
 #include "security/totp.h"
 #include "security/hmac.h"
 #include "security/crypto.h"
-#include "util/throw.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /** TOTP: a shared per-user secret plus a counter derived from the clock. The code
@@ -23,7 +23,7 @@
  * comparison uses Crypto_constantTimeEquals; no allocation, no logging on success.
  * ======================================================================== */
 
-static u32 digitsModulus(unsigned digits) {
+static u32 digitsModulus(u32 digits) {
     switch (digits) {
         case 6u: return 1000000u;
         case 7u: return 10000000u;
@@ -33,12 +33,12 @@ static u32 digitsModulus(unsigned digits) {
 }
 
 static void stepCounter(u64 step, u8 out[8]) {
-    for (unsigned i = 0; i < 8u; ++i)
+    for (u32 i = 0; i < 8u; ++i)
         out[i] = (u8) (step >> (56u - i * 8u));
 }
 
 u32 Totp_code(const u8 *secret, bytes secretLen, u64 unixTime,
-                   unsigned digits, unsigned stepSeconds) {
+                   u32 digits, u32 stepSeconds) {
     u32 modulus = digitsModulus(digits);
     if (secret == nullptr || secretLen == 0u || modulus == 0u || stepSeconds == 0u) {
         THROW("Totp_code: invalid secret, digits or step");
@@ -48,26 +48,26 @@ u32 Totp_code(const u8 *secret, bytes secretLen, u64 unixTime,
     stepCounter(unixTime / stepSeconds, counter);
     u8 mac[HMAC_SHA1_DIGEST_SIZE];
     Hmac_sha1(secret, secretLen, counter, sizeof counter, mac);
-    unsigned offset = mac[HMAC_SHA1_DIGEST_SIZE - 1u] & 0x0Fu;
+    u32 offset = mac[HMAC_SHA1_DIGEST_SIZE - 1u] & 0x0Fu;
     u32 binary = ((u32) (mac[offset] & 0x7Fu) << 24) |
                       ((u32) mac[offset + 1u] << 16) |
                       ((u32) mac[offset + 2u] << 8) |
                       (u32) mac[offset + 3u];
     u32 code = binary % modulus;
-    for (unsigned i = 0; i < sizeof mac; ++i)
+    for (u32 i = 0; i < sizeof mac; ++i)
         mac[i] = 0u;
     return code;
 }
 
 bool Totp_verify(const u8 *secret, bytes secretLen, u32 code, u64 unixTime,
-                 unsigned digits, unsigned stepSeconds, int window, u64 *ioLastAcceptedStep) {
+                 u32 digits, u32 stepSeconds, i32 window, u64 *ioLastAcceptedStep) {
     if (secret == nullptr || secretLen == 0u || stepSeconds == 0u || digitsModulus(digits) == 0u) {
         THROW("Totp_verify: invalid secret, digits or step");
         return false;
     }
-    int span = window < 0 ? 0 : window;
+    i32 span = window < 0 ? 0 : window;
     u64 step = unixTime / stepSeconds;
-    for (int offset = -span; offset <= span; ++offset) {
+    for (i32 offset = -span; offset <= span; ++offset) {
         if (offset < 0 && (u64) (-offset) > step)
             continue;
         u64 candidate = offset < 0 ? step - (u64) (-offset) : step + (u64) offset;

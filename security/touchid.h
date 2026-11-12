@@ -1,8 +1,7 @@
 #ifndef SRC_SECURITY_TOUCHID_H
 #define SRC_SECURITY_TOUCHID_H
 
-#include <stdint.h>
-#include <stdbool.h>
+#include "vex.h"
 
 /*
  * TouchID token — opaque to the C core.

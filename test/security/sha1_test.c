@@ -1,7 +1,8 @@
 // Owner: security/sha1.c — SHA-1 as a streaming digest (kept for HMAC-SHA1).
+#include "vex.h"
+
 #include <assert.h>
-#include <stdio.h>
-#include <string.h>
+
 #include "security/sha1.h"
 #include "security/crypto.h"
 

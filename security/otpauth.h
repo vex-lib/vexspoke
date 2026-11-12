@@ -1,9 +1,7 @@
 #ifndef SECURITY_OTPAUTH_H
 #define SECURITY_OTPAUTH_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // security/otpauth.h — the setup URI an authenticator app reads ONCE.
 //
@@ -23,7 +21,7 @@
 // False with *outTruncated set when `cap` cannot hold it, or on invalid input.
 bool OtpAuth_buildUri(const char *issuer, const char *account,
                       const u8 *secret, bytes secretLen,
-                      unsigned digits, unsigned stepSeconds,
+                      u32 digits, u32 stepSeconds,
                       char *dest, bytes cap, bool *outTruncated);
 
 #endif

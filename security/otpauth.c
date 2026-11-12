@@ -1,8 +1,7 @@
+#include "vex.h"
+
 #include "security/otpauth.h"
 #include "security/base32.h"
-#include "util/throw.h"
-#include "util/annotation.h"
-#include <stdio.h>
 
 ;;DEFINITION
 /** The `otpauth://` setup URI: the one artifact that makes a darkbase account work
@@ -62,7 +61,7 @@ static bool appendEncoded(char *dest, bytes cap, bytes *used, const char *text) 
 
 bool OtpAuth_buildUri(const char *issuer, const char *account,
                       const u8 *secret, bytes secretLen,
-                      unsigned digits, unsigned stepSeconds,
+                      u32 digits, u32 stepSeconds,
                       char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated != nullptr)
         *outTruncated = false;
@@ -96,7 +95,7 @@ bool OtpAuth_buildUri(const char *issuer, const char *account,
     if (ok) {
         // Checked, never cast away: a truncated query would silently drop the
         // digits or the period and hand the user a QR their app reads wrongly.
-        int written = snprintf(number, sizeof number, "&algorithm=SHA1&digits=%u&period=%u",
+        i32 written = snprintf(number, sizeof number, "&algorithm=SHA1&digits=%u&period=%u",
                                digits, stepSeconds);
         if (written < 0 || (bytes) written >= sizeof number) {
             THROW("OtpAuth_buildUri: query buffer too small");

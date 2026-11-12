@@ -1,9 +1,6 @@
+#include "vex.h"
+
 #include "security/chacha20.h"
-
-#include <string.h>
-
-#include "util/annotation.h"
-#include "util/throw.h"
 
 ;;DEFINITION
 /** ChaCha20 is the stream cipher the AEAD is built from: a 4-word constant, an
@@ -43,11 +40,11 @@ static void store32(u8 *p, u32 v) {
     p[3] = (u8) (v >> 24);
 }
 
-static u32 rotl32(u32 v, unsigned bits) {
+static u32 rotl32(u32 v, u32 bits) {
     return (v << bits) | (v >> (32u - bits));
 }
 
-static void quarterRound(u32 *s, unsigned a, unsigned b, unsigned c, unsigned d) {
+static void quarterRound(u32 *s, u32 a, u32 b, u32 c, u32 d) {
     s[a] += s[b];
     s[d] ^= s[a];
     s[d] = rotl32(s[d], 16u);
@@ -73,15 +70,15 @@ void ChaCha20_block(u8 out[CHACHA20_BLOCK_SIZE], const u8 key[CHACHA20_KEY_SIZE]
     state[1] = 0x3320646eu;
     state[2] = 0x79622d32u;
     state[3] = 0x6b206574u;
-    for (unsigned i = 0; i < 8u; ++i)
+    for (u32 i = 0; i < 8u; ++i)
         state[4u + i] = load32(key + 4u * i);
     state[12] = counter;
-    for (unsigned i = 0; i < 3u; ++i)
+    for (u32 i = 0; i < 3u; ++i)
         state[13u + i] = load32(nonce + 4u * i);
 
     u32 working[16];
     memcpy(working, state, sizeof working);
-    for (unsigned i = 0; i < 10u; ++i) {
+    for (u32 i = 0; i < 10u; ++i) {
         quarterRound(working, 0u, 4u, 8u, 12u);
         quarterRound(working, 1u, 5u, 9u, 13u);
         quarterRound(working, 2u, 6u, 10u, 14u);
@@ -91,7 +88,7 @@ void ChaCha20_block(u8 out[CHACHA20_BLOCK_SIZE], const u8 key[CHACHA20_KEY_SIZE]
         quarterRound(working, 2u, 7u, 8u, 13u);
         quarterRound(working, 3u, 4u, 9u, 14u);
     }
-    for (unsigned i = 0; i < 16u; ++i)
+    for (u32 i = 0; i < 16u; ++i)
         store32(out + 4u * i, working[i] + state[i]);
 }
 

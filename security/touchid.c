@@ -71,8 +71,9 @@
  * ============================================================================
  */
 
+#include "vex.h"
+
 #include "security/touchid.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

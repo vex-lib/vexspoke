@@ -14,10 +14,7 @@
 //   - hex encode/decode round trips, truncation, and invalid-char stopping;
 //   - nullptr safety throughout.
 
-#include <stddef.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
+#include "vex.h"
 
 #include "security/crypto.h"
 

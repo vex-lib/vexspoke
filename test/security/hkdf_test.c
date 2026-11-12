@@ -3,11 +3,11 @@
 // Proves appendix A test cases 1, 2 and 3: the basic case, the long-input case
 // that crosses the expand block boundary several times, and the zero-length
 // salt/info case. A wrong HKDF still returns plausible bytes.
-#include "security/hkdf.h"
+#include "vex.h"
 
 #include <assert.h>
-#include <stdio.h>
-#include <string.h>
+
+#include "security/hkdf.h"
 
 static bytes fromHex(const char *hex, u8 *out, bytes cap) {
     bytes n = 0;
@@ -20,9 +20,9 @@ static bytes fromHex(const char *hex, u8 *out, bytes cap) {
     return n;
 }
 
-static void toHex(const u8 *bytes, bytes len, char *out) {
+static void toHex(const u8 *data, bytes len, char *out) {
     for (bytes i = 0; i < len; ++i)
-        snprintf(out + i * 2u, 3u, "%02x", bytes[i]);
+        snprintf(out + i * 2u, 3u, "%02x", data[i]);
     out[len * 2u] = '\0';
 }
 

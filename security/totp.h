@@ -1,9 +1,7 @@
 #ifndef SECURITY_TOTP_H
 #define SECURITY_TOTP_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // security/totp.h — TOTP (RFC 6238 over RFC 4226): the second factor.
 //
@@ -24,13 +22,13 @@
 
 // The code for one instant. `digits` is 6..8; anything else is rejected (returns 0).
 u32 Totp_code(const u8 *secret, bytes secretLen, u64 unixTime,
-                   unsigned digits, unsigned stepSeconds);
+                   u32 digits, u32 stepSeconds);
 
 // True when `code` is valid for `unixTime` within ±`window` steps. When
 // `ioLastAcceptedStep` is non-null it is read as the last accepted step and
 // written back on success, so a replayed code is refused. Null means "no replay
 // tracking" — the caller takes responsibility for it.
 bool Totp_verify(const u8 *secret, bytes secretLen, u32 code, u64 unixTime,
-                 unsigned digits, unsigned stepSeconds, int window, u64 *ioLastAcceptedStep);
+                 u32 digits, u32 stepSeconds, i32 window, u64 *ioLastAcceptedStep);
 
 #endif

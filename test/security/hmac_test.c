@@ -1,7 +1,8 @@
 // Owner: security/hmac.c — RFC 2104 HMAC over SHA-1 and SHA-256.
+#include "vex.h"
+
 #include <assert.h>
-#include <stdio.h>
-#include <string.h>
+
 #include "security/hmac.h"
 #include "security/crypto.h"
 

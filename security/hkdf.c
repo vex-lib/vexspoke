@@ -1,10 +1,8 @@
-#include "security/hkdf.h"
+#include "vex.h"
 
 #include <stdlib.h>
-#include <string.h>
 
-#include "util/annotation.h"
-#include "util/throw.h"
+#include "security/hkdf.h"
 #include "security/hmac.h"
 
 ;;DEFINITION

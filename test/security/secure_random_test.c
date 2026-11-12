@@ -10,9 +10,7 @@
 //   - every small/odd/word-aligned length is accepted;
 //   - the telemetry counter tracks draws.
 
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
+#include "vex.h"
 
 #include "security/secure_random.h"
 

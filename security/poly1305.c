@@ -1,9 +1,6 @@
+#include "vex.h"
+
 #include "security/poly1305.h"
-
-#include <string.h>
-
-#include "util/annotation.h"
-#include "util/throw.h"
 
 ;;DEFINITION
 /** Poly1305 is a one-time message authenticator over the prime 2^130 - 5. The
@@ -62,7 +59,7 @@ void Poly1305_init(Poly1305 *self, const u8 key[POLY1305_KEY_SIZE]) {
     (*self).r[2] = (load32le(key + 6) >> 4) & 0x3ffc0ffu;
     (*self).r[3] = (load32le(key + 9) >> 6) & 0x3f03fffu;
     (*self).r[4] = (load32le(key + 12) >> 8) & 0x00fffffu;
-    for (unsigned i = 0; i < 4u; ++i)
+    for (u32 i = 0; i < 4u; ++i)
         (*self).pad[i] = load32le(key + 16u + 4u * i);
 }
 

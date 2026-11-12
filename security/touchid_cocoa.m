@@ -3,11 +3,12 @@
 // Bridges the C11 token-based TouchID API to Apple's LocalAuthentication framework
 // (LAContext). Evaluates biometric policy (TouchID) with passcode fallback if configured.
 
+#include "vex.h"
+
 #import <Foundation/Foundation.h>
 #import <LocalAuthentication/LocalAuthentication.h>
 
 #include "security/touchid.h"
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**
@@ -105,7 +106,7 @@ TouchIDToken TouchID_authenticate(const char *reason) {
                 authErrorCode != LAErrorUserFallback &&
                 authErrorCode != LAErrorAppCancel &&
                 authErrorCode != LAErrorSystemCancel) {
-                fprintf(stderr, "[TouchID] Authentication rejected (code: %ld)\n", (long)authErrorCode);
+                fprintf(stderr, "[TouchID] Authentication rejected (code: %" PRId64 ")\n", (i64) authErrorCode);
             }
             return null_token;
         }

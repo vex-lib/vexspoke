@@ -1,7 +1,6 @@
-#include "security/crypto.h"
+#include "vex.h"
 
-#include <string.h>
-#include "util/annotation.h"
+#include "security/crypto.h"
 
 ;;DEFINITION
 /**
@@ -101,13 +100,13 @@ static const u32 K[64] = {
 
 static void Crypto_sha256Transform(CryptoSha256 *ctx, const u8 data[64]) {
     u32 m[64];
-    for (int i = 0; i < 16; i++) {
+    for (i32 i = 0; i < 16; i++) {
         m[i] = ((u32) data[i * 4] << 24) |
                ((u32) data[i * 4 + 1] << 16) |
                ((u32) data[i * 4 + 2] << 8) |
                ((u32) data[i * 4 + 3]);
     }
-    for (int i = 16; i < 64; i++) {
+    for (i32 i = 16; i < 64; i++) {
         m[i] = SIG1(m[i - 2]) + m[i - 7] + SIG0(m[i - 15]) + m[i - 16];
     }
 
@@ -120,7 +119,7 @@ static void Crypto_sha256Transform(CryptoSha256 *ctx, const u8 data[64]) {
     u32 g = (*ctx).state[6];
     u32 h = (*ctx).state[7];
 
-    for (int i = 0; i < 64; i++) {
+    for (i32 i = 0; i < 64; i++) {
         u32 t1 = h + EP1(e) + CH(e, f, g) + K[i] + m[i];
         u32 t2 = EP0(a) + MAJ(a, b, c);
         h = g;
@@ -208,13 +207,13 @@ void Crypto_sha256Final(CryptoSha256 *ctx, u8 outDigest[CRYPTO_SHA256_DIGEST_SIZ
     }
 
     // Append 64-bit big-endian bit length
-    for (int i = 7; i >= 0; i--) {
+    for (i32 i = 7; i >= 0; i--) {
         (*ctx).buffer[56 + (7 - i)] = (u8) ((bitCount >> (i * 8)) & 0xFF);
     }
     Crypto_sha256Transform(ctx, (*ctx).buffer);
 
     // Output big-endian digest
-    for (int i = 0; i < 8; i++) {
+    for (i32 i = 0; i < 8; i++) {
         outDigest[i * 4]     = (u8) (((*ctx).state[i] >> 24) & 0xFF);
         outDigest[i * 4 + 1] = (u8) (((*ctx).state[i] >> 16) & 0xFF);
         outDigest[i * 4 + 2] = (u8) (((*ctx).state[i] >> 8) & 0xFF);
@@ -354,7 +353,7 @@ void Crypto_toHex(const u8 *Bytes, bytes len, char *outHex) {
     outHex[len * 2] = '\0';
 }
 
-static int hexVal(char c) {
+static i32 hexVal(char c) {
     if (c >= '0' && c <= '9') return c - '0';
     if (c >= 'a' && c <= 'f') return c - 'a' + 10;
     if (c >= 'A' && c <= 'F') return c - 'A' + 10;
@@ -368,8 +367,8 @@ bytes Crypto_fromHex(const char *hex, u8 *outBytes, bytes maxBytes) {
     if (byteCount > maxBytes) byteCount = maxBytes;
 
     for (bytes i = 0; i < byteCount; i++) {
-        int hi = hexVal(hex[i * 2]);
-        int lo = hexVal(hex[i * 2 + 1]);
+        i32 hi = hexVal(hex[i * 2]);
+        i32 lo = hexVal(hex[i * 2 + 1]);
         if (hi < 0 || lo < 0) {
             return i; // Stop at invalid hex char
         }

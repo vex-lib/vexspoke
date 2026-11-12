@@ -1,9 +1,7 @@
 #ifndef SECURITY_PASSWORD_H
 #define SECURITY_PASSWORD_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 
 // security/password.h — versioned slow password verifiers (PBKDF2 or Argon2id).
 //
