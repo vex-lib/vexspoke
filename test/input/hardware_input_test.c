@@ -1,7 +1,7 @@
+#include "vex.h"
+
 #include <assert.h>
 #include <math.h>
-#include <stdio.h>
-#include <string.h>
 
 #include "input/piano_key.h"
 #include "input/turntable.h"
@@ -153,17 +153,15 @@ static void test_gamepad(void) {
     assert(!GamepadState_isDown(&pad, GAMEPAD_BUTTON_B));
 
     // Circular deadzone test
-    Coord2 raw;
+    vec2f raw = vec2f_2(0.05f, 0.05f);
 
-    Coord2_set(&raw, 0.05f, 0.05f);
-
-    Coord2 filtered = Gamepad_applyCircularDeadzone(raw, GAMEPAD_DEFAULT_DEADZONE);
+    vec2f filtered = Gamepad_applyCircularDeadzone(raw, GAMEPAD_DEFAULT_DEADZONE);
 
     assert(filtered.x == 0.0f);
 
     assert(filtered.y == 0.0f);
 
-    Coord2_set(&raw, 0.8f, 0.0f);
+    raw = vec2f_2(0.8f, 0.0f);
 
     filtered = Gamepad_applyCircularDeadzone(raw, GAMEPAD_DEFAULT_DEADZONE);
 
@@ -174,7 +172,7 @@ static void test_gamepad(void) {
 
     assert(fabsf(filtered.x - 0.8f) < 0.001f && filtered.y == 0.0f);
 
-    Coord2_set(&raw, 2.0f, 0.0f);
+    raw = vec2f_2(2.0f, 0.0f);
 
     filtered = Gamepad_applyCircularDeadzone(raw, GAMEPAD_DEFAULT_DEADZONE);
 
