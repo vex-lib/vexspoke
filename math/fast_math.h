@@ -1,8 +1,7 @@
 #ifndef MATH_FAST_MATH_H
 #define MATH_FAST_MATH_H
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "vex.h"
 
 // math/fast_math.h — Relaxed Fast Math Engine (Violates IEEE 754 for Speed).
 //

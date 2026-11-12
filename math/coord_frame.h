@@ -1,8 +1,7 @@
 #ifndef MATH_COORD_FRAME_H
 #define MATH_COORD_FRAME_H
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "vex.h"
 
 // math/coord_frame.h — 12 Primary Spatial Coordinate Frames.
 //
@@ -39,16 +38,16 @@ typedef enum CoordFrame {
 // Permutation & sign descriptor for branchless one-line indexing math:
 // data[axis] * sign maps standard XYZ to the target spatial dimension.
 typedef struct CoordBasis {
-     axis[3]; // which spatial component (0=horizontal, 1=vertical, 2=depth)
-     sign[3]; // +1 or -1 multiplier
+    u8 axis[3]; // which spatial component (0=horizontal, 1=vertical, 2=depth)
+    i8 sign[3]; // +1 or -1 multiplier
 } CoordBasis;
 
 // Query the basis descriptor for a given coordinate frame.
 CoordBasis CoordFrame_getBasis(CoordFrame frame);
 
 // Retrieve component index and sign for X, Y, or Z in one call:
- CoordFrame_getAxisIndex(CoordFrame frame, int xyzIndex);
-f32 CoordFrame_getAxisSign(CoordFrame frame, int xyzIndex);
+i32 CoordFrame_getAxisIndex(CoordFrame frame, i32 xyzIndex);
+f32 CoordFrame_getAxisSign(CoordFrame frame, i32 xyzIndex);
 
 // Validate whether an integer represents a valid CoordFrame (0..11).
 bool CoordFrame_isValid(u32 frame);

@@ -1,8 +1,6 @@
+#include "vex.h"
+
 #include "math/fast_math.h"
-
-#include <string.h>
-
-#include "util/annotation.h"
 
 ;;DEFINITION
 /**

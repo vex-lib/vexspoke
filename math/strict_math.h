@@ -1,8 +1,7 @@
 #ifndef MATH_STRICT_MATH_H
 #define MATH_STRICT_MATH_H
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "vex.h"
 
 // math/strict_math.h — Strict IEEE 754 Math Engine.
 //

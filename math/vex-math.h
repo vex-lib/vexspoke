@@ -1,8 +1,7 @@
 #ifndef MATH_MATH_H
 #define MATH_MATH_H
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "vex.h"
 
 #include "math/strict_math.h"
 #include "math/fast_math.h"

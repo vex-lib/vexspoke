@@ -1,6 +1,6 @@
-#include "math/coord_frame.h"
+#include "vex.h"
 
-#include "util/annotation.h"
+#include "math/coord_frame.h"
 
 ;;DEFINITION
 /**
@@ -111,14 +111,14 @@ CoordBasis CoordFrame_getBasis(CoordFrame frame) {
     return s_bases[frame];
 }
 
- CoordFrame_getAxisIndex(CoordFrame frame, int xyzIndex) {
+i32 CoordFrame_getAxisIndex(CoordFrame frame, i32 xyzIndex) {
     if ((u32) frame >= COORD_FRAME_COUNT || (u32) xyzIndex >= 3) {
         return 0;
     }
     return s_bases[frame].axis[xyzIndex];
 }
 
-f32 CoordFrame_getAxisSign(CoordFrame frame, int xyzIndex) {
+f32 CoordFrame_getAxisSign(CoordFrame frame, i32 xyzIndex) {
     if ((u32) frame >= COORD_FRAME_COUNT || (u32) xyzIndex >= 3) {
         return 1.0f;
     }
