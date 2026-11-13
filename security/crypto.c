@@ -155,7 +155,7 @@ void Crypto_sha256Init(CryptoSha256 *ctx) {
     (*ctx).state[7] = 0x5be0cd19u;
 }
 
-void Crypto_sha256Update(CryptoSha256 *ctx, const any data, bytes len) {
+void Crypto_sha256Update(CryptoSha256 *ctx, const_any data, bytes len) {
     if (ctx == nullptr || data == nullptr || len == 0) return;
 
     const u8 *p = (const u8*) data;
@@ -221,14 +221,14 @@ void Crypto_sha256Final(CryptoSha256 *ctx, u8 outDigest[CRYPTO_SHA256_DIGEST_SIZ
     }
 }
 
-void Crypto_sha256(const any data, bytes len, u8 outDigest[CRYPTO_SHA256_DIGEST_SIZE]) {
+void Crypto_sha256(const_any data, bytes len, u8 outDigest[CRYPTO_SHA256_DIGEST_SIZE]) {
     CryptoSha256 ctx;
     Crypto_sha256Init(&ctx);
     Crypto_sha256Update(&ctx, data, len);
     Crypto_sha256Final(&ctx, outDigest);
 }
 
-void Crypto_sha256Hex(const any data, bytes len, char outHex[CRYPTO_SHA256_HEX_SIZE]) {
+void Crypto_sha256Hex(const_any data, bytes len, char outHex[CRYPTO_SHA256_HEX_SIZE]) {
     u8 digest[CRYPTO_SHA256_DIGEST_SIZE];
     Crypto_sha256(data, len, digest);
     Crypto_toHex(digest, CRYPTO_SHA256_DIGEST_SIZE, outHex);
@@ -238,7 +238,7 @@ void Crypto_sha256Hex(const any data, bytes len, char outHex[CRYPTO_SHA256_HEX_S
 // Constant-Time Equality Verification
 // ============================================================================
 
-bool Crypto_constantTimeEquals(const any a, const any b, bytes len) {
+bool Crypto_constantTimeEquals(const_any a, const_any b, bytes len) {
     if (a == nullptr || b == nullptr) return false;
     const volatile u8 *pa = (const volatile u8*) a;
     const volatile u8 *pb = (const volatile u8*) b;
@@ -253,7 +253,7 @@ bool Crypto_constantTimeEquals(const any a, const any b, bytes len) {
 // Fast Relational Hash Mixers (64-bit & 32-bit)
 // ============================================================================
 
-u64 Crypto_hash64(const any data, bytes len) {
+u64 Crypto_hash64(const_any data, bytes len) {
     if (data == nullptr || len == 0) return 0;
     const u8 *p = (const u8*) data;
     // FNV-1a 64-bit basis
@@ -271,7 +271,7 @@ u64 Crypto_hash64(const any data, bytes len) {
     return h;
 }
 
-u32 Crypto_hash32(const any data, bytes len) {
+u32 Crypto_hash32(const_any data, bytes len) {
     u64 h = Crypto_hash64(data, len);
     return (u32) (h ^ (h >> 32));
 }

@@ -237,7 +237,7 @@ bool SphereArray_getGrid(any dest, const SphereArray *self, i32 gx, i32 gy, i32 
     return true;
 }
 
-bool SphereArray_setGrid(SphereArray *self, i32 gx, i32 gy, i32 gz, const any src) {
+bool SphereArray_setGrid(SphereArray *self, i32 gx, i32 gy, i32 gz, const_any src) {
     if (self == nullptr || src == nullptr) return false;
     if (!SphereArray_containsGrid(self, gx, gy, gz)) {
         return false;
@@ -258,7 +258,7 @@ bool SphereArray_getOffset(any dest, const SphereArray *self, i32 dx, i32 dy, i3
     return SphereArray_getGrid(dest, self, gx, gy, gz);
 }
 
-bool SphereArray_setOffset(SphereArray *self, i32 dx, i32 dy, i32 dz, const any src) {
+bool SphereArray_setOffset(SphereArray *self, i32 dx, i32 dy, i32 dz, const_any src) {
     if (self == nullptr) return false;
     i32 gx = dx + (*self).radius;
     i32 gy = dy + (*self).radius;

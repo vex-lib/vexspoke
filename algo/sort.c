@@ -48,7 +48,7 @@ static unsigned char *elementAt(any values, bytes index, bytes elementSize) {
     return (unsigned char*) values + index * elementSize;
 }
 
-static const unsigned char *constElementAt(const any values, bytes index,
+static const unsigned char *constElementAt(const_any values, bytes index,
                                             bytes elementSize) {
     return (const unsigned char*) values + index * elementSize;
 }
@@ -65,7 +65,7 @@ static void swapElements(any left, any right, bytes elementSize) {
     }
 }
 
-static bool validComparisonRange(const any values, bytes count,
+static bool validComparisonRange(const_any values, bytes count,
                                  bytes elementSize, SortCompareFn compare) {
     if (count == 0u)
         return true;
@@ -310,7 +310,7 @@ bytes Sort_partitionInt32(i32 *values, bytes count, i32 pivot) {
     return boundary;
 }
 
-static u64 unsignedKeyAt(const any values, bytes index,
+static u64 unsignedKeyAt(const_any values, bytes index,
                               bytes keySize) {
     if (keySize == sizeof(u32))
         return ((const u32*) values)[index];

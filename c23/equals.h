@@ -10,7 +10,7 @@
 // length must match), then the payload Bytes compared directly. Foreign
 // (non-allocator) pointers can only prove identity.
 
-bool isEqual(const any a, const any b);
+bool isEqual(const_any a, const_any b);
 
 // Registry form: resolve two symbol names in `v` and compare their payloads.
 // False when either name is unregistered or their class ids differ.

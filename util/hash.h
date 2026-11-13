@@ -17,7 +17,7 @@ u64 Hash_fnv1a64(const u8 *data, bytes length);
 // Stable for a run (addresses are process-local); the whole-pointer hash of the
 // Relational Engine's two-hash design — symbol names use the avalanched FNV/
 // Murmur path instead.
-u64 Hash_pointer(const any p);
+u64 Hash_pointer(const_any p);
 
 // MurmurHash3 64-bit finalizer mix for a single 64-bit value.
 u64 Hash_murmur3Mix64(u64 k);

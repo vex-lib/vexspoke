@@ -10,7 +10,7 @@
 // allocate. Sort_mergeSort requires a non-overlapping caller-owned scratch buffer of
 // count * elementSize bytes. Radix sorts use the Relational Engine Memory ABI.
 
-typedef int (*SortCompareFn)(const any left, const any right);
+typedef int (*SortCompareFn)(const_any left, const_any right);
 
 bool Sort_quickSort(any values, bytes count, bytes elementSize,
                     SortCompareFn compare);

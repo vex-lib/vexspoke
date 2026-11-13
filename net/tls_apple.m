@@ -162,7 +162,7 @@ static bool vexWaitForReady(nw_connection_t connection, dispatch_queue_t queue,
  * sends its HELLO the moment the upgrade lands) and fatal on a peer which waits
  * for us.
  */
-static bool vexSendBounded(nw_connection_t connection, const any bytes,
+static bool vexSendBounded(nw_connection_t connection, const_any bytes,
                            bytes length, u32 timeoutMs) {
     dispatch_data_t payload = dispatch_data_create(bytes, length, nullptr,
                                                    DISPATCH_DATA_DESTRUCTOR_DEFAULT);
@@ -202,7 +202,7 @@ static void vexArmRead(VexTlsSession *session) {
             if (error == nullptr && content != nullptr) {
                 __block bytes got = 0u;
                 dispatch_data_apply(content, ^bool(dispatch_data_t region, bytes offset,
-                                                   const any buffer, bytes size) {
+                                                   const_any buffer, bytes size) {
                     (void) region;
                     if (offset + size > VEX_TLS_READ_BYTES)
                         return false;

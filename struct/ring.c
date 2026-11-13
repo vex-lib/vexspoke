@@ -115,7 +115,7 @@ void RingBuffer_shutdown(RingBuffer *ring) {
 }
 
 // Pushes one item under the ring lock; returns false for invalid input or a full ring.
-bool RingBuffer_push(RingBuffer *ring, const any item) {
+bool RingBuffer_push(RingBuffer *ring, const_any item) {
     if (!ring || !item) return false;
 
     SpinLock_lock(&(*ring).lock);

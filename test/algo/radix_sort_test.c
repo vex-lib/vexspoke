@@ -47,13 +47,13 @@ static bool sorted_u64(const u64 *a, bytes n) {
 }
 
 /** qsort comparator used as an independent oracle for u32 sorting. */
-static int cmp_u32(const any a, const any b) {
+static int cmp_u32(const_any a, const_any b) {
     u32 x = *(const u32*) a, y = *(const u32*) b;
     return (x > y) - (x < y);
 }
 
 /** qsort comparator used as an independent oracle for u64 sorting. */
-static int cmp_u64(const any a, const any b) {
+static int cmp_u64(const_any a, const_any b) {
     u64 x = *(const u64*) a, y = *(const u64*) b;
     return (x > y) - (x < y);
 }

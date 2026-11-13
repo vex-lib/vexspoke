@@ -36,7 +36,7 @@
  */
 
 
-any ImageMac_decode(const any fileData, bytes fileSize, bytes *outW, bytes *outH) {
+any ImageMac_decode(const_any fileData, bytes fileSize, bytes *outW, bytes *outH) {
     if (!fileData || fileSize == 0) return nullptr;
 
     CGDataProviderRef provider = CGDataProviderCreateWithData(nullptr, fileData, fileSize, nullptr);

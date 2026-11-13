@@ -47,7 +47,7 @@ static inline void ComputeJob_setOnDone(ComputeJob *job, ComputeJobFn onDone) {
 // Recognise / execute a task as a ComputeJob. A role's job calls isJob first;
 // when true it runs the job and returns, so generic work may be dispatched to
 // any established thread (the one-line convention per role).
-bool ComputeJob_isJob(const any task);
+bool ComputeJob_isJob(const_any task);
 bool ComputeJob_run(any task);             // true when handled as a job
 
 // A private compute worker (caller owns the handle), created running.

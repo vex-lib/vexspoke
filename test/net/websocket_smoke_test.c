@@ -61,7 +61,7 @@ static u64 selfCpuMs(void) {
     return user + system;
 }
 
-static bool peerWrite(int fd, const any bytes, bytes length) {
+static bool peerWrite(int fd, const_any bytes, bytes length) {
     const u8 *p = (const u8*) bytes;
     bytes sent = 0u;
     while (sent < length) {

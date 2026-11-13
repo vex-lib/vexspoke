@@ -35,17 +35,17 @@ int64_t SphereArray_distanceSquaredOffset(i32 dx, i32 dy, i32 dz);
 
 // Voxel access by grid coordinates [0, diameter - 1] (get output first, set input last)
 bool SphereArray_getGrid(any dest, const SphereArray *self, i32 gx, i32 gy, i32 gz);
-bool SphereArray_setGrid(SphereArray *self, i32 gx, i32 gy, i32 gz, const any src);
+bool SphereArray_setGrid(SphereArray *self, i32 gx, i32 gy, i32 gz, const_any src);
 
 // Voxel access by center-relative offsets [-radius, radius]
 bool SphereArray_getOffset(any dest, const SphereArray *self, i32 dx, i32 dy, i32 dz);
-bool SphereArray_setOffset(SphereArray *self, i32 dx, i32 dy, i32 dz, const any src);
+bool SphereArray_setOffset(SphereArray *self, i32 dx, i32 dy, i32 dz, const_any src);
 
 u8 *SphereArray_slotGrid(SphereArray *self, i32 gx, i32 gy, i32 gz);
 u8 *SphereArray_slotOffset(SphereArray *self, i32 dx, i32 dy, i32 dz);
 
 // Iteration callback across all valid spherical voxels
-typedef void (*SphereArrayVoxelFn)(i32 gx, i32 gy, i32 gz, i32 dx, i32 dy, i32 dz, const any voxel, any userData);
+typedef void (*SphereArrayVoxelFn)(i32 gx, i32 gy, i32 gz, i32 dx, i32 dy, i32 dz, const_any voxel, any userData);
 void SphereArray_forEach(const SphereArray *self, SphereArrayVoxelFn callback, any userData);
 
 #endif

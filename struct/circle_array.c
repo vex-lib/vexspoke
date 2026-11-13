@@ -224,7 +224,7 @@ bool CircleArray_getGrid(any dest, const CircleArray *self, i32 gridX, i32 gridY
     return true;
 }
 
-bool CircleArray_setGrid(CircleArray *self, i32 gridX, i32 gridY, const any src) {
+bool CircleArray_setGrid(CircleArray *self, i32 gridX, i32 gridY, const_any src) {
     if (self == nullptr || src == nullptr) return false;
     if (!CircleArray_containsGrid(self, gridX, gridY)) {
         return false;
@@ -244,7 +244,7 @@ bool CircleArray_getOffset(any dest, const CircleArray *self, i32 dx, i32 dy) {
     return CircleArray_getGrid(dest, self, gridX, gridY);
 }
 
-bool CircleArray_setOffset(CircleArray *self, i32 dx, i32 dy, const any src) {
+bool CircleArray_setOffset(CircleArray *self, i32 dx, i32 dy, const_any src) {
     if (self == nullptr) return false;
     i32 gridX = dx + (*self).radius;
     i32 gridY = dy + (*self).radius;

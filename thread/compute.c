@@ -57,7 +57,7 @@ static void compute_job(Thread *self, any task) {
     ComputeJob_run(task);                    // ignores non-jobs (nullptr, foreign packets)
 }
 
-bool ComputeJob_isJob(const any task) {
+bool ComputeJob_isJob(const_any task) {
     const ComputeJob *job = (const ComputeJob*) task;
     return job != nullptr && (*job).tag == COMPUTE_JOB_TAG;
 }

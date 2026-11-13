@@ -377,7 +377,7 @@ static any concReader(any arg) {
 }
 
 // Orders pointer values for deterministic comparison of concurrent writer results.
-static int cmpPtr(const any a, const any b) {
+static int cmpPtr(const_any a, const_any b) {
     u8 * const *pa = (u8 * const *) a;
     u8 * const *pb = (u8 * const *) b;
     if (*pa < *pb)

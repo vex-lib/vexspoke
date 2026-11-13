@@ -30,7 +30,7 @@ RingBuffer RingBuffer_2(bytes elem_size, bytes capacity);
 void RingBuffer_shutdown(RingBuffer *ring);
 
 // Copy item into the ring. Returns false if full (caller retries/spins).
-bool RingBuffer_push(RingBuffer *ring, const any item);
+bool RingBuffer_push(RingBuffer *ring, const_any item);
 
 // Copy oldest item _out into _out. Returns false if empty.
 bool RingBuffer_pop(RingBuffer *ring, any out);

@@ -101,7 +101,7 @@ static int calculate_score(const char *candidate, const char *query) {
 }
 
 // Orders SpotlightMatch records by descending score for qsort.
-static int compare_matches(const any a, const any b) {
+static int compare_matches(const_any a, const_any b) {
     const SpotlightMatch *ma = (const SpotlightMatch*) a;
     const SpotlightMatch *mb = (const SpotlightMatch*) b;
     return (*mb).score - (*ma).score; // descending
