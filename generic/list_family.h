@@ -1,8 +1,6 @@
 #ifndef GENERIC_LIST_FAMILY_H
 #define GENERIC_LIST_FAMILY_H
 
-#include "vex.h"
-
 #include "oop/vexspoke_type.h"
 
 // generic/list_family.h — the repo's List element registry.
