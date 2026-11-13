@@ -4,13 +4,12 @@
 // exact width; a full TYPE_ id is masked to its class field; unknown ids answer
 // the pointer-sized default (8). Pure, stateless, headless.
 
-#include <stdint.h>
 #include <stdio.h>
 
 #include "oop/stride.h"
 #include "oop/vexspoke_type.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -21,7 +20,7 @@ static int g_failures = 0;
     } while (0)
 
 // Checks class-to-byte-width mappings and full type-id class masking.
-int main(void) {
+int main() {
     // Scalar widths.
     CHECK(Stride_get(ID_BYTE) == 1);
     CHECK(Stride_get(ID_SHORT) == 2);
@@ -29,8 +28,6 @@ int main(void) {
     CHECK(Stride_get(ID_FLOAT) == 4);
     CHECK(Stride_get(ID_LONG) == 8);
     CHECK(Stride_get(ID_f64) == 8);
-    CHECK(Stride_get(ID_INT_f64) == 16);
-    CHECK(Stride_get(ID_LONG_f64) == 16);
 
     // Geometry + outliers.
     CHECK(Stride_get(ID_VEC2) == 8);

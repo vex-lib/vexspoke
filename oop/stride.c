@@ -50,11 +50,7 @@ bytes Stride_get(u32 class_id) {
         case ID_FIXED64:
         case ID_BIT64:
         case ID_STRING:
-        case ID_INT_FLOAT:
         case ID_ARGUMENTS:  return 8;
-        case ID_INT_f64:
-        case ID_LONG_FLOAT:
-        case ID_LONG_f64: return 16;
 
         // Variable and the time outliers.
         case ID_VARIABLE:   return 40;
