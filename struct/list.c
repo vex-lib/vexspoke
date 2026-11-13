@@ -16,10 +16,10 @@
  * The List container over the Collection base: a flat, stride-strided data
  * buffer with activeCount/capacity/elementClass metadata, so element access
  * is a single base-plus-stride hop. The buffer starts at DEFAULT_CAPACITY
- * (1024) slots and grows in 1024-slot chunks on demand, arena-backed; add
- * writes through Collection_writeSlot, remove memmoves the tail down, and
- * compare is a byte-wise memcmp over the active region. All accessors are
- * null-guarded and index-bounded.
+ * (1024) slots and doubles when full, arena-backed; add writes through
+ * Collection_writeSlot, remove memmoves the tail down, and compare is a
+ * byte-wise memcmp over the active region. All accessors are null-guarded and
+ * index-bounded.
  * ============================================================================
  */
 
@@ -39,9 +39,10 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Constructors:
+ *   - List_init(self, element_class, capacity)
  *   - List_2(element_class, capacity)
  *   - List_1(element_class)
- *   - List(element_class, capacity, count)
+ *   - List_3(element_class, capacity, count)
  *
  * Core Functions:
  *   - List_free(list)
@@ -98,34 +99,51 @@ static u8 *bufferGrow(Collection *c, bytes needed) {
     return next;
 }
 
-List *List_3(u32 elementClass, bytes capacity, bytes count) {
+bool List_init(List *self, u32 elementClass, bytes capacity) {
+    if (!self) return false;
+
     bytes stride = Stride_get(elementClass);
     bytes cap = capacity < DEFAULT_CAPACITY ? DEFAULT_CAPACITY : capacity;
-    List *list = (List*) Memory_alloc(TYPE_LIST, sizeof(List));
-    if (!list) {
-        (void) Struct_reportConstructionExhaustion("list", sizeof(List));
-        return nullptr;
-    }
 
-    Collection *c = asCollection(list);
+    Collection *c = asCollection(self);
     (*c).typeId = TYPE_LIST;
-    (*c).activeCount = (u32)count;
+    (*c).activeCount = 0;
     (*c).elementClass = elementClass;
     (*c).stride = (u32)stride;
     (*c).capacity = (u32)cap;
     (*c).head = 0;
     (*c).exhaustionCount = 0;
     (*c).exhaustionReported = false;
+    // Set before the allocation so a refused buffer still leaves a List_free-able
+    // object: data == nullptr is the empty-buffer state.
+    (*c).data = nullptr;
 
     bytes Bytes = cap * stride;
     u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, elementClass);
-    (*c).data = (u8*) Memory_alloc(bufType, Bytes);
-    if (!(*c).data) {
+    u8 *data = (u8*) Memory_alloc(bufType, Bytes);
+    if (!data) {
         (void) Struct_reportConstructionExhaustion("list", Bytes);
+        return false;
+    }
+    memset(data, 0, Bytes);
+    (*c).data = data;
+    return true;
+}
+
+List *List_3(u32 elementClass, bytes capacity, bytes count) {
+    List *list = (List*) Memory_alloc(TYPE_LIST, sizeof(List));
+    if (!list) {
+        (void) Struct_reportConstructionExhaustion("list", sizeof(List));
+        return nullptr;
+    }
+    if (!List_init(list, elementClass, capacity)) {
         Memory_free(list);
         return nullptr;
     }
-    memset((*c).data, 0, Bytes);
+    // Pre-filled means the slots exist and read as zero; the zeroing is
+    // List_init's, so the count is the only extra step.
+    Collection *c = asCollection(list);
+    (*c).activeCount = (u32)count;
     return list;
 }
 

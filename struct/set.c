@@ -77,9 +77,9 @@ static int isReferenceClass(u32 classId) {
 static u64 computeHash(u32 elementClass, u64 element) {
     if (element == 0) return 0;
     if (isReferenceClass(elementClass) && element >= 4096u) {
-        u64 inspected = Memory_type((void*) (pointer)element);
+        u64 inspected = Memory_type((any) (pointer)element);
         if (inspected != 0) {
-            bytes len = Memory_length((void*) (pointer)element);
+            bytes len = Memory_length((any) (pointer)element);
             if (len > 0)
                 return Hash_fnv1a64((const u8*) (pointer)element, len);
         }
@@ -91,8 +91,8 @@ static int elementsEqual(u32 elementClass, u64 e1, u64 e2) {
     if (e1 == e2) return 1;
     if (e1 == 0 || e2 == 0) return 0;
     if (isReferenceClass(elementClass) && e1 >= 4096u && e2 >= 4096u) {
-        void *p1 = (void*) (pointer)e1;
-        void *p2 = (void*) (pointer)e2;
+        any p1 = (any) (pointer)e1;
+        any p2 = (any) (pointer)e2;
         u64 t1 = Memory_type(p1);
         u64 t2 = Memory_type(p2);
         if (t1 != 0 && t1 == t2) {
@@ -286,7 +286,7 @@ int Set_remove(Set *set, u64 element) {
 List *Set_toList(Set *set) {
     if (!set) return nullptr;
     Collection *c = asCollection(set);
-    List *list = List((*c).elementClass, (*c).activeCount);
+    List *list = List_2((*c).elementClass, (*c).activeCount);
     if (!list) return nullptr;
 
     for (bytes i = 0; i < (*c).capacity; i++) {

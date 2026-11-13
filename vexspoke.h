@@ -25,6 +25,7 @@
 #include "c23/c23.h"
 #include "event/event.h"
 #include "exception/exception.h"
+#include "generic/generic.h"
 #include "io/io.h"
 #include "lang/lang.h"
 #include "math/math.h"

@@ -16,6 +16,13 @@ typedef struct List {
     Collection collection;
 } List;
 
+// Initialize caller-owned List storage in place: element_class plus a zeroed
+// data buffer of capacity slots (min 1024, legacy default). The storage can
+// still be released with List_free even when the buffer is refused. Returns
+// false on a refused buffer; the reason is counted by
+// Struct_constructionExhaustionCount.
+bool List_init(List *self, u32 element_class, bytes capacity);
+
 // Empty list for element_class with initial capacity (min 1024, legacy default).
 List *List_2(u32 element_class, bytes capacity);
 
@@ -58,6 +65,8 @@ u8 *List_dataBuffer(List *list);
 
 List *List_1(u32 element_class);
 
-#define List(...) CONSTRUCTOR_DISPATCH(List, __VA_ARGS__)
+// The untyped chooser was retired in favour of the typed surface: generic/
+// owns `List(T)` (generic/list_stamps.h), and the runtime-class constructors
+// stay explicit as List_1 / List_2 / List_3.
 
 #endif
