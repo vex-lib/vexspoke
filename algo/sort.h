@@ -34,6 +34,6 @@ bytes Sort_partitionInt32(i32 *values, bytes count, i32 pivot);
 // failure; on allocation failure the input arrays remain unchanged.
 bool Sort_radixSortUint32(u32 *values, bytes count);
 bool Sort_radixSortUint64(u64 *values, bytes count);
-bool Sort_radixSortPairsUint64(u64 *keys, void **values, bytes count);
+bool Sort_radixSortPairsUint64(u64 *keys, any *values, bytes count);
 
 #endif

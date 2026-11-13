@@ -368,7 +368,7 @@ bool Sort_radixSortUint64(u64 *values, bytes count) {
     return radixSortUnsigned(values, count, sizeof(u64));
 }
 
-bool Sort_radixSortPairsUint64(u64 *keys, void **values, bytes count) {
+bool Sort_radixSortPairsUint64(u64 *keys, any *values, bytes count) {
     if (count <= 1u)
         return true;
     if (keys == nullptr || values == nullptr
@@ -378,7 +378,7 @@ bool Sort_radixSortPairsUint64(u64 *keys, void **values, bytes count) {
     bytes keyBytes = count * sizeof(u64);
     bytes valueBytes = count * sizeof(any);
     u64 *temporaryKeys = (u64*) Memory_alloc(TYPE_BYTE_ARRAY, keyBytes);
-    void **temporaryValues = (void**) Memory_alloc(TYPE_BYTE_ARRAY, valueBytes);
+    any *temporaryValues = (any*) Memory_alloc(TYPE_BYTE_ARRAY, valueBytes);
     if (temporaryKeys == nullptr || temporaryValues == nullptr) {
         if (temporaryKeys != nullptr)
             Memory_free(temporaryKeys);
@@ -389,8 +389,8 @@ bool Sort_radixSortPairsUint64(u64 *keys, void **values, bytes count) {
 
     u64 *sourceKeys = keys;
     u64 *destinationKeys = temporaryKeys;
-    void **sourceValues = values;
-    void **destinationValues = temporaryValues;
+    any *sourceValues = values;
+    any *destinationValues = temporaryValues;
     for (unsigned pass = 0u; pass < 8u; ++pass) {
         bytes bucketCounts[256] = {0};
         bytes bucketOffsets[256] = {0};
@@ -413,7 +413,7 @@ bool Sort_radixSortPairsUint64(u64 *keys, void **values, bytes count) {
         u64 *keySwap = sourceKeys;
         sourceKeys = destinationKeys;
         destinationKeys = keySwap;
-        void **valueSwap = sourceValues;
+        any *valueSwap = sourceValues;
         sourceValues = destinationValues;
         destinationValues = valueSwap;
     }
