@@ -9,18 +9,18 @@ extern BitPool g_f32Pool;
 
 bool Float_init(void);
 void Float_shutdown(void);
-void *Float_alloc(void);
-void *Float_allocArray(bytes count);
-void Float_free(void *ptr);
-f32 Float_get(void *ptr);
-void Float_set(void *ptr, f32 value);
-bool Float_compareAndSet(void *ptr, f32 expected, f32 value);
-u64 Float_type(void *ptr);
-bytes Float_length(void *ptr);
+any Float_alloc(void);
+any Float_allocArray(bytes count);
+void Float_free(any ptr);
+f32 Float_get(any ptr);
+void Float_set(any ptr, f32 value);
+bool Float_compareAndSet(any ptr, f32 expected, f32 value);
+u64 Float_type(any ptr);
+bytes Float_length(any ptr);
 
 
 // Ergonomic constructors — Float() and Float(value)
-void *Float_allocWithValue(f32 value);
+any Float_allocWithValue(f32 value);
 #define Float_0(...) Float_alloc()
 #define Float_1(value) Float_allocWithValue(value)
 #define Float(...) CONSTRUCTOR_DISPATCH(Float, __VA_ARGS__)

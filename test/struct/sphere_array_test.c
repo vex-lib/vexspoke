@@ -138,7 +138,7 @@ typedef struct WalkStats {
 // Accumulates traversal count, coordinate checks, and the visited payload checksum.
 static void walkVoxel(i32 gx, i32 gy, i32 gz,
                       i32 dx, i32 dy, i32 dz,
-                      const void *voxel, void *userData) {
+                      const any voxel, any userData) {
     WalkStats *s = (WalkStats*) userData;
     (*s).count++;
     if (voxel == nullptr)

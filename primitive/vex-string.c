@@ -114,14 +114,14 @@ const char *string_get(const u8 *ptr) {
 bytes string_length(const u8 *ptr) {
     if (!ptr)
         return 0;
-    bytes n = Memory_length((void*) (pointer)ptr);
+    bytes n = Memory_length((any) (pointer)ptr);
     return n > 0 ? n - 1 : 0;
 }
 
 u64 string_type(const u8 *ptr) {
     if (!ptr)
         return 0;
-    return Memory_type((void*) (pointer)ptr);
+    return Memory_type((any) (pointer)ptr);
 }
 
 bool string_isArray(const u8 *ptr) {
@@ -136,7 +136,7 @@ u32 string_classId(void) {
 bytes string_capacity(const u8 *ptr) {
     if (!ptr)
         return 0;
-    return Memory_length((void*) (pointer)ptr);
+    return Memory_length((any) (pointer)ptr);
 }
 
 u8 *string_copy(const u8 *ptr) {

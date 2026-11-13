@@ -20,7 +20,7 @@ static int g_failures = 0;
 int main(void) {
     CHECK(Short_init());
 
-    void *p = Short_alloc();
+    any p = Short_alloc();
     CHECK(p != nullptr);
     CHECK(Short_get(p) == 0);
     CHECK(Short_type(p) == ID_SHORT);
@@ -32,11 +32,11 @@ int main(void) {
         CHECK(Short_get(p) == values[i]);
     }
 
-    void *q = Short_allocWithValue(42);
+    any q = Short_allocWithValue(42);
     CHECK(q != nullptr && Short_get(q) == 42);
-    void *r = Short(-7);
+    any r = Short(-7);
     CHECK(r != nullptr && Short_get(r) == -7);
-    void *s = Short_0();
+    any s = Short_0();
     CHECK(s != nullptr && Short_type(s) == ID_SHORT);
 
     CHECK(Short_compareAndSet(p, Short_get(p), 999));
@@ -45,7 +45,7 @@ int main(void) {
     CHECK(Short_get(p) == 999);
 
     CHECK(Short_allocArray(0) == nullptr);
-    void *arr = Short_array(8);
+    any arr = Short_array(8);
     CHECK(arr != nullptr);
     CHECK((Short_type(arr) & MASK_CLASS) == ID_SHORT);
     CHECK(Short_length(arr) >= 8);

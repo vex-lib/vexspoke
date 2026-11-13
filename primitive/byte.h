@@ -9,18 +9,18 @@ extern BitPool g_bytePool;
 
 bool Byte_init(void);
 void Byte_shutdown(void);
-void *Byte_alloc(void);
-void *Byte_allocArray(bytes count);
-void Byte_free(void *ptr);
- Byte_get(void *ptr);
-void Byte_set(void *ptr,  value);
-bool Byte_compareAndSet(void *ptr,  expected,  value);
-u64 Byte_type(void *ptr);
-bytes Byte_length(void *ptr);
+any Byte_alloc(void);
+any Byte_allocArray(bytes count);
+void Byte_free(any ptr);
+ Byte_get(any ptr);
+void Byte_set(any ptr,  value);
+bool Byte_compareAndSet(any ptr,  expected,  value);
+u64 Byte_type(any ptr);
+bytes Byte_length(any ptr);
 
 
 // Ergonomic constructors — Byte() and Byte(value)
-void *Byte_allocWithValue( value);
+any Byte_allocWithValue( value);
 #define Byte_0(...) Byte_alloc()
 #define Byte_1(value) Byte_allocWithValue(value)
 #define Byte(...) CONSTRUCTOR_DISPATCH(Byte, __VA_ARGS__)

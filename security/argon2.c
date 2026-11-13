@@ -69,7 +69,7 @@ static u64 rotr64(u64 v, u32 bits) {
     return (v >> bits) | (v << (64u - bits));
 }
 
-static void secureWipe(void *p, bytes n) {
+static void secureWipe(any p, bytes n) {
     volatile u8 *v = (volatile u8*) p;
     while (n > 0u) {
         *v = 0u;

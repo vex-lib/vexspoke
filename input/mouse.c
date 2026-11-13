@@ -425,7 +425,7 @@ static void deliverMotion(u32 windowId, int action8, int button,
     if (row == nullptr) return;
     for (int i = 0; i < (*row).count; i++) {
         const MouseHandler *l = (*row).items[i];
-        void *self = (*l).self;
+        any self = (*l).self;
         if (action8 == 5 && (*l).onMouseMove)
             (*l).onMouseMove(self, a, b);
         else if (action8 == 9 && (*l).onMouseMoveDelta)
@@ -456,7 +456,7 @@ static void deliverButton(u32 windowId, int action, int mouseEvent, u64 exactNan
     if (row == nullptr) return;
     for (int i = 0; i < (*row).count; i++) {
         const MouseHandler *l = (*row).items[i];
-        void *self = (*l).self;
+        any self = (*l).self;
         if (action == KEY_ACTION_DOWN && (*l).onMouseDown)
             (*l).onMouseDown(self, mouseEvent, exactNanos);
         else if (action == KEY_ACTION_UP && (*l).onMouseUp)
@@ -565,7 +565,7 @@ void Mouse_dispatchEvents(void) {
         int mouseEvent = button | mappedMods;
 
         for (int i = 0; i < s_listenerCount; i++) {
-            void *self = (*s_listeners[i]).self;
+            any self = (*s_listeners[i]).self;
             if (action == KEY_ACTION_DOWN && (*s_listeners[i]).onMouseDown)
                 (*s_listeners[i]).onMouseDown(self, mouseEvent, exactNanos);
             else if (action == KEY_ACTION_UP && (*s_listeners[i]).onMouseUp)

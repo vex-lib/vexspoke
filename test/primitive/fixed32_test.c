@@ -20,7 +20,7 @@ static int g_failures = 0;
 int main(void) {
     CHECK(Fixed32_init());
 
-    void *p = Fixed32_alloc();
+    any p = Fixed32_alloc();
     CHECK(p != nullptr);
     CHECK(Fixed32_get(p) == 0);
     CHECK(Fixed32_type(p) == ID_FIXED32);
@@ -32,11 +32,11 @@ int main(void) {
         CHECK(Fixed32_get(p) == values[i]);
     }
 
-    void *q = Fixed32_allocWithValue(65536);
+    any q = Fixed32_allocWithValue(65536);
     CHECK(q != nullptr && Fixed32_get(q) == 65536);
-    void *r = Fixed32(-65536);
+    any r = Fixed32(-65536);
     CHECK(r != nullptr && Fixed32_get(r) == -65536);
-    void *s = Fixed32_0();
+    any s = Fixed32_0();
     CHECK(s != nullptr && Fixed32_type(s) == ID_FIXED32);
 
     CHECK(Fixed32_compareAndSet(p, Fixed32_get(p), 999));
@@ -45,7 +45,7 @@ int main(void) {
     CHECK(Fixed32_get(p) == 999);
 
     CHECK(Fixed32_allocArray(0) == nullptr);
-    void *arr = Fixed32_array(8);
+    any arr = Fixed32_array(8);
     CHECK(arr != nullptr);
     CHECK((Fixed32_type(arr) & MASK_CLASS) == ID_FIXED32);
     CHECK(Fixed32_length(arr) >= 8);

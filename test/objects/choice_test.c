@@ -20,11 +20,11 @@ static int g_failures = 0;
     } while (0)
 
 static u64 g_lastObject = 0;
-static void *g_lastUserdata = (void*) 0;
+static any g_lastUserdata = (any) 0;
 static int g_fired = 0;
 
 // Captures the object and caller context delivered by Choice_trigger.
-static void cb(u64 objectPtr, void *userdata) {
+static void cb(u64 objectPtr, any userdata) {
     g_lastObject = objectPtr;
     g_lastUserdata = userdata;
     g_fired++;

@@ -62,11 +62,11 @@ void Short_shutdown(void) {
     BitPool_shutdown(&g_shortPool);
 }
 
-void *Short_alloc(void) {
+any Short_alloc(void) {
     return BitPool_alloc(&g_shortPool, ID_SHORT);
 }
 
-void *Short_allocArray(bytes count) {
+any Short_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
@@ -78,48 +78,48 @@ void *Short_allocArray(bytes count) {
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_SHORT), Bytes);
 }
 
-void Short_free(void *ptr) {
+void Short_free(any ptr) {
     if (!ptr)
         return;
     if (BitPool_contains(&g_shortPool, ptr)) BitPool_free(&g_shortPool, ptr);
     else Memory_free(ptr);
 }
 
- Short_get(void *ptr) {
+ Short_get(any ptr) {
     if (!ptr)
         return () 0;
     return *(*) ptr;
 }
 
-void Short_set(void *ptr,  value) {
+void Short_set(any ptr,  value) {
     if (!ptr)
         return;
     *(*) ptr = value;
 }
 
-bool Short_compareAndSet(void *ptr,  expected,  value) {
+bool Short_compareAndSet(any ptr,  expected,  value) {
     if (!ptr)
         return false;
     // fallback to simple CAS via __atomic_compare_exchange
     return __atomic_compare_exchange_n((*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
-u64 Short_type(void *ptr) {
+u64 Short_type(any ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_shortPool, ptr)) return BitPool_type(&g_shortPool, ptr);
     return Memory_type(ptr);
 }
 
-bytes Short_length(void *ptr) {
+bytes Short_length(any ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_shortPool, ptr)) return BitPool_length(&g_shortPool, ptr);
     return Memory_length(ptr);
 }
 
-void *Short_allocWithValue( value) {
-    void *ptr = Short_alloc();
+any Short_allocWithValue( value) {
+    any ptr = Short_alloc();
     if (ptr) Short_set(ptr, value);
     return ptr;
 }

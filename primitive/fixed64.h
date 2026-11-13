@@ -9,18 +9,18 @@ extern BitPool g_fixed64Pool;
 
 bool Fixed64_init(void);
 void Fixed64_shutdown(void);
-void *Fixed64_alloc(void);
-void *Fixed64_allocArray(bytes count);
-void Fixed64_free(void *ptr);
-int64_t Fixed64_get(void *ptr);
-void Fixed64_set(void *ptr, int64_t value);
-bool Fixed64_compareAndSet(void *ptr, int64_t expected, int64_t value);
-u64 Fixed64_type(void *ptr);
-bytes Fixed64_length(void *ptr);
+any Fixed64_alloc(void);
+any Fixed64_allocArray(bytes count);
+void Fixed64_free(any ptr);
+int64_t Fixed64_get(any ptr);
+void Fixed64_set(any ptr, int64_t value);
+bool Fixed64_compareAndSet(any ptr, int64_t expected, int64_t value);
+u64 Fixed64_type(any ptr);
+bytes Fixed64_length(any ptr);
 
 
 // Ergonomic constructors — Fixed64() and Fixed64(value)
-void *Fixed64_allocWithValue(int64_t value);
+any Fixed64_allocWithValue(int64_t value);
 #define Fixed64_0(...) Fixed64_alloc()
 #define Fixed64_1(value) Fixed64_allocWithValue(value)
 #define Fixed64(...) CONSTRUCTOR_DISPATCH(Fixed64, __VA_ARGS__)

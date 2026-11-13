@@ -75,7 +75,7 @@
 
 #if defined(SR_BACKEND_GETRANDOM) || defined(SR_BACKEND_URANDOM)
 // POSIX fallback: bounded read loop over /dev/urandom.
-static bool fillFromUrandom(void *dest, bytes len) {
+static bool fillFromUrandom(any dest, bytes len) {
     i32 fd = open("/dev/urandom", O_RDONLY);
     if (fd < 0)
         return false;
@@ -94,7 +94,7 @@ static bool fillFromUrandom(void *dest, bytes len) {
 }
 #endif
 
-static bool osFill(void *dest, bytes len) {
+static bool osFill(any dest, bytes len) {
     if (len == 0)
         return true;
     if (dest == nullptr)
@@ -139,7 +139,7 @@ void SecureRandom_free(SecureRandom *self) {
     free(self);
 }
 
-bool SecureRandom_bytes(SecureRandom *self, void *dest, bytes len) {
+bool SecureRandom_bytes(SecureRandom *self, any dest, bytes len) {
     if (self == nullptr)
         return false;
     if (!osFill(dest, len))

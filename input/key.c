@@ -420,7 +420,7 @@ static void deliverToWindow(u32 windowId, int action, int keyEvent, u64 exactNan
     if (row == nullptr) return;
     for (int i = 0; i < (*row).count; i++) {
         const KeyHandler *l = (*row).items[i];
-        void *self = (*l).self;
+        any self = (*l).self;
         if (action == KEY_ACTION_DOWN && (*l).onKeyDown)
             (*l).onKeyDown(self, keyEvent, exactNanos);
         else if (action == KEY_ACTION_UP && (*l).onKeyUp)
@@ -479,7 +479,7 @@ void Key_dispatchEvents(void) {
         // Global taps hear everything; window listeners only their own
         // window (or broadcast).
         for (int i = 0; i < s_listenerCount; i++) {
-            void *self = (*s_listeners[i]).self;
+            any self = (*s_listeners[i]).self;
             if (action == KEY_ACTION_DOWN && (*s_listeners[i]).onKeyDown)
                 (*s_listeners[i]).onKeyDown(self, keyEvent, exactNanos);
             else if (action == KEY_ACTION_UP && (*s_listeners[i]).onKeyUp)

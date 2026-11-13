@@ -20,7 +20,7 @@ static int g_failures = 0;
 int main(void) {
     CHECK(Byte_init());
 
-    void *p = Byte_alloc();
+    any p = Byte_alloc();
     CHECK(p != nullptr);
     CHECK(Byte_get(p) == 0);
     CHECK(Byte_type(p) == ID_BYTE);
@@ -32,11 +32,11 @@ int main(void) {
         CHECK(Byte_get(p) == values[i]);
     }
 
-    void *q = Byte_allocWithValue(42);
+    any q = Byte_allocWithValue(42);
     CHECK(q != nullptr && Byte_get(q) == 42);
-    void *r = Byte(-7);
+    any r = Byte(-7);
     CHECK(r != nullptr && Byte_get(r) == -7);
-    void *s = Byte_0();
+    any s = Byte_0();
     CHECK(s != nullptr && Byte_type(s) == ID_BYTE);
 
     CHECK(Byte_compareAndSet(p, Byte_get(p), 99));
@@ -45,7 +45,7 @@ int main(void) {
     CHECK(Byte_get(p) == 99);
 
     CHECK(Byte_allocArray(0) == nullptr);
-    void *arr = Byte_array(8);
+    any arr = Byte_array(8);
     CHECK(arr != nullptr);
     CHECK((Byte_type(arr) & MASK_CLASS) == ID_BYTE);
     CHECK(Byte_length(arr) >= 8);

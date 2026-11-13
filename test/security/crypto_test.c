@@ -29,7 +29,7 @@ static int g_failures = 0;
     } while (0)
 
 // Hashes a byte span and compares its hex digest with the supplied expectation.
-static void expect_hex(const void *data, bytes len, const char *want) {
+static void expect_hex(const any data, bytes len, const char *want) {
     char got[CRYPTO_SHA256_HEX_SIZE];
     Crypto_sha256Hex(data, len, got);
     CHECK(strcmp(got, want) == 0);

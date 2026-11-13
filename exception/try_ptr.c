@@ -54,7 +54,7 @@
  */
 
 // Constructs a result containing the pointer payload and status code.
-TryPtr TryPtr_2(void *value, TryCode code) {
+TryPtr TryPtr_2(any value, TryCode code) {
     TryPtr self;
     self.value = value;
     self.code = code;
@@ -62,7 +62,7 @@ TryPtr TryPtr_2(void *value, TryCode code) {
 }
 
 // Constructs a successful result carrying value.
-TryPtr TryPtr_ok(void *value) {
+TryPtr TryPtr_ok(any value) {
     return TryPtr_2(value, TRY_OK);
 }
 
@@ -72,14 +72,14 @@ TryPtr TryPtr_error(TryCode code) {
 }
 
 // Returns the stored pointer, or nullptr when self is nullptr.
-void *TryPtr_getValue(const TryPtr *self) {
+any TryPtr_getValue(const TryPtr *self) {
     if (!self)
         return nullptr;
     return (*self).value;
 }
 
 // Replaces the pointer payload when self is non-null.
-void TryPtr_setValue(TryPtr *self, void *value) {
+void TryPtr_setValue(TryPtr *self, any value) {
     if (!self)
         return;
     (*self).value = value;

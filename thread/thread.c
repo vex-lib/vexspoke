@@ -39,7 +39,7 @@
  *     u64 typeId;           // block-header type (TYPE_THREAD_*)
  *     pthread_t platform;        // native platform thread handle
  *     bool platformStarted;      // platform thread spawned flag
- *     RingBuffer queue;          // void* task slot ring
+ *     RingBuffer queue;          // any task slot ring
  *     Thread_Job job;            // per-pass task body callback
  *     bool tickWhenIdle;         // run job with nullptr task when idle
  *     bool core;                 // core handle: immune to stop/free
@@ -76,18 +76,18 @@ typedef struct Thread {
     u64 typeId;          // block header type (TYPE_THREAD_*)
     pthread_t platform;
     bool platformStarted;
-    RingBuffer queue;         // void* task slots
+    RingBuffer queue;         // any task slots
     Thread_Job job;
     bool tickWhenIdle;
     bool core;
 } Thread;
 
-#define THREAD_TASK_SIZE sizeof(void*)
+#define THREAD_TASK_SIZE sizeof(any)
 
 // Central registry: handle address => 1. Legacy used Map.put(workerPtr, 1L).
 static Map *s_workers = nullptr;
 
-static void *platform_main(void *arg);
+static any platform_main(any arg);
 
 static Map *workers(void) {
     if (!s_workers)
@@ -135,7 +135,7 @@ bool Thread_run(Thread *self) {
     return true;
 }
 
-bool Thread_submit(Thread *self, void *task) {
+bool Thread_submit(Thread *self, any task) {
     if (!self || !task)
         return false;
     if (atomic_load(&(*self).state) != 1)
@@ -186,10 +186,10 @@ u64 Thread_purpose(Thread *self) {
     return self ? (*self).typeId : 0;
 }
 
-static void *platform_main(void *arg) {
+static any platform_main(any arg) {
     Thread *self = (Thread*) arg;
     while (atomic_load(&(*self).state) == 1) {
-        void *task = nullptr;
+        any task = nullptr;
         if (RingBuffer_pop(&(*self).queue, &task)) {
             (*(*self).job)(self, task);
         } else if ((*self).tickWhenIdle) {

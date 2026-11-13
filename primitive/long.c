@@ -63,11 +63,11 @@ void Long_shutdown(void) {
     BitPool_shutdown(&g_longPool);
 }
 
-void *Long_alloc(void) {
+any Long_alloc(void) {
     return BitPool_alloc(&g_longPool, ID_LONG);
 }
 
-void *Long_allocArray(bytes count) {
+any Long_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
@@ -79,48 +79,48 @@ void *Long_allocArray(bytes count) {
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_LONG), Bytes);
 }
 
-void Long_free(void *ptr) {
+void Long_free(any ptr) {
     if (!ptr)
         return;
     if (BitPool_contains(&g_longPool, ptr)) BitPool_free(&g_longPool, ptr);
     else Memory_free(ptr);
 }
 
-int64_t Long_get(void *ptr) {
+int64_t Long_get(any ptr) {
     if (!ptr)
         return (int64_t) 0;
     return *(int64_t*) ptr;
 }
 
-void Long_set(void *ptr, int64_t value) {
+void Long_set(any ptr, int64_t value) {
     if (!ptr)
         return;
     *(int64_t*) ptr = value;
 }
 
-bool Long_compareAndSet(void *ptr, int64_t expected, int64_t value) {
+bool Long_compareAndSet(any ptr, int64_t expected, int64_t value) {
     if (!ptr)
         return false;
     // fallback to simple CAS via __atomic_compare_exchange
     return __atomic_compare_exchange_n((int64_t*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
-u64 Long_type(void *ptr) {
+u64 Long_type(any ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_longPool, ptr)) return BitPool_type(&g_longPool, ptr);
     return Memory_type(ptr);
 }
 
-bytes Long_length(void *ptr) {
+bytes Long_length(any ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_longPool, ptr)) return BitPool_length(&g_longPool, ptr);
     return Memory_length(ptr);
 }
 
-void *Long_allocWithValue(int64_t value) {
-    void *ptr = Long_alloc();
+any Long_allocWithValue(int64_t value) {
+    any ptr = Long_alloc();
     if (ptr) Long_set(ptr, value);
     return ptr;
 }

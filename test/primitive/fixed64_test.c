@@ -20,7 +20,7 @@ static int g_failures = 0;
 int main(void) {
     CHECK(Fixed64_init());
 
-    void *p = Fixed64_alloc();
+    any p = Fixed64_alloc();
     CHECK(p != nullptr);
     CHECK(Fixed64_get(p) == 0);
     CHECK(Fixed64_type(p) == ID_FIXED64);
@@ -32,11 +32,11 @@ int main(void) {
         CHECK(Fixed64_get(p) == values[i]);
     }
 
-    void *q = Fixed64_allocWithValue(4294967296LL);
+    any q = Fixed64_allocWithValue(4294967296LL);
     CHECK(q != nullptr && Fixed64_get(q) == 4294967296LL);
-    void *r = Fixed64(-4294967296LL);
+    any r = Fixed64(-4294967296LL);
     CHECK(r != nullptr && Fixed64_get(r) == -4294967296LL);
-    void *s = Fixed64_0();
+    any s = Fixed64_0();
     CHECK(s != nullptr && Fixed64_type(s) == ID_FIXED64);
 
     CHECK(Fixed64_compareAndSet(p, Fixed64_get(p), 999));
@@ -45,7 +45,7 @@ int main(void) {
     CHECK(Fixed64_get(p) == 999);
 
     CHECK(Fixed64_allocArray(0) == nullptr);
-    void *arr = Fixed64_array(8);
+    any arr = Fixed64_array(8);
     CHECK(arr != nullptr);
     CHECK((Fixed64_type(arr) & MASK_CLASS) == ID_FIXED64);
     CHECK(Fixed64_length(arr) >= 8);

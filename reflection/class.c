@@ -124,16 +124,16 @@ void Class_free(Class *self) {
 u64 Class_kind(const Class *self) {
     if (self == nullptr)
         return 0u;
-    return Memory_type((void*) self);
+    return Memory_type((any) self);
 }
 
 bool Class_check(const Class *self, u64 typeId) {
     if (self == nullptr)
         return false;
-    return Memory_type((void*) self) == typeId;
+    return Memory_type((any) self) == typeId;
 }
 
-void *Class_construct(Class *self, void *arg) {
+any Class_construct(Class *self, any arg) {
     if (self == nullptr || (*self).construct == nullptr)
         return nullptr;
     return (*self).construct(arg);
@@ -159,7 +159,7 @@ Method *Class_getMethod(const Class *self, u32 index) {
     return (Method*) ChunkedList_slot((*self).methods, index);
 }
 
-void Class_forEachMethod(Class *self, ClassMethodVisitFn fn, void *userdata) {
+void Class_forEachMethod(Class *self, ClassMethodVisitFn fn, any userdata) {
     if (self == nullptr || fn == nullptr || (*self).methods == nullptr)
         return;
     u32 n = (*self).methodCount;

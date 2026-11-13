@@ -31,7 +31,7 @@
  *     u64 cachedValue;      // memoized lazy value
  *     PassiveGetter getter;      // lazy compute callback
  *     PassiveSetter setter;      // optional write-back callback
- *     void *userdata;            // opaque callback context
+ *     any userdata;            // opaque callback context
  *   }
  *
  * FUNCTION REGISTRY:
@@ -61,7 +61,7 @@ struct Passive {
     void         *userdata;
 };
 
-Passive *Passive_3(PassiveGetter getter, PassiveSetter setter, void *userdata) {
+Passive *Passive_3(PassiveGetter getter, PassiveSetter setter, any userdata) {
     u64 type = Type_make(PROJ_VEXSPOKE, FORM_SINGLETON, ID_PASSIVE) | WRAP_PROACTIVE;
     Passive *passive = (Passive*) Memory_alloc(type, sizeof(Passive));
     if (!passive)

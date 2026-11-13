@@ -29,7 +29,7 @@ void SecureRandom_free(SecureRandom *self);
 
 // Fill dest[0..len) with cryptographically secure Bytes. Returns false when the
 // OS source is unavailable (dest untouched). len 0 is a successful no-op.
-bool SecureRandom_bytes(SecureRandom *self, void *dest, bytes len);
+bool SecureRandom_bytes(SecureRandom *self, any dest, bytes len);
 
 // Convenience scalar draws; 0 on OS failure (prefer SecureRandom_bytes when the
 // caller must distinguish failure from a legitimate zero).

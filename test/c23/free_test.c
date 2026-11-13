@@ -23,13 +23,13 @@ static int g_failures = 0;
 
 static int g_calls = 0;
 // Counts destructor dispatches for the registered test type.
-static void countingDestructor(void *ptr) {
+static void countingDestructor(any ptr) {
     (void) ptr;
     g_calls++;
 }
 
 // Distinguishes replacement of a registered destructor from its old handler.
-static void otherDestructor(void *ptr) {
+static void otherDestructor(any ptr) {
     (void) ptr;
     g_calls += 100;
 }
@@ -59,19 +59,19 @@ int main(void) {
 
     // c23_free routes the block's type through the registered destructor.
     g_calls = 0;
-    void *p = Memory_alloc(4242u, 16);
+    any p = Memory_alloc(4242u, 16);
     CHECK(p != nullptr);
     c23_free(p);
     CHECK(g_calls == 1);
 
     // An unregistered type frees cleanly (no handler, block reclaimed).
-    void *q = Memory_alloc(6001u, 16);
+    any q = Memory_alloc(6001u, 16);
     CHECK(q != nullptr);
     c23_free(q);
     CHECK(1);
 
     // A built-in type case frees cleanly.
-    void *r = Memory_alloc(TYPE_PROBABLE, 64);
+    any r = Memory_alloc(TYPE_PROBABLE, 64);
     CHECK(r != nullptr);
     c23_free(r);
     CHECK(1);

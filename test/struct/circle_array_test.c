@@ -145,7 +145,7 @@ typedef struct WalkStats {
 
 // Accumulates callback count, coordinate consistency, and payload checksum.
 static void walkCell(i32 gridX, i32 gridY, i32 dx, i32 dy,
-                     const void *element, void *userData) {
+                     const any element, any userData) {
     WalkStats *s = (WalkStats*) userData;
     (*s).count++;
     if (element == nullptr)

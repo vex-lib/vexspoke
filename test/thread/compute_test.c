@@ -45,7 +45,7 @@ static atomic_int g_done_count;
 // Increments the atomic count used to observe job execution.
 // Records that a submitted compute job began running.
 // Increments the atomic counter used to observe job execution.
-static void on_run(void *ctx) {
+static void on_run(any ctx) {
     (void) ctx;
     atomic_fetch_add(&g_run_count, 1);
 }
@@ -53,7 +53,7 @@ static void on_run(void *ctx) {
 // Increments the atomic count used to observe completion callbacks.
 // Records completion of a compute job for the bounded progress check.
 // Increments the atomic counter used to observe job completion callbacks.
-static void on_done(void *ctx) {
+static void on_done(any ctx) {
     (void) ctx;
     atomic_fetch_add(&g_done_count, 1);
 }

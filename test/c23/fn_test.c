@@ -14,14 +14,14 @@ static int g_failures = 0;
         }                                                                  \
     } while (0)
 
-static void *addStep(void *context, void *input) {
+static any addStep(any context, any input) {
     int *step = context;
     int *value = input;
     *value += *step;
     return value;
 }
 
-static void *subtractStep(void *context, void *input) {
+static any subtractStep(any context, any input) {
     int *step = context;
     int *value = input;
     *value -= *step;

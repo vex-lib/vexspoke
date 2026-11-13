@@ -43,7 +43,7 @@
 ;;INCOMPLETE // tick yet (legacy tickComponents — caret blink, scroll inertia).
 ;;INCOMPLETE // Packet drain and lifecycle are fully live.
 
-static void ui_job(Thread *self, void *task) {
+static void ui_job(Thread *self, any task) {
     (void)self;
     if (ComputeJob_run(task)) return;   // a generic job handed to this role
     if (!task)
@@ -55,7 +55,7 @@ Thread *UIThread_invoke(void) {
     return Thread(TYPE_THREAD_UI_SINGLETON, ui_job, 1024, true, false);
 }
 
-bool UIThread_submit(Thread *w, void *packet) {
+bool UIThread_submit(Thread *w, any packet) {
     return Thread_submit(w, packet);
 }
 

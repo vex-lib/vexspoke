@@ -77,7 +77,7 @@ void Crypto_sha1Init(CryptoSha1 *ctx) {
     (*ctx).used = 0u;
 }
 
-void Crypto_sha1Update(CryptoSha1 *ctx, const void *data, bytes len) {
+void Crypto_sha1Update(CryptoSha1 *ctx, const any data, bytes len) {
     if (ctx == nullptr || (data == nullptr && len != 0u)) {
         THROW("Crypto_sha1Update: null input");
         return;
@@ -126,7 +126,7 @@ void Crypto_sha1Final(CryptoSha1 *ctx, u8 outDigest[CRYPTO_SHA1_DIGEST_SIZE]) {
         (*ctx).block[i] = 0u;
 }
 
-void Crypto_sha1(const void *data, bytes len, u8 outDigest[CRYPTO_SHA1_DIGEST_SIZE]) {
+void Crypto_sha1(const any data, bytes len, u8 outDigest[CRYPTO_SHA1_DIGEST_SIZE]) {
     CryptoSha1 ctx;
     Crypto_sha1Init(&ctx);
     Crypto_sha1Update(&ctx, data, len);

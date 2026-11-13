@@ -59,7 +59,7 @@
  * ----------------------------------------------------------------------------
  *   ChunkedList {
  *     Collection collection;     // gate-maintained mirror; quiesced reads only under concurrency
- *     _Atomic(void*) directory;  // current root generation (COW; generations never freed mid-run)
+ *     _Atomic(any) directory;  // current root generation (COW; generations never freed mid-run)
  *     _Atomic u32 chunkCount; // published leaves (lock-free reader bound)
  *     _Atomic u32 committed;  // published rows (lock-free reader bound)
  *     u32 rowsPerChunk;     // rows per leaf (power of two, >= 1; geometry)
@@ -348,7 +348,7 @@ static bool chunkAddLocked(ChunkedList *self) {
     if (newLeaf && leafIndex > 0u) {
         u8 *prev = leafAtRow(self, (leafIndex - 1u) << (*self).rowShift);
         if (prev) {
-            _Atomic(void*) *link = (_Atomic(void*) *) (prev + leafLinkOffset(self));
+            _Atomic(any) *link = (_Atomic(any) *) (prev + leafLinkOffset(self));
             atomic_store_explicit(link, newLeaf, memory_order_release);
         }
     }
@@ -407,7 +407,7 @@ static ChunkedList *buildPaged(u32 elementClass, bytes stride, const u32 *radixI
     if (stride == 0u)
         stride = Stride_get(elementClass);
     if (stride == 0u)
-        stride = sizeof(void*);
+        stride = sizeof(any);
     if (stride > (bytes)UINT32_MAX)
         return nullptr;
 
@@ -470,7 +470,7 @@ ChunkedList *ChunkedList_3(u32 elementClass, u32 stride, u32 chunkBytes) {
     if (stride == 0u)
         stride = Stride_get(elementClass);
     if (stride == 0u)
-        stride = sizeof(void*);
+        stride = sizeof(any);
     if (stride > (bytes)UINT32_MAX)
         return nullptr;
     if (chunkBytes < 16u)
@@ -509,7 +509,7 @@ ChunkedList *ChunkedList_paged(u32 elementClass, u32 stride, const i32 *radices,
     if (stride == 0u)
         stride = (u32) Stride_get(elementClass);
     if (stride == 0u)
-        stride = (u32) sizeof(void*);
+        stride = (u32) sizeof(any);
 
     bytes cap = count > 3u ? count : 3u;
     u32 *shape = (u32*) Memory_alloc(TYPE_CHUNKED_LIST, cap * sizeof(u32));
@@ -663,11 +663,11 @@ u8 *ChunkedList_getChunk(const ChunkedList *self, u32 chunkIndex) {
 u8 *ChunkedList_nextChunk(const ChunkedList *self, const u8 *chunk) {
     if (!self || !chunk)
         return nullptr;
-    const _Atomic(void*) *link = (const _Atomic(void*) *) (chunk + leafLinkOffset(self));
+    const _Atomic(any) *link = (const _Atomic(any) *) (chunk + leafLinkOffset(self));
     return (u8*) atomic_load_explicit(link, memory_order_acquire);
 }
 
-void ChunkedList_forEachChunk(const ChunkedList *self, ChunkedListChunkFn fn, void *userdata) {
+void ChunkedList_forEachChunk(const ChunkedList *self, ChunkedListChunkFn fn, any userdata) {
     if (!self || !fn)
         return;
     u8 *chunk = ChunkedList_getChunk(self, 0u);

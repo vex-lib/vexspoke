@@ -52,17 +52,17 @@ static bytes s_poolCount = 0;
 static _Atomic bytes s_rr = 0;
 
 // The one body every compute worker runs: a popped task is a ComputeJob.
-static void compute_job(Thread *self, void *task) {
+static void compute_job(Thread *self, any task) {
     (void) self;
     ComputeJob_run(task);                    // ignores non-jobs (nullptr, foreign packets)
 }
 
-bool ComputeJob_isJob(const void *task) {
+bool ComputeJob_isJob(const any task) {
     const ComputeJob *job = (const ComputeJob*) task;
     return job != nullptr && (*job).tag == COMPUTE_JOB_TAG;
 }
 
-bool ComputeJob_run(void *task) {
+bool ComputeJob_run(any task) {
     ComputeJob *job = (ComputeJob*) task;
     if (!ComputeJob_isJob(job))
         return false;

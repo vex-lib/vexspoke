@@ -6,7 +6,7 @@
 // objects/choice.h — Immutable deterministic choice / branch dispatcher.
 // Ported from legacy objects/Choice.java.
 
-typedef void (*ChoiceCallback)(u64 objectPtr, void *userdata);
+typedef void (*ChoiceCallback)(u64 objectPtr, any userdata);
 
 typedef struct Choice Choice;
 
@@ -26,6 +26,6 @@ bytes   Choice_length(const Choice *choice);
 u64 Choice_getObject(const Choice *choice, bytes index);
 
 // Trigger the callback associated with choice option 'index'
-void Choice_trigger(const Choice *choice, bytes index, void *userdata);
+void Choice_trigger(const Choice *choice, bytes index, any userdata);
 
 #endif

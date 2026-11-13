@@ -83,20 +83,20 @@ typedef struct HttpExchange {
     bytes bodyLen;
 } HttpExchange;
 
-typedef void (*HttpHandler)(const HttpExchange *exchange, int clientFd, void *userdata);
+typedef void (*HttpHandler)(const HttpExchange *exchange, int clientFd, any userdata);
 
 typedef struct HttpServer {
     int listenFd;
     pthread_t thread;
     volatile bool running;
     HttpHandler handler;
-    void *userdata;
+    any userdata;
 } HttpServer;
 
 // Bind + listen + spawn the accept loop on its own thread. Returns false on
 // socket failure; portOut receives the bound port (use 0 to pick ephemeral).
 bool HttpServer_start(HttpServer *server, int port, HttpHandler handler,
-                      void *userdata, int *portOut);
+                      any userdata, int *portOut);
 
 // Stop accepting and close the listener. In-flight handler finishes.
 void HttpServer_stop(HttpServer *server);

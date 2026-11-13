@@ -20,7 +20,7 @@ static int g_failures = 0;
 int main(void) {
     CHECK(Long_init());
 
-    void *p = Long_alloc();
+    any p = Long_alloc();
     CHECK(p != nullptr);
     CHECK(Long_get(p) == 0);
     CHECK(Long_type(p) == ID_LONG);
@@ -32,11 +32,11 @@ int main(void) {
         CHECK(Long_get(p) == values[i]);
     }
 
-    void *q = Long_allocWithValue(42);
+    any q = Long_allocWithValue(42);
     CHECK(q != nullptr && Long_get(q) == 42);
-    void *r = Long(-7);
+    any r = Long(-7);
     CHECK(r != nullptr && Long_get(r) == -7);
-    void *s = Long_0();
+    any s = Long_0();
     CHECK(s != nullptr && Long_type(s) == ID_LONG);
 
     CHECK(Long_compareAndSet(p, Long_get(p), 999));
@@ -45,7 +45,7 @@ int main(void) {
     CHECK(Long_get(p) == 999);
 
     CHECK(Long_allocArray(0) == nullptr);
-    void *arr = Long_array(8);
+    any arr = Long_array(8);
     CHECK(arr != nullptr);
     CHECK((Long_type(arr) & MASK_CLASS) == ID_LONG);
     CHECK(Long_length(arr) >= 8);

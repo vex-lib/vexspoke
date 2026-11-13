@@ -19,16 +19,16 @@
 
 #define COMPUTE_JOB_TAG 0x434F4D50554A4F42ull   // "COMPUJOB"
 
-typedef void (*ComputeJobFn)(void *ctx);
+typedef void (*ComputeJobFn)(any ctx);
 
 typedef struct ComputeJob {
     u64 tag;        // COMPUTE_JOB_TAG — recognition for any role thread
     ComputeJobFn run;    // the heavy/blocking body (runs on a worker)
-    void *ctx;           // its argument (caller-owned; keep alive until run)
+    any ctx;           // its argument (caller-owned; keep alive until run)
     ComputeJobFn onDone; // optional completion (runs on the same worker)
 } ComputeJob;
 
-static inline ComputeJob ComputeJob_3(ComputeJobFn run, void *context,
+static inline ComputeJob ComputeJob_3(ComputeJobFn run, any context,
                                       ComputeJobFn onDone) {
     return (ComputeJob) { .tag = COMPUTE_JOB_TAG, .run = run,
         .ctx = context, .onDone = onDone };
@@ -37,7 +37,7 @@ static inline ComputeJob ComputeJob_3(ComputeJobFn run, void *context,
 static inline void ComputeJob_setRun(ComputeJob *job, ComputeJobFn run) {
     if (job) (*job).run = run;
 }
-static inline void ComputeJob_setContext(ComputeJob *job, void *context) {
+static inline void ComputeJob_setContext(ComputeJob *job, any context) {
     if (job) (*job).ctx = context;
 }
 static inline void ComputeJob_setOnDone(ComputeJob *job, ComputeJobFn onDone) {
@@ -47,8 +47,8 @@ static inline void ComputeJob_setOnDone(ComputeJob *job, ComputeJobFn onDone) {
 // Recognise / execute a task as a ComputeJob. A role's job calls isJob first;
 // when true it runs the job and returns, so generic work may be dispatched to
 // any established thread (the one-line convention per role).
-bool ComputeJob_isJob(const void *task);
-bool ComputeJob_run(void *task);             // true when handled as a job
+bool ComputeJob_isJob(const any task);
+bool ComputeJob_run(any task);             // true when handled as a job
 
 // A private compute worker (caller owns the handle), created running.
 Thread *ComputeThread_invoke(void);

@@ -9,18 +9,18 @@ extern BitPool g_f64Pool;
 
 bool f64_init(void);
 void f64_shutdown(void);
-void *f64_alloc(void);
-void *f64_allocArray(bytes count);
-void f64_free(void *ptr);
-d64 f64_get(void *ptr);
-void f64_set(void *ptr, d64 value);
-bool f64_compareAndSet(void *ptr, d64 expected, d64 value);
-u64 f64_type(void *ptr);
-bytes f64_length(void *ptr);
+any f64_alloc(void);
+any f64_allocArray(bytes count);
+void f64_free(any ptr);
+d64 f64_get(any ptr);
+void f64_set(any ptr, d64 value);
+bool f64_compareAndSet(any ptr, d64 expected, d64 value);
+u64 f64_type(any ptr);
+bytes f64_length(any ptr);
 
 
 // Ergonomic constructors — d64() and d64(value)
-void *f64_allocWithValue(d64 value);
+any f64_allocWithValue(d64 value);
 #define f64_0(...) f64_alloc()
 #define f64_1(value) f64_allocWithValue(value)
 #define d64(...) CONSTRUCTOR_DISPATCH(d64, __VA_ARGS__)

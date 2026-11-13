@@ -246,7 +246,7 @@ static void consumeGesture(int64_t combo)
 // CONSTRUCTORS
 // ═══════════════════════════════════════════════════════════
 
-KeyMap *KeyMap_1(void *arena)
+KeyMap *KeyMap_1(any arena)
 {
     MemoryArena *a = (MemoryArena*) arena;
     if (a == nullptr)
@@ -384,7 +384,7 @@ bool KeyMap_resolve(const KeyMap *map, int64_t *outCombo)
 // SETTERS
 // ═══════════════════════════════════════════════════════════
 
-bool KeyMap_bind(KeyMap *map, int64_t combo, KeyBindingFn fn, void *userdata)
+bool KeyMap_bind(KeyMap *map, int64_t combo, KeyBindingFn fn, any userdata)
 {
     if (map == nullptr || fn == nullptr)
         return false;

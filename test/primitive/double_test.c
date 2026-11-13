@@ -20,7 +20,7 @@ static int g_failures = 0;
 int main(void) {
     CHECK(f64_init());
 
-    void *p = f64_alloc();
+    any p = f64_alloc();
     CHECK(p != nullptr);
     CHECK(f64_get(p) == 0.0);
     CHECK(f64_type(p) == ID_f64);
@@ -32,11 +32,11 @@ int main(void) {
         CHECK(f64_get(p) == values[i]);
     }
 
-    void *q = f64_allocWithValue(2.5);
+    any q = f64_allocWithValue(2.5);
     CHECK(q != nullptr && f64_get(q) == 2.5);
-    void *r = d64(-1.25);
+    any r = d64(-1.25);
     CHECK(r != nullptr && f64_get(r) == -1.25);
-    void *s = f64_0();
+    any s = f64_0();
     CHECK(s != nullptr && f64_type(s) == ID_f64);
 
     f64_set(p, 1.0);
@@ -46,7 +46,7 @@ int main(void) {
     CHECK(f64_get(p) == 9.0);
 
     CHECK(f64_allocArray(0) == nullptr);
-    void *arr = f64_array(8);
+    any arr = f64_array(8);
     CHECK(arr != nullptr);
     CHECK((f64_type(arr) & MASK_CLASS) == ID_f64);
     CHECK(f64_length(arr) >= 8);

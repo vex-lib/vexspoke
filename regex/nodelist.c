@@ -77,7 +77,7 @@
 
 #define REGEX_NODELIST_SEED_CAPACITY 64u
 
-static void *nodeGrow(void *block, bytes bytes) {
+static any nodeGrow(any block, bytes bytes) {
     if (block)
         return Memory_realloc(block, bytes);
     return Memory_alloc(TYPE_REGEX, bytes);

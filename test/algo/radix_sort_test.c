@@ -47,13 +47,13 @@ static bool sorted_u64(const u64 *a, bytes n) {
 }
 
 /** qsort comparator used as an independent oracle for u32 sorting. */
-static int cmp_u32(const void *a, const void *b) {
+static int cmp_u32(const any a, const any b) {
     u32 x = *(const u32*) a, y = *(const u32*) b;
     return (x > y) - (x < y);
 }
 
 /** qsort comparator used as an independent oracle for u64 sorting. */
-static int cmp_u64(const void *a, const void *b) {
+static int cmp_u64(const any a, const any b) {
     u64 x = *(const u64*) a, y = *(const u64*) b;
     return (x > y) - (x < y);
 }
@@ -75,7 +75,7 @@ static void test_trivial(void) {
     CHECK(big[0] == 0x123456789abcdefull);
 
     u64 keys[1] = { 5 };
-    void *vals[1] = { (void*) (pointer) 9 };
+    any vals[1] = { (any) (pointer) 9 };
     CHECK(Sort_radixSortPairsUint64(keys, vals, 1u));
     CHECK(keys[0] == 5 && (pointer) vals[0] == 9);
 
@@ -142,9 +142,9 @@ static void test_pairs(void) {
     // tags of equal keys keep their original relative order.
     u64 keys[]      = { 5, 1, 5, 3, 1, 5, 0, 3 };
     pointer tags[]     = { 50, 11, 51, 31, 12, 52, 70, 32 };
-    void *vals[8];
+    any vals[8];
     for (int i = 0; i < 8; i++)
-        vals[i] = (void*) tags[i];
+        vals[i] = (any) tags[i];
 
     CHECK(Sort_radixSortPairsUint64(keys, vals, 8u));
     CHECK(sorted_u64(keys, 8));

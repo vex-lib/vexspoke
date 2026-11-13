@@ -32,11 +32,11 @@ static Reactive *g_self;
 static ReactiveChangedFn g_changedFnA;
 
 // Counts delivery to the first onSet observer.
-static void onSetA(Reactive *r, pointer v, void *ud) { (void) r; (void) v; (void) ud; g_setA++; }
+static void onSetA(Reactive *r, pointer v, any ud) { (void) r; (void) v; (void) ud; g_setA++; }
 // Counts delivery to the second onSet observer.
-static void onSetB(Reactive *r, pointer v, void *ud) { (void) r; (void) v; (void) ud; g_setB++; }
+static void onSetB(Reactive *r, pointer v, any ud) { (void) r; (void) v; (void) ud; g_setB++; }
 // Counts changed notifications and removes observer A during dispatch to test safe mutation.
-static void onChangedA(Reactive *r, pointer o, pointer n, void *ud) {
+static void onChangedA(Reactive *r, pointer o, pointer n, any ud) {
     (void) o; (void) n; (void) ud;
     g_changedA++;
     // mid-fire removal: A removes itself; the fire must stay safe.
@@ -44,13 +44,13 @@ static void onChangedA(Reactive *r, pointer o, pointer n, void *ud) {
         Reactive_removeOnChanged(r, g_changedFnA, nullptr);
 }
 // Counts delivery to the second onChanged observer.
-static void onChangedB(Reactive *r, pointer o, pointer n, void *ud) { (void) r; (void) o; (void) n; (void) ud; g_changedB++; }
+static void onChangedB(Reactive *r, pointer o, pointer n, any ud) { (void) r; (void) o; (void) n; (void) ud; g_changedB++; }
 
 // A writer thread: hammer the reactive from a foreign thread. Must never fire an
 // observer there — it only stores + marks dirty.
 typedef struct SetterArg { Reactive *r; u64 n; } SetterArg;
 // Writes a sequence from a worker thread; observer delivery is left to the owner drain.
-static void *setterLoop(void *arg) {
+static any setterLoop(any arg) {
     SetterArg *a = (SetterArg*) arg;
     for (u64 i = 1; i <= (*a).n; i++)
         Reactive_set((*a).r, i);

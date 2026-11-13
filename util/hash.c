@@ -53,7 +53,7 @@ u64 Hash_fnv1a64(const u8 *data, bytes length) {
 }
 
 // Mixes a pointer's integer representation into a 64-bit hash.
-u64 Hash_pointer(const void *p) {
+u64 Hash_pointer(const any p) {
     return Hash_murmur3Mix64((u64) (pointer) p);
 }
 

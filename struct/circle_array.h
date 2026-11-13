@@ -34,19 +34,19 @@ int64_t CircleArray_distanceSquaredGrid(const CircleArray *self, i32 gridX, i32 
 int64_t CircleArray_distanceSquaredOffset(i32 dx, i32 dy);
 
 // Cell access by grid coordinates [0, diameter - 1] (get output first, set input last)
-bool CircleArray_getGrid(void *dest, const CircleArray *self, i32 gridX, i32 gridY);
-bool CircleArray_setGrid(CircleArray *self, i32 gridX, i32 gridY, const void *src);
+bool CircleArray_getGrid(any dest, const CircleArray *self, i32 gridX, i32 gridY);
+bool CircleArray_setGrid(CircleArray *self, i32 gridX, i32 gridY, const any src);
 
 // Cell access by center-relative offsets [-radius, radius]
-bool CircleArray_getOffset(void *dest, const CircleArray *self, i32 dx, i32 dy);
-bool CircleArray_setOffset(CircleArray *self, i32 dx, i32 dy, const void *src);
+bool CircleArray_getOffset(any dest, const CircleArray *self, i32 dx, i32 dy);
+bool CircleArray_setOffset(CircleArray *self, i32 dx, i32 dy, const any src);
 
 // Raw pointer to cell slot inside circular matrix (nullptr if outside circle or bounds)
 u8 *CircleArray_slotGrid(CircleArray *self, i32 gridX, i32 gridY);
 u8 *CircleArray_slotOffset(CircleArray *self, i32 dx, i32 dy);
 
 // Iteration callback across all valid circular cells
-typedef void (*CircleArrayCellFn)(i32 gridX, i32 gridY, i32 dx, i32 dy, const void *element, void *userData);
-void CircleArray_forEach(const CircleArray *self, CircleArrayCellFn callback, void *userData);
+typedef void (*CircleArrayCellFn)(i32 gridX, i32 gridY, i32 dx, i32 dy, const any element, any userData);
+void CircleArray_forEach(const CircleArray *self, CircleArrayCellFn callback, any userData);
 
 #endif

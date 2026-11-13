@@ -20,7 +20,7 @@ static int g_failures = 0;
 int main(void) {
     CHECK(Bool_init());
 
-    void *p = Bool_alloc();
+    any p = Bool_alloc();
     CHECK(p != nullptr);
     CHECK(Bool_get(p) == false);
     CHECK(Bool_type(p) == ID_BOOL);
@@ -31,11 +31,11 @@ int main(void) {
     Bool_set(p, false);
     CHECK(Bool_get(p) == false);
 
-    void *q = Bool_allocWithValue(true);
+    any q = Bool_allocWithValue(true);
     CHECK(q != nullptr && Bool_get(q) == true);
-    void *r = Bool(true);
+    any r = Bool(true);
     CHECK(r != nullptr && Bool_get(r) == true);
-    void *s = Bool_0();
+    any s = Bool_0();
     CHECK(s != nullptr && Bool_type(s) == ID_BOOL);
 
     Bool_set(p, false);
@@ -45,7 +45,7 @@ int main(void) {
     CHECK(Bool_get(p) == true);
 
     CHECK(Bool_allocArray(0) == nullptr);
-    void *arr = Bool_array(8);
+    any arr = Bool_array(8);
     CHECK(arr != nullptr);
     CHECK((Bool_type(arr) & MASK_CLASS) == ID_BOOL);
     CHECK(Bool_length(arr) >= 8);

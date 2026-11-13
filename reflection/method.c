@@ -35,7 +35,7 @@
  *   Method {
  *     char name[24];  // folded name (atom grammar)
  *     MethodFn invoke; // the callable
- *     void *target;   // the owner / default receiver
+ *     any target;   // the owner / default receiver
  *   }
  *
  * PRIVATE HELPERS (kept file-local, pure logic, no behavior of their own): none.
@@ -52,7 +52,7 @@
 
 // CONSTRUCTORS
 
-bool Method_init(Method *self, const char *name, MethodFn invoke, void *target) {
+bool Method_init(Method *self, const char *name, MethodFn invoke, any target) {
     if (self == nullptr)
         return false;
     char folded[REFLECT_METHOD_NAME_BYTES];
@@ -81,7 +81,7 @@ Method *Method_2(const char *name, MethodFn invoke) {
     return Method_3(name, invoke, nullptr);
 }
 
-Method *Method_3(const char *name, MethodFn invoke, void *target) {
+Method *Method_3(const char *name, MethodFn invoke, any target) {
     Method *self = Method_0();
     if (self == nullptr)
         return nullptr;
@@ -102,16 +102,16 @@ void Method_free(Method *self) {
 u64 Method_kind(const Method *self) {
     if (self == nullptr)
         return 0u;
-    return Memory_type((void*) self);
+    return Memory_type((any) self);
 }
 
 bool Method_check(const Method *self, u64 typeId) {
     if (self == nullptr)
         return false;
-    return Memory_type((void*) self) == typeId;
+    return Memory_type((any) self) == typeId;
 }
 
-void *Method_call(Method *self, void *arg) {
+any Method_call(Method *self, any arg) {
     if (self == nullptr || (*self).invoke == nullptr)
         return nullptr;
     return (*self).invoke(arg);
@@ -136,7 +136,7 @@ void Method_setInvoke(Method *self, MethodFn invoke) {
     (*self).invoke = invoke;
 }
 
-void Method_setTarget(Method *self, void *target) {
+void Method_setTarget(Method *self, any target) {
     if (self == nullptr)
         return;
     (*self).target = target;
@@ -154,7 +154,7 @@ MethodFn Method_getInvoke(const Method *self) {
     return (*self).invoke;
 }
 
-void *Method_getTarget(const Method *self) {
+any Method_getTarget(const Method *self) {
     if (self == nullptr)
         return nullptr;
     return (*self).target;

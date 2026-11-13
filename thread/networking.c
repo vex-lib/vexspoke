@@ -48,7 +48,7 @@
 
 static Thread *s_core = nullptr;
 
-static void networking_job(Thread *self, void *task) {
+static void networking_job(Thread *self, any task) {
     (void)self;
     if (ComputeJob_run(task)) return;   // a generic job handed to this role
     (void)task; // TODO(net): PollRequest_executeAll(batch) once ported.
@@ -66,7 +66,7 @@ Thread *NetworkingThread_core(void) {
     return s_core;
 }
 
-bool NetworkingThread_submit(Thread *w, void *batch) {
+bool NetworkingThread_submit(Thread *w, any batch) {
     return Thread_submit(w, batch);
 }
 

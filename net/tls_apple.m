@@ -48,7 +48,7 @@
  * ----------------------------------------------------------------------------
  *   TlsConn {
  *     int backend;   // TLS_BACKEND_APPLE for every connection made here
- *     void *opaque;  // __bridge_retained VexTlsSession (released by Tls_close)
+ *     any opaque;  // __bridge_retained VexTlsSession (released by Tls_close)
  *   }
  *
  * PRIVATE HELPER RECORD (file-local, Objective-C; never exposed):
@@ -162,7 +162,7 @@ static bool vexWaitForReady(nw_connection_t connection, dispatch_queue_t queue,
  * sends its HELLO the moment the upgrade lands) and fatal on a peer which waits
  * for us.
  */
-static bool vexSendBounded(nw_connection_t connection, const void *bytes,
+static bool vexSendBounded(nw_connection_t connection, const any bytes,
                            bytes length, u32 timeoutMs) {
     dispatch_data_t payload = dispatch_data_create(bytes, length, nullptr,
                                                    DISPATCH_DATA_DESTRUCTOR_DEFAULT);
@@ -202,7 +202,7 @@ static void vexArmRead(VexTlsSession *session) {
             if (error == nullptr && content != nullptr) {
                 __block bytes got = 0u;
                 dispatch_data_apply(content, ^bool(dispatch_data_t region, bytes offset,
-                                                   const void *buffer, bytes size) {
+                                                   const any buffer, bytes size) {
                     (void) region;
                     if (offset + size > VEX_TLS_READ_BYTES)
                         return false;
@@ -311,7 +311,7 @@ bool Tls_connect(const char *host, int port, TlsConn **connOut) {
             return false;
         }
         (*conn).backend = (int) TLS_BACKEND_APPLE;
-        (*conn).opaque = (__bridge_retained void*) session; // released by Tls_close
+        (*conn).opaque = (__bridge_retained any) session; // released by Tls_close
         s_lastBackend = TLS_BACKEND_APPLE;
         *connOut = conn;
     }

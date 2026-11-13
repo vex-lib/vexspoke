@@ -14,7 +14,7 @@
 #define DRAW_ROLE_USER   4 // start of user-generated registers
 
 Thread *DrawThread_invokeRole(int role);
-bool DrawThread_submitTo(int role, void *task);
+bool DrawThread_submitTo(int role, any task);
 void DrawThread_stopAll(void);
 void DrawThread_stopAll(void);
 void DrawThread_freeAll(void);

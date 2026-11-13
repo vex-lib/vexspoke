@@ -39,12 +39,12 @@ bool Blake2b_init(Blake2b *self, bytes outlen);
 bool Blake2b_initKeyed(Blake2b *self, bytes outlen, const u8 *key, bytes keylen);
 
 // Absorb `len` bytes. A null self is a no-op; null data with a nonzero len rejects.
-void Blake2b_update(Blake2b *self, const void *data, bytes len);
+void Blake2b_update(Blake2b *self, const any data, bytes len);
 // Write (*self).outlen bytes into out. False (with THROW) when out is null or
 // outCap is shorter than outlen. Zeroes the context on success.
 bool Blake2b_final(Blake2b *self, u8 *out, bytes outCap);
 
 // One-shot unkeyed digest of `data` (outCap must be >= outlen).
-bool Blake2b_digest(const void *data, bytes len, bytes outlen, u8 *out, bytes outCap);
+bool Blake2b_digest(const any data, bytes len, bytes outlen, u8 *out, bytes outCap);
 
 #endif

@@ -63,7 +63,7 @@ static Map *queued(void) {
 // One pass: pop a box, forget it is queued, drain it. Dropping the queued entry
 // BEFORE the drain lets a callback that re-wakes the same box queue it for the
 // NEXT pass (coalesced, and never a same-stack re-entry).
-static void reactive_job(Thread *self, void *task) {
+static void reactive_job(Thread *self, any task) {
     (void) self;
     if (task == nullptr)
         return;                              // no idle work: this worker only acts when nudged

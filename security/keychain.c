@@ -89,8 +89,8 @@ KeychainCode Keychain_store(const char *service, const char *account,
         THROW("Keychain_store: could not build the query");
         return KEYCHAIN_FULL;
     }
-    const void *keys[] = { kSecClass, kSecAttrService, kSecAttrAccount, kSecValueData };
-    const void *values[] = { kSecClassGenericPassword, svc, acct, data };
+    const any keys[] = { kSecClass, kSecAttrService, kSecAttrAccount, kSecValueData };
+    const any values[] = { kSecClassGenericPassword, svc, acct, data };
     CFDictionaryRef query = CFDictionaryCreate(nullptr, keys, values, 4,
                                               &kCFTypeDictionaryKeyCallBacks,
                                               &kCFTypeDictionaryValueCallBacks);
@@ -125,8 +125,8 @@ KeychainCode Keychain_load(const char *service, const char *account,
         if (acct != nullptr) CFRelease(acct);
         return KEYCHAIN_FULL;
     }
-    const void *keys[] = { kSecClass, kSecAttrService, kSecAttrAccount, kSecReturnData, kSecMatchLimit };
-    const void *values[] = { kSecClassGenericPassword, svc, acct, kCFBooleanTrue, kSecMatchLimitOne };
+    const any keys[] = { kSecClass, kSecAttrService, kSecAttrAccount, kSecReturnData, kSecMatchLimit };
+    const any values[] = { kSecClassGenericPassword, svc, acct, kCFBooleanTrue, kSecMatchLimitOne };
     CFDictionaryRef query = CFDictionaryCreate(nullptr, keys, values, 5,
                                               &kCFTypeDictionaryKeyCallBacks,
                                               &kCFTypeDictionaryValueCallBacks);
@@ -166,8 +166,8 @@ KeychainCode Keychain_remove(const char *service, const char *account) {
         if (acct != nullptr) CFRelease(acct);
         return KEYCHAIN_FULL;
     }
-    const void *keys[] = { kSecClass, kSecAttrService, kSecAttrAccount };
-    const void *values[] = { kSecClassGenericPassword, svc, acct };
+    const any keys[] = { kSecClass, kSecAttrService, kSecAttrAccount };
+    const any values[] = { kSecClassGenericPassword, svc, acct };
     CFDictionaryRef query = CFDictionaryCreate(nullptr, keys, values, 3,
                                               &kCFTypeDictionaryKeyCallBacks,
                                               &kCFTypeDictionaryValueCallBacks);

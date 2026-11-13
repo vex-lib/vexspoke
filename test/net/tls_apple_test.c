@@ -127,7 +127,7 @@ int main(void) {
     TlsConn forged = { .backend = (int) TLS_BACKEND_APPLE, .opaque = nullptr };
     CHECK(!Tls_send(&forged, "x", 1u));
     CHECK(!Tls_recv(&forged, buffer, sizeof(buffer), &got));
-    TlsConn mislabelled = { .backend = (int) TLS_BACKEND_CURL, .opaque = (void*) &forged };
+    TlsConn mislabelled = { .backend = (int) TLS_BACKEND_CURL, .opaque = (any) &forged };
     CHECK(!Tls_send(&mislabelled, "x", 1u)); // wrong backend tag is refused
 
     printf("%d checks, %d failed\n", g_checks, g_failures);

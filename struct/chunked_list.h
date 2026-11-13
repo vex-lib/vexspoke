@@ -111,7 +111,7 @@ typedef struct ChunkedList {
     // --- ChunkedList core (embed-first: a ChunkedList* is a Collection*) ---
     Collection collection;     // gate-maintained mirror; quiesced reads only under concurrency
     // --- ChunkedList paging part (radix page table; rows never move) ---
-    _Atomic(void*) directory;  // current root generation (COW; generations never freed mid-run)
+    _Atomic(any) directory;  // current root generation (COW; generations never freed mid-run)
     _Atomic u32 chunkCount; // published leaves (lock-free reader bound)
     _Atomic u32 committed;  // published rows (lock-free reader bound)
     u32 rowsPerChunk;     // rows per leaf (power of two, >= 1; geometry)
@@ -139,7 +139,7 @@ ChunkedList *ChunkedList_3(u32 elementClass, u32 stride, u32 chunkBytes);
 //   CHUNKED_LIST_TWO_LAYER_DEFAULT   -> { rootInit, pageLeaf }
 //   CHUNKED_LIST_THREE_LAYER_DEFAULT -> { rootInit, internal, pageLeaf }
 // Non-power-of-two radices are rounded DOWN to a power of two (min 1). `stride`
-// 0 falls back to Stride_get(elementClass), then sizeof(void*). Page leaf =
+// 0 falls back to Stride_get(elementClass), then sizeof(any). Page leaf =
 // largest power of two <= VEX_CHUNKED_PAGE_BYTES / stride.
 ChunkedList *ChunkedList_paged(u32 elementClass, u32 stride, const i32 *radices, bytes count);
 
@@ -178,8 +178,8 @@ u8 *ChunkedList_getChunk(const ChunkedList *self, u32 chunkIndex);
 u8 *ChunkedList_nextChunk(const ChunkedList *self, const u8 *chunk);
 // Walk every published leaf in chain order. Lock-free; safe concurrently with
 // writers (visits a prefix of the published leaves).
-typedef void (*ChunkedListChunkFn)(u8 *chunk, u32 chunkIndex, void *userdata);
-void ChunkedList_forEachChunk(const ChunkedList *self, ChunkedListChunkFn fn, void *userdata);
+typedef void (*ChunkedListChunkFn)(u8 *chunk, u32 chunkIndex, any userdata);
+void ChunkedList_forEachChunk(const ChunkedList *self, ChunkedListChunkFn fn, any userdata);
 
 // Setters
 // Byte budget for the leaf. Setup-time only: never concurrently with any other

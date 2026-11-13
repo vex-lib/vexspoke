@@ -21,7 +21,7 @@
 #define REFLECT_CLASS_NAME_MAX VARIABLE_SLOT_NAME_MAX
 #define REFLECT_CLASS_METHOD_NONE UINT32_MAX
 
-typedef void *(*ClassConstructFn)(void*);
+typedef any (*ClassConstructFn)(any);
 
 typedef struct Class {
     char name[REFLECT_CLASS_NAME_BYTES]; // folded name (atom grammar)
@@ -44,7 +44,7 @@ void Class_free(Class *self);
 
 u64 Class_kind(const Class *self);
 bool Class_check(const Class *self, u64 typeId);
-void *Class_construct(Class *self, void *arg);
+any Class_construct(Class *self, any arg);
 
 // The class's field layout (borrowed; may be null).
 Struct *Class_getLayout(const Class *self);
@@ -56,8 +56,8 @@ void Class_setConstruct(Class *self, ClassConstructFn construct);
 u32 Class_addMethod(Class *self, const Method *method);
 Method *Class_getMethod(const Class *self, u32 index);
 u32 Class_methodCount(const Class *self);
-typedef void (*ClassMethodVisitFn)(Method *method, u32 index, void *userdata);
-void Class_forEachMethod(Class *self, ClassMethodVisitFn fn, void *userdata);
+typedef void (*ClassMethodVisitFn)(Method *method, u32 index, any userdata);
+void Class_forEachMethod(Class *self, ClassMethodVisitFn fn, any userdata);
 
 bool Class_setName(Class *self, const char *name);
 const char *Class_getName(const Class *self);

@@ -10,7 +10,7 @@
 // no packets arrive.
 
 Thread *EventThread_invoke(void);
-bool EventThread_submit(Thread *w, void *packet);
+bool EventThread_submit(Thread *w, any packet);
 void EventThread_stop(Thread *w);
 void EventThread_free(Thread *w);
 

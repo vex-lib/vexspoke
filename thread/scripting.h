@@ -9,7 +9,7 @@
 // no idle ticking.
 
 Thread *ScriptingThread_invoke(void);
-bool ScriptingThread_submit(Thread *w, void *task);
+bool ScriptingThread_submit(Thread *w, any task);
 void ScriptingThread_stop(Thread *w);
 void ScriptingThread_free(Thread *w);
 

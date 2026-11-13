@@ -19,13 +19,13 @@ static int g_failures = 0;
         }                                                                    \
     } while (0)
 
-static int compareUint64(const void *left, const void *right) {
+static int compareUint64(const any left, const any right) {
     u64 a = *(const u64*) left;
     u64 b = *(const u64*) right;
     return (a > b) - (a < b);
 }
 
-static int compareInt32(const void *left, const void *right) {
+static int compareInt32(const any left, const any right) {
     i32 a = *(const i32*) left;
     i32 b = *(const i32*) right;
     return (a > b) - (a < b);
@@ -36,13 +36,13 @@ typedef struct StableItem {
     u32 sequence;
 } StableItem;
 
-static int compareStableItem(const void *left, const void *right) {
+static int compareStableItem(const any left, const any right) {
     const StableItem *a = left;
     const StableItem *b = right;
     return ((*a).key > (*b).key) - ((*a).key < (*b).key);
 }
 
-typedef bool (*SortFunction)(void *, bytes, bytes, SortCompareFn);
+typedef bool (*SortFunction)(any , bytes, bytes, SortCompareFn);
 
 static bool isSortedUint64(const u64 *values, bytes count) {
     for (bytes i = 1u; i < count; ++i)

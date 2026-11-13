@@ -64,11 +64,11 @@ void f64_shutdown(void) {
     BitPool_shutdown(&g_f64Pool);
 }
 
-void *f64_alloc(void) {
+any f64_alloc(void) {
     return BitPool_alloc(&g_f64Pool, ID_f64);
 }
 
-void *f64_allocArray(bytes count) {
+any f64_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
@@ -80,26 +80,26 @@ void *f64_allocArray(bytes count) {
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_f64), Bytes);
 }
 
-void f64_free(void *ptr) {
+void f64_free(any ptr) {
     if (!ptr)
         return;
     if (BitPool_contains(&g_f64Pool, ptr)) BitPool_free(&g_f64Pool, ptr);
     else Memory_free(ptr);
 }
 
-d64 f64_get(void *ptr) {
+d64 f64_get(any ptr) {
     if (!ptr)
         return (d64) 0;
     return *(d64*) ptr;
 }
 
-void f64_set(void *ptr, d64 value) {
+void f64_set(any ptr, d64 value) {
     if (!ptr)
         return;
     *(d64*) ptr = value;
 }
 
-bool f64_compareAndSet(void *ptr, d64 expected, d64 value) {
+bool f64_compareAndSet(any ptr, d64 expected, d64 value) {
     if (!ptr)
         return false;
     int64_t expBits;
@@ -109,22 +109,22 @@ bool f64_compareAndSet(void *ptr, d64 expected, d64 value) {
     return __atomic_compare_exchange_n((int64_t*) ptr, &expBits, valBits, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
-u64 f64_type(void *ptr) {
+u64 f64_type(any ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_f64Pool, ptr)) return BitPool_type(&g_f64Pool, ptr);
     return Memory_type(ptr);
 }
 
-bytes f64_length(void *ptr) {
+bytes f64_length(any ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_f64Pool, ptr)) return BitPool_length(&g_f64Pool, ptr);
     return Memory_length(ptr);
 }
 
-void *f64_allocWithValue(d64 value) {
-    void *ptr = f64_alloc();
+any f64_allocWithValue(d64 value) {
+    any ptr = f64_alloc();
     if (ptr) f64_set(ptr, value);
     return ptr;
 }

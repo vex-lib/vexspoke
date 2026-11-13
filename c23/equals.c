@@ -34,21 +34,21 @@
  */
 
 // Compares identity first, then matching block type, length, and payload bytes.
-bool isEqual(const void *a, const void *b) {
+bool isEqual(const any a, const any b) {
     if (a == b)
         return true;
     if (!a || !b)
         return false;
 
-    u64 ta = Memory_type((void*) a);
-    u64 tb = Memory_type((void*) b);
+    u64 ta = Memory_type((any) a);
+    u64 tb = Memory_type((any) b);
     if (ta == 0 || tb == 0)
         return false;
     if (ta != tb)
         return false;
 
-    bytes la = Memory_length((void*) a);
-    bytes lb = Memory_length((void*) b);
+    bytes la = Memory_length((any) a);
+    bytes lb = Memory_length((any) b);
     if (la != lb)
         return false;
 
@@ -67,7 +67,7 @@ bool isEquallyNamed(struct SymbolTable *v, const char *nameA, const char *nameB)
         return false;
     if (SymbolTable_getClassId(v, idA) != SymbolTable_getClassId(v, idB))
         return false;
-    const void *pa = (const void*) SymbolTable_getPointer(v, idA);
-    const void *pb = (const void*) SymbolTable_getPointer(v, idB);
+    const any pa = (const any) SymbolTable_getPointer(v, idA);
+    const any pb = (const any) SymbolTable_getPointer(v, idB);
     return isEqual(pa, pb);
 }

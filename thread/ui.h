@@ -9,7 +9,7 @@
 // queue. tickWhenIdle is on so components animate even with no packets.
 
 Thread *UIThread_invoke(void);
-bool UIThread_submit(Thread *w, void *packet);
+bool UIThread_submit(Thread *w, any packet);
 void UIThread_stop(Thread *w);
 void UIThread_free(Thread *w);
 

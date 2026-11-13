@@ -27,14 +27,14 @@ static int g_fires = 0;
 static int64_t g_firedCombo = 0;
 
 // Records the most recent combo delivered by a KeyMap binding.
-static void onFire(void *userdata, int64_t combo) {
+static void onFire(any userdata, int64_t combo) {
     (void) userdata;
     g_fires++;
     g_firedCombo = combo;
 }
 
 // Adds a distinct callback marker to verify replacement and dispatch routing.
-static void onFire2(void *userdata, int64_t combo) {
+static void onFire2(any userdata, int64_t combo) {
     (void) userdata;
     (void) combo;
     g_fires += 10;
@@ -121,12 +121,12 @@ static void test_bind_replaces(void) {
     CHECK(KeyMap_count(map) == 1);
 
     // Rebind same combo + same function: updates userdata
-    CHECK(KeyMap_bind(map, combo, onFire, (void*) 0x1234));
+    CHECK(KeyMap_bind(map, combo, onFire, (any) 0x1234));
     CHECK(KeyMap_count(map) == 1);  // no duplicate
 
     const KeyBinding *hit = KeyMap_match(map, combo);
     CHECK(hit != nullptr);
-    CHECK((*hit).userdata == (void*) 0x1234);
+    CHECK((*hit).userdata == (any) 0x1234);
 
     KeyMap_destroy(map);
     MemoryArena_destroy(arena);
@@ -274,7 +274,7 @@ static int g_fireCount = 0;
 static int64_t g_fireCombo = -1;
 
 // Records callback count and resolved combo for gesture-resolution cases.
-static void onResolveFire(void *userdata, int64_t combo) {
+static void onResolveFire(any userdata, int64_t combo) {
     g_fireCount++;
     g_fireCombo = combo;
     (void) userdata;

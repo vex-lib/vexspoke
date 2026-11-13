@@ -63,11 +63,11 @@ void Fixed64_shutdown(void) {
     BitPool_shutdown(&g_fixed64Pool);
 }
 
-void *Fixed64_alloc(void) {
+any Fixed64_alloc(void) {
     return BitPool_alloc(&g_fixed64Pool, ID_FIXED64);
 }
 
-void *Fixed64_allocArray(bytes count) {
+any Fixed64_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
@@ -79,48 +79,48 @@ void *Fixed64_allocArray(bytes count) {
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_FIXED64), Bytes);
 }
 
-void Fixed64_free(void *ptr) {
+void Fixed64_free(any ptr) {
     if (!ptr)
         return;
     if (BitPool_contains(&g_fixed64Pool, ptr)) BitPool_free(&g_fixed64Pool, ptr);
     else Memory_free(ptr);
 }
 
-int64_t Fixed64_get(void *ptr) {
+int64_t Fixed64_get(any ptr) {
     if (!ptr)
         return (int64_t) 0;
     return *(int64_t*) ptr;
 }
 
-void Fixed64_set(void *ptr, int64_t value) {
+void Fixed64_set(any ptr, int64_t value) {
     if (!ptr)
         return;
     *(int64_t*) ptr = value;
 }
 
-bool Fixed64_compareAndSet(void *ptr, int64_t expected, int64_t value) {
+bool Fixed64_compareAndSet(any ptr, int64_t expected, int64_t value) {
     if (!ptr)
         return false;
     // fallback to simple CAS via __atomic_compare_exchange
     return __atomic_compare_exchange_n((int64_t*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
-u64 Fixed64_type(void *ptr) {
+u64 Fixed64_type(any ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_fixed64Pool, ptr)) return BitPool_type(&g_fixed64Pool, ptr);
     return Memory_type(ptr);
 }
 
-bytes Fixed64_length(void *ptr) {
+bytes Fixed64_length(any ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_fixed64Pool, ptr)) return BitPool_length(&g_fixed64Pool, ptr);
     return Memory_length(ptr);
 }
 
-void *Fixed64_allocWithValue(int64_t value) {
-    void *ptr = Fixed64_alloc();
+any Fixed64_allocWithValue(int64_t value) {
+    any ptr = Fixed64_alloc();
     if (ptr) Fixed64_set(ptr, value);
     return ptr;
 }

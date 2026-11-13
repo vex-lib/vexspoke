@@ -52,7 +52,7 @@ static void onObjectChanged(Vec3 *value) { g_objectValue = value; }
 static void onProbableChanged(i32 value) { g_probableValue = value; }
 
 // Records typed integer change notifications and their old/new payloads.
-static void onChangedInt(Reactive *r, pointer o, pointer n, void *ud) {
+static void onChangedInt(Reactive *r, pointer o, pointer n, any ud) {
     (void) r;
     (void) ud;
     g_changed++;
@@ -61,7 +61,7 @@ static void onChangedInt(Reactive *r, pointer o, pointer n, void *ud) {
 }
 
 // Counts typed integer onSet notifications.
-static void onSetInt(Reactive *r, pointer v, void *ud) {
+static void onSetInt(Reactive *r, pointer v, any ud) {
     (void) r;
     (void) v;
     (void) ud;

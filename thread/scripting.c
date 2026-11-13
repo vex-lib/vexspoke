@@ -42,7 +42,7 @@
 ;;INCOMPLETE // Script executor port: tasks are dequeued and dropped until the
 ;;INCOMPLETE // scripting surface lands. Queue and lifecycle are fully live.
 
-static void scripting_job(Thread *self, void *task) {
+static void scripting_job(Thread *self, any task) {
     (void)self;
     if (ComputeJob_run(task)) return;   // a generic job handed to this role
     (void)task; // TODO(lang): execute(task) once the script surface lands.
@@ -53,7 +53,7 @@ Thread *ScriptingThread_invoke(void) {
                       1024, false, false);
 }
 
-bool ScriptingThread_submit(Thread *w, void *task) {
+bool ScriptingThread_submit(Thread *w, any task) {
     return Thread_submit(w, task);
 }
 

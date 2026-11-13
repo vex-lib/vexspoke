@@ -113,7 +113,7 @@ u64 Choice_getObject(const Choice *choice, bytes index) {
 }
 
 // Invokes the selected option callback with its object payload and userdata.
-void Choice_trigger(const Choice *choice, bytes index, void *userdata) {
+void Choice_trigger(const Choice *choice, bytes index, any userdata) {
     if (!choice || index >= (*choice).count)
         return;
     ChoiceCallback cb = (*choice).slots[index].callback;

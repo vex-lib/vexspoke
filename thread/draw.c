@@ -67,7 +67,7 @@ static Thread *roleWorker(int role) {
     return nullptr;
 }
 
-static void draw_job(Thread *self, void *task) {
+static void draw_job(Thread *self, any task) {
     (void)self;
     if (ComputeJob_run(task)) return;   // a generic job handed to this role
     if (!task)
@@ -91,7 +91,7 @@ Thread *DrawThread_invokeRole(int role) {
     return nullptr;
 }
 
-bool DrawThread_submitTo(int role, void *task) {
+bool DrawThread_submitTo(int role, any task) {
     Thread *w = roleWorker(role);
     return w && Thread_submit(w, task);
 }

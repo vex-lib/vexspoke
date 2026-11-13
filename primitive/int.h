@@ -9,18 +9,18 @@ extern BitPool g_intPool;
 
 bool Int_init(void);
 void Int_shutdown(void);
-void *Int_alloc(void);
-void *Int_allocArray(bytes count);
-void Int_free(void *ptr);
-i32 Int_get(void *ptr);
-void Int_set(void *ptr, i32 value);
-bool Int_compareAndSet(void *ptr, i32 expected, i32 value);
-u64 Int_type(void *ptr);
-bytes Int_length(void *ptr);
+any Int_alloc(void);
+any Int_allocArray(bytes count);
+void Int_free(any ptr);
+i32 Int_get(any ptr);
+void Int_set(any ptr, i32 value);
+bool Int_compareAndSet(any ptr, i32 expected, i32 value);
+u64 Int_type(any ptr);
+bytes Int_length(any ptr);
 
 
 // Ergonomic constructors — Int() and Int(value)
-void *Int_allocWithValue(i32 value);
+any Int_allocWithValue(i32 value);
 #define Int_0(...) Int_alloc()
 #define Int_1(value) Int_allocWithValue(value)
 #define Int(...) CONSTRUCTOR_DISPATCH(Int, __VA_ARGS__)

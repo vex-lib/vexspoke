@@ -35,7 +35,7 @@
  *   Variable {
  *     char name[24];      // folded name (atom grammar)
  *     VariableReadFn read; // the reader
- *     void *target;       // the value / owner
+ *     any target;       // the value / owner
  *   }
  *
  * PRIVATE HELPERS (kept file-local, pure logic, no behavior of their own): none.
@@ -52,7 +52,7 @@
 
 // CONSTRUCTORS
 
-bool Variable_init(Variable *self, const char *name, VariableReadFn read, void *target) {
+bool Variable_init(Variable *self, const char *name, VariableReadFn read, any target) {
     if (self == nullptr)
         return false;
     char folded[REFLECT_VARIABLE_NAME_BYTES];
@@ -81,7 +81,7 @@ Variable *Variable_2(const char *name, VariableReadFn read) {
     return Variable_3(name, read, nullptr);
 }
 
-Variable *Variable_3(const char *name, VariableReadFn read, void *target) {
+Variable *Variable_3(const char *name, VariableReadFn read, any target) {
     Variable *self = Variable_0();
     if (self == nullptr)
         return nullptr;
@@ -102,16 +102,16 @@ void Variable_free(Variable *self) {
 u64 Variable_kind(const Variable *self) {
     if (self == nullptr)
         return 0u;
-    return Memory_type((void*) self);
+    return Memory_type((any) self);
 }
 
 bool Variable_check(const Variable *self, u64 typeId) {
     if (self == nullptr)
         return false;
-    return Memory_type((void*) self) == typeId;
+    return Memory_type((any) self) == typeId;
 }
 
-void *Variable_read(Variable *self, void *arg) {
+any Variable_read(Variable *self, any arg) {
     if (self == nullptr || (*self).read == nullptr)
         return nullptr;
     return (*self).read(arg);
@@ -136,7 +136,7 @@ void Variable_setRead(Variable *self, VariableReadFn read) {
     (*self).read = read;
 }
 
-void Variable_setTarget(Variable *self, void *target) {
+void Variable_setTarget(Variable *self, any target) {
     if (self == nullptr)
         return;
     (*self).target = target;
@@ -154,7 +154,7 @@ VariableReadFn Variable_getRead(const Variable *self) {
     return (*self).read;
 }
 
-void *Variable_getTarget(const Variable *self) {
+any Variable_getTarget(const Variable *self) {
     if (self == nullptr)
         return nullptr;
     return (*self).target;

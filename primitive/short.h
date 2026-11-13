@@ -9,18 +9,18 @@ extern BitPool g_shortPool;
 
 bool Short_init(void);
 void Short_shutdown(void);
-void *Short_alloc(void);
-void *Short_allocArray(bytes count);
-void Short_free(void *ptr);
- Short_get(void *ptr);
-void Short_set(void *ptr,  value);
-bool Short_compareAndSet(void *ptr,  expected,  value);
-u64 Short_type(void *ptr);
-bytes Short_length(void *ptr);
+any Short_alloc(void);
+any Short_allocArray(bytes count);
+void Short_free(any ptr);
+ Short_get(any ptr);
+void Short_set(any ptr,  value);
+bool Short_compareAndSet(any ptr,  expected,  value);
+u64 Short_type(any ptr);
+bytes Short_length(any ptr);
 
 
 // Ergonomic constructors — Short() and Short(value)
-void *Short_allocWithValue( value);
+any Short_allocWithValue( value);
 #define Short_0(...) Short_alloc()
 #define Short_1(value) Short_allocWithValue(value)
 #define Short(...) CONSTRUCTOR_DISPATCH(Short, __VA_ARGS__)

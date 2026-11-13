@@ -211,7 +211,7 @@ u8 *CircleArray_slotOffset(CircleArray *self, i32 dx, i32 dy) {
     return CircleArray_slotGrid(self, gridX, gridY);
 }
 
-bool CircleArray_getGrid(void *dest, const CircleArray *self, i32 gridX, i32 gridY) {
+bool CircleArray_getGrid(any dest, const CircleArray *self, i32 gridX, i32 gridY) {
     if (self == nullptr || dest == nullptr) return false;
     if (!CircleArray_containsGrid(self, gridX, gridY)) {
         return false;
@@ -224,7 +224,7 @@ bool CircleArray_getGrid(void *dest, const CircleArray *self, i32 gridX, i32 gri
     return true;
 }
 
-bool CircleArray_setGrid(CircleArray *self, i32 gridX, i32 gridY, const void *src) {
+bool CircleArray_setGrid(CircleArray *self, i32 gridX, i32 gridY, const any src) {
     if (self == nullptr || src == nullptr) return false;
     if (!CircleArray_containsGrid(self, gridX, gridY)) {
         return false;
@@ -237,21 +237,21 @@ bool CircleArray_setGrid(CircleArray *self, i32 gridX, i32 gridY, const void *sr
     return true;
 }
 
-bool CircleArray_getOffset(void *dest, const CircleArray *self, i32 dx, i32 dy) {
+bool CircleArray_getOffset(any dest, const CircleArray *self, i32 dx, i32 dy) {
     if (self == nullptr) return false;
     i32 gridX = dx + (*self).radius;
     i32 gridY = dy + (*self).radius;
     return CircleArray_getGrid(dest, self, gridX, gridY);
 }
 
-bool CircleArray_setOffset(CircleArray *self, i32 dx, i32 dy, const void *src) {
+bool CircleArray_setOffset(CircleArray *self, i32 dx, i32 dy, const any src) {
     if (self == nullptr) return false;
     i32 gridX = dx + (*self).radius;
     i32 gridY = dy + (*self).radius;
     return CircleArray_setGrid(self, gridX, gridY, src);
 }
 
-void CircleArray_forEach(const CircleArray *self, CircleArrayCellFn callback, void *userData) {
+void CircleArray_forEach(const CircleArray *self, CircleArrayCellFn callback, any userData) {
     if (self == nullptr || callback == nullptr) return;
     i32 r = (*self).radius;
     i32 d = (*self).diameter;

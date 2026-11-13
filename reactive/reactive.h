@@ -54,10 +54,10 @@ struct Reactive {
     ReactiveObserverList *onNullptr; // fires when a drained word is 0 (empty)
 };
 
-typedef void (*ReactiveSetFn)(Reactive *self, pointer newValue, void *userdata);
-typedef void (*ReactiveChangedFn)(Reactive *self, pointer oldValue, pointer newValue, void *userdata);
-typedef void (*ReactiveGetFn)(Reactive *self, pointer value, void *userdata);
-typedef void (*ReactiveNullptrFn)(Reactive *self, void *userdata);
+typedef void (*ReactiveSetFn)(Reactive *self, pointer newValue, any userdata);
+typedef void (*ReactiveChangedFn)(Reactive *self, pointer oldValue, pointer newValue, any userdata);
+typedef void (*ReactiveGetFn)(Reactive *self, pointer value, any userdata);
+typedef void (*ReactiveNullptrFn)(Reactive *self, any userdata);
 
 // --- Constructors ---
 // Embedded init: seed the word (its own shadow starts equal, so the first drain
@@ -114,14 +114,14 @@ bool Reactive_drain(Reactive *self);
 
 // --- Observer add / remove (per event; multiple functions allowed) ---
 // Owner-affine: add/remove on the owner thread only.
-bool Reactive_watchSet(Reactive *self, ReactiveSetFn cb, void *userdata);
-bool Reactive_unwatchSet(Reactive *self, ReactiveSetFn cb, void *userdata);
-bool Reactive_watchChanged(Reactive *self, ReactiveChangedFn cb, void *userdata);
-bool Reactive_unwatchChanged(Reactive *self, ReactiveChangedFn cb, void *userdata);
-bool Reactive_watchGet(Reactive *self, ReactiveGetFn cb, void *userdata);
-bool Reactive_unwatchGet(Reactive *self, ReactiveGetFn cb, void *userdata);
-bool Reactive_watchNullptr(Reactive *self, ReactiveNullptrFn cb, void *userdata);
-bool Reactive_unwatchNullptr(Reactive *self, ReactiveNullptrFn cb, void *userdata);
+bool Reactive_watchSet(Reactive *self, ReactiveSetFn cb, any userdata);
+bool Reactive_unwatchSet(Reactive *self, ReactiveSetFn cb, any userdata);
+bool Reactive_watchChanged(Reactive *self, ReactiveChangedFn cb, any userdata);
+bool Reactive_unwatchChanged(Reactive *self, ReactiveChangedFn cb, any userdata);
+bool Reactive_watchGet(Reactive *self, ReactiveGetFn cb, any userdata);
+bool Reactive_unwatchGet(Reactive *self, ReactiveGetFn cb, any userdata);
+bool Reactive_watchNullptr(Reactive *self, ReactiveNullptrFn cb, any userdata);
+bool Reactive_unwatchNullptr(Reactive *self, ReactiveNullptrFn cb, any userdata);
 
 // --- Getters (the Symmetric Getter/Setter Completeness Law: null-safe) ---
 bytes Reactive_observerCount(const Reactive *self);

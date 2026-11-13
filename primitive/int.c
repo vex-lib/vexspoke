@@ -61,11 +61,11 @@ void Int_shutdown(void) {
     BitPool_shutdown(&g_intPool);
 }
 
-void *Int_alloc(void) {
+any Int_alloc(void) {
     return BitPool_alloc(&g_intPool, ID_INT);
 }
 
-void *Int_allocArray(bytes count) {
+any Int_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
@@ -77,48 +77,48 @@ void *Int_allocArray(bytes count) {
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_INT), Bytes);
 }
 
-void Int_free(void *ptr) {
+void Int_free(any ptr) {
     if (!ptr)
         return;
     if (BitPool_contains(&g_intPool, ptr)) BitPool_free(&g_intPool, ptr);
     else Memory_free(ptr);
 }
 
-i32 Int_get(void *ptr) {
+i32 Int_get(any ptr) {
     if (!ptr)
         return (i32) 0;
     return *(i32*) ptr;
 }
 
-void Int_set(void *ptr, i32 value) {
+void Int_set(any ptr, i32 value) {
     if (!ptr)
         return;
     *(i32*) ptr = value;
 }
 
-bool Int_compareAndSet(void *ptr, i32 expected, i32 value) {
+bool Int_compareAndSet(any ptr, i32 expected, i32 value) {
     if (!ptr)
         return false;
     // fallback to simple CAS via __atomic_compare_exchange
     return __atomic_compare_exchange_n((i32*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
-u64 Int_type(void *ptr) {
+u64 Int_type(any ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_intPool, ptr)) return BitPool_type(&g_intPool, ptr);
     return Memory_type(ptr);
 }
 
-bytes Int_length(void *ptr) {
+bytes Int_length(any ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_intPool, ptr)) return BitPool_length(&g_intPool, ptr);
     return Memory_length(ptr);
 }
 
-void *Int_allocWithValue(i32 value) {
-    void *ptr = Int_alloc();
+any Int_allocWithValue(i32 value) {
+    any ptr = Int_alloc();
     if (ptr) Int_set(ptr, value);
     return ptr;
 }

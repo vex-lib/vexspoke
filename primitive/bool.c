@@ -64,11 +64,11 @@ void Bool_shutdown(void) {
     BitPool_shutdown(&g_boolPool);
 }
 
-void *Bool_alloc(void) {
+any Bool_alloc(void) {
     return BitPool_alloc(&g_boolPool, ID_BOOL);
 }
 
-void *Bool_allocArray(bytes count) {
+any Bool_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
@@ -80,48 +80,48 @@ void *Bool_allocArray(bytes count) {
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_BOOL), Bytes);
 }
 
-void Bool_free(void *ptr) {
+void Bool_free(any ptr) {
     if (!ptr)
         return;
     if (BitPool_contains(&g_boolPool, ptr)) BitPool_free(&g_boolPool, ptr);
     else Memory_free(ptr);
 }
 
-bool Bool_get(void *ptr) {
+bool Bool_get(any ptr) {
     if (!ptr)
         return (bool) 0;
     return *(bool*) ptr;
 }
 
-void Bool_set(void *ptr, bool value) {
+void Bool_set(any ptr, bool value) {
     if (!ptr)
         return;
     *(bool*) ptr = value;
 }
 
-bool Bool_compareAndSet(void *ptr, bool expected, bool value) {
+bool Bool_compareAndSet(any ptr, bool expected, bool value) {
     if (!ptr)
         return false;
     // fallback to simple CAS via __atomic_compare_exchange
     return __atomic_compare_exchange_n((bool*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
-u64 Bool_type(void *ptr) {
+u64 Bool_type(any ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_boolPool, ptr)) return BitPool_type(&g_boolPool, ptr);
     return Memory_type(ptr);
 }
 
-bytes Bool_length(void *ptr) {
+bytes Bool_length(any ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_boolPool, ptr)) return BitPool_length(&g_boolPool, ptr);
     return Memory_length(ptr);
 }
 
-void *Bool_allocWithValue(bool value) {
-    void *ptr = Bool_alloc();
+any Bool_allocWithValue(bool value) {
+    any ptr = Bool_alloc();
     if (ptr) Bool_set(ptr, value);
     return ptr;
 }

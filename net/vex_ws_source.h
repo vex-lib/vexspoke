@@ -11,8 +11,8 @@
 // that turns a live `WebSocket` connection into the four-callback transport a
 // host expects lives here, next to the protocol it wraps. The four operations
 // below are declared with the shape a host's transport seam already uses
-// (`bool connect(void*)`, `u32 poll(void*, u64)`,
-// `bool send(void*, const u8*, u32)`, `void close(void*)`), so a host
+// (`bool connect(any)`, `u32 poll(any, u64)`,
+// `bool send(any, const u8*, u32)`, `void close(any)`), so a host
 // that can see both this header and its own seam assigns them directly:
 //
 //     const HavenWsSource source = {
@@ -53,21 +53,21 @@ bool VexWsSource_open(VexWsSource *self, const char *url, WebSocketConfig config
 // Connect (or reconnect) to the target a previous open() stored, so a host may
 // retry through the table alone. False when nothing was configured or the
 // attempt fails.
-bool VexWsSource_connect(void *handle);
+bool VexWsSource_connect(any handle);
 
 // Deliver at most ONE complete message within the budget, and never discard a
 // message it did not deliver: unread Bytes stay in the socket, so a host that
 // polls slower than the peer still loses nothing. Returns 1 when a text or
 // binary message was delivered (read it with VexWsSource_last), 0 otherwise —
 // a close or a failure is reported through the record, not as a count.
-u32 VexWsSource_poll(void *handle, u64 budgetMs);
+u32 VexWsSource_poll(any handle, u64 budgetMs);
 
 // Send one TEXT frame. A payload that is not valid UTF-8 is refused rather than
 // silently re-typed; use VexWsSource_socket for binary, ping and close frames.
-bool VexWsSource_send(void *handle, const u8 *bytes, u32 length);
+bool VexWsSource_send(any handle, const u8 *bytes, u32 length);
 
 // Close the connection and release the owned buffer. Safe on a null handle.
-void VexWsSource_close(void *handle);
+void VexWsSource_close(any handle);
 
 // --- Getters (the Symmetric Getter/Setter Completeness Law: null-safe) ---
 // The last delivered record; its payload borrows the client and stays valid

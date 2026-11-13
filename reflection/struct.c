@@ -110,13 +110,13 @@ void Struct_free(Struct *self) {
 u64 Struct_kind(const Struct *self) {
     if (self == nullptr)
         return 0u;
-    return Memory_type((void*) self);
+    return Memory_type((any) self);
 }
 
 bool Struct_check(const Struct *self, u64 typeId) {
     if (self == nullptr)
         return false;
-    return Memory_type((void*) self) == typeId;
+    return Memory_type((any) self) == typeId;
 }
 
 u32 Struct_add(Struct *self, const Field *field) {
@@ -139,7 +139,7 @@ Field *Struct_get(const Struct *self, u32 index) {
     return (Field*) ChunkedList_slot((*self).fields, index);
 }
 
-void Struct_forEach(Struct *self, StructVisitFn fn, void *userdata) {
+void Struct_forEach(Struct *self, StructVisitFn fn, any userdata) {
     if (self == nullptr || fn == nullptr || (*self).fields == nullptr)
         return;
     u32 n = (*self).count;

@@ -26,7 +26,7 @@ static const char CANNED_JSON[] =
     "{\"name\":\"anti\",\"n\":42,\"pi\":3.5,\"quote\":\"a\\\"b.sh\\nline\","
     "\"tags\":[\"x\",\"y\"],\"nested\":{\"ok\":true}}";
 
-static void handler(const HttpExchange *ex, int fd, void *ud) {
+static void handler(const HttpExchange *ex, int fd, any ud) {
     (void) ud;
     if (strcmp((*ex).path, "/hello") == 0 && strcmp((*ex).method, "GET") == 0) {
         Http_respond(fd, 200, "text/plain", "hello from anti", 15);

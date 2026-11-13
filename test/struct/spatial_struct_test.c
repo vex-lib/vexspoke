@@ -28,7 +28,7 @@ typedef struct CellPayload {
 
 // Counts visited circle-array cells and accumulates their grid coordinates.
 // Counts CircleArray callback visits for comparison with its valid-cell count.
-static void countCellsCb(i32 gx, i32 gy, i32 dx, i32 dy, const void *element, void *userData) {
+static void countCellsCb(i32 gx, i32 gy, i32 dx, i32 dy, const any element, any userData) {
     (void) gx; (void) gy; (void) dx; (void) dy; (void) element;
     bytes *count = (bytes*) userData;
     (*count)++;
@@ -36,7 +36,7 @@ static void countCellsCb(i32 gx, i32 gy, i32 dx, i32 dy, const void *element, vo
 
 // Counts visited sphere-array voxels and accumulates their grid coordinates.
 // Counts SphereArray callback visits for comparison with its valid-voxel count.
-static void countVoxelsCb(i32 gx, i32 gy, i32 gz, i32 dx, i32 dy, i32 dz, const void *voxel, void *userData) {
+static void countVoxelsCb(i32 gx, i32 gy, i32 gz, i32 dx, i32 dy, i32 dz, const any voxel, any userData) {
     (void) gx; (void) gy; (void) gz; (void) dx; (void) dy; (void) dz; (void) voxel;
     bytes *count = (bytes*) userData;
     (*count)++;

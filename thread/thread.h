@@ -42,10 +42,10 @@ const char *ThreadRole_name(ThreadRole role);
 typedef struct Thread Thread;
 
 // Per-pass body. Runs on the worker platform thread.
-typedef void (*Thread_Job)(Thread *self, void *task);
+typedef void (*Thread_Job)(Thread *self, any task);
 
 // Create a stopped handle. typeId stamps the block header (one of the
-// ID_THREAD_* classes); queueCapacity holds void* tasks. Core handles reject
+// ID_THREAD_* classes); queueCapacity holds any tasks. Core handles reject
 // stop/free like legacy ROLE_CORE. nullptr on OOM/bad args.
 Thread *Thread_5(u64 typeId, Thread_Job job, bytes queueCapacity,
                  bool tickWhenIdle, bool core);
@@ -55,7 +55,7 @@ Thread *Thread_5(u64 typeId, Thread_Job job, bytes queueCapacity,
 bool Thread_run(Thread *self);
 
 // Enqueue a task handle. False when stopped or the ring is full.
-bool Thread_submit(Thread *self, void *task);
+bool Thread_submit(Thread *self, any task);
 
 // Ask the loop to exit and join. No-op when already stopped. Refused on cores.
 void Thread_stop(Thread *self);

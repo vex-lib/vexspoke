@@ -11,7 +11,7 @@
 
 Thread *NetworkingThread_invoke(void);
 Thread *NetworkingThread_core(void);      // shared singleton, created lazily
-bool NetworkingThread_submit(Thread *w, void *batch);
+bool NetworkingThread_submit(Thread *w, any batch);
 void NetworkingThread_stop(Thread *w);    // no-op on the core
 void NetworkingThread_free(Thread *w);    // no-op on the core
 

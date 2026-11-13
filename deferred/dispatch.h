@@ -16,12 +16,12 @@
 // Reusable d64 buffers avoid allocation during drain. Post may grow its
 // pending buffer at a new high-water mark: not a hard realtime operation.
 // Reserve/growth budgeting and typed Signal coalescing are separate concerns.
-typedef void (*DispatchFn)(void *context);
+typedef void (*DispatchFn)(any context);
 
 // Behaviorless slot record, storage owned exclusively by Dispatch.
 typedef struct DispatchItem {
     DispatchFn fn;
-    void *context;
+    any context;
 } DispatchItem;
 
 typedef struct Dispatch {
@@ -47,7 +47,7 @@ bool Dispatch_free(Dispatch *self);
 // True transfers responsibility for delivery to the queue, not payload ownership.
 // False = invalid, contention, capacity overflow or OOM; nothing was enqueued.
 // Caller retains responsibility and may retry LATER, never spin on Thread 0.
-bool Dispatch_post(Dispatch *self, DispatchFn fn, void *context);
+bool Dispatch_post(Dispatch *self, DispatchFn fn, any context);
 
 // True = captured batch processed (including empty); false = null or busy.
 // No allocation, no waiting for the post lock, no callback under that lock.

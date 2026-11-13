@@ -23,14 +23,14 @@ typedef struct TryPtr {
 } TryPtr;
 
 // --- Constructors (by value: no allocation) ---
-TryPtr TryPtr_2(void *value, TryCode code);
-TryPtr TryPtr_ok(void *value);
+TryPtr TryPtr_2(any value, TryCode code);
+TryPtr TryPtr_ok(any value);
 TryPtr TryPtr_error(TryCode code);
 #define TryPtr(...) CONSTRUCTOR_DISPATCH(TryPtr, __VA_ARGS__)
 
 // --- Setters / Getters (the Symmetric Getter/Setter Completeness Law) ---
 void   *TryPtr_getValue(const TryPtr *self);
-void    TryPtr_setValue(TryPtr *self, void *value);
+void    TryPtr_setValue(TryPtr *self, any value);
 TryCode TryPtr_getCode(const TryPtr *self);
 void    TryPtr_setCode(TryPtr *self, TryCode code);
 bool    TryPtr_isOk(const TryPtr *self);

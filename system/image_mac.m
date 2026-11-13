@@ -36,7 +36,7 @@
  */
 
 
-void *ImageMac_decode(const void *fileData, bytes fileSize, bytes *outW, bytes *outH) {
+any ImageMac_decode(const any fileData, bytes fileSize, bytes *outW, bytes *outH) {
     if (!fileData || fileSize == 0) return nullptr;
 
     CGDataProviderRef provider = CGDataProviderCreateWithData(nullptr, fileData, fileSize, nullptr);
@@ -58,7 +58,7 @@ void *ImageMac_decode(const void *fileData, bytes fileSize, bytes *outW, bytes *
     
     bytes bytesPerPixel = 4;
     bytes bytesPerRow = bytesPerPixel * width;
-    void *rgbaData = malloc(height * bytesPerRow);
+    any rgbaData = malloc(height * bytesPerRow);
     
     if (rgbaData) {
         CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();

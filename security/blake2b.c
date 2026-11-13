@@ -140,7 +140,7 @@ bool Blake2b_initKeyed(Blake2b *self, bytes outlen, const u8 *key, bytes keylen)
     return true;
 }
 
-void Blake2b_update(Blake2b *self, const void *data, bytes len) {
+void Blake2b_update(Blake2b *self, const any data, bytes len) {
     if (self == nullptr)
         return;
     if (len == 0u)
@@ -189,7 +189,7 @@ bool Blake2b_final(Blake2b *self, u8 *out, bytes outCap) {
     return true;
 }
 
-bool Blake2b_digest(const void *data, bytes len, bytes outlen, u8 *out, bytes outCap) {
+bool Blake2b_digest(const any data, bytes len, bytes outlen, u8 *out, bytes outCap) {
     Blake2b ctx = Blake2b_0();
     if (!Blake2b_init(&ctx, outlen))
         return false;

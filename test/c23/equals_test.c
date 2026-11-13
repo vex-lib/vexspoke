@@ -36,8 +36,8 @@ int main(void) {
     CHECK(!isEqual(&a, nullptr));
 
     // Allocated blocks: equal type + length + Bytes match.
-    void *x = Memory_alloc(7001u, 8);
-    void *y = Memory_alloc(7001u, 8);
+    any x = Memory_alloc(7001u, 8);
+    any y = Memory_alloc(7001u, 8);
     CHECK(x && y);
     memset(x, 0, 8);
     memset(y, 0, 8);
@@ -50,13 +50,13 @@ int main(void) {
     CHECK(isEqual(x, y));
 
     // Different type id -> not equal, even with equal Bytes.
-    void *z = Memory_alloc(7002u, 8);
+    any z = Memory_alloc(7002u, 8);
     CHECK(z);
     memset(z, 0, 8);
     CHECK(!isEqual(x, z));
 
     // Different length -> not equal.
-    void *big = Memory_alloc(7001u, 16);
+    any big = Memory_alloc(7001u, 16);
     CHECK(big);
     memset(big, 0, 16);
     CHECK(!isEqual(x, big));

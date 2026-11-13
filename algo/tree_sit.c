@@ -142,7 +142,7 @@ static bool walk_preorder_rec(
     i32 node_idx,
     int depth,
     TreeSitVisitorFn visitor,
-    void *user_data
+    any user_data
 ) {
     if (node_idx < 0 || (u32) node_idx >= (*tree).node_count) {
         return true;
@@ -162,7 +162,7 @@ static bool walk_preorder_rec(
     return true;
 }
 
-bool TreeSitTree_walk_preorder(const TreeSitTree *tree, TreeSitVisitorFn visitor, void *user_data) {
+bool TreeSitTree_walk_preorder(const TreeSitTree *tree, TreeSitVisitorFn visitor, any user_data) {
     if (!tree || !visitor || (*tree).root < 0) {
         return false;
     }
@@ -174,7 +174,7 @@ static bool walk_postorder_rec(
     i32 node_idx,
     int depth,
     TreeSitVisitorFn visitor,
-    void *user_data
+    any user_data
 ) {
     if (node_idx < 0 || (u32) node_idx >= (*tree).node_count) {
         return true;
@@ -191,7 +191,7 @@ static bool walk_postorder_rec(
     return visitor(tree, node_idx, depth, user_data);
 }
 
-bool TreeSitTree_walk_postorder(const TreeSitTree *tree, TreeSitVisitorFn visitor, void *user_data) {
+bool TreeSitTree_walk_postorder(const TreeSitTree *tree, TreeSitVisitorFn visitor, any user_data) {
     if (!tree || !visitor || (*tree).root < 0) {
         return false;
     }

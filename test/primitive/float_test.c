@@ -20,7 +20,7 @@ static int g_failures = 0;
 int main(void) {
     CHECK(Float_init());
 
-    void *p = Float_alloc();
+    any p = Float_alloc();
     CHECK(p != nullptr);
     CHECK(Float_get(p) == 0.0f);
     CHECK(Float_type(p) == ID_FLOAT);
@@ -32,11 +32,11 @@ int main(void) {
         CHECK(Float_get(p) == values[i]);
     }
 
-    void *q = Float_allocWithValue(2.5f);
+    any q = Float_allocWithValue(2.5f);
     CHECK(q != nullptr && Float_get(q) == 2.5f);
-    void *r = Float(-1.25f);
+    any r = Float(-1.25f);
     CHECK(r != nullptr && Float_get(r) == -1.25f);
-    void *s = Float_0();
+    any s = Float_0();
     CHECK(s != nullptr && Float_type(s) == ID_FLOAT);
 
     Float_set(p, 1.0f);
@@ -46,7 +46,7 @@ int main(void) {
     CHECK(Float_get(p) == 9.0f);
 
     CHECK(Float_allocArray(0) == nullptr);
-    void *arr = Float_array(8);
+    any arr = Float_array(8);
     CHECK(arr != nullptr);
     CHECK((Float_type(arr) & MASK_CLASS) == ID_FLOAT);
     CHECK(Float_length(arr) >= 8);

@@ -21,11 +21,11 @@
 // the reconstructed engine-epoch timestamp of the OS delivery.
 
 typedef struct KeyHandler {
-    void *self; // the implementing object, handed back to every callback
-    void (*onKeyDown)(void *self, int keyEvent, u64 exactNanos);
-    void (*onKeyUp)(void *self, int keyEvent, u64 exactNanos);
-    void (*onKeyRepeat)(void *self, int keyEvent, u64 exactNanos);
-    void (*onCharTyped)(void *self, u32 character); // default no-op in legacy
+    any self; // the implementing object, handed back to every callback
+    void (*onKeyDown)(any self, int keyEvent, u64 exactNanos);
+    void (*onKeyUp)(any self, int keyEvent, u64 exactNanos);
+    void (*onKeyRepeat)(any self, int keyEvent, u64 exactNanos);
+    void (*onCharTyped)(any self, u32 character); // default no-op in legacy
 } KeyHandler;
 
 #endif

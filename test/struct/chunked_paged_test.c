@@ -193,7 +193,7 @@ typedef struct ChainProbe {
 } ChainProbe;
 
 // Records each chunk and index visited by the chain traversal callback.
-static void chainFn(u8 *chunk, u32 index, void *userdata) {
+static void chainFn(u8 *chunk, u32 index, any userdata) {
     ChainProbe *p = (ChainProbe*) userdata;
     if (!chunk || index != (*p).chunks)
         (*p).ok = false;

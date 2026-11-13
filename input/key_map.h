@@ -54,7 +54,7 @@
 
 // ── Types ─────────────────────────────────────────────────
 
-typedef void (*KeyBindingFn)(void *userdata, int64_t combo);
+typedef void (*KeyBindingFn)(any userdata, int64_t combo);
 
 typedef struct KeyBinding {
     int64_t       combo;       // the encoded combo
@@ -79,7 +79,7 @@ typedef struct KeyMap {
            "mask) planned for any-modifier/any-key binds; do not harden the "
            "public surface until a real Frame consumer proves it")
 
-KeyMap *KeyMap_1(void *arena);
+KeyMap *KeyMap_1(any arena);
 #define KeyMap(...) CONSTRUCTOR_DISPATCH(KeyMap, __VA_ARGS__)
 void    KeyMap_destroy(KeyMap *map);
 
@@ -87,7 +87,7 @@ void    KeyMap_destroy(KeyMap *map);
 // Exact match: liveCombo must equal the registered combo exactly.
 // Wildcard matching (KeyMap_matchMask) deferred — see DRAFT annotation above.
 
-bool KeyMap_bind(KeyMap *map, int64_t combo, KeyBindingFn fn, void *userdata);
+bool KeyMap_bind(KeyMap *map, int64_t combo, KeyBindingFn fn, any userdata);
 bool KeyMap_unbind(KeyMap *map, int64_t combo, KeyBindingFn fn);
 
 // ── Matching ──────────────────────────────────────────────

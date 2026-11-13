@@ -24,7 +24,7 @@ typedef enum TlsBackendKind {
 
 typedef struct TlsConn {
     int backend;   // TlsBackendKind that produced this connection
-    void *opaque;  // backend-owned session; released only by Tls_close
+    any opaque;  // backend-owned session; released only by Tls_close
 } TlsConn;
 
 // Connect with TLS to host:port. connOut is filled on success.

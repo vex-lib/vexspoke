@@ -224,7 +224,7 @@ u8 *SphereArray_slotOffset(SphereArray *self, i32 dx, i32 dy, i32 dz) {
     return SphereArray_slotGrid(self, gx, gy, gz);
 }
 
-bool SphereArray_getGrid(void *dest, const SphereArray *self, i32 gx, i32 gy, i32 gz) {
+bool SphereArray_getGrid(any dest, const SphereArray *self, i32 gx, i32 gy, i32 gz) {
     if (self == nullptr || dest == nullptr) return false;
     if (!SphereArray_containsGrid(self, gx, gy, gz)) {
         return false;
@@ -237,7 +237,7 @@ bool SphereArray_getGrid(void *dest, const SphereArray *self, i32 gx, i32 gy, i3
     return true;
 }
 
-bool SphereArray_setGrid(SphereArray *self, i32 gx, i32 gy, i32 gz, const void *src) {
+bool SphereArray_setGrid(SphereArray *self, i32 gx, i32 gy, i32 gz, const any src) {
     if (self == nullptr || src == nullptr) return false;
     if (!SphereArray_containsGrid(self, gx, gy, gz)) {
         return false;
@@ -250,7 +250,7 @@ bool SphereArray_setGrid(SphereArray *self, i32 gx, i32 gy, i32 gz, const void *
     return true;
 }
 
-bool SphereArray_getOffset(void *dest, const SphereArray *self, i32 dx, i32 dy, i32 dz) {
+bool SphereArray_getOffset(any dest, const SphereArray *self, i32 dx, i32 dy, i32 dz) {
     if (self == nullptr) return false;
     i32 gx = dx + (*self).radius;
     i32 gy = dy + (*self).radius;
@@ -258,7 +258,7 @@ bool SphereArray_getOffset(void *dest, const SphereArray *self, i32 dx, i32 dy, 
     return SphereArray_getGrid(dest, self, gx, gy, gz);
 }
 
-bool SphereArray_setOffset(SphereArray *self, i32 dx, i32 dy, i32 dz, const void *src) {
+bool SphereArray_setOffset(SphereArray *self, i32 dx, i32 dy, i32 dz, const any src) {
     if (self == nullptr) return false;
     i32 gx = dx + (*self).radius;
     i32 gy = dy + (*self).radius;
@@ -266,7 +266,7 @@ bool SphereArray_setOffset(SphereArray *self, i32 dx, i32 dy, i32 dz, const void
     return SphereArray_setGrid(self, gx, gy, gz, src);
 }
 
-void SphereArray_forEach(const SphereArray *self, SphereArrayVoxelFn callback, void *userData) {
+void SphereArray_forEach(const SphereArray *self, SphereArrayVoxelFn callback, any userData) {
     if (self == nullptr || callback == nullptr) return;
     i32 r = (*self).radius;
     i32 d = (*self).diameter;

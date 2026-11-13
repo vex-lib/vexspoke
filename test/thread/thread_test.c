@@ -34,7 +34,7 @@ static _Atomic i32 g_counter;
 
 // Atomically increments the shared counter for the configured contention batch.
 // Performs the shared atomic increment workload for contention testing.
-static void *hammer(void *arg) {
+static any hammer(any arg) {
     (void) arg;
     for (int i = 0; i < HAMMER_ITERS; i++)
         atomic_fetch_add(&g_counter, 1);
@@ -46,7 +46,7 @@ static _Atomic i32 g_seenMask[THREAD_REGISTRY_DEFAULT_SIZE]; // per-index arriva
 
 // Registers the calling thread, assigns its role, and marks its registry slot.
 // Registers the calling thread, assigns its role, and marks its registry slot.
-static void *registerer(void *arg) {
+static any registerer(any arg) {
     (void) arg;
     int idx = ThreadRegistry_index();
     ThreadRegistry_setTag(idx, THREAD_ROLE_USER);
@@ -62,7 +62,7 @@ static int g_guardedSum = 0;
 
 // Adds to the shared sum while holding the test SpinLock.
 // Increments the shared sum only while holding the test SpinLock.
-static void *lockWorker(void *arg) {
+static any lockWorker(any arg) {
     (void) arg;
     for (int i = 0; i < 5000; i++) {
         SpinLock_lock(&g_testLock);
@@ -97,10 +97,10 @@ int main(void) {
     int64_t expectedL = 41;
     CHECK(atomic_compare_exchange_strong(&l, &expectedL, 100));
 
-    _Atomic(void*) p = nullptr;
+    _Atomic(any) p = nullptr;
     static int payload;
     CHECK(atomic_load(&p) == nullptr);
-    void *expectedP = &payload;
+    any expectedP = &payload;
     CHECK(!atomic_compare_exchange_strong(&p, &expectedP, nullptr)); // stale expectation fails
     expectedP = nullptr;
     CHECK(atomic_compare_exchange_strong(&p, &expectedP, &payload));  // correct one lands

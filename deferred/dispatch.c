@@ -19,7 +19,7 @@
  * FIELDS: SpinLock lock; DispatchItem *items; bytes count, cap;
  * DispatchItem *batch; bytes batchCap; atomic_bool draining;
  * atomic_size_t pendingCount; _Atomic unsigned long drainedCount.
- * SLOT: DispatchItem { DispatchFn fn; void *context; } (behaviorless).
+ * SLOT: DispatchItem { DispatchFn fn; any context; } (behaviorless).
  * CONSTRUCTOR: Dispatch() / Dispatch_0().
  * CORE: Dispatch_drain, Dispatch_free. SETTER: Dispatch_post.
  * GETTERS: Dispatch_pending, Dispatch_getDrainedCount. HELPERS: none.
@@ -43,7 +43,7 @@ Dispatch *Dispatch_0(void) {
     return self;
 }
 
-bool Dispatch_post(Dispatch *self, DispatchFn fn, void *context) {
+bool Dispatch_post(Dispatch *self, DispatchFn fn, any context) {
     if (!self || !fn)
         return false;
     if (!SpinLock_tryLock(&(*self).lock))

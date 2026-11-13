@@ -25,7 +25,7 @@ static int g_failures = 0;
 int main(void) {
     CHECK(Brain_init());
 
-    void *p = Brain_alloc();
+    any p = Brain_alloc();
     CHECK(p != nullptr);
     CHECK(Brain_get(p) == 0);
     CHECK(Brain_type(p) == ID_BRAIN);
@@ -50,11 +50,11 @@ int main(void) {
     Brain_setFloat(p, 100.0f);
     CHECK(fabsf(Brain_getFloat(p) - 100.0f) < 1.0f);
 
-    void *q = Brain_allocWithValue(bf35);
+    any q = Brain_allocWithValue(bf35);
     CHECK(q != nullptr && Brain_get(q) == bf35);
-    void *r = Brain(bf35);
+    any r = Brain(bf35);
     CHECK(r != nullptr && Brain_get(r) == bf35);
-    void *s = Brain_0();
+    any s = Brain_0();
     CHECK(s != nullptr && Brain_type(s) == ID_BRAIN);
 
     Brain_set(p, 1);
@@ -64,7 +64,7 @@ int main(void) {
     CHECK(Brain_get(p) == 2);
 
     CHECK(Brain_allocArray(0) == nullptr);
-    void *arr = Brain_array(8);
+    any arr = Brain_array(8);
     CHECK(arr != nullptr);
     CHECK((Brain_type(arr) & MASK_CLASS) == ID_BRAIN);
     CHECK(Brain_length(arr) >= 8);

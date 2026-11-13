@@ -63,11 +63,11 @@ void Fixed32_shutdown(void) {
     BitPool_shutdown(&g_fixed32Pool);
 }
 
-void *Fixed32_alloc(void) {
+any Fixed32_alloc(void) {
     return BitPool_alloc(&g_fixed32Pool, ID_FIXED32);
 }
 
-void *Fixed32_allocArray(bytes count) {
+any Fixed32_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
@@ -79,48 +79,48 @@ void *Fixed32_allocArray(bytes count) {
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_FIXED32), Bytes);
 }
 
-void Fixed32_free(void *ptr) {
+void Fixed32_free(any ptr) {
     if (!ptr)
         return;
     if (BitPool_contains(&g_fixed32Pool, ptr)) BitPool_free(&g_fixed32Pool, ptr);
     else Memory_free(ptr);
 }
 
-i32 Fixed32_get(void *ptr) {
+i32 Fixed32_get(any ptr) {
     if (!ptr)
         return (i32) 0;
     return *(i32*) ptr;
 }
 
-void Fixed32_set(void *ptr, i32 value) {
+void Fixed32_set(any ptr, i32 value) {
     if (!ptr)
         return;
     *(i32*) ptr = value;
 }
 
-bool Fixed32_compareAndSet(void *ptr, i32 expected, i32 value) {
+bool Fixed32_compareAndSet(any ptr, i32 expected, i32 value) {
     if (!ptr)
         return false;
     // fallback to simple CAS via __atomic_compare_exchange
     return __atomic_compare_exchange_n((i32*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
-u64 Fixed32_type(void *ptr) {
+u64 Fixed32_type(any ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_fixed32Pool, ptr)) return BitPool_type(&g_fixed32Pool, ptr);
     return Memory_type(ptr);
 }
 
-bytes Fixed32_length(void *ptr) {
+bytes Fixed32_length(any ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_fixed32Pool, ptr)) return BitPool_length(&g_fixed32Pool, ptr);
     return Memory_length(ptr);
 }
 
-void *Fixed32_allocWithValue(i32 value) {
-    void *ptr = Fixed32_alloc();
+any Fixed32_allocWithValue(i32 value) {
+    any ptr = Fixed32_alloc();
     if (ptr) Fixed32_set(ptr, value);
     return ptr;
 }

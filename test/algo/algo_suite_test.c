@@ -34,10 +34,10 @@ static void test_radix_sort(void) {
     }
 
     u64 keys[64];
-    void *values[64];
+    any values[64];
     for (int i = 0; i < 64; i++) {
         keys[i] = (u64) (63 - i);
-        values[i] = (void*) (pointer) (i * 10);
+        values[i] = (any) (pointer) (i * 10);
     }
     assert(Sort_radixSortPairsUint64(keys, values, 64u));
     for (int i = 0; i < 63; i++) {
@@ -158,7 +158,7 @@ static void test_bvh(void) {
     BvhTree_destroy(&tree);
 }
 
-static bool tree_sit_counter(const TreeSitTree *tree, i32 node_idx, int depth, void *user_data) {
+static bool tree_sit_counter(const TreeSitTree *tree, i32 node_idx, int depth, any user_data) {
     (void) tree;
     (void) node_idx;
     (void) depth;

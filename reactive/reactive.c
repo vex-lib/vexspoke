@@ -55,7 +55,7 @@
  *
  * PRIVATE HELPERS (kept file-local, pure data + list math only):
  * ----------------------------------------------------------------------------
- *   ReactiveObserver { void *cb; void *userdata; }        // SLOT RECORD
+ *   ReactiveObserver { any cb; any userdata; }        // SLOT RECORD
  *   ReactiveObserverList { ReactiveObserver *items; bytes count, cap; } // SLOT RECORD
  *   listEnsure(slot) / listAdd(list, cb, userdata) / listRemove(...) / listFree(list)
  *   fireSet/fireChanged (inline over the lists)           // the fire walks
@@ -71,8 +71,8 @@
 
 // SLOT RECORD: one observer entry (a callback + its context).
 typedef struct ReactiveObserver {
-    void *cb;       // the typed callback (cast per list)
-    void *userdata; // per-observer context
+    any cb;       // the typed callback (cast per list)
+    any userdata; // per-observer context
 } ReactiveObserver;
 
 // SLOT RECORD: one event's observer list (arena-backed, doubling).
@@ -99,7 +99,7 @@ static ReactiveObserverList *listEnsure(ReactiveObserverList **slot) {
 }
 
 // Add (or reuse a tombstone slot for) an observer. Returns false on null cb/OOM.
-static bool listAdd(ReactiveObserverList **slot, void *cb, void *userdata) {
+static bool listAdd(ReactiveObserverList **slot, any cb, any userdata) {
     if (cb == nullptr)
         return false;
     ReactiveObserverList *list = listEnsure(slot);
@@ -127,7 +127,7 @@ static bool listAdd(ReactiveObserverList **slot, void *cb, void *userdata) {
 }
 
 // Remove an observer (leaves a reusable tombstone). Returns false if absent.
-static bool listRemove(ReactiveObserverList **slot, void *cb, void *userdata) {
+static bool listRemove(ReactiveObserverList **slot, any cb, any userdata) {
     if (cb == nullptr || *slot == nullptr)
         return false;
     ReactiveObserverList *list = *slot;
@@ -336,36 +336,36 @@ bool Reactive_drain(Reactive *self) {
 
 // OBSERVERS
 
-bool Reactive_watchSet(Reactive *self, ReactiveSetFn cb, void *userdata) {
-    return self ? listAdd(&(*self).onSet, (void*) cb, userdata) : false;
+bool Reactive_watchSet(Reactive *self, ReactiveSetFn cb, any userdata) {
+    return self ? listAdd(&(*self).onSet, (any) cb, userdata) : false;
 }
 
-bool Reactive_unwatchSet(Reactive *self, ReactiveSetFn cb, void *userdata) {
-    return self ? listRemove(&(*self).onSet, (void*) cb, userdata) : false;
+bool Reactive_unwatchSet(Reactive *self, ReactiveSetFn cb, any userdata) {
+    return self ? listRemove(&(*self).onSet, (any) cb, userdata) : false;
 }
 
-bool Reactive_watchChanged(Reactive *self, ReactiveChangedFn cb, void *userdata) {
-    return self ? listAdd(&(*self).onChanged, (void*) cb, userdata) : false;
+bool Reactive_watchChanged(Reactive *self, ReactiveChangedFn cb, any userdata) {
+    return self ? listAdd(&(*self).onChanged, (any) cb, userdata) : false;
 }
 
-bool Reactive_unwatchChanged(Reactive *self, ReactiveChangedFn cb, void *userdata) {
-    return self ? listRemove(&(*self).onChanged, (void*) cb, userdata) : false;
+bool Reactive_unwatchChanged(Reactive *self, ReactiveChangedFn cb, any userdata) {
+    return self ? listRemove(&(*self).onChanged, (any) cb, userdata) : false;
 }
 
-bool Reactive_watchGet(Reactive *self, ReactiveGetFn cb, void *userdata) {
-    return self ? listAdd(&(*self).onGet, (void*) cb, userdata) : false;
+bool Reactive_watchGet(Reactive *self, ReactiveGetFn cb, any userdata) {
+    return self ? listAdd(&(*self).onGet, (any) cb, userdata) : false;
 }
 
-bool Reactive_unwatchGet(Reactive *self, ReactiveGetFn cb, void *userdata) {
-    return self ? listRemove(&(*self).onGet, (void*) cb, userdata) : false;
+bool Reactive_unwatchGet(Reactive *self, ReactiveGetFn cb, any userdata) {
+    return self ? listRemove(&(*self).onGet, (any) cb, userdata) : false;
 }
 
-bool Reactive_watchNullptr(Reactive *self, ReactiveNullptrFn cb, void *userdata) {
-    return self ? listAdd(&(*self).onNullptr, (void*) cb, userdata) : false;
+bool Reactive_watchNullptr(Reactive *self, ReactiveNullptrFn cb, any userdata) {
+    return self ? listAdd(&(*self).onNullptr, (any) cb, userdata) : false;
 }
 
-bool Reactive_unwatchNullptr(Reactive *self, ReactiveNullptrFn cb, void *userdata) {
-    return self ? listRemove(&(*self).onNullptr, (void*) cb, userdata) : false;
+bool Reactive_unwatchNullptr(Reactive *self, ReactiveNullptrFn cb, any userdata) {
+    return self ? listRemove(&(*self).onNullptr, (any) cb, userdata) : false;
 }
 
 // GETTERS

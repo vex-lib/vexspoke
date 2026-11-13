@@ -72,7 +72,7 @@
 
 #define REGEX_PROGRAM_SEED_CAPACITY 64u
 
-static void *programGrow(void *block, bytes bytes) {
+static any programGrow(any block, bytes bytes) {
     if (block)
         return Memory_realloc(block, bytes);
     return Memory_alloc(TYPE_REGEX, bytes);

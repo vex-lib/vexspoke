@@ -175,7 +175,7 @@ static atomic_int g_dup;
 static atomic_int g_start;
 
 /** Publishes the producer's assigned values into the shared ring until complete. */
-static void *ring_producer(void *arg) {
+static any ring_producer(any arg) {
     int id = (int) (intptr_t) arg;
     while (!atomic_load_explicit(&g_start, memory_order_acquire))
         sched_yield();
@@ -188,7 +188,7 @@ static void *ring_producer(void *arg) {
 }
 
 /** Drains published values and records consumption for the bounded MPMC assertion. */
-static void *ring_consumer(void *arg) {
+static any ring_consumer(any arg) {
     (void) arg;
     while (!atomic_load_explicit(&g_start, memory_order_acquire))
         sched_yield();
@@ -222,7 +222,7 @@ static void test_mpmc_exactly_once(void) {
     pthread_t producers[RING_PRODUCERS];
     pthread_t consumers[RING_CONSUMERS];
     for (int i = 0; i < RING_PRODUCERS; i++)
-        CHECK(pthread_create(&producers[i], nullptr, ring_producer, (void*) (intptr_t) i) == 0);
+        CHECK(pthread_create(&producers[i], nullptr, ring_producer, (any) (intptr_t) i) == 0);
     for (int i = 0; i < RING_CONSUMERS; i++)
         CHECK(pthread_create(&consumers[i], nullptr, ring_consumer, nullptr) == 0);
 

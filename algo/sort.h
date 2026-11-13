@@ -10,20 +10,20 @@
 // allocate. Sort_mergeSort requires a non-overlapping caller-owned scratch buffer of
 // count * elementSize bytes. Radix sorts use the Relational Engine Memory ABI.
 
-typedef int (*SortCompareFn)(const void *left, const void *right);
+typedef int (*SortCompareFn)(const any left, const any right);
 
-bool Sort_quickSort(void *values, bytes count, bytes elementSize,
+bool Sort_quickSort(any values, bytes count, bytes elementSize,
                     SortCompareFn compare);
-bool Sort_insertionSort(void *values, bytes count, bytes elementSize,
+bool Sort_insertionSort(any values, bytes count, bytes elementSize,
                         SortCompareFn compare);
-bool Sort_selectionSort(void *values, bytes count, bytes elementSize,
+bool Sort_selectionSort(any values, bytes count, bytes elementSize,
                         SortCompareFn compare);
-bool Sort_bubbleSort(void *values, bytes count, bytes elementSize,
+bool Sort_bubbleSort(any values, bytes count, bytes elementSize,
                      SortCompareFn compare);
-bool Sort_heapSort(void *values, bytes count, bytes elementSize,
+bool Sort_heapSort(any values, bytes count, bytes elementSize,
                    SortCompareFn compare);
-bool Sort_mergeSort(void *values, bytes count, bytes elementSize,
-                    SortCompareFn compare, void *scratch);
+bool Sort_mergeSort(any values, bytes count, bytes elementSize,
+                    SortCompareFn compare, any scratch);
 
 // Two-way partition: [0, boundary) is below pivot; the remainder is greater
 // than or equal to pivot. This operation is not stable. Returns zero for

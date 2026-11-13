@@ -61,7 +61,7 @@
 
 // CONSTRUCTORS
 
-bool Field_init(Field *self, const char *name, VariableReadFn read, FieldSetFn set, void *target) {
+bool Field_init(Field *self, const char *name, VariableReadFn read, FieldSetFn set, any target) {
     if (self == nullptr)
         return false;
     Variable *variable = &(*self).variable;
@@ -96,7 +96,7 @@ Field *Field_3(const char *name, VariableReadFn read, FieldSetFn set) {
     return Field_4(name, read, set, nullptr);
 }
 
-Field *Field_4(const char *name, VariableReadFn read, FieldSetFn set, void *target) {
+Field *Field_4(const char *name, VariableReadFn read, FieldSetFn set, any target) {
     Field *self = Field_0();
     if (self == nullptr)
         return nullptr;
@@ -117,13 +117,13 @@ void Field_free(Field *self) {
 u64 Field_kind(const Field *self) {
     if (self == nullptr)
         return 0u;
-    return Memory_type((void*) self);
+    return Memory_type((any) self);
 }
 
 bool Field_check(const Field *self, u64 typeId) {
     if (self == nullptr)
         return false;
-    return Memory_type((void*) self) == typeId;
+    return Memory_type((any) self) == typeId;
 }
 
 Variable *Field_getVariable(Field *self) {
@@ -132,14 +132,14 @@ Variable *Field_getVariable(Field *self) {
     return &(*self).variable;
 }
 
-void *Field_read(Field *self, void *receiver) {
+any Field_read(Field *self, any receiver) {
     if (self == nullptr)
         return nullptr;
     Variable *variable = &(*self).variable;
     return Variable_read(variable, receiver);
 }
 
-void Field_write(Field *self, void *receiver, void *value) {
+void Field_write(Field *self, any receiver, any value) {
     if (self == nullptr || (*self).set == nullptr)
         return;
     (*self).set(receiver, value);
@@ -167,7 +167,7 @@ void Field_setSet(Field *self, FieldSetFn set) {
     (*self).set = set;
 }
 
-void Field_setTarget(Field *self, void *target) {
+void Field_setTarget(Field *self, any target) {
     if (self == nullptr)
         return;
     Variable *variable = &(*self).variable;
@@ -196,7 +196,7 @@ FieldSetFn Field_getSet(const Field *self) {
     return (*self).set;
 }
 
-void *Field_getTarget(const Field *self) {
+any Field_getTarget(const Field *self) {
     if (self == nullptr)
         return nullptr;
     const Variable *variable = &(*self).variable;

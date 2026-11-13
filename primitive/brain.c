@@ -66,11 +66,11 @@ void Brain_shutdown(void) {
     BitPool_shutdown(&g_brainPool);
 }
 
-void *Brain_alloc(void) {
+any Brain_alloc(void) {
     return BitPool_alloc(&g_brainPool, ID_BRAIN);
 }
 
-void *Brain_allocArray(bytes count) {
+any Brain_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
@@ -82,20 +82,20 @@ void *Brain_allocArray(bytes count) {
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_BRAIN), Bytes);
 }
 
-void Brain_free(void *ptr) {
+void Brain_free(any ptr) {
     if (!ptr)
         return;
     if (BitPool_contains(&g_brainPool, ptr)) BitPool_free(&g_brainPool, ptr);
     else Memory_free(ptr);
 }
 
-u16 Brain_get(void *ptr) {
+u16 Brain_get(any ptr) {
     if (!ptr)
         return (u16) 0;
     return *(u16*) ptr;
 }
 
-void Brain_set(void *ptr, u16 value) {
+void Brain_set(any ptr, u16 value) {
     if (!ptr)
         return;
     *(u16*) ptr = value;
@@ -117,37 +117,37 @@ f32 Brain_bFloat16ToFloat(u16 bits) {
     return out;
 }
 
-f32 Brain_getFloat(void *ptr) {
+f32 Brain_getFloat(any ptr) {
     return Brain_bFloat16ToFloat(Brain_get(ptr));
 }
 
-void Brain_setFloat(void *ptr, f32 value) {
+void Brain_setFloat(any ptr, f32 value) {
     Brain_set(ptr, Brain_f32ToBFloat16(value));
 }
 
-bool Brain_compareAndSet(void *ptr, u16 expected, u16 value) {
+bool Brain_compareAndSet(any ptr, u16 expected, u16 value) {
     if (!ptr)
         return false;
     // fallback to simple CAS via __atomic_compare_exchange
     return __atomic_compare_exchange_n((u16*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
-u64 Brain_type(void *ptr) {
+u64 Brain_type(any ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_brainPool, ptr)) return BitPool_type(&g_brainPool, ptr);
     return Memory_type(ptr);
 }
 
-bytes Brain_length(void *ptr) {
+bytes Brain_length(any ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_brainPool, ptr)) return BitPool_length(&g_brainPool, ptr);
     return Memory_length(ptr);
 }
 
-void *Brain_allocWithValue(u16 value) {
-    void *ptr = Brain_alloc();
+any Brain_allocWithValue(u16 value) {
+    any ptr = Brain_alloc();
     if (ptr) Brain_set(ptr, value);
     return ptr;
 }

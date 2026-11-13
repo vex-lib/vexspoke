@@ -79,9 +79,9 @@ static int isReferenceClass(u32 classId) {
 static u64 computeHash(u32 keyClass, u64 key) {
     if (key == 0) return 0;
     if (isReferenceClass(keyClass) && key >= 4096u) {
-        u64 inspected = Memory_type((void*) (pointer)key);
+        u64 inspected = Memory_type((any) (pointer)key);
         if (inspected != 0) {
-            bytes len = Memory_length((void*) (pointer)key);
+            bytes len = Memory_length((any) (pointer)key);
             if (len > 0)
                 return Hash_fnv1a64((const u8*) (pointer)key, len);
         }
@@ -93,8 +93,8 @@ static int keysEqual(u32 keyClass, u64 k1, u64 k2) {
     if (k1 == k2) return 1;
     if (k1 == 0 || k2 == 0) return 0;
     if (isReferenceClass(keyClass) && k1 >= 4096u && k2 >= 4096u) {
-        void *p1 = (void*) (pointer)k1;
-        void *p2 = (void*) (pointer)k2;
+        any p1 = (any) (pointer)k1;
+        any p2 = (any) (pointer)k2;
         u64 t1 = Memory_type(p1);
         u64 t2 = Memory_type(p2);
         if (t1 != 0 && t1 == t2) {

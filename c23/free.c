@@ -75,7 +75,7 @@ DestructorFn Destructor_lookup(u64 typeId) {
 }
 
 // Runs the matching registered destructor, then releases ptr through Memory_free.
-void c23_free(void *ptr) {
+void c23_free(any ptr) {
     if (!ptr) return;
 
     u64 typeId = Memory_type(ptr);

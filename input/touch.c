@@ -314,7 +314,7 @@ static void deliverTouch(u32 windowId, int action, int touchId,
     if (row == nullptr) return;
     for (int i = 0; i < (*row).count; i++) {
         const TouchHandler *l = (*row).items[i];
-        void *self = (*l).self;
+        any self = (*l).self;
         if (action == TOUCH_DOWN && (*l).onTouchDown)
             (*l).onTouchDown(self, touchId, x, y, pressure, exactNanos);
         else if (action == TOUCH_UP && (*l).onTouchUp)
@@ -343,7 +343,7 @@ void Touch_dispatchEvents(void) {
         d64 pressure = (*pos).pressure;
 
         for (int i = 0; i < s_listenerCount; i++) {
-            void *self = (*s_listeners[i]).self;
+            any self = (*s_listeners[i]).self;
             if (action == TOUCH_DOWN && (*s_listeners[i]).onTouchDown)
                 (*s_listeners[i]).onTouchDown(self, touchId, x, y, pressure, exactNanos);
             else if (action == TOUCH_UP && (*s_listeners[i]).onTouchUp)

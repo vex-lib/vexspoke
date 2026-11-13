@@ -89,7 +89,7 @@
  *     pthread_t thread; // background thread handle
  *     volatile bool running; // run-state flag
  *     HttpHandler handler; // per-connection request handler
- *     void *userdata; // opaque callback context
+ *     any userdata; // opaque callback context
  *   }
  *
  * FUNCTION REGISTRY:
@@ -332,7 +332,7 @@ void Http_respond(int clientFd, int status, const char *contentType,
 
 // --- Micro server ---
 
-static void *acceptLoop(void *arg) {
+static any acceptLoop(any arg) {
     HttpServer *server = arg;
     while ((*server).running) {
         // Poll with a short budget instead of blocking in accept forever:
@@ -392,7 +392,7 @@ static void *acceptLoop(void *arg) {
 }
 
 bool HttpServer_start(HttpServer *server, int port, HttpHandler handler,
-                      void *userdata, int *portOut) {
+                      any userdata, int *portOut) {
     memset(server, 0, sizeof(*server));
     (*server).handler = handler;
     (*server).userdata = userdata;

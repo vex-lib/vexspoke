@@ -216,7 +216,7 @@ typedef struct BuildCtx {
     SegmentIndex *index;
 } BuildCtx;
 
-static void buildFn(VariableSlot *slot, void *userdata) {
+static void buildFn(VariableSlot *slot, any userdata) {
     BuildCtx *ctx = (BuildCtx*) userdata;
     const char *name = VariableSlot_getName(slot);
     if (!name)
@@ -224,7 +224,7 @@ static void buildFn(VariableSlot *slot, void *userdata) {
     SegmentIndex_add((*ctx).index, name, (pointer) slot);
 }
 
-static void freePostingsFn(VariableSlot *slot, void *userdata) {
+static void freePostingsFn(VariableSlot *slot, any userdata) {
     (void) userdata;
     pointer value = VariableSlot_getPointer(slot);
     if (value)

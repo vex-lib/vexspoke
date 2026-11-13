@@ -35,7 +35,7 @@ typedef struct TreeSitNode {
     i32 next_sibling;
     i32 prev_sibling;
     u32 child_count;
-    void *payload;
+    any payload;
 } TreeSitNode;
 
 typedef struct TreeSitTree {
@@ -45,7 +45,7 @@ typedef struct TreeSitTree {
     i32 root;
 } TreeSitTree;
 
-typedef bool (*TreeSitVisitorFn)(const TreeSitTree *tree, i32 node_idx, int depth, void *user_data);
+typedef bool (*TreeSitVisitorFn)(const TreeSitTree *tree, i32 node_idx, int depth, any user_data);
 
 TreeSitTree TreeSitTree_0(void);
 TreeSitTree TreeSitTree_1(u32 initial_capacity);
@@ -58,8 +58,8 @@ i32 TreeSitTree_add_node(
     TreeSitSpan span,
     TreeSitTree *tree
 );
-bool TreeSitTree_walk_preorder(const TreeSitTree *tree, TreeSitVisitorFn visitor, void *user_data);
-bool TreeSitTree_walk_postorder(const TreeSitTree *tree, TreeSitVisitorFn visitor, void *user_data);
+bool TreeSitTree_walk_preorder(const TreeSitTree *tree, TreeSitVisitorFn visitor, any user_data);
+bool TreeSitTree_walk_postorder(const TreeSitTree *tree, TreeSitVisitorFn visitor, any user_data);
 i32 TreeSitTree_find_by_byte(const TreeSitTree *tree, u32 byte_offset);
 u32 TreeSitTree_count_kind(const TreeSitTree *tree, u16 kind);
 

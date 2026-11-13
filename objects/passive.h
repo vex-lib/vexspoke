@@ -6,13 +6,13 @@
 // objects/passive.h — Lazy-evaluated / computed Passive object wrapper.
 // Ported from legacy objects/Passive.java.
 
-typedef u64 (*PassiveGetter)(void *userdata);
-typedef void (*PassiveSetter)(u64 value, void *userdata);
+typedef u64 (*PassiveGetter)(any userdata);
+typedef void (*PassiveSetter)(u64 value, any userdata);
 
 typedef struct Passive Passive;
 
 // Allocate a new Passive instance with lazy getter/setter hooks
-Passive *Passive_3(PassiveGetter getter, PassiveSetter setter, void *userdata);
+Passive *Passive_3(PassiveGetter getter, PassiveSetter setter, any userdata);
 
 // Free passive memory
 

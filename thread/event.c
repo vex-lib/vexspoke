@@ -44,7 +44,7 @@
 
 // thread/event.c — event dispatcher worker (Legacy: EventThread.java).
 
-static void event_job(Thread *self, void *task) {
+static void event_job(Thread *self, any task) {
     (void)self;
     if (ComputeJob_run(task)) return;   // a generic job handed to this role
     if (!task) {
@@ -60,7 +60,7 @@ Thread *EventThread_invoke(void) {
     return Thread(TYPE_THREAD_EVENT_SINGLETON, event_job, 1024, true, false);
 }
 
-bool EventThread_submit(Thread *w, void *packet) {
+bool EventThread_submit(Thread *w, any packet) {
     return Thread_submit(w, packet);
 }
 

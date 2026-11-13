@@ -39,7 +39,7 @@ typedef struct Trace {
 } Trace;
 
 /** Records visited node indices and depths into the test's bounded observation buffer. */
-static bool record(const TreeSitTree *tree, i32 node_idx, int depth, void *user_data) {
+static bool record(const TreeSitTree *tree, i32 node_idx, int depth, any user_data) {
     (void) tree;
     Trace *t = (Trace*) user_data;
     if ((*t).count < 64) {

@@ -34,7 +34,7 @@ typedef struct {
 } AddArg;
 
 // Appends this worker's assigned value range while holding the shared list mutex.
-static void *adder(void *userData) {
+static any adder(any userData) {
     AddArg *arg = userData;
     for (u32 i = 0; i < (*arg).count; i++) {
         pthread_mutex_lock((*arg).lock);

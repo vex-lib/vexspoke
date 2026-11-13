@@ -44,12 +44,12 @@
  */
 
 #if defined(VEX_PLATFORM_APPLE) || defined(VEX_PLATFORM_LINUX)
-__attribute__((weak)) bool runGraphics(void) { return false; }
-__attribute__((weak)) BespokeState checkGraphics(void) { return BESPOKE_ABSENT; }
-__attribute__((weak)) bool runNetworking(void) { return false; }
-__attribute__((weak)) BespokeState checkNetworking(void) { return BESPOKE_ABSENT; }
-__attribute__((weak)) bool doSmth(void) { return false; } // this is just a placeholder
-__attribute__((weak)) BespokeState checkSmth(void) { return BESPOKE_ABSENT; }
+__attribute__((weak)) bool runGraphics() { return false; }
+__attribute__((weak)) BespokeState checkGraphics() { return BESPOKE_ABSENT; }
+__attribute__((weak)) bool runNetworking() { return false; }
+__attribute__((weak)) BespokeState checkNetworking() { return BESPOKE_ABSENT; }
+__attribute__((weak)) bool doSmth() { return false; } // this is just a placeholder
+__attribute__((weak)) BespokeState checkSmth() { return BESPOKE_ABSENT; }
 #endif
 
 static Bespoke s_defaultBespoke = {
@@ -60,7 +60,7 @@ static Bespoke s_defaultBespoke = {
     .checks = 0
 };
 
-Bespoke *Bespoke_0(void) {
+Bespoke *Bespoke_0() {
     return &s_defaultBespoke;
 }
 
@@ -81,8 +81,6 @@ void Bespoke_bridge(Bespoke *self) {
         } else {
             (*self).networkingState = state;
         }
-    } else {
-        (*self).networkingState = BESPOKE_ABSENT;
     }
 
     // 2. Custom / doSmth (darkbase-engine or other)
@@ -96,8 +94,6 @@ void Bespoke_bridge(Bespoke *self) {
         } else {
             (*self).smthState = state;
         }
-    } else {
-        (*self).smthState = BESPOKE_ABSENT;
     }
 
     // 3. Graphics (graphvex)
@@ -111,8 +107,6 @@ void Bespoke_bridge(Bespoke *self) {
         } else {
             (*self).graphicsState = state;
         }
-    } else {
-        (*self).graphicsState = BESPOKE_ABSENT;
     }
 }
 
@@ -168,22 +162,22 @@ bool Bespoke_check(Bespoke *self) {
     return changed;
 }
 
-void bridgeBespoke(void) {
+void bridgeBespoke() {
     Bespoke_bridge(&s_defaultBespoke);
 }
 
-bool bridgeBespokeCheck(void) {
+bool bridgeBespokeCheck() {
     return Bespoke_check(&s_defaultBespoke);
 }
 
-BespokeState bridgeBespokeGraphicsState(void) {
+BespokeState bridgeBespokeGraphicsState() {
     return s_defaultBespoke.graphicsState;
 }
 
-BespokeState bridgeBespokeNetworkingState(void) {
+BespokeState bridgeBespokeNetworkingState() {
     return s_defaultBespoke.networkingState;
 }
 
-BespokeState bridgeBespokeSmthState(void) {
+BespokeState bridgeBespokeSmthState() {
     return s_defaultBespoke.smthState;
 }

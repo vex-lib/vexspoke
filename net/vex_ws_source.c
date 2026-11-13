@@ -100,7 +100,7 @@ bool VexWsSource_open(VexWsSource *self, const char *url, WebSocketConfig config
 // THE FOUR SEAM OPERATIONS
 
 /** Connect (or reconnect) to the stored target; the host's retry path. */
-bool VexWsSource_connect(void *handle) {
+bool VexWsSource_connect(any handle) {
     VexWsSource *self = (VexWsSource*) handle;
     if (self == nullptr || !(*self).configured) {
         if (self != nullptr)
@@ -124,7 +124,7 @@ bool VexWsSource_connect(void *handle) {
 }
 
 /** Deliver at most one complete message; never consume one we do not hand over. */
-u32 VexWsSource_poll(void *handle, u64 budgetMs) {
+u32 VexWsSource_poll(any handle, u64 budgetMs) {
     VexWsSource *self = (VexWsSource*) handle;
     if (self == nullptr)
         return 0u;
@@ -136,7 +136,7 @@ u32 VexWsSource_poll(void *handle, u64 budgetMs) {
 }
 
 /** Send one TEXT frame; a non-UTF-8 payload is refused, not re-typed. */
-bool VexWsSource_send(void *handle, const u8 *data, u32 length) {
+bool VexWsSource_send(any handle, const u8 *data, u32 length) {
     VexWsSource *self = (VexWsSource*) handle;
     if (self == nullptr || (data == nullptr && length != 0u))
         return false;
@@ -146,7 +146,7 @@ bool VexWsSource_send(void *handle, const u8 *data, u32 length) {
 }
 
 /** Close the connection and release the owned buffer. */
-void VexWsSource_close(void *handle) {
+void VexWsSource_close(any handle) {
     VexWsSource *self = (VexWsSource*) handle;
     if (self == nullptr)
         return;

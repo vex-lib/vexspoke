@@ -62,11 +62,11 @@ void Byte_shutdown(void) {
     BitPool_shutdown(&g_bytePool);
 }
 
-void *Byte_alloc(void) {
+any Byte_alloc(void) {
     return BitPool_alloc(&g_bytePool, ID_BYTE);
 }
 
-void *Byte_allocArray(bytes count) {
+any Byte_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
@@ -78,48 +78,48 @@ void *Byte_allocArray(bytes count) {
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_BYTE), Bytes);
 }
 
-void Byte_free(void *ptr) {
+void Byte_free(any ptr) {
     if (!ptr)
         return;
     if (BitPool_contains(&g_bytePool, ptr)) BitPool_free(&g_bytePool, ptr);
     else Memory_free(ptr);
 }
 
- Byte_get(void *ptr) {
+ Byte_get(any ptr) {
     if (!ptr)
         return () 0;
     return *(*) ptr;
 }
 
-void Byte_set(void *ptr,  value) {
+void Byte_set(any ptr,  value) {
     if (!ptr)
         return;
     *(*) ptr = value;
 }
 
-bool Byte_compareAndSet(void *ptr,  expected,  value) {
+bool Byte_compareAndSet(any ptr,  expected,  value) {
     if (!ptr)
         return false;
     // fallback to simple CAS via __atomic_compare_exchange
     return __atomic_compare_exchange_n((*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
-u64 Byte_type(void *ptr) {
+u64 Byte_type(any ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_bytePool, ptr)) return BitPool_type(&g_bytePool, ptr);
     return Memory_type(ptr);
 }
 
-bytes Byte_length(void *ptr) {
+bytes Byte_length(any ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_bytePool, ptr)) return BitPool_length(&g_bytePool, ptr);
     return Memory_length(ptr);
 }
 
-void *Byte_allocWithValue( value) {
-    void *ptr = Byte_alloc();
+any Byte_allocWithValue( value) {
+    any ptr = Byte_alloc();
     if (ptr) Byte_set(ptr, value);
     return ptr;
 }

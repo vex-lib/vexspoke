@@ -78,56 +78,56 @@
     bool VEX_CAT(NAME, _removeOnNullptr)(NAME *self, VEX_CAT(NAME, NullptrFn) fn)
 
 #define VEX_CHANNELS_DEF(NAME, FROMW)                                       \
-    static void VEX_CAT(NAME, _setTramp)(Reactive *r, pointer v, void *ud) { \
+    static void VEX_CAT(NAME, _setTramp)(Reactive *r, pointer v, any ud) { \
         (void) r; ((VEX_CAT(NAME, SetFn)) ud)(FROMW(v));                    \
     }                                                                       \
-    static void VEX_CAT(NAME, _changedTramp)(Reactive *r, pointer o, pointer n, void *ud) { \
+    static void VEX_CAT(NAME, _changedTramp)(Reactive *r, pointer o, pointer n, any ud) { \
         (void) r; (void) o; ((VEX_CAT(NAME, ChangedFn)) ud)(FROMW(n));      \
     }                                                                       \
-    static void VEX_CAT(NAME, _getTramp)(Reactive *r, pointer v, void *ud) { \
+    static void VEX_CAT(NAME, _getTramp)(Reactive *r, pointer v, any ud) { \
         (void) r; ((VEX_CAT(NAME, GetFn)) ud)(FROMW(v));                    \
     }                                                                       \
-    static void VEX_CAT(NAME, _nullptrTramp)(Reactive *r, void *ud) {       \
+    static void VEX_CAT(NAME, _nullptrTramp)(Reactive *r, any ud) {       \
         (void) r; ((VEX_CAT(NAME, NullptrFn)) ud)();                        \
     }                                                                       \
     bool VEX_CAT(NAME, _addOnSet)(NAME *self, VEX_CAT(NAME, SetFn) fn) {    \
         if (self == nullptr) return false;                                  \
-        return Reactive_watchSet(&(*self).base, VEX_CAT(NAME, _setTramp), (void*) fn); \
+        return Reactive_watchSet(&(*self).base, VEX_CAT(NAME, _setTramp), (any) fn); \
     }                                                                       \
     bool VEX_CAT(NAME, _removeOnSet)(NAME *self, VEX_CAT(NAME, SetFn) fn) { \
         if (self == nullptr) return false;                                  \
-        return Reactive_unwatchSet(&(*self).base, VEX_CAT(NAME, _setTramp), (void*) fn); \
+        return Reactive_unwatchSet(&(*self).base, VEX_CAT(NAME, _setTramp), (any) fn); \
     }                                                                       \
     bool VEX_CAT(NAME, _addOnChanged)(NAME *self, VEX_CAT(NAME, ChangedFn) fn) { \
         if (self == nullptr) return false;                                  \
-        return Reactive_watchChanged(&(*self).base, VEX_CAT(NAME, _changedTramp), (void*) fn); \
+        return Reactive_watchChanged(&(*self).base, VEX_CAT(NAME, _changedTramp), (any) fn); \
     }                                                                       \
     bool VEX_CAT(NAME, _removeOnChanged)(NAME *self, VEX_CAT(NAME, ChangedFn) fn) { \
         if (self == nullptr) return false;                                  \
-        return Reactive_unwatchChanged(&(*self).base, VEX_CAT(NAME, _changedTramp), (void*) fn); \
+        return Reactive_unwatchChanged(&(*self).base, VEX_CAT(NAME, _changedTramp), (any) fn); \
     }                                                                       \
     bool VEX_CAT(NAME, _addOnGet)(NAME *self, VEX_CAT(NAME, GetFn) fn) {    \
         if (self == nullptr) return false;                                  \
-        return Reactive_watchGet(&(*self).base, VEX_CAT(NAME, _getTramp), (void*) fn); \
+        return Reactive_watchGet(&(*self).base, VEX_CAT(NAME, _getTramp), (any) fn); \
     }                                                                       \
     bool VEX_CAT(NAME, _removeOnGet)(NAME *self, VEX_CAT(NAME, GetFn) fn) { \
         if (self == nullptr) return false;                                  \
-        return Reactive_unwatchGet(&(*self).base, VEX_CAT(NAME, _getTramp), (void*) fn); \
+        return Reactive_unwatchGet(&(*self).base, VEX_CAT(NAME, _getTramp), (any) fn); \
     }                                                                       \
     bool VEX_CAT(NAME, _addOnNullptr)(NAME *self, VEX_CAT(NAME, NullptrFn) fn) { \
         if (self == nullptr) return false;                                  \
-        return Reactive_watchNullptr(&(*self).base, VEX_CAT(NAME, _nullptrTramp), (void*) fn); \
+        return Reactive_watchNullptr(&(*self).base, VEX_CAT(NAME, _nullptrTramp), (any) fn); \
     }                                                                       \
     bool VEX_CAT(NAME, _removeOnNullptr)(NAME *self, VEX_CAT(NAME, NullptrFn) fn) { \
         if (self == nullptr) return false;                                  \
-        return Reactive_unwatchNullptr(&(*self).base, VEX_CAT(NAME, _nullptrTramp), (void*) fn); \
+        return Reactive_unwatchNullptr(&(*self).base, VEX_CAT(NAME, _nullptrTramp), (any) fn); \
     }
 
 // --- The object one-liner --------------------------------------------------
 
 #define VEX_RCLASS(NAME)   VEX_CAT(Reactive, NAME)
 #define VEX_RFN(NAME, SUF) VEX_CAT(VEX_CAT(Reactive, NAME), SUF)
-#define VEX_OBJECT_FROM(w) ((void*) (w))   // a NAME* round-trips through the word
+#define VEX_OBJECT_FROM(w) ((any) (w))   // a NAME* round-trips through the word
 
 // Declarations: the class struct + the API + the channels. Requires a trailing
 // `;` at the call site (like any struct declaration).
@@ -181,7 +181,7 @@
 // object has no textual form.
 #define IMPLEMENT_REACTIVE(NAME)                                            \
     static void VEX_CAT(VEX_RCLASS(NAME), _valueOfPtr)(pointer word, char *out, bytes cap) { \
-        snprintf((out), (cap), "%p", (void*) word);                         \
+        snprintf((out), (cap), "%p", (any) word);                         \
     }                                                                       \
     VEX_IMPLEMENT_REACTIVE_BODY(NAME, VEX_CAT(VEX_RCLASS(NAME), _valueOfPtr))
 

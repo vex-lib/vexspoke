@@ -43,8 +43,8 @@ u32 Struct_add(Struct *self, const Field *field);
 // The field row at `index` (mutable, stable), or null.
 Field *Struct_get(const Struct *self, u32 index);
 // Visit every field row in order (cold). Must not mutate the Struct.
-typedef void (*StructVisitFn)(Field *field, u32 index, void *userdata);
-void Struct_forEach(Struct *self, StructVisitFn fn, void *userdata);
+typedef void (*StructVisitFn)(Field *field, u32 index, any userdata);
+void Struct_forEach(Struct *self, StructVisitFn fn, any userdata);
 
 bool Struct_setName(Struct *self, const char *name);
 // The entity row byte stride (0 = unknown). Struct_add does not lay out

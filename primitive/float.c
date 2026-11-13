@@ -63,11 +63,11 @@ void Float_shutdown(void) {
     BitPool_shutdown(&g_f32Pool);
 }
 
-void *Float_alloc(void) {
+any Float_alloc(void) {
     return BitPool_alloc(&g_f32Pool, ID_FLOAT);
 }
 
-void *Float_allocArray(bytes count) {
+any Float_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
@@ -79,26 +79,26 @@ void *Float_allocArray(bytes count) {
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_FLOAT), Bytes);
 }
 
-void Float_free(void *ptr) {
+void Float_free(any ptr) {
     if (!ptr)
         return;
     if (BitPool_contains(&g_f32Pool, ptr)) BitPool_free(&g_f32Pool, ptr);
     else Memory_free(ptr);
 }
 
-f32 Float_get(void *ptr) {
+f32 Float_get(any ptr) {
     if (!ptr)
         return (f32) 0;
     return *(f32*) ptr;
 }
 
-void Float_set(void *ptr, f32 value) {
+void Float_set(any ptr, f32 value) {
     if (!ptr)
         return;
     *(f32*) ptr = value;
 }
 
-bool Float_compareAndSet(void *ptr, f32 expected, f32 value) {
+bool Float_compareAndSet(any ptr, f32 expected, f32 value) {
     if (!ptr)
         return false;
     i32 expBits;
@@ -108,22 +108,22 @@ bool Float_compareAndSet(void *ptr, f32 expected, f32 value) {
     return __atomic_compare_exchange_n((i32*) ptr, &expBits, valBits, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
-u64 Float_type(void *ptr) {
+u64 Float_type(any ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_f32Pool, ptr)) return BitPool_type(&g_f32Pool, ptr);
     return Memory_type(ptr);
 }
 
-bytes Float_length(void *ptr) {
+bytes Float_length(any ptr) {
     if (!ptr)
         return 0;
     if (BitPool_contains(&g_f32Pool, ptr)) return BitPool_length(&g_f32Pool, ptr);
     return Memory_length(ptr);
 }
 
-void *Float_allocWithValue(f32 value) {
-    void *ptr = Float_alloc();
+any Float_allocWithValue(f32 value) {
+    any ptr = Float_alloc();
     if (ptr) Float_set(ptr, value);
     return ptr;
 }

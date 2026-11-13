@@ -346,12 +346,12 @@ static _Atomic u32 g_concSeq;
 static _Atomic bool g_concDone;
 
 // Appends a fixed batch of rows and stamps each admitted row with a unique sequence.
-static void *concWriter(void *arg) {
+static any concWriter(any arg) {
     (void) arg;
     for (u32 i = 0u; i < CONC_ROWS; i++) {
         u8 *row = ChunkedList_addSlot(g_concList);
         if (!row)
-            return (void*) 1;
+            return (any) 1;
         u32 seq = atomic_fetch_add(&g_concSeq, 1u) + 1u;
         memcpy(row, &seq, sizeof(seq));
     }
@@ -359,25 +359,25 @@ static void *concWriter(void *arg) {
 }
 
 // Scans all published rows until writers finish, rejecting holes or invalid stamps.
-static void *concReader(void *arg) {
+static any concReader(any arg) {
     (void) arg;
     while (!atomic_load(&g_concDone)) {
         u32 n = ChunkedList_size(g_concList);
         for (u32 i = 0u; i < n; i++) {
             u8 *row = ChunkedList_slot(g_concList, i);
             if (!row)
-                return (void*) 1; // hole below the published count: defect
+                return (any) 1; // hole below the published count: defect
             u32 seq = 0u;
             memcpy(&seq, row, sizeof(seq));
             if (seq > (u32) CONC_TOTAL)
-                return (void*) 1; // out of range (0 = claimed but not yet stamped)
+                return (any) 1; // out of range (0 = claimed but not yet stamped)
         }
     }
     return nullptr;
 }
 
 // Orders pointer values for deterministic comparison of concurrent writer results.
-static int cmpPtr(const void *a, const void *b) {
+static int cmpPtr(const any a, const any b) {
     u8 * const *pa = (u8 * const *) a;
     u8 * const *pb = (u8 * const *) b;
     if (*pa < *pb)
@@ -409,7 +409,7 @@ static void testConcurrentWriters(void) {
 
     int writerFail = 0;
     for (int i = 0; i < CONC_WRITERS; i++) {
-        void *ret = nullptr;
+        any ret = nullptr;
         pthread_join(writers[i], &ret);
         if (ret != nullptr)
             writerFail = 1;
@@ -417,7 +417,7 @@ static void testConcurrentWriters(void) {
     atomic_store(&g_concDone, true);
     int readerFail = 0;
     for (int i = 0; i < CONC_READERS; i++) {
-        void *ret = nullptr;
+        any ret = nullptr;
         pthread_join(readers[i], &ret);
         if (ret != nullptr)
             readerFail = 1;

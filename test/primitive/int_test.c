@@ -24,7 +24,7 @@ static int g_failures = 0;
 int main(void) {
     CHECK(Int_init());
 
-    void *p = Int_alloc();
+    any p = Int_alloc();
     CHECK(p != nullptr);
     CHECK(Int_get(p) == 0);
     CHECK(Int_type(p) == ID_INT);
@@ -36,11 +36,11 @@ int main(void) {
         CHECK(Int_get(p) == values[i]);
     }
 
-    void *q = Int_allocWithValue(42);
+    any q = Int_allocWithValue(42);
     CHECK(q != nullptr && Int_get(q) == 42);
-    void *r = Int(-7); // dispatch macro -> Int_1
+    any r = Int(-7); // dispatch macro -> Int_1
     CHECK(r != nullptr && Int_get(r) == -7);
-    void *s = Int_0();
+    any s = Int_0();
     CHECK(s != nullptr && Int_type(s) == ID_INT);
 
     CHECK(Int_compareAndSet(p, Int_get(p), 999));
@@ -49,7 +49,7 @@ int main(void) {
     CHECK(Int_get(p) == 999);
 
     CHECK(Int_allocArray(0) == nullptr);
-    void *arr = Int_array(8);
+    any arr = Int_array(8);
     CHECK(arr != nullptr);
     CHECK((Int_type(arr) & MASK_CLASS) == ID_INT);
     CHECK(Int_length(arr) >= 8);
