@@ -10,7 +10,7 @@
 
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
-#include "relational/variable_slot.h"
+#include "substrate/variable/variable_slot.h"
 
 ;;DEFINITION
 /**

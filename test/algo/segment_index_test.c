@@ -5,8 +5,8 @@
 #include "algo/segment_index.h"
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
-#include "relational/variable_hash_map.h"
-#include "relational/variable_slot.h"
+#include "substrate/variable/variable_hash_map.h"
+#include "substrate/variable/variable_slot.h"
 
 ;;OVERVIEW
 /**

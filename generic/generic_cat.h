@@ -20,4 +20,13 @@
 #define VEX_CAT(a, b)  VEX_CAT_(a, b)
 #endif
 
+// VEX_STR is the matching two-level stringize: `#` suppresses expansion of its
+// operand, so the outer macro expands the argument first and the inner `#`
+// spells the result. The generic stamps use it to write the class name
+// annotation from the element token, including a nested `List_<T>`.
+#ifndef VEX_STR
+#define VEX_STR_(x) #x
+#define VEX_STR(x)  VEX_STR_(x)
+#endif
+
 #endif // GENERIC_GENERIC_CAT_H

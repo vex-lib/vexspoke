@@ -3,8 +3,8 @@
 
 #include "vex.h"
 
-#include "relational/variable_hash_map.h"
-#include "relational/variable_mini_map.h"
+#include "substrate/variable/variable_hash_map.h"
+#include "substrate/variable/variable_mini_map.h"
 #include "struct/chunked_list.h"
 
 // algo/segment_index.h — positional segment index for dotted-name search.

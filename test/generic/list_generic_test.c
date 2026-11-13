@@ -2,15 +2,22 @@
 //
 // Overkill on purpose (the Dynamic Scalability & Anti-Hardcoding Law):
 //   - List(u32)(23) constructs a typed handle over the type-erased engine;
-//   - the stamp's element class id and stride reach the engine metadata;
+//   - the stamp's element class id and explicit stride reach the engine
+//     metadata, including the floor shapes that have no registered class id
+//     (ld128, b16, mat2f) and the multi-word segment records;
 //   - add/get/slot round-trip through the method-first macros, including a
 //     writable slot and a hostile index;
-//   - four scalar instantiations (u8, i32, u32, u64) keep their own widths,
-//     including a negative i32 and a full-range u64;
+//   - every scalar width keeps its own size, including a negative i32, a full
+//     range u64, and a 16-bit u16;
+//   - a multi-word value (ld128) is stored whole through List_addSlot/memcpy,
+//     not truncated to one engine word;
 //   - the object stamp (Buffer) stores a pointer word and returns the pointer;
 //   - growth past the requested capacity keeps every element;
 //   - null handles are cold-safe (no crash, safe defaults);
-//   - two instantiations are distinct C types over one engine block layout.
+//   - two instantiations are distinct C types over one engine block layout;
+//   - List(List(u32)) nests at depth 2 and stores the inner handle;
+//   - every VEX_LIST_FAMILY entry constructs, reports its stride, and frees,
+//     and every entry also gets its nested depth-2 stamp exercised.
 //
 // The engine's own accessors are not called here: generic/classgeneric_repo.h
 // owns the method-first names in this translation unit, and the typed macros
@@ -20,6 +27,7 @@
 
 #include "generic/generic.h"
 #include "oop/vexspoke_type.h"
+#include "primitive/buffer.h"
 
 static i32 g_failures = 0;
 
@@ -30,6 +38,34 @@ static i32 g_failures = 0;
             g_failures++;                                                  \
         }                                                                  \
     } while (0)
+
+// Construct, verify the slot width, and release one value-stored entry.
+#define VEX_TEST_VALUE(T, ID)                                              \
+    do {                                                                   \
+        List(T) *list = List(T)(4);                                        \
+        CHECK(list != nullptr);                                            \
+        CHECK(List_stride((List*) list) == sizeof(T));                     \
+        List_free(T)(list);                                                \
+    } while (0);
+
+// Construct, verify the pointer slot width, and release one object entry.
+#define VEX_TEST_OBJECT(T, ID)                                             \
+    do {                                                                   \
+        List(T) *list = List(T)(4);                                        \
+        CHECK(list != nullptr);                                            \
+        CHECK(List_stride((List*) list) == sizeof(T*));                    \
+        List_free(T)(list);                                                \
+    } while (0);
+
+// Construct, verify the inner-handle slot width, and release one nested entry.
+#define VEX_TEST_NESTED(T, ID)                                             \
+    do {                                                                   \
+        List(List(T)) *list = List(List(T))(4);                            \
+        CHECK(list != nullptr);                                            \
+        CHECK(List_stride((List*) list) == sizeof(VEX_LIST_CLASS(T)*));    \
+        CHECK(List_elementClassId((List*) list) == ID_LIST);               \
+        List_free(List(T))(list);                                          \
+    } while (0);
 
 int main() {
     // --- u32: construction, metadata, round trip --------------------------
@@ -71,6 +107,15 @@ int main() {
     CHECK(List_get(u8)(octets, 0) == 200);
     CHECK(List_get(u8)(octets, 1) == 255);
 
+    // --- u16: two bytes per slot -----------------------------------------
+    List(u16) *halves = List(u16)(4);
+    CHECK(halves != nullptr);
+    CHECK(List_stride((List*) halves) == 2);
+    List_add(u16)(halves, 0xBEEF);
+    List_add(u16)(halves, 0x1234);
+    CHECK(List_get(u16)(halves, 0) == 0xBEEF);
+    CHECK(List_get(u16)(halves, 1) == 0x1234);
+
     // --- i32: the sign survives the engine word --------------------------
     List(i32) *signedNumbers = List(i32)(8);
     CHECK(signedNumbers != nullptr);
@@ -88,6 +133,18 @@ int main() {
     List_add(u64)(words, huge);
     CHECK(List_get(u64)(words, 0) == huge);
 
+    // --- ld128: a multi-word value is stored whole -----------------------
+    List(ld128) *wideValues = List(ld128)(4);
+    CHECK(wideValues != nullptr);
+    CHECK(List_stride((List*) wideValues) == sizeof(ld128));
+    ld128 big = {0};
+    big.integer = 0x1122334455667788ll;
+    big.fraction = 0.5;
+    List_add(ld128)(wideValues, big);
+    ld128 back = List_get(ld128)(wideValues, 0);
+    CHECK(back.integer == big.integer);
+    CHECK(back.fraction == big.fraction);
+
     // --- object stamp: the slot holds a pointer, not a copy --------------
     Buffer *buffer = Buffer_1(4);
     CHECK(buffer != nullptr);
@@ -100,6 +157,28 @@ int main() {
     CHECK(bufferSlot != nullptr);
     CHECK(*bufferSlot == buffer);
     CHECK(List_get(Buffer)(buffers, 1) == nullptr);
+
+    // --- nested depth 2: List(List(u32)) stores the inner handle ---------
+    List(u32) *inner = List(u32)(4);
+    CHECK(inner != nullptr);
+    List_add(u32)(inner, 42);
+    List(List(u32)) *outer = List(List(u32))(4);
+    CHECK(outer != nullptr);
+    CHECK(List_stride((List*) outer) == sizeof(List_u32*));
+    CHECK(List_elementClassId((List*) outer) == ID_LIST);
+    List_add(List(u32))(outer, inner);
+    CHECK(List_get(List(u32))(outer, 0) == inner);
+    List_u32 **innerSlot = List_slot(List(u32))(outer, 0);
+    CHECK(innerSlot != nullptr);
+    CHECK(*innerSlot == inner);
+    CHECK(List_get(List(u32))(outer, 1) == nullptr);
+    CHECK(List_get(u32)(*innerSlot, 0) == 42);
+
+    // --- nested object list: List(List(Buffer)) --------------------------
+    List(List(Buffer)) *bufferBuckets = List(List(Buffer))(4);
+    CHECK(bufferBuckets != nullptr);
+    List_add(List(Buffer))(bufferBuckets, buffers);
+    CHECK(List_get(List(Buffer))(bufferBuckets, 0) == buffers);
 
     // --- growth past the requested capacity -----------------------------
     List(u32) *grown = List(u32)(2048);
@@ -120,13 +199,24 @@ int main() {
     CHECK(sizeof(List_u8) == sizeof(List));
     CHECK(sizeof(List_u32) == sizeof(List));
     CHECK(sizeof(List_Buffer) == sizeof(List));
+    CHECK(sizeof(List_List_u32) == sizeof(List));
+
+    // --- every registry entry: construct, stride, free ------------------
+    VEX_LIST_VALUES(VEX_TEST_VALUE)
+    VEX_LIST_OBJECTS(VEX_TEST_OBJECT)
+    VEX_LIST_FAMILY(VEX_TEST_NESTED)
 
     // --- release, objects before the buffer they point at ---------------
+    List_free(List(Buffer))(bufferBuckets);
+    List_free(List(u32))(outer);
+    List_free(u32)(inner);
+    List_free(ld128)(wideValues);
     List_free(u32)(grown);
     List_free(Buffer)(buffers);
     Buffer_free(buffer);
     List_free(u64)(words);
     List_free(i32)(signedNumbers);
+    List_free(u16)(halves);
     List_free(u8)(octets);
     List_free(u32)(numbers);
 

@@ -99,10 +99,9 @@ static u8 *bufferGrow(Collection *c, bytes needed) {
     return next;
 }
 
-bool List_init(List *self, u32 elementClass, bytes capacity) {
+bool List_initStride(List *self, u32 elementClass, bytes stride, bytes capacity) {
     if (!self) return false;
 
-    bytes stride = Stride_get(elementClass);
     bytes cap = capacity < DEFAULT_CAPACITY ? DEFAULT_CAPACITY : capacity;
 
     Collection *c = asCollection(self);
@@ -128,6 +127,10 @@ bool List_init(List *self, u32 elementClass, bytes capacity) {
     memset(data, 0, Bytes);
     (*c).data = data;
     return true;
+}
+
+bool List_init(List *self, u32 elementClass, bytes capacity) {
+    return List_initStride(self, elementClass, Stride_get(elementClass), capacity);
 }
 
 List *List_3(u32 elementClass, bytes capacity, bytes count) {

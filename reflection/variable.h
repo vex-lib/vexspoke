@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "vex.h"
 
-#include "relational/variable_slot.h"
+#include "substrate/variable/variable_slot.h"
 
 // reflection/variable.h — the Variable metadata record (base of the hierarchy).
 //

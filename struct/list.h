@@ -16,6 +16,12 @@ typedef struct List {
     Collection collection;
 } List;
 
+// Initialize caller-owned List storage in place with an explicit element stride.
+// The typed generic stamps pass sizeof(T) for a value and sizeof(T*) for an
+// object, so a floor shape with no registered class number (ld128, b16) still
+// gets the exact slot width. The class number stays metadata.
+bool List_initStride(List *self, u32 element_class, bytes stride, bytes capacity);
+
 // Initialize caller-owned List storage in place: element_class plus a zeroed
 // data buffer of capacity slots (min 1024, legacy default). The storage can
 // still be released with List_free even when the buffer is refused. Returns

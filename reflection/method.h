@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "vex.h"
 
-#include "relational/variable_slot.h"
+#include "substrate/variable/variable_slot.h"
 
 // reflection/method.h — the Method metadata record.
 //
