@@ -70,38 +70,38 @@ any Short_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
-    bytes Bytes = count * sizeof();
-    // For compound types, elem_size 2 already accounts for stride, but sizeof() is placeholder
+    bytes Bytes = count * sizeof(i16);
+    // For compound types, elem_size 2 already accounts for stride, but sizeof(i16) is placeholder
     // Use elem_size for true stride where c_type is int64 placeholder
-    if (count > 1 && 2 != sizeof())
+    if (count > 1 && 2 != sizeof(i16))
         Bytes = count * 2;
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_SHORT), Bytes);
 }
 
-void Short_free(any ptr) {
+fn Short_free(any ptr) {
     if (!ptr)
         return;
     if (BitPool_contains(&g_shortPool, ptr)) BitPool_free(&g_shortPool, ptr);
     else Memory_free(ptr);
 }
 
- Short_get(any ptr) {
+i16 Short_get(any ptr) {
     if (!ptr)
-        return () 0;
-    return *(*) ptr;
+        return (i16) 0;
+    return *(i16*) ptr;
 }
 
-void Short_set(any ptr,  value) {
+fn Short_set(any ptr, i16 value) {
     if (!ptr)
         return;
-    *(*) ptr = value;
+    *(i16*) ptr = value;
 }
 
-bool Short_compareAndSet(any ptr,  expected,  value) {
+bool Short_compareAndSet(any ptr, i16 expected, i16 value) {
     if (!ptr)
         return false;
     // fallback to simple CAS via __atomic_compare_exchange
-    return __atomic_compare_exchange_n((*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
+    return __atomic_compare_exchange_n((i16*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
 u64 Short_type(any ptr) {

@@ -70,38 +70,38 @@ any Byte_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
-    bytes Bytes = count * sizeof();
-    // For compound types, elem_size 1 already accounts for stride, but sizeof() is placeholder
+    bytes Bytes = count * sizeof(i8);
+    // For compound types, elem_size 1 already accounts for stride, but sizeof(i8) is placeholder
     // Use elem_size for true stride where c_type is int64 placeholder
-    if (count > 1 && 1 != sizeof())
+    if (count > 1 && 1 != sizeof(i8))
         Bytes = count * 1;
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_BYTE), Bytes);
 }
 
-void Byte_free(any ptr) {
+fn Byte_free(any ptr) {
     if (!ptr)
         return;
     if (BitPool_contains(&g_bytePool, ptr)) BitPool_free(&g_bytePool, ptr);
     else Memory_free(ptr);
 }
 
- Byte_get(any ptr) {
+i8 Byte_get(any ptr) {
     if (!ptr)
-        return () 0;
-    return *(*) ptr;
+        return (i8) 0;
+    return *(i8*) ptr;
 }
 
-void Byte_set(any ptr,  value) {
+fn Byte_set(any ptr, i8 value) {
     if (!ptr)
         return;
-    *(*) ptr = value;
+    *(i8*) ptr = value;
 }
 
-bool Byte_compareAndSet(any ptr,  expected,  value) {
+bool Byte_compareAndSet(any ptr, i8 expected, i8 value) {
     if (!ptr)
         return false;
     // fallback to simple CAS via __atomic_compare_exchange
-    return __atomic_compare_exchange_n((*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
+    return __atomic_compare_exchange_n((i8*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
 u64 Byte_type(any ptr) {
