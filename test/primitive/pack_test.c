@@ -4,7 +4,7 @@
 // carries no state). Proves byte/short/int pack+unpack round trips, including
 // the sign-carrying negative cases.
 
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "primitive/pack.h"
@@ -20,14 +20,14 @@ static int g_failures = 0;
     } while (0)
 
 // Verifies signed and boundary round trips for byte, short, and int packing helpers.
-int main(void) {
+int main() {
     // Byte pair -> short.
     CHECK(Pack_packByte(1, 2) == 0x0102);
     CHECK(Pack_unpackByte1(Pack_packByte(1, 2)) == 1);
     CHECK(Pack_unpackByte2(Pack_packByte(1, 2)) == 2);
     CHECK(Pack_unpackByte1(Pack_packByte(-1, -2)) == -1);
     CHECK(Pack_unpackByte2(Pack_packByte(-1, -2)) == -2);
-    CHECK(Pack_unpackByte2(Pack_packByte(0x7F, 0x80)) == () 0x80);
+    CHECK(Pack_unpackByte2(Pack_packByte(0x7F, 0x80)) == (i8) 0x80);
 
     // Short pair -> int.
     CHECK(Pack_packShort(1, 2) == 0x00010002);
