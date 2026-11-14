@@ -3,7 +3,10 @@
 
 #if defined(VEX_PLATFORM_APPLE)
 #include <CoreFoundation/CoreFoundation.h>
-#include <Security/Security.h>
+/* The SDK umbrella <Security/Security.h> collides with this tree's
+ * security/security.h on case-insensitive filesystems; SecItem.h carries the
+ * keychain API and pulls SecBase.h for the errSec* codes. */
+#include <Security/SecItem.h>
 #endif
 
 ;;DEFINITION
