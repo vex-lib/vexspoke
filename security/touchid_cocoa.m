@@ -4,6 +4,11 @@
 // (LAContext). Evaluates biometric policy (TouchID) with passcode fallback if configured.
 
 
+/* Foundation's NSURLCredential needs the Security identity/trust types, and the
+ * SDK umbrella <Security/Security.h> collides with this tree's
+ * security/security.h on case-insensitive filesystems. */
+#import <Security/SecIdentity.h>
+#import <Security/SecTrust.h>
 #import <Foundation/Foundation.h>
 #import <LocalAuthentication/LocalAuthentication.h>
 
