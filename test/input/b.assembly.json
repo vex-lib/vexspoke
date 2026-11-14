@@ -16,7 +16,7 @@
     "entry": "hardware_input_test.c",
     "sources": ["hardware_input_test.c", "input_test.c", "key_map_test.c"],
     "includes": ["vexspoke", "re", "lifetime"],
-    "dependencies": ["lifetime", "re", "vexspoke"],
+    "dependencies": ["../lib", "lifetime", "re", "vexspoke"],
     "defines": [],
     "options": [],
     "link": "executable"
