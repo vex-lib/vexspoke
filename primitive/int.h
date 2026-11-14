@@ -2,6 +2,7 @@
 #define PRIMITIVE_INT_H
 
 #include "vex.h"
+#include "nio/nio.h"
 
 // primitive/int.h — Int primitive (Legacy: primitive/Int.java).
 // Delegates to Bit32 width pool (4B stride).

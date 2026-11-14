@@ -2,6 +2,7 @@
 #define PRIMITIVE_LONG_H
 
 #include "vex.h"
+#include "nio/nio.h"
 
 // primitive/long.h — Long primitive (Legacy: primitive/Long.java).
 // Delegates to Bit64 width pool (8B stride).

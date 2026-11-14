@@ -2,6 +2,7 @@
 #define PRIMITIVE_FIXED64_H
 
 #include "vex.h"
+#include "nio/nio.h"
 
 // primitive/fixed64.h — Fixed64 primitive (Legacy: primitive/Fixed64.java).
 // Delegates to Bit64 width pool (8B stride).

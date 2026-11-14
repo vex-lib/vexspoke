@@ -2,6 +2,7 @@
 #define PRIMITIVE_f64_H
 
 #include "vex.h"
+#include "nio/nio.h"
 
 // primitive/d64.h — d64 primitive (Legacy: primitive/d64.java).
 // Delegates to Bit64 width pool (8B stride).

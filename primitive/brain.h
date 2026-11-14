@@ -2,6 +2,7 @@
 #define PRIMITIVE_BRAIN_H
 
 #include "vex.h"
+#include "nio/nio.h"
 
 // primitive/brain.h — Brain primitive (Legacy: primitive/Brain.java).
 // Delegates to Bit16 width pool (2B stride).

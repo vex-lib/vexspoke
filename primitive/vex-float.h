@@ -2,6 +2,7 @@
 #define PRIMITIVE_FLOAT_H
 
 #include "vex.h"
+#include "nio/nio.h"
 
 // primitive/f32.h — Float primitive (Legacy: primitive/Float.java).
 // Delegates to Bit32 width pool (4B stride).

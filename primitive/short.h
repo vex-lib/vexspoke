@@ -2,6 +2,7 @@
 #define PRIMITIVE_SHORT_H
 
 #include "vex.h"
+#include "nio/nio.h"
 
 // primitive/short.h — Short primitive (Legacy: primitive/Short.java).
 // Delegates to Bit16 width pool (2B stride).

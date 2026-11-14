@@ -2,6 +2,7 @@
 #define PRIMITIVE_BOOL_H
 
 #include "vex.h"
+#include "nio/nio.h"
 
 // primitive/bool.h — Bool primitive (Legacy: primitive/Bool.java).
 // Delegates to Bit8 width pool (1B stride).
