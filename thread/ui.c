@@ -29,7 +29,7 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Core Functions:
- *   - UIThread_invoke(void)
+ *   - UIThread_invoke()
  *   - UIThread_submit(w, packet)
  *   - UIThread_stop(w)
  *   - UIThread_free(w)
@@ -43,15 +43,15 @@
 ;;INCOMPLETE // tick yet (legacy tickComponents — caret blink, scroll inertia).
 ;;INCOMPLETE // Packet drain and lifecycle are fully live.
 
-static void ui_job(Thread *self, any task) {
-    (void)self;
+static fn ui_job(Thread *self, any task) {
+    (fn)self;
     if (ComputeJob_run(task)) return;   // a generic job handed to this role
     if (!task)
         return; // TODO(ui): tickComponents(self) once UI components land.
     // TODO(ui): dispatch(packet) for queued UI packets.
 }
 
-Thread *UIThread_invoke(void) {
+Thread *UIThread_invoke() {
     return Thread(TYPE_THREAD_UI_SINGLETON, ui_job, 1024, true, false);
 }
 
@@ -59,10 +59,10 @@ bool UIThread_submit(Thread *w, any packet) {
     return Thread_submit(w, packet);
 }
 
-void UIThread_stop(Thread *w) {
+fn UIThread_stop(Thread *w) {
     Thread_stop(w);
 }
 
-void UIThread_free(Thread *w) {
+fn UIThread_free(Thread *w) {
     Thread_free(w);
 }

@@ -1,7 +1,6 @@
 // regex/parser.c — the RegexParser: pattern bytes to a flat AST plus bitmaps.
 
 #include "vex.h"
-
 #include "regex/parser.h"
 
 #include "nio/mem.h"
@@ -104,7 +103,7 @@ static bool isAsciiDigit(char c) {
 }
 
 // Records the first rejection reason; later ones are ignored.
-static void parserFail(RegexParser *parser, const char *message) {
+static fn parserFail(RegexParser *parser, const char *message) {
     if (!(*parser).failed) {
         (*parser).failed = true;
         (*parser).error = message;
@@ -594,7 +593,7 @@ RegexCharClass *RegexParser_releaseClasses(RegexParser *parser, u32 *outCount) {
     return classes;
 }
 
-void RegexParser_free(RegexParser *parser) {
+fn RegexParser_free(RegexParser *parser) {
     RegexNodeList_free(&(*parser).nodes);
     if ((*parser).classes)
         Memory_free((*parser).classes);

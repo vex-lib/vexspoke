@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "security/otpauth.h"
 #include "security/base32.h"
 

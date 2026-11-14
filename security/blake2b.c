@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "security/blake2b.h"
 
 ;;DEFINITION
@@ -40,7 +39,7 @@
  * logging beyond the cold THROW.
  * ======================================================================== */
 
-static const u64 BLAKE2B_IV[8] = {
+static constexpr u64 BLAKE2B_IV[8] = {
     0x6a09e667f3bcc908ULL, 0xbb67ae8584caa73bULL,
     0x3c6ef372fe94f82bULL, 0xa54ff53a5f1d36f1ULL,
     0x510e527fade682d1ULL, 0x9b05688c2b3e6c1fULL,
@@ -66,7 +65,7 @@ static u64 rotr64(u64 v, u32 bits) {
     return (v >> bits) | (v << (64u - bits));
 }
 
-static void mix(u64 *v, u32 a, u32 b, u32 c, u32 d,
+static fn mix(u64 *v, u32 a, u32 b, u32 c, u32 d,
                 u64 x, u64 y) {
     v[a] = v[a] + v[b] + x;
     v[d] = rotr64(v[d] ^ v[a], 32u);
@@ -78,7 +77,7 @@ static void mix(u64 *v, u32 a, u32 b, u32 c, u32 d,
     v[b] = rotr64(v[b] ^ v[c], 63u);
 }
 
-static void compress(Blake2b *self, const u8 *block, bool last) {
+static fn compress(Blake2b *self, const u8 *block, bool last) {
     u64 m[16];
     for (u32 i = 0; i < 16u; ++i) {
         m[i] = 0u;
@@ -140,7 +139,7 @@ bool Blake2b_initKeyed(Blake2b *self, bytes outlen, const u8 *key, bytes keylen)
     return true;
 }
 
-void Blake2b_update(Blake2b *self, const_any data, bytes len) {
+fn Blake2b_update(Blake2b *self, const_any data, bytes len) {
     if (self == nullptr)
         return;
     if (len == 0u)

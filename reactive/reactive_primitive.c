@@ -3,7 +3,6 @@
 // waiver).
 
 #include "vex.h"
-
 #include "reactive/reactive_primitive.h"
 
 #include "nio/mem.h"
@@ -82,7 +81,7 @@ static if64 if64Of(pointer word) {
     return value;
 }
 
-static if64 if64Zero(void) {
+static if64 if64Zero() {
     if64 zero = { 0, 0.0f };
     return zero;
 }

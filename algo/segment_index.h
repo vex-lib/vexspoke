@@ -2,7 +2,6 @@
 #define ALGO_SEGMENT_INDEX_H
 
 #include "vex.h"
-
 #include "substrate/variable/variable_hash_map.h"
 #include "substrate/variable/variable_mini_map.h"
 #include "struct/chunked_list.h"
@@ -76,14 +75,14 @@ int SegmentIndex_segment(const char *path, bytes index, char *out, bytes cap);
 
 // --- Constructors ---
 bool SegmentIndex_init(SegmentIndex *index);
-void SegmentIndex_shutdown(SegmentIndex *index);
-SegmentIndex *SegmentIndex_0(void);
-void SegmentIndex_free(SegmentIndex *index);
+fn SegmentIndex_shutdown(SegmentIndex *index);
+SegmentIndex *SegmentIndex_0();
+fn SegmentIndex_free(SegmentIndex *index);
 #define SegmentIndex(...) CONSTRUCTOR_DISPATCH(SegmentIndex, __VA_ARGS__)
 
 // --- Core functions ---
 // Drop every entry + posting, keeping the index usable.
-void SegmentIndex_clear(SegmentIndex *index);
+fn SegmentIndex_clear(SegmentIndex *index);
 // Index a name (folded + segmented + posted). Returns the entry id, or
 // SEGMENT_ENTRY_NONE on an invalid name or OOM.
 u32 SegmentIndex_add(SegmentIndex *index, const char *name, pointer payload);
@@ -101,7 +100,7 @@ u32 SegmentIndex_count(const SegmentIndex *index);
 bool SegmentIndex_isEmpty(const SegmentIndex *index);
 
 // --- String projections (the toString Law) ---
-void SegmentIndex_toString(const SegmentIndex *index, char *dest, bytes cap, bool *outTruncated);
-void SegmentIndex_toStringStruct(const SegmentIndex *index, char *dest, bytes cap, bool *outTruncated);
+fn SegmentIndex_toString(const SegmentIndex *index, char *dest, bytes cap, bool *outTruncated);
+fn SegmentIndex_toStringStruct(const SegmentIndex *index, char *dest, bytes cap, bool *outTruncated);
 
 #endif

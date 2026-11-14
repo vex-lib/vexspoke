@@ -2,18 +2,19 @@
 #define PRIMITIVE_FIXED32_H
 
 #include "vex.h"
+
 // primitive/fixed32.h — Fixed32 primitive (Legacy: primitive/Fixed32.java).
 // Delegates to Bit32 width pool (4B stride).
 
 extern BitPool g_fixed32Pool;
 
-bool Fixed32_init(void);
-void Fixed32_shutdown(void);
-any Fixed32_alloc(void);
+bool Fixed32_init();
+fn Fixed32_shutdown();
+any Fixed32_alloc();
 any Fixed32_allocArray(bytes count);
-void Fixed32_free(any ptr);
+fn Fixed32_free(any ptr);
 i32 Fixed32_get(any ptr);
-void Fixed32_set(any ptr, i32 value);
+fn Fixed32_set(any ptr, i32 value);
 bool Fixed32_compareAndSet(any ptr, i32 expected, i32 value);
 u64 Fixed32_type(any ptr);
 bytes Fixed32_length(any ptr);

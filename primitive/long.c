@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "primitive/long.h"
 
 #include "nio/mem.h"
@@ -31,11 +30,11 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Constructors:
- *   - Long_init(void)
+ *   - Long_init()
  *
  * Core Functions:
- *   - Long_shutdown(void)
- *   - Long_alloc(void)
+ *   - Long_shutdown()
+ *   - Long_alloc()
  *   - Long_allocArray(count)
  *   - Long_free(ptr)
  *   - Long_compareAndSet(ptr, expected, value)
@@ -54,16 +53,16 @@
 
 BitPool g_longPool;
 
-bool Long_init(void) {
+bool Long_init() {
     g_longPool = BitPool(8, 1024);
     return BitPool_live(&g_longPool);
 }
 
-void Long_shutdown(void) {
+fn Long_shutdown() {
     BitPool_shutdown(&g_longPool);
 }
 
-any Long_alloc(void) {
+any Long_alloc() {
     return BitPool_alloc(&g_longPool, ID_LONG);
 }
 
@@ -79,7 +78,7 @@ any Long_allocArray(bytes count) {
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_LONG), Bytes);
 }
 
-void Long_free(any ptr) {
+fn Long_free(any ptr) {
     if (!ptr)
         return;
     if (BitPool_contains(&g_longPool, ptr)) BitPool_free(&g_longPool, ptr);
@@ -92,7 +91,7 @@ int64_t Long_get(any ptr) {
     return *(int64_t*) ptr;
 }
 
-void Long_set(any ptr, int64_t value) {
+fn Long_set(any ptr, int64_t value) {
     if (!ptr)
         return;
     *(int64_t*) ptr = value;

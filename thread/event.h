@@ -9,9 +9,9 @@
 // event packets from its queue. tickWhenIdle is on: the pump runs even when
 // no packets arrive.
 
-Thread *EventThread_invoke(void);
+Thread *EventThread_invoke();
 bool EventThread_submit(Thread *w, any packet);
-void EventThread_stop(Thread *w);
-void EventThread_free(Thread *w);
+fn EventThread_stop(Thread *w);
+fn EventThread_free(Thread *w);
 
 #endif

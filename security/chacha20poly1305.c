@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "security/chacha20poly1305.h"
 #include "security/chacha20.h"
 #include "security/crypto.h"
@@ -37,7 +36,7 @@
  * allocation, no logging beyond the cold rejection.
  * ======================================================================== */
 
-static void pad16(Poly1305 *ctx, bytes len) {
+static fn pad16(Poly1305 *ctx, bytes len) {
     bytes remainder = len % 16u;
     if (remainder != 0u) {
         static const u8 zeros[16] = {0};
@@ -45,12 +44,12 @@ static void pad16(Poly1305 *ctx, bytes len) {
     }
 }
 
-static void store64le(u8 *p, u64 v) {
+static fn store64le(u8 *p, u64 v) {
     for (u32 i = 0; i < 8u; ++i)
         p[i] = (u8) (v >> (8u * i));
 }
 
-static void mac(const u8 key[CHACHA20POLY1305_KEY_SIZE],
+static fn mac(const u8 key[CHACHA20POLY1305_KEY_SIZE],
                 const u8 nonce[CHACHA20POLY1305_NONCE_SIZE],
                 const u8 *aad, bytes aadLen,
                 const u8 *ciphertext, bytes len,

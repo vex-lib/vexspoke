@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "input/turntable.h"
 
 #include <math.h>
@@ -69,7 +68,7 @@ TurntableState TurntableState_1(u8 deckIndex) {
     return state;
 }
 
-void TurntableState_processEvent(TurntableState *state, TurntableEvent event) {
+fn TurntableState_processEvent(TurntableState *state, TurntableEvent event) {
     if (state == nullptr) return;
 
     (*state).platterTouched = event.platterTouched;
@@ -114,7 +113,7 @@ void TurntableState_processEvent(TurntableState *state, TurntableEvent event) {
     }
 }
 
-void TurntableState_tick(TurntableState *state, f32 deltaSeconds) {
+fn TurntableState_tick(TurntableState *state, f32 deltaSeconds) {
     if (state == nullptr || deltaSeconds <= 0.0f) return;
 
     if (!(*state).platterTouched && (*state).isPlaying) {

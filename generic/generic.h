@@ -2,7 +2,6 @@
 #define GENERIC_GENERIC_H
 
 #include "vex.h"
-
 #include "generic/generic_cat.h"
 #include "generic/list_family.h"
 #include "generic/list_tmpl.h"

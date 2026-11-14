@@ -34,7 +34,7 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Constructors:
- *   - Future_0(void)
+ *   - Future_0()
  *   - Future_2(init, count)
  *
  * Core Functions:
@@ -57,7 +57,7 @@ typedef struct Future {
 } Future;
 
 // Allocates one unresolved future with a zero payload.
-Future *Future_0(void) {
+Future *Future_0() {
     u64 type = Type_make(PROJ_VEXSPOKE, FORM_SINGLETON, ID_FUTURE) | WRAP2_FUTURE;
     Future *future = Memory_alloc(type, sizeof(Future));
     if (!future)
@@ -81,7 +81,7 @@ Future *Future_2(const Future *init, bytes count) {
     return p;
 }
 // Releases the allocation through the engine-owned Memory ABI.
-void Future_free(Future *future) {
+fn Future_free(Future *future) {
     if (!future) return;
     Memory_free(future);
 }

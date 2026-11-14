@@ -41,13 +41,13 @@ static inline PianoKeyEvent PianoKeyEvent_3(u8 note, bool isDown, f32 velocity) 
     return (PianoKeyEvent) { .note = note, .isDown = isDown, .velocity = velocity };
 }
 #define PianoKeyEvent(...) CONSTRUCTOR_DISPATCH(PianoKeyEvent, __VA_ARGS__)
-static inline void PianoKeyEvent_setNote(PianoKeyEvent *event, u8 note) {
+static inline fn PianoKeyEvent_setNote(PianoKeyEvent *event, u8 note) {
     if (event) (*event).note = note;
 }
-static inline void PianoKeyEvent_setDown(PianoKeyEvent *event, bool isDown) {
+static inline fn PianoKeyEvent_setDown(PianoKeyEvent *event, bool isDown) {
     if (event) (*event).isDown = isDown;
 }
-static inline void PianoKeyEvent_setVelocity(PianoKeyEvent *event, f32 velocity) {
+static inline fn PianoKeyEvent_setVelocity(PianoKeyEvent *event, f32 velocity) {
     if (event) (*event).velocity = velocity;
 }
 
@@ -65,12 +65,12 @@ f32           PianoKey_frequency(u8 note);
 static inline f32 PianoKey_equal_temperament_hz(u8 note) { return PianoKey_frequency(note); }
 PianoPitchClass PianoKey_pitchClass(u8 note);
 i32         PianoKey_octave(u8 note);
-void            PianoKey_noteName(u8 note, char *dest, bytes maxLen);
+fn            PianoKey_noteName(u8 note, char *dest, bytes maxLen);
 
 // State container management
-PianoState PianoState_0(void);
+PianoState PianoState_0();
 #define PianoState(...) CONSTRUCTOR_DISPATCH(PianoState, __VA_ARGS__)
-void PianoState_processEvent(PianoState *state, PianoKeyEvent event);
+fn PianoState_processEvent(PianoState *state, PianoKeyEvent event);
 bool PianoState_isNoteOn(const PianoState *state, u8 note);
 f32 PianoState_noteVelocity(const PianoState *state, u8 note);
 

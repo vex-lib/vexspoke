@@ -2,7 +2,6 @@
 #define REGEX_PARSER_H
 
 #include "vex.h"
-
 #include "regex/charclass.h"
 #include "regex/nodelist.h"
 
@@ -67,6 +66,6 @@ u32 RegexParser_groupCount(const RegexParser *parser);
 RegexCharClass *RegexParser_releaseClasses(RegexParser *parser, u32 *outCount);
 
 // Release the AST and any un-transferred class array. Null-safe.
-void RegexParser_free(RegexParser *parser);
+fn RegexParser_free(RegexParser *parser);
 
 #endif

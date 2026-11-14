@@ -39,7 +39,7 @@ static int g_failures = 0;
     } while (0)
 
 // Covers string allocation forms, value identity, copying, chooser arities, and freeing.
-static void test_allocate(void) {
+static fn test_allocate() {
     CHECK(string_allocate(nullptr) == nullptr);
 
     u8 *s = string_allocate("hello");
@@ -93,7 +93,7 @@ static void test_allocate(void) {
 }
 
 // Checks safe defaults from every string introspection and equality call on null inputs.
-static void test_null_introspection(void) {
+static fn test_null_introspection() {
     CHECK(string_get(nullptr) == nullptr);
     CHECK(string_length(nullptr) == 0);
     CHECK(string_type(nullptr) == 0);
@@ -104,7 +104,7 @@ static void test_null_introspection(void) {
 }
 
 // Checks ordering, containment, index lookup, in-string matching, and null arguments.
-static void test_compare_search(void) {
+static fn test_compare_search() {
     u8 *a = string_allocate("apple");
     u8 *b = string_allocate("banana");
     u8 *apple2 = string_allocate("apple");
@@ -138,7 +138,7 @@ static void test_compare_search(void) {
 }
 
 // Checks substring clamping, empty out-of-range results, and first/last projections.
-static void test_substrings(void) {
+static fn test_substrings() {
     u8 *s = string_allocate("hello world");
 
     u8 *sub = String_substring(s, 6, 5);
@@ -179,7 +179,7 @@ static void test_substrings(void) {
 }
 
 // Checks append variants, null identities, destination capacity, and append-first growth.
-static void test_append(void) {
+static fn test_append() {
     u8 *a = string_allocate("foo");
     u8 *b = string_allocate("bar");
 
@@ -227,7 +227,7 @@ static void test_append(void) {
 }
 
 // Initializes the memory substrate, runs each string contract case, and returns aggregate failures.
-int main(void) {
+int main() {
     CHECK(Memory_init(0));
     test_allocate();
     test_null_introspection();

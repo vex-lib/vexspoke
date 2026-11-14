@@ -78,7 +78,7 @@ Global *Global_2(const Global *init, bytes count) {
     return p;
 }
 // Releases the allocation through the engine-owned Memory ABI.
-void Global_free(Global *global) {
+fn Global_free(Global *global) {
     if (!global) return;
     Memory_free(global);
 }
@@ -90,7 +90,7 @@ u64 Global_get(const Global *global) {
 }
 
 // Stores value with release ordering when global is non-null.
-void Global_set(Global *global, u64 value) {
+fn Global_set(Global *global, u64 value) {
     if (!global) return;
     atomic_store_explicit(&(*global).value, value, memory_order_release);
 }

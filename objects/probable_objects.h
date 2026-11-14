@@ -2,7 +2,6 @@
 #define OBJECTS_PROBABLE_OBJECTS_H
 
 #include "vex.h"
-
 #include "objects/probable.h"
 
 // objects/probable_objects.h — the ProbableObjects class, ported from
@@ -33,7 +32,7 @@ ProbableObjects *ProbableObjects_2(const ProbableObjects *init, bytes count);
 
 #define ProbableObjects(...) CONSTRUCTOR_DISPATCH(ProbableObjects, __VA_ARGS__)
 
-void ProbableObjects_free(ProbableObjects *po);
+fn ProbableObjects_free(ProbableObjects *po);
 
 bytes ProbableObjects_size(ProbableObjects *po);
 bytes ProbableObjects_capacity(ProbableObjects *po);

@@ -125,7 +125,7 @@ static u64 slotState(u8 *slot) {
     return *(u64*) (slot + 16);
 }
 
-static void rehash(Collection *c, bytes newCap) {
+static fn rehash(Collection *c, bytes newCap) {
     bytes oldCap = (*c).capacity;
     u8 *oldData = (*c).data;
     bytes Bytes = newCap * SLOT_SIZE;
@@ -165,7 +165,7 @@ Set *Set_2(u32 elementClass, bytes capacity) {
 
     Set *set = (Set*) Memory_alloc(TYPE_SET, sizeof(Set));
     if (!set) {
-        (void) Struct_reportConstructionExhaustion("set", sizeof(Set));
+        (fn) Struct_reportConstructionExhaustion("set", sizeof(Set));
         return nullptr;
     }
 
@@ -183,7 +183,7 @@ Set *Set_2(u32 elementClass, bytes capacity) {
     u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_SET);
     (*c).data = (u8*) Memory_alloc(bufType, Bytes);
     if (!(*c).data) {
-        (void) Struct_reportConstructionExhaustion("set", Bytes);
+        (fn) Struct_reportConstructionExhaustion("set", Bytes);
         Memory_free(set);
         return nullptr;
     }
@@ -191,7 +191,7 @@ Set *Set_2(u32 elementClass, bytes capacity) {
     return set;
 }
 
-void Set_free(Set *set) {
+fn Set_free(Set *set) {
     if (!set) return;
     Collection *c = asCollection(set);
     if ((*c).data)

@@ -25,7 +25,7 @@ static int g_failures = 0;
 // Exercises time-unit constants and conversion helpers using known values.
 // Integrates UTC date conversion, calendar arithmetic, virtual clock, and timer checks.
 // Integrates known UTC dates with calendar arithmetic, Clock, and NanoTimer.
-int main(void) {
+int main() {
     // --- Known instants, verified against UTC ---
     DateTime dt;
 

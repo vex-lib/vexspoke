@@ -21,7 +21,7 @@ static int g_failures = 0;
     } while (0)
 
 // Checks the empty list, index assignment, and the zeroed node payload.
-static void testAdd(void) {
+static fn testAdd() {
     RegexNodeList list = RegexNodeList();
     CHECK(list.count == 0);
     CHECK(list.nodes == nullptr);
@@ -49,7 +49,7 @@ static void testAdd(void) {
 }
 
 // Checks growth past the seed capacity keeps indices stable, and range checks.
-static void testGrowth(void) {
+static fn testGrowth() {
     RegexNodeList list = RegexNodeList();
 
     // Past the 64-node seed capacity so the block is reallocated at least twice.
@@ -79,7 +79,7 @@ static void testGrowth(void) {
 }
 
 // Checks that free releases and re-zeroes the list, and is null-safe.
-static void testFreeAndReuse(void) {
+static fn testFreeAndReuse() {
     RegexNodeList list = RegexNodeList();
     CHECK(RegexNodeList_add(&list, REGEX_NODE_ANY) == 0);
     RegexNodeList_free(&list);
@@ -94,7 +94,7 @@ static void testFreeAndReuse(void) {
     CHECK(list.nodes == nullptr);
 }
 
-int main(void) {
+int main() {
     testAdd();
     testGrowth();
     testFreeAndReuse();

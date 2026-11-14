@@ -29,12 +29,12 @@ typedef struct Method {
 _Static_assert(sizeof(Method) == 40u, "Method must stay 40 Bytes");
 
 bool Method_init(Method *self, const char *name, MethodFn invoke, any target);
-Method *Method_0(void);
+Method *Method_0();
 Method *Method_1(const char *name);
 Method *Method_2(const char *name, MethodFn invoke);
 Method *Method_3(const char *name, MethodFn invoke, any target);
 #define Method(...) CONSTRUCTOR_DISPATCH(Method, __VA_ARGS__)
-void Method_free(Method *self);
+fn Method_free(Method *self);
 
 u64 Method_kind(const Method *self);
 bool Method_check(const Method *self, u64 typeId);
@@ -42,12 +42,12 @@ any Method_call(Method *self, any arg);
 
 bool Method_setName(Method *self, const char *name);
 const char *Method_getName(const Method *self);
-void Method_setInvoke(Method *self, MethodFn invoke);
+fn Method_setInvoke(Method *self, MethodFn invoke);
 MethodFn Method_getInvoke(const Method *self);
-void Method_setTarget(Method *self, any target);
+fn Method_setTarget(Method *self, any target);
 any Method_getTarget(const Method *self);
 
-void Method_toString(const Method *self, char *dest, bytes cap, bool *outTruncated);
-void Method_toStringStruct(const Method *self, char *dest, bytes cap, bool *outTruncated);
+fn Method_toString(const Method *self, char *dest, bytes cap, bool *outTruncated);
+fn Method_toStringStruct(const Method *self, char *dest, bytes cap, bool *outTruncated);
 
 #endif

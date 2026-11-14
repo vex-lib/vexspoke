@@ -1,7 +1,6 @@
 // regex/span.c — the RegexSpan value helpers.
 
 #include "vex.h"
-
 #include "regex/span.h"
 
 ;;DEFINITION
@@ -52,7 +51,7 @@
  * ============================================================================
  */
 
-RegexSpan RegexSpan_none(void) {
+RegexSpan RegexSpan_none() {
     RegexSpan span;
     span.start = REGEX_UNSET;
     span.end = REGEX_UNSET;

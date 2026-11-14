@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "input/gamepad.h"
 
 #include <math.h>
@@ -50,7 +49,7 @@
  * ============================================================================
  */
 
-GamepadState GamepadState_0(void) {
+GamepadState GamepadState_0() {
     GamepadState state;
     memset(&state, 0, sizeof state);
     state.isConnected = false;

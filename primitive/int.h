@@ -2,18 +2,19 @@
 #define PRIMITIVE_INT_H
 
 #include "vex.h"
+
 // primitive/int.h — Int primitive (Legacy: primitive/Int.java).
 // Delegates to Bit32 width pool (4B stride).
 
 extern BitPool g_intPool;
 
-bool Int_init(void);
-void Int_shutdown(void);
-any Int_alloc(void);
+bool Int_init();
+fn Int_shutdown();
+any Int_alloc();
 any Int_allocArray(bytes count);
-void Int_free(any ptr);
+fn Int_free(any ptr);
 i32 Int_get(any ptr);
-void Int_set(any ptr, i32 value);
+fn Int_set(any ptr, i32 value);
 bool Int_compareAndSet(any ptr, i32 expected, i32 value);
 u64 Int_type(any ptr);
 bytes Int_length(any ptr);

@@ -7,7 +7,6 @@
 // should support calendar at 1500s i think? may regurgitate...
 
 #include "vex.h"
-
 #include "time/calendar.h"
 
 ;;DEFINITION
@@ -86,7 +85,7 @@ i32 Calendar_dayOfWeek(i32 year, i32 month, i32 day) {
 }
 
 // Advances the date-time by the requested number of 24-hour days.
-void Calendar_addDays(DateTime *dt, i32 days) {
+fn Calendar_addDays(DateTime *dt, i32 days) {
     setEpochMillis(dt, DateTime_epochMillis(dt) + (int64_t)days * 86400000LL);
 }
 
@@ -107,7 +106,7 @@ static int64_t toEpochMillis(i32 year, i32 month, i32 day,
 }
 
 // Shifts the month while retaining time-of-day and clipping an invalid day to month end.
-void Calendar_addMonths(DateTime *dt, i32 months) {
+fn Calendar_addMonths(DateTime *dt, i32 months) {
     i32 year = DateTime_year(dt);
     i32 month = DateTime_month(dt);
     i32 day = DateTime_day(dt);
@@ -129,7 +128,7 @@ void Calendar_addMonths(DateTime *dt, i32 months) {
 }
 
 // Shifts the year while retaining month and time, clipping the day when needed.
-void Calendar_addYears(DateTime *dt, i32 years) {
+fn Calendar_addYears(DateTime *dt, i32 years) {
     i32 year = DateTime_year(dt);
     i32 month = DateTime_month(dt);
     i32 day = DateTime_day(dt);

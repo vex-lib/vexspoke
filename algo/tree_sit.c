@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "algo/tree_sit.h"
 
 #include <stdlib.h>
@@ -52,7 +51,7 @@
 
 ;;INTENTION("AST node graph representation and hierarchy traversal")
 
-TreeSitTree TreeSitTree_0(void) {
+TreeSitTree TreeSitTree_0() {
     return TreeSitTree_1(16u);
 }
 
@@ -67,7 +66,7 @@ TreeSitTree TreeSitTree_1(u32 initial_capacity) {
     return tree;
 }
 
-void TreeSitTree_destroy(TreeSitTree *tree) {
+fn TreeSitTree_destroy(TreeSitTree *tree) {
     if (!tree) {
         return;
     }

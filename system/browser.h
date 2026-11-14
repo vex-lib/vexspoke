@@ -17,7 +17,7 @@ typedef struct Browser {
 
 // --- Constructor ---
 // Returns the shared browser launcher handle (static, zero-init, never NULL).
-Browser *Browser_shared(void);
+Browser *Browser_shared();
 
 // --- Core functions ---
 // Launch the default browser to navigate to the specified URL.

@@ -6,7 +6,6 @@
 // timestamps from different threads stay comparable.
 
 #include "vex.h"
-
 #include "time/nanotime.h"
 
 #include <time.h>
@@ -45,12 +44,12 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Constructors:
- *   - NanoTime_init(void)
+ *   - NanoTime_init()
  *
  * Core Functions:
- *   - NanoTime_now(void)
- *   - NanoTime_startNanos(void)
- *   - NanoTime_elapsedNanos(void)
+ *   - NanoTime_now()
+ *   - NanoTime_startNanos()
+ *   - NanoTime_elapsedNanos()
  *   - NanoTimer_reset(timer)
  *   - NanoTimer_tick(timer)
  *   - NanoTimer_tickWithClock(timer, clock)
@@ -66,29 +65,29 @@
 static u64 s_startNanos = 0;
 static int s_started = 0;
 
-static u64 nanoTime(void) {
+static u64 nanoTime() {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
     return (u64)ts.tv_sec * 1000000000ULL + (u64)ts.tv_nsec;
 }
 
-void NanoTime_init(void) {
+fn NanoTime_init() {
     if (s_started) return;
     s_startNanos = nanoTime();
     s_started = 1;
 }
 
-u64 NanoTime_startNanos(void) {
+u64 NanoTime_startNanos() {
     return s_startNanos;
 }
 
 // Raw reading only — pure function of the clock, no shared state involved
 // (the init-race concern lives in the epoch accessors below, not here).
-u64 NanoTime_now(void) {
+u64 NanoTime_now() {
     return nanoTime();
 }
 
-u64 NanoTime_elapsedNanos(void) {
+u64 NanoTime_elapsedNanos() {
     if (!s_started)
         return 0;
     return nanoTime() - s_startNanos;
@@ -96,7 +95,7 @@ u64 NanoTime_elapsedNanos(void) {
 
 // --- Tickable timer (Legacy: NanoTime.allocate/tick) ---
 
-void NanoTimer_reset(NanoTimer *timer) {
+fn NanoTimer_reset(NanoTimer *timer) {
     u64 now = nanoTime();
     (*timer).startNanos = now;
     (*timer).lastNanos = now;
@@ -105,7 +104,7 @@ void NanoTimer_reset(NanoTimer *timer) {
     (*timer).totalTime = 0.0;
 }
 
-void NanoTimer_tickWithClock(NanoTimer *timer, const Clock *clock) {
+fn NanoTimer_tickWithClock(NanoTimer *timer, const Clock *clock) {
     u64 now = nanoTime();
     u64 current = (*timer).currentNanos;
 
@@ -127,7 +126,7 @@ void NanoTimer_tickWithClock(NanoTimer *timer, const Clock *clock) {
     (*timer).totalTime += scaledDeltaSec;
 }
 
-void NanoTimer_tick(NanoTimer *timer) {
+fn NanoTimer_tick(NanoTimer *timer) {
     NanoTimer_tickWithClock(timer, nullptr);
 }
 

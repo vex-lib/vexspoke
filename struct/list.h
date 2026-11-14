@@ -2,7 +2,6 @@
 #define STRUCT_LIST_H
 
 #include "vex.h"
-
 #include "struct/collection.h"
 
 // struct/list.h — the List class, ported from struct/List.java.
@@ -36,23 +35,23 @@ List *List_2(u32 element_class, bytes capacity);
 List *List_3(u32 element_class, bytes capacity, bytes count);
 
 // Free the list and its data buffer.
-void List_free(List *list);
+fn List_free(List *list);
 
 // Append a scalar value or pointer, growing the buffer if needed.
-void List_add(List *list, u64 value_or_pointer);
+fn List_add(List *list, u64 value_or_pointer);
 
 // Append a new (zeroed) struct slot and return a pointer to it.
 u8 *List_addSlot(List *list);
 
 // Get/set the value or pointer at index (bounds-checked).
 u64 List_get(List *list, bytes index);
-void List_set(List *list, bytes index, u64 value);
+fn List_set(List *list, bytes index, u64 value);
 
 // Pointer to the struct element at index (bounds-checked).
 u8 *List_slot(List *list, bytes index);
 
 // Remove the element at index, shifting the tail left.
-void List_remove(List *list, bytes index);
+fn List_remove(List *list, bytes index);
 
 // Element-wise equality (stride + Bytes must match).
 bool List_compare(List *a, List *b);

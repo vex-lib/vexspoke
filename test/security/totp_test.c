@@ -8,7 +8,7 @@
 // RFC 6238 Appendix B uses the ASCII secret "12345678901234567890" in SHA-1 mode.
 static const u8 SECRET[] = "12345678901234567890";
 
-int main(void) {
+int main() {
     struct { u64 t; u32 code; } vectors[] = {
         { 59u,          94287082u },
         { 1111111109u,  7081804u },

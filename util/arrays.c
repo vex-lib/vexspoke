@@ -41,7 +41,7 @@
 // would or should or will support other stuff, and maybe support struct based on field itself and compare...
 
 // Exchanges two positions in an int32 buffer.
-static void swap_int(i32 *data, bytes i, bytes j) {
+static fn swap_int(i32 *data, bytes i, bytes j) {
     if (i == j) return;
     i32 temp = data[i];
     data[i] = data[j];
@@ -63,7 +63,7 @@ static bytes partition_int(i32 *data, bytes low, bytes high) {
 }
 
 // Recursively sorts an inclusive int32 range in place.
-static void quicksort_int(i32 *data, bytes low, bytes high) {
+static fn quicksort_int(i32 *data, bytes low, bytes high) {
     if (low >= high) return;
     bytes pi = partition_int(data, low, high);
     if (pi > low) quicksort_int(data, low, pi - 1);
@@ -71,7 +71,7 @@ static void quicksort_int(i32 *data, bytes low, bytes high) {
 }
 
 // Exchanges two positions in an int64 buffer.
-static void swap_long(int64_t *data, bytes i, bytes j) {
+static fn swap_long(int64_t *data, bytes i, bytes j) {
     if (i == j) return;
     int64_t temp = data[i];
     data[i] = data[j];
@@ -93,7 +93,7 @@ static bytes partition_long(int64_t *data, bytes low, bytes high) {
 }
 
 // Recursively sorts an inclusive int64 range in place.
-static void quicksort_long(int64_t *data, bytes low, bytes high) {
+static fn quicksort_long(int64_t *data, bytes low, bytes high) {
     if (low >= high) return;
     bytes pi = partition_long(data, low, high);
     if (pi > low) quicksort_long(data, low, pi - 1);
@@ -101,13 +101,13 @@ static void quicksort_long(int64_t *data, bytes low, bytes high) {
 }
 
 // Sorts the supplied int32 values in ascending order in place.
-void Arrays_sortInt(i32 *data, bytes length) {
+fn Arrays_sortInt(i32 *data, bytes length) {
     if (!data || length <= 1) return;
     quicksort_int(data, 0, length - 1);
 }
 
 // Sorts the supplied int64 values in ascending order in place.
-void Arrays_sortLong(int64_t *data, bytes length) {
+fn Arrays_sortLong(int64_t *data, bytes length) {
     if (!data || length <= 1) return;
     quicksort_long(data, 0, length - 1);
 }
@@ -149,13 +149,13 @@ intptr_t Arrays_binarySearchLong(const int64_t *data, bytes length, int64_t key)
 }
 
 // Fills the byte span with the repeated value.
-void Arrays_fill(u8 *data, bytes length, u8 value) {
+fn Arrays_fill(u8 *data, bytes length, u8 value) {
     if (!data || length == 0) return;
     memset(data, value, length);
 }
 
 // Copies Bytes bytes from src to dest; the spans must not overlap.
-void Arrays_copy(const u8 *src, u8 *dest, bytes Bytes) {
+fn Arrays_copy(const u8 *src, u8 *dest, bytes Bytes) {
     if (!src || !dest || Bytes == 0) return;
     memcpy(dest, src, Bytes);
 }

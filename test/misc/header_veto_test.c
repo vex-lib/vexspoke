@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,7 +23,7 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Core Functions:
- *   - main(void)
+ *   - main()
  * ============================================================================
  */
 
@@ -36,7 +35,7 @@ static int g_failures = 0;
 } while (0)
 
 // Exercises memory-header integrity vetoes, invalidation, size classes, and reuse.
-int main(void) {
+int main() {
     printf("=== Running Header Veto Test Suite ===\n");
     MemoryArena *arena = MemoryArena_create(64u << 20);
     CHECK("arena created", arena != nullptr);

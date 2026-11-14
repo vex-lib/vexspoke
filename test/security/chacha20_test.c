@@ -20,13 +20,13 @@ static bytes fromHex(const char *hex, u8 *out, bytes cap) {
     return n;
 }
 
-static void toHex(const u8 *data, bytes len, char *out) {
+static fn toHex(const u8 *data, bytes len, char *out) {
     for (bytes i = 0; i < len; ++i)
         snprintf(out + i * 2u, 3u, "%02x", data[i]);
     out[len * 2u] = '\0';
 }
 
-int main(void) {
+int main() {
     u8 key[CHACHA20_KEY_SIZE];
     for (unsigned i = 0; i < CHACHA20_KEY_SIZE; ++i)
         key[i] = (u8) i;

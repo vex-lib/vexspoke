@@ -109,7 +109,7 @@ static TlsBackendKind s_lastBackend = TLS_BACKEND_NONE;
 @end
 
 @implementation VexTlsSession
-- (void)dealloc {
+- (fn)dealloc {
     if (_readBytes != nullptr)
         free(_readBytes);
 }
@@ -133,7 +133,7 @@ static bool vexWaitForReady(nw_connection_t connection, dispatch_queue_t queue,
     nw_connection_set_queue(connection, queue);
     nw_connection_set_state_changed_handler(connection, ^(nw_connection_state_t state,
                                                           nw_error_t error) {
-        (void) error;
+        (fn) error;
         if (state == nw_connection_state_ready) {
             ready = true;
             dispatch_semaphore_signal(settled);
@@ -162,9 +162,9 @@ static bool vexWaitForReady(nw_connection_t connection, dispatch_queue_t queue,
  * sends its HELLO the moment the upgrade lands) and fatal on a peer which waits
  * for us.
  */
-static bool vexSendBounded(nw_connection_t connection, const_any bytes,
+static bool vexSendBounded(nw_connection_t connection, const_any data,
                            bytes length, u32 timeoutMs) {
-    dispatch_data_t payload = dispatch_data_create(bytes, length, nullptr,
+    dispatch_data_t payload = dispatch_data_create(data, length, nullptr,
                                                    DISPATCH_DATA_DESTRUCTOR_DEFAULT);
     dispatch_semaphore_t settled = dispatch_semaphore_create(0);
     __block bool sent = false;
@@ -186,7 +186,7 @@ static bool vexSendBounded(nw_connection_t connection, const_any bytes,
  * armed is the whole point: this is what stops a second receive from aborting the
  * connection.
  */
-static void vexArmRead(VexTlsSession *session) {
+static fn vexArmRead(VexTlsSession *session) {
     if (session.readArmed || session.readFailed)
         return;
     session.readArmed = true;
@@ -197,13 +197,13 @@ static void vexArmRead(VexTlsSession *session) {
     nw_connection_receive(session.connection, 1u, VEX_TLS_READ_BYTES,
         ^(dispatch_data_t content, nw_content_context_t context, bool is_complete,
           nw_error_t error) {
-            (void) context;
+            (fn) context;
             session.readArmed = false; // the slot is free again
             if (error == nullptr && content != nullptr) {
                 __block bytes got = 0u;
                 dispatch_data_apply(content, ^bool(dispatch_data_t region, bytes offset,
                                                    const_any buffer, bytes size) {
-                    (void) region;
+                    (fn) region;
                     if (offset + size > VEX_TLS_READ_BYTES)
                         return false;
                     memcpy(session.readBytes + offset, buffer, size);
@@ -376,7 +376,7 @@ bool Tls_readable(TlsConn *conn, u32 budgetMs) {
 }
 
 /** Set the per-operation IO budget, so a read cannot outlive its caller's slice. */
-void Tls_setBudget(TlsConn *conn, u32 timeoutMs) {
+fn Tls_setBudget(TlsConn *conn, u32 timeoutMs) {
     VexTlsSession *session = vexSession(conn);
     if (session == nullptr)
         return;
@@ -390,7 +390,7 @@ u32 Tls_getBudget(const TlsConn *conn) {
 }
 
 /** Cancel the connection, release the session and free the record. Null-safe. */
-void Tls_close(TlsConn *conn) {
+fn Tls_close(TlsConn *conn) {
     if (conn == nullptr)
         return;
     @autoreleasepool {
@@ -407,6 +407,6 @@ void Tls_close(TlsConn *conn) {
 }
 
 /** Which backend answered; TLS_BACKEND_NONE until one completes a handshake. */
-TlsBackendKind Tls_backend(void) {
+TlsBackendKind Tls_backend() {
     return s_lastBackend;
 }

@@ -21,7 +21,7 @@ static int g_failures = 0;
     } while (0)
 
 // Exercises Int boundaries, allocation forms, CAS, arrays, metadata, and null safety.
-int main(void) {
+int main() {
     CHECK(Int_init());
 
     any p = Int_alloc();

@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "primitive/brain.h"
 
 #include "nio/mem.h"
@@ -30,11 +29,11 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Constructors:
- *   - Brain_init(void)
+ *   - Brain_init()
  *
  * Core Functions:
- *   - Brain_shutdown(void)
- *   - Brain_alloc(void)
+ *   - Brain_shutdown()
+ *   - Brain_alloc()
  *   - Brain_allocArray(count)
  *   - Brain_free(ptr)
  *   - Brain_compareAndSet(ptr, expected, value)
@@ -57,16 +56,16 @@
 
 BitPool g_brainPool;
 
-bool Brain_init(void) {
+bool Brain_init() {
     g_brainPool = BitPool(2, 1024);
     return BitPool_live(&g_brainPool);
 }
 
-void Brain_shutdown(void) {
+fn Brain_shutdown() {
     BitPool_shutdown(&g_brainPool);
 }
 
-any Brain_alloc(void) {
+any Brain_alloc() {
     return BitPool_alloc(&g_brainPool, ID_BRAIN);
 }
 
@@ -82,7 +81,7 @@ any Brain_allocArray(bytes count) {
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_BRAIN), Bytes);
 }
 
-void Brain_free(any ptr) {
+fn Brain_free(any ptr) {
     if (!ptr)
         return;
     if (BitPool_contains(&g_brainPool, ptr)) BitPool_free(&g_brainPool, ptr);
@@ -95,7 +94,7 @@ u16 Brain_get(any ptr) {
     return *(u16*) ptr;
 }
 
-void Brain_set(any ptr, u16 value) {
+fn Brain_set(any ptr, u16 value) {
     if (!ptr)
         return;
     *(u16*) ptr = value;
@@ -121,7 +120,7 @@ f32 Brain_getFloat(any ptr) {
     return Brain_bFloat16ToFloat(Brain_get(ptr));
 }
 
-void Brain_setFloat(any ptr, f32 value) {
+fn Brain_setFloat(any ptr, f32 value) {
     Brain_set(ptr, Brain_f32ToBFloat16(value));
 }
 

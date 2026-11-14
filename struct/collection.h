@@ -50,15 +50,15 @@ bool Collection_reportExhaustion(Collection *c, bytes requestedBytes);
 u64 Collection_exhaustionCount(const Collection *c);
 // Start a fresh exhaustion epoch (count zeroed, diagnostic armed again).
 ;;TEST
-void Collection_resetExhaustion(Collection *c);
+fn Collection_resetExhaustion(Collection *c);
 
 // Generic slot read/write for the scalar/pointer collections. Reads the slot at
 // index with the collection's stride, widening small ints (legacy readSlot).
 u64 Collection_readSlot(Collection *c, bytes index);
-void Collection_writeSlot(Collection *c, bytes index, u64 value);
+fn Collection_writeSlot(Collection *c, bytes index, u64 value);
 
 // Slot read/write without bounds checks (legacy unsafeGet/setUnsafe).
 u64 Collection_readSlotUnsafe(Collection *c, bytes index);
-void Collection_writeSlotUnsafe(Collection *c, bytes index, u64 value);
+fn Collection_writeSlotUnsafe(Collection *c, bytes index, u64 value);
 
 #endif

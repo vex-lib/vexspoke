@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include <stdlib.h>
 
 #include "security/secure_random.h"
@@ -41,7 +40,7 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Constructors:
- *   - SecureRandom_0(void)
+ *   - SecureRandom_0()
  *
  * Core Functions:
  *   - SecureRandom_free(self)
@@ -130,12 +129,12 @@ struct SecureRandom {
     u64 draws; // count of draws issued (telemetry)
 };
 
-SecureRandom *SecureRandom_0(void) {
+SecureRandom *SecureRandom_0() {
     SecureRandom *self = (SecureRandom*) calloc(1, sizeof(SecureRandom));
     return self;
 }
 
-void SecureRandom_free(SecureRandom *self) {
+fn SecureRandom_free(SecureRandom *self) {
     free(self);
 }
 

@@ -1,7 +1,6 @@
 // reflection/variable.c — the Variable metadata record (base of the hierarchy).
 
 #include "vex.h"
-
 #include "reflection/variable.h"
 
 #include "nio/mem.h"
@@ -65,7 +64,7 @@ bool Variable_init(Variable *self, const char *name, VariableReadFn read, any ta
     return true;
 }
 
-Variable *Variable_0(void) {
+Variable *Variable_0() {
     Variable *self = (Variable*) Memory_alloc(TYPE_REFLECT_VARIABLE, sizeof(Variable));
     if (self == nullptr)
         return nullptr;
@@ -92,7 +91,7 @@ Variable *Variable_3(const char *name, VariableReadFn read, any target) {
     return self;
 }
 
-void Variable_free(Variable *self) {
+fn Variable_free(Variable *self) {
     if (self != nullptr)
         Memory_free(self);
 }
@@ -130,13 +129,13 @@ bool Variable_setName(Variable *self, const char *name) {
     return true;
 }
 
-void Variable_setRead(Variable *self, VariableReadFn read) {
+fn Variable_setRead(Variable *self, VariableReadFn read) {
     if (self == nullptr)
         return;
     (*self).read = read;
 }
 
-void Variable_setTarget(Variable *self, any target) {
+fn Variable_setTarget(Variable *self, any target) {
     if (self == nullptr)
         return;
     (*self).target = target;
@@ -162,7 +161,7 @@ any Variable_getTarget(const Variable *self) {
 
 // STRING PROJECTIONS (the toString Law)
 
-void Variable_toString(const Variable *self, char *dest, bytes cap, bool *outTruncated) {
+fn Variable_toString(const Variable *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (dest == nullptr || cap == 0u)
@@ -178,7 +177,7 @@ void Variable_toString(const Variable *self, char *dest, bytes cap, bool *outTru
     }
 }
 
-void Variable_toStringStruct(const Variable *self, char *dest, bytes cap, bool *outTruncated) {
+fn Variable_toStringStruct(const Variable *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (dest == nullptr || cap == 0u)

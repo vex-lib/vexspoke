@@ -17,7 +17,7 @@ static int g_failures = 0;
     } while (0)
 
 // Exercises Fixed64 boundary values, constructors, CAS, arrays, and null safety.
-int main(void) {
+int main() {
     CHECK(Fixed64_init());
 
     any p = Fixed64_alloc();

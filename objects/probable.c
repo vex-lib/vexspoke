@@ -80,7 +80,7 @@ Probable *Probable_2(const Probable *init, bytes count) {
     return p;
 }
 
-void Probable_free(Probable *p) {
+fn Probable_free(Probable *p) {
     Memory_free(p);
 }
 
@@ -99,17 +99,17 @@ u32 Probable_total(Probable *p) {
     return (*p).total;
 }
 
-void Probable_setObject(Probable *p, pointer object) {
+fn Probable_setObject(Probable *p, pointer object) {
     if (!p) return;
     (*p).object = object;
 }
 
-void Probable_setWeight(Probable *p, u32 weight) {
+fn Probable_setWeight(Probable *p, u32 weight) {
     if (!p) return;
     (*p).weight = weight;
 }
 
-void Probable_setTotal(Probable *p, u32 total) {
+fn Probable_setTotal(Probable *p, u32 total) {
     if (!p) return;
     (*p).total = total;
 }

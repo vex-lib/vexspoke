@@ -49,7 +49,7 @@ static BvhPrimitive prim(u32 id, f32 x, f32 y, f32 z, f32 h) {
 }
 
 /** Checks AABB construction, containment, and overlap boundary behavior. */
-static void test_aabb(void) {
+static fn test_aabb() {
     BvhAabb e = BvhAabb_empty();
     CHECK(e.min_point[0] == FLT_MAX && e.max_point[0] == -FLT_MAX);
 
@@ -78,7 +78,7 @@ static void test_aabb(void) {
 }
 
 /** Verifies ray/AABB intersection results for hit and miss cases. */
-static void test_ray_aabb(void) {
+static fn test_ray_aabb() {
     BvhAabb b = box_at(0, 0, 0, 1);            // [-1,1]^3
     BvhRay ray = { { -5, 0, 0 }, { 1, 0, 0 }, 0.0f, 100.0f };
     f32 t = -1.0f;
@@ -105,7 +105,7 @@ static void test_ray_aabb(void) {
 }
 
 /** Exercises BVH creation, build, query, and destruction across ordinary inputs. */
-static void test_tree_lifecycle(void) {
+static fn test_tree_lifecycle() {
     BvhTree t = BvhTree();
     CHECK(t.nodes == nullptr);
     CHECK(t.node_count == 0u);
@@ -125,7 +125,7 @@ static void test_tree_lifecycle(void) {
 }
 
 /** Checks ray traversal returns the expected nearest primitive in the built tree. */
-static void test_ray_tree(void) {
+static fn test_ray_tree() {
     enum { N = 12 };
     BvhPrimitive prims[N];
     for (u32 i = 0; i < N; i++)
@@ -165,7 +165,7 @@ static void test_ray_tree(void) {
 }
 
 /** Covers empty, repeated, and degenerate primitive bounds without invalid traversal. */
-static void test_degenerate(void) {
+static fn test_degenerate() {
     // Five identical centroids: the split collapses to a leaf, still hittable.
     enum { N = 5 };
     BvhPrimitive prims[N];
@@ -198,7 +198,7 @@ static void test_degenerate(void) {
 }
 
 /** Runs the BVH owner scenarios and reports aggregate assertion status. */
-int main(void) {
+int main() {
     test_aabb();
     test_ray_aabb();
     test_tree_lifecycle();

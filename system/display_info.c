@@ -45,20 +45,20 @@
  *   - DisplayInfo_setHardwareDensity(val)
  *
  * Getters:
- *   - DisplayInfo_getMonitorCount(void)
- *   - DisplayInfo_getPrimaryMonitor(void)
+ *   - DisplayInfo_getMonitorCount()
+ *   - DisplayInfo_getPrimaryMonitor()
  *   - DisplayInfo_getMonitor(index)
  *   - DisplayInfo_getMonitors(outCount)
- *   - DisplayInfo_getMonitorResolutionWidth(void)
- *   - DisplayInfo_getMonitorResolutionHeight(void)
- *   - DisplayInfo_getPointResolutionWidth(void)
- *   - DisplayInfo_getPointResolutionHeight(void)
- *   - DisplayInfo_getNativeResolutionWidth(void)
- *   - DisplayInfo_getNativeResolutionHeight(void)
- *   - DisplayInfo_getCurrentRefreshRate(void)
- *   - DisplayInfo_getHdrSupported(void)
- *   - DisplayInfo_getDisplayDensity(void)
- *   - DisplayInfo_getHardwareDensity(void)
+ *   - DisplayInfo_getMonitorResolutionWidth()
+ *   - DisplayInfo_getMonitorResolutionHeight()
+ *   - DisplayInfo_getPointResolutionWidth()
+ *   - DisplayInfo_getPointResolutionHeight()
+ *   - DisplayInfo_getNativeResolutionWidth()
+ *   - DisplayInfo_getNativeResolutionHeight()
+ *   - DisplayInfo_getCurrentRefreshRate()
+ *   - DisplayInfo_getHdrSupported()
+ *   - DisplayInfo_getDisplayDensity()
+ *   - DisplayInfo_getHardwareDensity()
  * ============================================================================
  */
 
@@ -79,25 +79,25 @@ static i32 s_currentRefreshRate = 0;
 static bool    s_hdrSupported = false;
 static f32   s_displayDensity = 1.0f;
 
-static inline void ensureDiscovered(void) {
+static inline fn ensureDiscovered() {
     SystemDiscovery_bootstrap();
 }
 
-i32 DisplayInfo_getMonitorCount(void) {
+i32 DisplayInfo_getMonitorCount() {
     ensureDiscovered();
     return s_monitorCount;
 }
 
-void DisplayInfo_setMonitorCount(i32 val) {
+fn DisplayInfo_setMonitorCount(i32 val) {
     s_monitorCount = val;
 }
 
-DisplayMonitor *DisplayInfo_getPrimaryMonitor(void) {
+DisplayMonitor *DisplayInfo_getPrimaryMonitor() {
     ensureDiscovered();
     return s_primaryMonitor;
 }
 
-void DisplayInfo_setPrimaryMonitor(DisplayMonitor *val) {
+fn DisplayInfo_setPrimaryMonitor(DisplayMonitor *val) {
     s_primaryMonitor = val;
 }
 
@@ -115,7 +115,7 @@ DisplayMonitor **DisplayInfo_getMonitors(bytes *outCount) {
     return s_monitors;
 }
 
-void DisplayInfo_setMonitors(DisplayMonitor **monitors, bytes count) {
+fn DisplayInfo_setMonitors(DisplayMonitor **monitors, bytes count) {
     if (count > MAX_SYSTEM_MONITORS)
         count = MAX_SYSTEM_MONITORS;
     for (bytes i = 0; i < count; i++) {
@@ -124,94 +124,94 @@ void DisplayInfo_setMonitors(DisplayMonitor **monitors, bytes count) {
     s_monitorCount = (i32)count;
 }
 
-i32 DisplayInfo_getMonitorResolutionWidth(void) {
+i32 DisplayInfo_getMonitorResolutionWidth() {
     ensureDiscovered();
     return s_monitorResolutionWidth;
 }
 
-void DisplayInfo_setMonitorResolutionWidth(i32 val) {
+fn DisplayInfo_setMonitorResolutionWidth(i32 val) {
     s_monitorResolutionWidth = val;
 }
 
-i32 DisplayInfo_getMonitorResolutionHeight(void) {
+i32 DisplayInfo_getMonitorResolutionHeight() {
     ensureDiscovered();
     return s_monitorResolutionHeight;
 }
 
-void DisplayInfo_setMonitorResolutionHeight(i32 val) {
+fn DisplayInfo_setMonitorResolutionHeight(i32 val) {
     s_monitorResolutionHeight = val;
 }
 
-i32 DisplayInfo_getPointResolutionWidth(void) {
+i32 DisplayInfo_getPointResolutionWidth() {
     ensureDiscovered();
     return s_pointResolutionWidth;
 }
 
-void DisplayInfo_setPointResolutionWidth(i32 val) {
+fn DisplayInfo_setPointResolutionWidth(i32 val) {
     s_pointResolutionWidth = val;
 }
 
-i32 DisplayInfo_getPointResolutionHeight(void) {
+i32 DisplayInfo_getPointResolutionHeight() {
     ensureDiscovered();
     return s_pointResolutionHeight;
 }
 
-void DisplayInfo_setPointResolutionHeight(i32 val) {
+fn DisplayInfo_setPointResolutionHeight(i32 val) {
     s_pointResolutionHeight = val;
 }
 
-i32 DisplayInfo_getNativeResolutionWidth(void) {
+i32 DisplayInfo_getNativeResolutionWidth() {
     ensureDiscovered();
     return s_nativeResolutionWidth;
 }
 
-void DisplayInfo_setNativeResolutionWidth(i32 val) {
+fn DisplayInfo_setNativeResolutionWidth(i32 val) {
     s_nativeResolutionWidth = val;
 }
 
-i32 DisplayInfo_getNativeResolutionHeight(void) {
+i32 DisplayInfo_getNativeResolutionHeight() {
     ensureDiscovered();
     return s_nativeResolutionHeight;
 }
 
-void DisplayInfo_setNativeResolutionHeight(i32 val) {
+fn DisplayInfo_setNativeResolutionHeight(i32 val) {
     s_nativeResolutionHeight = val;
 }
 
-i32 DisplayInfo_getCurrentRefreshRate(void) {
+i32 DisplayInfo_getCurrentRefreshRate() {
     ensureDiscovered();
     return s_currentRefreshRate;
 }
 
-void DisplayInfo_setCurrentRefreshRate(i32 val) {
+fn DisplayInfo_setCurrentRefreshRate(i32 val) {
     s_currentRefreshRate = val;
 }
 
-bool DisplayInfo_getHdrSupported(void) {
+bool DisplayInfo_getHdrSupported() {
     ensureDiscovered();
     return s_hdrSupported;
 }
 
-void DisplayInfo_setHdrSupported(bool val) {
+fn DisplayInfo_setHdrSupported(bool val) {
     s_hdrSupported = val;
 }
 
-f32 DisplayInfo_getDisplayDensity(void) {
+f32 DisplayInfo_getDisplayDensity() {
     ensureDiscovered();
     return s_displayDensity;
 }
 
-void DisplayInfo_setDisplayDensity(f32 val) {
+fn DisplayInfo_setDisplayDensity(f32 val) {
     s_displayDensity = val;
 }
 
 static f32 s_hardwareDensity = 1.0f;
 
-f32 DisplayInfo_getHardwareDensity(void) {
+f32 DisplayInfo_getHardwareDensity() {
     ensureDiscovered();
     return s_hardwareDensity;
 }
 
-void DisplayInfo_setHardwareDensity(f32 val) {
+fn DisplayInfo_setHardwareDensity(f32 val) {
     s_hardwareDensity = val;
 }

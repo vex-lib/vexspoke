@@ -17,7 +17,7 @@ static int g_failures = 0;
 } while (0)
 
 // Checks calculator parsing, search modes/ranking, and expression detection.
-int main(void) {
+int main() {
     printf("=== Running String Calc & Search Subsystem Test Suite ===\n");
 
     // 1. String Math Expression Calculator (Exact user expression!)

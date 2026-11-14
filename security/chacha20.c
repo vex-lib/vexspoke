@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "security/chacha20.h"
 
 ;;DEFINITION
@@ -33,7 +32,7 @@ static u32 load32(const u8 *p) {
            ((u32) p[2] << 16) | ((u32) p[3] << 24);
 }
 
-static void store32(u8 *p, u32 v) {
+static fn store32(u8 *p, u32 v) {
     p[0] = (u8) v;
     p[1] = (u8) (v >> 8);
     p[2] = (u8) (v >> 16);
@@ -44,7 +43,7 @@ static u32 rotl32(u32 v, u32 bits) {
     return (v << bits) | (v >> (32u - bits));
 }
 
-static void quarterRound(u32 *s, u32 a, u32 b, u32 c, u32 d) {
+static fn quarterRound(u32 *s, u32 a, u32 b, u32 c, u32 d) {
     s[a] += s[b];
     s[d] ^= s[a];
     s[d] = rotl32(s[d], 16u);
@@ -59,7 +58,7 @@ static void quarterRound(u32 *s, u32 a, u32 b, u32 c, u32 d) {
     s[b] = rotl32(s[b], 7u);
 }
 
-void ChaCha20_block(u8 out[CHACHA20_BLOCK_SIZE], const u8 key[CHACHA20_KEY_SIZE],
+fn ChaCha20_block(u8 out[CHACHA20_BLOCK_SIZE], const u8 key[CHACHA20_KEY_SIZE],
                     u32 counter, const u8 nonce[CHACHA20_NONCE_SIZE]) {
     if (out == nullptr || key == nullptr || nonce == nullptr) {
         THROW("ChaCha20_block: null output, key or nonce");
@@ -92,7 +91,7 @@ void ChaCha20_block(u8 out[CHACHA20_BLOCK_SIZE], const u8 key[CHACHA20_KEY_SIZE]
         store32(out + 4u * i, working[i] + state[i]);
 }
 
-void ChaCha20_xor(u8 *data, bytes len, const u8 key[CHACHA20_KEY_SIZE],
+fn ChaCha20_xor(u8 *data, bytes len, const u8 key[CHACHA20_KEY_SIZE],
                   u32 counter, const u8 nonce[CHACHA20_NONCE_SIZE]) {
     if (len == 0u)
         return;

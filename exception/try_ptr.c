@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "exception/try_ptr.h"
 
 ;;DEFINITION
@@ -27,7 +26,7 @@
  * STRUCT FIELDS (Mirroring exception/try_ptr.h):
  * ----------------------------------------------------------------------------
  *   TryPtr {
- *     void   *value; // success payload; undefined unless code == TRY_OK
+ *     any value; // success payload; undefined unless code == TRY_OK
  *     TryCode code;  // TRY_OK or the named reason
  *   }
  *
@@ -79,7 +78,7 @@ any TryPtr_getValue(const TryPtr *self) {
 }
 
 // Replaces the pointer payload when self is non-null.
-void TryPtr_setValue(TryPtr *self, any value) {
+fn TryPtr_setValue(TryPtr *self, any value) {
     if (!self)
         return;
     (*self).value = value;
@@ -93,7 +92,7 @@ TryCode TryPtr_getCode(const TryPtr *self) {
 }
 
 // Replaces the result code when self is non-null.
-void TryPtr_setCode(TryPtr *self, TryCode code) {
+fn TryPtr_setCode(TryPtr *self, TryCode code) {
     if (!self)
         return;
     (*self).code = code;
@@ -107,7 +106,7 @@ bool TryPtr_isOk(const TryPtr *self) {
 }
 
 // Formats a value-oriented summary into dest and reports capacity truncation.
-void TryPtr_toString(const TryPtr *self, char *dest, bytes cap, bool *outTruncated) {
+fn TryPtr_toString(const TryPtr *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (!dest || cap == 0u)
@@ -131,7 +130,7 @@ void TryPtr_toString(const TryPtr *self, char *dest, bytes cap, bool *outTruncat
 }
 
 // Formats the result fields into dest and reports capacity truncation.
-void TryPtr_toStringStruct(const TryPtr *self, char *dest, bytes cap, bool *outTruncated) {
+fn TryPtr_toStringStruct(const TryPtr *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (!dest || cap == 0u)

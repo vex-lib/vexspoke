@@ -59,7 +59,7 @@ static int cmp_u64(const_any a, const_any b) {
 }
 
 /** Checks empty, singleton, and already ordered input cases. */
-static void test_trivial(void) {
+static fn test_trivial() {
     CHECK(!Sort_radixSortUint32(nullptr, 16u));
     CHECK(!Sort_radixSortUint64(nullptr, 16u));
     CHECK(!Sort_radixSortPairsUint64(nullptr, nullptr, 16u));
@@ -87,7 +87,7 @@ static void test_trivial(void) {
 }
 
 /** Exercises unsigned value extremes and duplicate values for radix sorting. */
-static void test_value_boundaries(void) {
+static fn test_value_boundaries() {
     u32 a[] = { UINT32_MAX, 0, 1, 0x01000000u, 0x00FFFFFFu, 0, UINT32_MAX };
     bytes n = sizeof(a) / sizeof(a[0]);
     CHECK(Sort_radixSortUint32(a, n));
@@ -105,7 +105,7 @@ static void test_value_boundaries(void) {
 }
 
 /** Compares deterministic randomized u32 results against the standard-library oracle. */
-static void test_oracle_random(void) {
+static fn test_oracle_random() {
     enum { N = 4096 };
     u32 a[N], ref[N];
     u64 seed = 0x12345678u;
@@ -121,7 +121,7 @@ static void test_oracle_random(void) {
 }
 
 /** Compares deterministic randomized u64 results against the standard-library oracle. */
-static void test_oracle_random_u64(void) {
+static fn test_oracle_random_u64() {
     enum { N = 2048 };
     u64 a[N], ref[N];
     u64 seed = 0xfeedfacecafebeefull;
@@ -137,7 +137,7 @@ static void test_oracle_random_u64(void) {
 }
 
 /** Verifies key/value pairs remain associated and ordered by key after sorting. */
-static void test_pairs(void) {
+static fn test_pairs() {
     // Keys with duplicates; the values are distinct tags. Stability means the
     // tags of equal keys keep their original relative order.
     u64 keys[]      = { 5, 1, 5, 3, 1, 5, 0, 3 };
@@ -159,7 +159,7 @@ static void test_pairs(void) {
 }
 
 /** Runs the Sort radix owner scenarios and reports aggregate assertion status. */
-int main(void) {
+int main() {
     CHECK(Memory_init(0));
 
     test_trivial();

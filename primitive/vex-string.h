@@ -29,7 +29,7 @@ u8 *string_allocateBytes(const u8 *Bytes, bytes len);
 u8 *string_allocateUninitialized(bytes len);
 
 // Recycle a string block back to the allocator (Java free).
-void string_free(u8 *ptr);
+fn string_free(u8 *ptr);
 
 // Read-only C view of the Bytes (Java get).
 const char *string_get(const u8 *ptr);
@@ -44,7 +44,7 @@ u64 string_type(const u8 *ptr);
 bool string_isArray(const u8 *ptr);
 
 // Class id (ID_STRING) of any string block (Java classId).
-u32 string_classId(void);
+u32 string_classId();
 
 // Allocated capacity in Bytes, NUL included (Java capacity).
 bytes string_capacity(const u8 *ptr);
@@ -100,7 +100,7 @@ u8 *String_subLast(const u8 *str, bytes count);
 u8 *String_append(const u8 *a, const u8 *b);
 u8 *String_appendLiteral(const u8 *a, const char *b);
 u8 *String_appendLiterals(const char *a, const char *b);
-void String_appendInto(const u8 *a, const u8 *b, u8 *dest);
+fn String_appendInto(const u8 *a, const u8 *b, u8 *dest);
 u8 *String_appendFirst(u8 *a, const u8 *b);
 u8 *String_appendFirstLiteral(u8 *a, const char *b);
 

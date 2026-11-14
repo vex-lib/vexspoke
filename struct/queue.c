@@ -73,7 +73,7 @@ Queue *Queue_3(u32 elementClass, bytes capacity, bytes count) {
     bytes cap = capacity < DEFAULT_CAPACITY ? DEFAULT_CAPACITY : capacity;
     Queue *queue = (Queue*) Memory_alloc(TYPE_QUEUE, sizeof(Queue));
     if (!queue) {
-        (void) Struct_reportConstructionExhaustion("queue", sizeof(Queue));
+        (fn) Struct_reportConstructionExhaustion("queue", sizeof(Queue));
         return nullptr;
     }
 
@@ -91,7 +91,7 @@ Queue *Queue_3(u32 elementClass, bytes capacity, bytes count) {
     u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, elementClass);
     (*c).data = (u8*) Memory_alloc(bufType, Bytes);
     if (!(*c).data) {
-        (void) Struct_reportConstructionExhaustion("queue", Bytes);
+        (fn) Struct_reportConstructionExhaustion("queue", Bytes);
         Memory_free(queue);
         return nullptr;
     }
@@ -133,7 +133,7 @@ Queue *Queue_2(u32 elementClass, bytes capacity) {
     return Queue_3(elementClass, capacity, 0);
 }
 
-void Queue_free(Queue *queue) {
+fn Queue_free(Queue *queue) {
     if (!queue) return;
     Collection *c = asCollection(queue);
     if ((*c).data)
@@ -141,7 +141,7 @@ void Queue_free(Queue *queue) {
     Memory_free(queue);
 }
 
-void Queue_push(Queue *queue, u64 valueOrPointer) {
+fn Queue_push(Queue *queue, u64 valueOrPointer) {
     if (!queue) return;
     Collection *c = asCollection(queue);
     if (!ensureCapacity(c))

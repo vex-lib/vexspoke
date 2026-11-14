@@ -23,24 +23,24 @@ typedef struct Clock {
 } Clock;
 
 // New clock: scale 1.0, unpaused, virtual time zeroed at now.
-Clock Clock_0(void);
+Clock Clock_0();
 #define Clock(...) CONSTRUCTOR_DISPATCH(Clock, __VA_ARGS__)
 
 // Advance: reads real elapsed since last tick and adds it scaled to the
 // virtual timeline. While paused, the real reading still advances (so no
 // giant jump lands on resume) but nothing accrues.
-void Clock_tick(Clock *clock);
+fn Clock_tick(Clock *clock);
 
-void Clock_setTimeScale(Clock *clock, d64 scale);
+fn Clock_setTimeScale(Clock *clock, d64 scale);
 d64 Clock_timeScale(const Clock *clock);
 
-void Clock_setPaused(Clock *clock, bool paused);
+fn Clock_setPaused(Clock *clock, bool paused);
 bool Clock_isPaused(const Clock *clock);
 
 // Virtual milliseconds accrued since create/reset.
 u64 Clock_virtualTimeMillis(const Clock *clock);
 
 // Zero the virtual timeline and re-anchor the real side at now.
-void Clock_reset(Clock *clock);
+fn Clock_reset(Clock *clock);
 
 #endif

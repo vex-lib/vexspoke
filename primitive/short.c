@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "primitive/short.h"
 
 #include "nio/mem.h"
@@ -30,11 +29,11 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Constructors:
- *   - Short_init(void)
+ *   - Short_init()
  *
  * Core Functions:
- *   - Short_shutdown(void)
- *   - Short_alloc(void)
+ *   - Short_shutdown()
+ *   - Short_alloc()
  *   - Short_allocArray(count)
  *   - Short_free(ptr)
  *   - Short_compareAndSet(ptr, expected, value)
@@ -53,16 +52,16 @@
 
 BitPool g_shortPool;
 
-bool Short_init(void) {
+bool Short_init() {
     g_shortPool = BitPool(2, 1024);
     return BitPool_live(&g_shortPool);
 }
 
-void Short_shutdown(void) {
+fn Short_shutdown() {
     BitPool_shutdown(&g_shortPool);
 }
 
-any Short_alloc(void) {
+any Short_alloc() {
     return BitPool_alloc(&g_shortPool, ID_SHORT);
 }
 
@@ -118,7 +117,7 @@ bytes Short_length(any ptr) {
     return Memory_length(ptr);
 }
 
-any Short_allocWithValue( value) {
+any Short_allocWithValue(i16 value) {
     any ptr = Short_alloc();
     if (ptr) Short_set(ptr, value);
     return ptr;

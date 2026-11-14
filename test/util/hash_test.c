@@ -50,7 +50,7 @@ static unsigned popcount32(u32 v) {
 // Checks reference hash vectors, null/empty input, determinism, and avalanche behavior.
 // Checks hash outputs and their basic distribution/bit-count properties.
 // Checks hash reference vectors, deterministic output, null inputs, and avalanche behavior.
-int main(void) {
+int main() {
     // --- Value boundary: nullptr and empty are the zero mapping, never a read.
     CHECK(Hash_fnv1a64(nullptr, 0) == 0);
     CHECK(Hash_fnv1a64(nullptr, 999) == 0);          // nullptr vetoes before length

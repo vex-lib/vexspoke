@@ -121,7 +121,7 @@ bool List_initStride(List *self, u32 elementClass, bytes stride, bytes capacity)
     u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, elementClass);
     u8 *data = (u8*) Memory_alloc(bufType, Bytes);
     if (!data) {
-        (void) Struct_reportConstructionExhaustion("list", Bytes);
+        (fn) Struct_reportConstructionExhaustion("list", Bytes);
         return false;
     }
     memset(data, 0, Bytes);
@@ -136,7 +136,7 @@ bool List_init(List *self, u32 elementClass, bytes capacity) {
 List *List_3(u32 elementClass, bytes capacity, bytes count) {
     List *list = (List*) Memory_alloc(TYPE_LIST, sizeof(List));
     if (!list) {
-        (void) Struct_reportConstructionExhaustion("list", sizeof(List));
+        (fn) Struct_reportConstructionExhaustion("list", sizeof(List));
         return nullptr;
     }
     if (!List_init(list, elementClass, capacity)) {
@@ -154,7 +154,7 @@ List *List_2(u32 elementClass, bytes capacity) {
     return List_3(elementClass, capacity, 0);
 }
 
-void List_free(List *list) {
+fn List_free(List *list) {
     if (!list) return;
     Collection *c = asCollection(list);
     if ((*c).data)
@@ -162,7 +162,7 @@ void List_free(List *list) {
     Memory_free(list);
 }
 
-void List_add(List *list, u64 valueOrPointer) {
+fn List_add(List *list, u64 valueOrPointer) {
     if (!list) return;
     Collection *c = asCollection(list);
     if ((*c).activeCount >= (*c).capacity) {
@@ -194,7 +194,7 @@ u64 List_get(List *list, bytes index) {
     return Collection_readSlot(c, index);
 }
 
-void List_set(List *list, bytes index, u64 value) {
+fn List_set(List *list, bytes index, u64 value) {
     if (!list) return;
     Collection *c = asCollection(list);
     if (index >= (*c).activeCount)
@@ -210,7 +210,7 @@ u8 *List_slot(List *list, bytes index) {
     return (*c).data + index * (*c).stride;
 }
 
-void List_remove(List *list, bytes index) {
+fn List_remove(List *list, bytes index) {
     if (!list) return;
     Collection *c = asCollection(list);
     if (index >= (*c).activeCount)

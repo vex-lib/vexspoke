@@ -35,7 +35,7 @@ static int g_failures = 0;
     } while (0)
 
 // Checks exact/prefix/subsequence ranking order and default candidate-index IDs.
-static void test_exact_and_prefix(void) {
+static fn test_exact_and_prefix() {
     const char *cands[] = { "app", "apple", "apple pie", "banana", "pineapple" };
     u32 ids[] = { 10, 20, 30, 40, 50 };
     SpotlightMatch out[8];
@@ -60,7 +60,7 @@ static void test_exact_and_prefix(void) {
 }
 
 // Pins ordering across exact, prefix, word-boundary, substring, and fuzzy match tiers.
-static void test_tiers(void) {
+static fn test_tiers() {
     // One candidate per tier for a single query.
     const char *cands[] = {
         "bar",          // exact
@@ -86,7 +86,7 @@ static void test_tiers(void) {
 }
 
 // Checks candidate matching is case-insensitive for differently cased exact strings.
-static void test_case_and_boundaries(void) {
+static fn test_case_and_boundaries() {
     const char *cands[] = { "APPLE", "Apple", "apple" };
     SpotlightMatch out[4];
     bytes n = Spotlight_rank("apple", cands, nullptr, 3, out, 4);
@@ -95,7 +95,7 @@ static void test_case_and_boundaries(void) {
 }
 
 // Checks rank output capacity and the reported total count, including zero capacity.
-static void test_max_count(void) {
+static fn test_max_count() {
     const char *cands[] = { "aa", "ab", "ac", "ad" };
     SpotlightMatch out[2];
     bytes n = Spotlight_rank("a", cands, nullptr, 4, out, 2);
@@ -107,7 +107,7 @@ static void test_max_count(void) {
 }
 
 // Checks null and empty query inputs return no ranked matches.
-static void test_nulls(void) {
+static fn test_nulls() {
     const char *cands[] = { "a" };
     SpotlightMatch out[1];
     CHECK(Spotlight_rank(nullptr, cands, nullptr, 1, out, 1) == 0);
@@ -117,7 +117,7 @@ static void test_nulls(void) {
 }
 
 // Checks Spotlight calculation forwarding for valid, non-expression, and null inputs.
-static void test_calculate(void) {
+static fn test_calculate() {
     d64 r = 0.0;
     CHECK(Spotlight_tryCalculate("2 + 3 * 4", &r));
     CHECK(r == 14.0);
@@ -129,7 +129,7 @@ static void test_calculate(void) {
 }
 
 // Runs ranking tiers, candidate boundaries, capacity behavior, and calculation checks.
-int main(void) {
+int main() {
     test_exact_and_prefix();
     test_tiers();
     test_case_and_boundaries();

@@ -2,7 +2,6 @@
 #define GENERIC_LIST_TMPL_H
 
 #include "vex.h"
-
 #include "generic/generic_cat.h"
 #include "struct/list.h"
 
@@ -67,10 +66,10 @@
         List base;                                                           \
     } VEX_LIST_CLASS(T);                                                     \
     VEX_LIST_CLASS(T) *VEX_LIST_FN(T, _2)(bytes capacity);                   \
-    void VEX_LIST_FN(T, _add)(VEX_LIST_CLASS(T) *self, T value);             \
+    fn VEX_LIST_FN(T, _add)(VEX_LIST_CLASS(T) *self, T value);             \
     T VEX_LIST_FN(T, _get)(VEX_LIST_CLASS(T) *self, bytes index);            \
     T *VEX_LIST_FN(T, _slot)(VEX_LIST_CLASS(T) *self, bytes index);          \
-    void VEX_LIST_FN(T, _free)(VEX_LIST_CLASS(T) *self);
+    fn VEX_LIST_FN(T, _free)(VEX_LIST_CLASS(T) *self);
 
 #define TYPEDEF_LIST_OBJECT(T, CLASS_ID)                                     \
     ;;CLASSNAME("List_" VEX_STR(T))                                          \
@@ -78,10 +77,10 @@
         List base;                                                           \
     } VEX_LIST_CLASS(T);                                                     \
     VEX_LIST_CLASS(T) *VEX_LIST_FN(T, _2)(bytes capacity);                   \
-    void VEX_LIST_FN(T, _add)(VEX_LIST_CLASS(T) *self, T *value);            \
+    fn VEX_LIST_FN(T, _add)(VEX_LIST_CLASS(T) *self, T *value);            \
     T *VEX_LIST_FN(T, _get)(VEX_LIST_CLASS(T) *self, bytes index);           \
     T **VEX_LIST_FN(T, _slot)(VEX_LIST_CLASS(T) *self, bytes index);         \
-    void VEX_LIST_FN(T, _free)(VEX_LIST_CLASS(T) *self);
+    fn VEX_LIST_FN(T, _free)(VEX_LIST_CLASS(T) *self);
 
 // List(List(T)): an object list whose element type is the inner typed handle.
 // LIST_CLASS_ID is the inner List's class id (ID_LIST for this repo).
@@ -99,7 +98,7 @@
         VEX_LIST_CLASS(T) *self = (VEX_LIST_CLASS(T)*)                       \
             Memory_alloc(TYPE_LIST, sizeof(VEX_LIST_CLASS(T)));              \
         if (!self) {                                                         \
-            (void) Struct_reportConstructionExhaustion("List_" VEX_STR(T),   \
+            (fn) Struct_reportConstructionExhaustion("List_" VEX_STR(T),   \
                                                        sizeof(VEX_LIST_CLASS(T))); \
             return nullptr;                                                  \
         }                                                                    \
@@ -112,7 +111,7 @@
 
 #define IMPLEMENT_LIST_VALUE(T, CLASS_ID)                                    \
     VEX_LIST_DEFINE_CTOR(T, CLASS_ID, sizeof(T))                             \
-    void VEX_LIST_FN(T, _add)(VEX_LIST_CLASS(T) *self, T value) {            \
+    fn VEX_LIST_FN(T, _add)(VEX_LIST_CLASS(T) *self, T value) {            \
         u8 *slot = List_addSlot((List*) self);                               \
         if (slot) memcpy(slot, &value, sizeof value);                        \
     }                                                                        \
@@ -126,13 +125,13 @@
     T *VEX_LIST_FN(T, _slot)(VEX_LIST_CLASS(T) *self, bytes index) {         \
         return (T*) List_slot((List*) self, index);                          \
     }                                                                        \
-    void VEX_LIST_FN(T, _free)(VEX_LIST_CLASS(T) *self) {                    \
+    fn VEX_LIST_FN(T, _free)(VEX_LIST_CLASS(T) *self) {                    \
         List_free((List*) self);                                             \
     }
 
 #define IMPLEMENT_LIST_OBJECT(T, CLASS_ID)                                   \
     VEX_LIST_DEFINE_CTOR(T, CLASS_ID, sizeof(T*))                            \
-    void VEX_LIST_FN(T, _add)(VEX_LIST_CLASS(T) *self, T *value) {           \
+    fn VEX_LIST_FN(T, _add)(VEX_LIST_CLASS(T) *self, T *value) {           \
         List_add((List*) self, (u64) (pointer) value);                       \
     }                                                                        \
     T *VEX_LIST_FN(T, _get)(VEX_LIST_CLASS(T) *self, bytes index) {          \
@@ -141,7 +140,7 @@
     T **VEX_LIST_FN(T, _slot)(VEX_LIST_CLASS(T) *self, bytes index) {        \
         return (T**) List_slot((List*) self, index);                         \
     }                                                                        \
-    void VEX_LIST_FN(T, _free)(VEX_LIST_CLASS(T) *self) {                    \
+    fn VEX_LIST_FN(T, _free)(VEX_LIST_CLASS(T) *self) {                    \
         List_free((List*) self);                                             \
     }
 

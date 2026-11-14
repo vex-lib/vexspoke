@@ -27,8 +27,8 @@ typedef struct Poly1305 {
 } Poly1305;
 
 // Init with a 32-byte one-time key. Reusing the key is a caller contract break.
-void Poly1305_init(Poly1305 *self, const u8 key[POLY1305_KEY_SIZE]);
-void Poly1305_update(Poly1305 *self, const u8 *data, bytes len);
+fn Poly1305_init(Poly1305 *self, const u8 key[POLY1305_KEY_SIZE]);
+fn Poly1305_update(Poly1305 *self, const u8 *data, bytes len);
 // Write the 16-byte tag; zeroes the state on success.
 bool Poly1305_final(Poly1305 *self, u8 tag[POLY1305_TAG_SIZE]);
 // One-shot: init + update + final over `len` bytes.

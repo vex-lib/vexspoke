@@ -29,17 +29,17 @@ typedef struct Rectangle {
 // Constructors:
 //   Rectangle()                 — empty at origin
 //   Rectangle(x, y, w, h)       — explicit rectangle bounds
-Rectangle *Rectangle_0(void);
+Rectangle *Rectangle_0();
 Rectangle *Rectangle_4(f32 x, f32 y, f32 width, f32 height);
 #define Rectangle(...) CONSTRUCTOR_DISPATCH(Rectangle, __VA_ARGS__)
-void Rectangle_free(Rectangle *r);
+fn Rectangle_free(Rectangle *r);
 
 // Setters
-void Rectangle_setX(Rectangle *r, f32 x);
-void Rectangle_setY(Rectangle *r, f32 y);
-void Rectangle_setWidth(Rectangle *r, f32 width);
-void Rectangle_setHeight(Rectangle *r, f32 height);
-void Rectangle_set(Rectangle *r, f32 x, f32 y, f32 width, f32 height);
+fn Rectangle_setX(Rectangle *r, f32 x);
+fn Rectangle_setY(Rectangle *r, f32 y);
+fn Rectangle_setWidth(Rectangle *r, f32 width);
+fn Rectangle_setHeight(Rectangle *r, f32 height);
+fn Rectangle_set(Rectangle *r, f32 x, f32 y, f32 width, f32 height);
 
 // Getters (null-safe: 0 on null)
 f32 Rectangle_getX(const Rectangle *r);
@@ -52,12 +52,12 @@ f32 Rectangle_getRight(const Rectangle *r);
 f32 Rectangle_getBottom(const Rectangle *r);
 
 // Core functions (dest-last: (srcA, srcB, dest))
-void Rectangle_copy(const Rectangle *src, Rectangle *dest);
-void Rectangle_translate(const Rectangle *src, f32 dx, f32 dy, Rectangle *dest);
-void Rectangle_inflate(const Rectangle *src, f32 dx, f32 dy, Rectangle *dest);
-void Rectangle_inset(const Rectangle *src, f32 l, f32 t, f32 r, f32 b, Rectangle *dest);
-void Rectangle_intersection(const Rectangle *a, const Rectangle *b, Rectangle *dest);
-void Rectangle_merge(const Rectangle *a, const Rectangle *b, Rectangle *dest);
+fn Rectangle_copy(const Rectangle *src, Rectangle *dest);
+fn Rectangle_translate(const Rectangle *src, f32 dx, f32 dy, Rectangle *dest);
+fn Rectangle_inflate(const Rectangle *src, f32 dx, f32 dy, Rectangle *dest);
+fn Rectangle_inset(const Rectangle *src, f32 l, f32 t, f32 r, f32 b, Rectangle *dest);
+fn Rectangle_intersection(const Rectangle *a, const Rectangle *b, Rectangle *dest);
+fn Rectangle_merge(const Rectangle *a, const Rectangle *b, Rectangle *dest);
 
 // Predicates (null-safe: false on null)
 bool Rectangle_isEmpty(const Rectangle *r);

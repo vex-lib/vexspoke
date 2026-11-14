@@ -35,12 +35,12 @@ typedef struct Class {
 _Static_assert(sizeof(Class) == 56u, "Class must stay 56 Bytes");
 
 bool Class_init(Class *self, const char *name, Struct *layout, ClassConstructFn construct);
-Class *Class_0(void);
+Class *Class_0();
 Class *Class_1(const char *name);
 Class *Class_2(const char *name, Struct *layout);
 Class *Class_3(const char *name, Struct *layout, ClassConstructFn construct);
 #define Class(...) CONSTRUCTOR_DISPATCH(Class, __VA_ARGS__)
-void Class_free(Class *self);
+fn Class_free(Class *self);
 
 u64 Class_kind(const Class *self);
 bool Class_check(const Class *self, u64 typeId);
@@ -48,21 +48,21 @@ any Class_construct(Class *self, any arg);
 
 // The class's field layout (borrowed; may be null).
 Struct *Class_getLayout(const Class *self);
-void Class_setLayout(Class *self, Struct *layout);
+fn Class_setLayout(Class *self, Struct *layout);
 ClassConstructFn Class_getConstruct(const Class *self);
-void Class_setConstruct(Class *self, ClassConstructFn construct);
+fn Class_setConstruct(Class *self, ClassConstructFn construct);
 
 // Append a copy of a method. Returns its index, or REFLECT_CLASS_METHOD_NONE.
 u32 Class_addMethod(Class *self, const Method *method);
 Method *Class_getMethod(const Class *self, u32 index);
 u32 Class_methodCount(const Class *self);
-typedef void (*ClassMethodVisitFn)(Method *method, u32 index, any userdata);
-void Class_forEachMethod(Class *self, ClassMethodVisitFn fn, any userdata);
+typedef fn (*ClassMethodVisitFn)(Method *method, u32 index, any userdata);
+fn Class_forEachMethod(Class *self, ClassMethodVisitFn fn, any userdata);
 
 bool Class_setName(Class *self, const char *name);
 const char *Class_getName(const Class *self);
 
-void Class_toString(const Class *self, char *dest, bytes cap, bool *outTruncated);
-void Class_toStringStruct(const Class *self, char *dest, bytes cap, bool *outTruncated);
+fn Class_toString(const Class *self, char *dest, bytes cap, bool *outTruncated);
+fn Class_toStringStruct(const Class *self, char *dest, bytes cap, bool *outTruncated);
 
 #endif

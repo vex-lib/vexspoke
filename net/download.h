@@ -14,21 +14,21 @@ typedef struct DownloadOptions {
     const char *user_agent;
 } DownloadOptions;
 
-static inline DownloadOptions DownloadOptions_0(void) {
+static inline DownloadOptions DownloadOptions_0() {
     return (DownloadOptions) { .timeout_seconds = 30u, .follow_redirects = true,
         .silent = true, .user_agent = "vexgraph/1.0 (Homebrew/Tooling Client)" };
 }
 #define DownloadOptions(...) CONSTRUCTOR_DISPATCH(DownloadOptions, __VA_ARGS__)
-static inline void DownloadOptions_setTimeout(DownloadOptions *options, u32 seconds) {
+static inline fn DownloadOptions_setTimeout(DownloadOptions *options, u32 seconds) {
     if (options) (*options).timeout_seconds = seconds;
 }
-static inline void DownloadOptions_setFollowRedirects(DownloadOptions *options, bool enabled) {
+static inline fn DownloadOptions_setFollowRedirects(DownloadOptions *options, bool enabled) {
     if (options) (*options).follow_redirects = enabled;
 }
-static inline void DownloadOptions_setSilent(DownloadOptions *options, bool enabled) {
+static inline fn DownloadOptions_setSilent(DownloadOptions *options, bool enabled) {
     if (options) (*options).silent = enabled;
 }
-static inline void DownloadOptions_setUserAgent(DownloadOptions *options, const char *agent) {
+static inline fn DownloadOptions_setUserAgent(DownloadOptions *options, const char *agent) {
     if (options) (*options).user_agent = agent;
 }
 
@@ -39,7 +39,7 @@ typedef struct DownloadResponse {
     bytes size;
 } DownloadResponse;
 
-static inline DownloadResponse DownloadResponse_0(void) { return (DownloadResponse) {0}; }
+static inline DownloadResponse DownloadResponse_0() { return (DownloadResponse) {0}; }
 #define DownloadResponse(...) CONSTRUCTOR_DISPATCH(DownloadResponse, __VA_ARGS__)
 
 // Download URL to an output file path on disk.
@@ -48,7 +48,7 @@ bool Download_to_file(const char *url, const char *output_file, const DownloadOp
 // Download URL directly to memory buffer (caller frees with DownloadResponse_free).
 bool Download_to_memory(const char *url, const DownloadOptions *opts, DownloadResponse *response_out);
 
-void DownloadResponse_free(DownloadResponse *res);
+fn DownloadResponse_free(DownloadResponse *res);
 
 // Fetch URL through the cache system: checks cache first, and if missing,
 // downloads and caches it under <subsystem>. Populates cached_path_out.

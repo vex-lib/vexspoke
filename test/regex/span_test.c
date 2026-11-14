@@ -19,7 +19,7 @@ static int g_failures = 0;
     } while (0)
 
 // Checks the unset span, its predicate, and its zero length.
-static void testUnset(void) {
+static fn testUnset() {
     RegexSpan none = RegexSpan_none();
     CHECK(none.start == REGEX_UNSET);
     CHECK(none.end == REGEX_UNSET);
@@ -28,7 +28,7 @@ static void testUnset(void) {
 }
 
 // Checks a participating span and its measured length.
-static void testSet(void) {
+static fn testSet() {
     RegexSpan span;
     span.start = 4;
     span.end = 9;
@@ -56,7 +56,7 @@ static void testSet(void) {
     CHECK(RegexSpan_length(inverted) == 0);
 }
 
-int main(void) {
+int main() {
     testUnset();
     testSet();
 

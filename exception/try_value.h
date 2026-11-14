@@ -2,7 +2,6 @@
 #define EXCEPTION_TRY_VALUE_H
 
 #include "vex.h"
-
 #include "exception/try_code.h"
 
 ;;DRAFT
@@ -30,13 +29,13 @@ TryValue TryValue_error(TryCode code);
 
 // --- Setters / Getters (the Symmetric Getter/Setter Completeness Law) ---
 u64 TryValue_getValue(const TryValue *self);
-void     TryValue_setValue(TryValue *self, u64 value);
+fn     TryValue_setValue(TryValue *self, u64 value);
 TryCode  TryValue_getCode(const TryValue *self);
-void     TryValue_setCode(TryValue *self, TryCode code);
+fn     TryValue_setCode(TryValue *self, TryCode code);
 bool     TryValue_isOk(const TryValue *self);
 
 // --- String projections (the toString Law) ---
-void TryValue_toString(const TryValue *self, char *dest, bytes cap, bool *outTruncated);
-void TryValue_toStringStruct(const TryValue *self, char *dest, bytes cap, bool *outTruncated);
+fn TryValue_toString(const TryValue *self, char *dest, bytes cap, bool *outTruncated);
+fn TryValue_toStringStruct(const TryValue *self, char *dest, bytes cap, bool *outTruncated);
 
 #endif

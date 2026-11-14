@@ -43,17 +43,17 @@
  *   - GraphicsInfo_setVramAvailable(val)
  *
  * Getters:
- *   - GraphicsInfo_getGpuName(void)
- *   - GraphicsInfo_getGpuVendorId(void)
- *   - GraphicsInfo_getGpuDeviceId(void)
- *   - GraphicsInfo_getPrimaryGraphicsApi(void)
- *   - GraphicsInfo_getUnifiedMemoryEnabled(void)
- *   - GraphicsInfo_getComputeShadersEnabled(void)
- *   - GraphicsInfo_getMeshShadersEnabled(void)
- *   - GraphicsInfo_getHardwareRayTracingEnabled(void)
- *   - GraphicsInfo_getMaxTextureSize(void)
- *   - GraphicsInfo_getVramTotal(void)
- *   - GraphicsInfo_getVramAvailable(void)
+ *   - GraphicsInfo_getGpuName()
+ *   - GraphicsInfo_getGpuVendorId()
+ *   - GraphicsInfo_getGpuDeviceId()
+ *   - GraphicsInfo_getPrimaryGraphicsApi()
+ *   - GraphicsInfo_getUnifiedMemoryEnabled()
+ *   - GraphicsInfo_getComputeShadersEnabled()
+ *   - GraphicsInfo_getMeshShadersEnabled()
+ *   - GraphicsInfo_getHardwareRayTracingEnabled()
+ *   - GraphicsInfo_getMaxTextureSize()
+ *   - GraphicsInfo_getVramTotal()
+ *   - GraphicsInfo_getVramAvailable()
  * ============================================================================
  */
 
@@ -70,111 +70,111 @@ static i32  s_maxTextureSize = 16384;
 static u64 s_vramTotal = 0;
 static u64 s_vramAvailable = 0;
 
-static inline void ensureDiscovered(void) {
+static inline fn ensureDiscovered() {
     SystemDiscovery_bootstrap();
 }
 
-const char *GraphicsInfo_getGpuName(void) {
+const char *GraphicsInfo_getGpuName() {
     ensureDiscovered();
     return s_gpuName;
 }
 
-void GraphicsInfo_setGpuName(const char *val) {
+fn GraphicsInfo_setGpuName(const char *val) {
     if (val) {
         strncpy(s_gpuName, val, sizeof(s_gpuName) - 1);
         s_gpuName[sizeof(s_gpuName) - 1] = '\0';
     }
 }
 
-i32 GraphicsInfo_getGpuVendorId(void) {
+i32 GraphicsInfo_getGpuVendorId() {
     ensureDiscovered();
     return s_gpuVendorId;
 }
 
-void GraphicsInfo_setGpuVendorId(i32 val) {
+fn GraphicsInfo_setGpuVendorId(i32 val) {
     s_gpuVendorId = val;
 }
 
-i32 GraphicsInfo_getGpuDeviceId(void) {
+i32 GraphicsInfo_getGpuDeviceId() {
     ensureDiscovered();
     return s_gpuDeviceId;
 }
 
-void GraphicsInfo_setGpuDeviceId(i32 val) {
+fn GraphicsInfo_setGpuDeviceId(i32 val) {
     s_gpuDeviceId = val;
 }
 
-const char *GraphicsInfo_getPrimaryGraphicsApi(void) {
+const char *GraphicsInfo_getPrimaryGraphicsApi() {
     ensureDiscovered();
     return s_primaryGraphicsApi;
 }
 
-void GraphicsInfo_setPrimaryGraphicsApi(const char *val) {
+fn GraphicsInfo_setPrimaryGraphicsApi(const char *val) {
     if (val) {
         strncpy(s_primaryGraphicsApi, val, sizeof(s_primaryGraphicsApi) - 1);
         s_primaryGraphicsApi[sizeof(s_primaryGraphicsApi) - 1] = '\0';
     }
 }
 
-bool GraphicsInfo_getUnifiedMemoryEnabled(void) {
+bool GraphicsInfo_getUnifiedMemoryEnabled() {
     ensureDiscovered();
     return s_unifiedMemoryEnabled;
 }
 
-void GraphicsInfo_setUnifiedMemoryEnabled(bool val) {
+fn GraphicsInfo_setUnifiedMemoryEnabled(bool val) {
     s_unifiedMemoryEnabled = val;
 }
 
-bool GraphicsInfo_getComputeShadersEnabled(void) {
+bool GraphicsInfo_getComputeShadersEnabled() {
     ensureDiscovered();
     return s_computeShadersEnabled;
 }
 
-void GraphicsInfo_setComputeShadersEnabled(bool val) {
+fn GraphicsInfo_setComputeShadersEnabled(bool val) {
     s_computeShadersEnabled = val;
 }
 
-bool GraphicsInfo_getMeshShadersEnabled(void) {
+bool GraphicsInfo_getMeshShadersEnabled() {
     ensureDiscovered();
     return s_meshShadersEnabled;
 }
 
-void GraphicsInfo_setMeshShadersEnabled(bool val) {
+fn GraphicsInfo_setMeshShadersEnabled(bool val) {
     s_meshShadersEnabled = val;
 }
 
-bool GraphicsInfo_getHardwareRayTracingEnabled(void) {
+bool GraphicsInfo_getHardwareRayTracingEnabled() {
     ensureDiscovered();
     return s_hardwareRayTracingEnabled;
 }
 
-void GraphicsInfo_setHardwareRayTracingEnabled(bool val) {
+fn GraphicsInfo_setHardwareRayTracingEnabled(bool val) {
     s_hardwareRayTracingEnabled = val;
 }
 
-i32 GraphicsInfo_getMaxTextureSize(void) {
+i32 GraphicsInfo_getMaxTextureSize() {
     ensureDiscovered();
     return s_maxTextureSize;
 }
 
-void GraphicsInfo_setMaxTextureSize(i32 val) {
+fn GraphicsInfo_setMaxTextureSize(i32 val) {
     s_maxTextureSize = val;
 }
 
-u64 GraphicsInfo_getVramTotal(void) {
+u64 GraphicsInfo_getVramTotal() {
     ensureDiscovered();
     return s_vramTotal;
 }
 
-void GraphicsInfo_setVramTotal(u64 val) {
+fn GraphicsInfo_setVramTotal(u64 val) {
     s_vramTotal = val;
 }
 
-u64 GraphicsInfo_getVramAvailable(void) {
+u64 GraphicsInfo_getVramAvailable() {
     ensureDiscovered();
     return s_vramAvailable;
 }
 
-void GraphicsInfo_setVramAvailable(u64 val) {
+fn GraphicsInfo_setVramAvailable(u64 val) {
     s_vramAvailable = val;
 }

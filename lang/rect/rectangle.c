@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "lang/rect/rectangle.h"
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
@@ -76,7 +75,7 @@
  */
 
 // CONSTRUCTORS
-Rectangle *Rectangle_0(void) {
+Rectangle *Rectangle_0() {
     Rectangle *r = (Rectangle*) Memory_alloc(ID_RECT, RECTANGLE_BYTES);
     if (!r) return nullptr;
     (*r).x = 0.0f;
@@ -96,17 +95,17 @@ Rectangle *Rectangle_4(f32 x, f32 y, f32 width, f32 height) {
     return r;
 }
 
-void Rectangle_free(Rectangle *r) {
+fn Rectangle_free(Rectangle *r) {
     if (r) Memory_free(r);
 }
 
 // SETTERS
-void Rectangle_setX(Rectangle *r, f32 x) { if (r) (*r).x = x; }
-void Rectangle_setY(Rectangle *r, f32 y) { if (r) (*r).y = y; }
-void Rectangle_setWidth(Rectangle *r, f32 width) { if (r) (*r).width = width; }
-void Rectangle_setHeight(Rectangle *r, f32 height) { if (r) (*r).height = height; }
+fn Rectangle_setX(Rectangle *r, f32 x) { if (r) (*r).x = x; }
+fn Rectangle_setY(Rectangle *r, f32 y) { if (r) (*r).y = y; }
+fn Rectangle_setWidth(Rectangle *r, f32 width) { if (r) (*r).width = width; }
+fn Rectangle_setHeight(Rectangle *r, f32 height) { if (r) (*r).height = height; }
 
-void Rectangle_set(Rectangle *r, f32 x, f32 y, f32 width, f32 height) {
+fn Rectangle_set(Rectangle *r, f32 x, f32 y, f32 width, f32 height) {
     if (!r) return;
     (*r).x = x;
     (*r).y = y;
@@ -125,7 +124,7 @@ f32 Rectangle_getRight(const Rectangle *r) { return r ? (*r).x + (*r).width : 0.
 f32 Rectangle_getBottom(const Rectangle *r) { return r ? (*r).y + (*r).height : 0.0f; }
 
 // CORE FUNCTIONS
-void Rectangle_copy(const Rectangle *src, Rectangle *dest) {
+fn Rectangle_copy(const Rectangle *src, Rectangle *dest) {
     if (!src || !dest) return;
     (*dest).x = (*src).x;
     (*dest).y = (*src).y;
@@ -133,7 +132,7 @@ void Rectangle_copy(const Rectangle *src, Rectangle *dest) {
     (*dest).height = (*src).height;
 }
 
-void Rectangle_translate(const Rectangle *src, f32 dx, f32 dy, Rectangle *dest) {
+fn Rectangle_translate(const Rectangle *src, f32 dx, f32 dy, Rectangle *dest) {
     if (!src || !dest) return;
     (*dest).x = (*src).x + dx;
     (*dest).y = (*src).y + dy;
@@ -141,7 +140,7 @@ void Rectangle_translate(const Rectangle *src, f32 dx, f32 dy, Rectangle *dest) 
     (*dest).height = (*src).height;
 }
 
-void Rectangle_inflate(const Rectangle *src, f32 dx, f32 dy, Rectangle *dest) {
+fn Rectangle_inflate(const Rectangle *src, f32 dx, f32 dy, Rectangle *dest) {
     if (!src || !dest) return;
     (*dest).x = (*src).x - dx;
     (*dest).y = (*src).y - dy;
@@ -149,7 +148,7 @@ void Rectangle_inflate(const Rectangle *src, f32 dx, f32 dy, Rectangle *dest) {
     (*dest).height = (*src).height + dy + dy;
 }
 
-void Rectangle_inset(const Rectangle *src, f32 l, f32 t, f32 r, f32 b, Rectangle *dest) {
+fn Rectangle_inset(const Rectangle *src, f32 l, f32 t, f32 r, f32 b, Rectangle *dest) {
     if (!src || !dest) return;
     (*dest).x = (*src).x + l;
     (*dest).y = (*src).y + t;
@@ -159,7 +158,7 @@ void Rectangle_inset(const Rectangle *src, f32 l, f32 t, f32 r, f32 b, Rectangle
     if ((*dest).height < 0.0f) (*dest).height = 0.0f;
 }
 
-void Rectangle_intersection(const Rectangle *a, const Rectangle *b, Rectangle *dest) {
+fn Rectangle_intersection(const Rectangle *a, const Rectangle *b, Rectangle *dest) {
     if (!a || !b || !dest) return;
     f32 l = ((*a).x > (*b).x) ? (*a).x : (*b).x;
     f32 t = ((*a).y > (*b).y) ? (*a).y : (*b).y;
@@ -182,7 +181,7 @@ void Rectangle_intersection(const Rectangle *a, const Rectangle *b, Rectangle *d
     (*dest).height = bot - t;
 }
 
-void Rectangle_merge(const Rectangle *a, const Rectangle *b, Rectangle *dest) {
+fn Rectangle_merge(const Rectangle *a, const Rectangle *b, Rectangle *dest) {
     if (!a || !b || !dest) return;
     f32 l = ((*a).x < (*b).x) ? (*a).x : (*b).x;
     f32 t = ((*a).y < (*b).y) ? (*a).y : (*b).y;

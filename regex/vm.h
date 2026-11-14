@@ -2,7 +2,6 @@
 #define REGEX_VM_H
 
 #include "vex.h"
-
 #include "regex/charclass.h"
 #include "regex/program.h"
 #include "regex/span.h"
@@ -31,13 +30,13 @@ static inline RegexOptions RegexOptions_3(bool ignoreCase, bool dotall, bool mul
     return (RegexOptions) { .ignoreCase = ignoreCase, .dotall = dotall, .multiline = multiline };
 }
 #define RegexOptions(...) CONSTRUCTOR_DISPATCH(RegexOptions, __VA_ARGS__)
-static inline void RegexOptions_setIgnoreCase(RegexOptions *options, bool value) {
+static inline fn RegexOptions_setIgnoreCase(RegexOptions *options, bool value) {
     if (options) (*options).ignoreCase = value;
 }
-static inline void RegexOptions_setDotall(RegexOptions *options, bool value) {
+static inline fn RegexOptions_setDotall(RegexOptions *options, bool value) {
     if (options) (*options).dotall = value;
 }
-static inline void RegexOptions_setMultiline(RegexOptions *options, bool value) {
+static inline fn RegexOptions_setMultiline(RegexOptions *options, bool value) {
     if (options) (*options).multiline = value;
 }
 
@@ -77,7 +76,7 @@ RegexVm RegexVm_2(const RegexProgram *program, u32 groupCount);
 #define RegexVm(...) CONSTRUCTOR_DISPATCH(RegexVm, __VA_ARGS__)
 
 // Release every scratch block and zero the VM. Null-safe.
-void RegexVm_free(RegexVm *vm);
+fn RegexVm_free(RegexVm *vm);
 
 // Run the simulation. anchored restricts the match to offset 0. Returns true
 // on a match and copies the winning capture row into the VM's best row.

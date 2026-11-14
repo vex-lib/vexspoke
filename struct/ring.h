@@ -23,11 +23,11 @@ typedef struct RingBuffer {
 
 // Construct a ring for elem_size-byte elements, capacity slots (rounded up to
 // pow2). A null slots pointer means invalid arguments or allocation failure.
-RingBuffer RingBuffer_0(void);
+RingBuffer RingBuffer_0();
 RingBuffer RingBuffer_2(bytes elem_size, bytes capacity);
 #define RingBuffer(...) CONSTRUCTOR_DISPATCH(RingBuffer, __VA_ARGS__)
 
-void RingBuffer_shutdown(RingBuffer *ring);
+fn RingBuffer_shutdown(RingBuffer *ring);
 
 // Copy item into the ring. Returns false if full (caller retries/spins).
 bool RingBuffer_push(RingBuffer *ring, const_any item);

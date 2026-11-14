@@ -10,7 +10,7 @@
 // a leading `self` pointer. Any struct "implements" it by exposing one of
 // these with .self pointing at itself; every callback receives that pointer
 // back as its first argument (the `this` Java implied). Callbacks mirror the
-// Java methods; Java's `default void` no-ops become nullptr pointers — every
+// Java methods; Java's `default fn` no-ops become nullptr pointers — every
 // dispatcher checks before invoking, so a listener only needs the callbacks
 // it cares about.
 //
@@ -22,10 +22,10 @@
 
 typedef struct KeyHandler {
     any self; // the implementing object, handed back to every callback
-    void (*onKeyDown)(any self, int keyEvent, u64 exactNanos);
-    void (*onKeyUp)(any self, int keyEvent, u64 exactNanos);
-    void (*onKeyRepeat)(any self, int keyEvent, u64 exactNanos);
-    void (*onCharTyped)(any self, u32 character); // default no-op in legacy
+    fn (*onKeyDown)(any self, int keyEvent, u64 exactNanos);
+    fn (*onKeyUp)(any self, int keyEvent, u64 exactNanos);
+    fn (*onKeyRepeat)(any self, int keyEvent, u64 exactNanos);
+    fn (*onCharTyped)(any self, u32 character); // default no-op in legacy
 } KeyHandler;
 
 #endif

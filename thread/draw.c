@@ -38,8 +38,8 @@
  * Core Functions:
  *   - DrawThread_invokeRole(role)
  *   - DrawThread_submitTo(role, task)
- *   - DrawThread_stopAll(void)
- *   - DrawThread_freeAll(void)
+ *   - DrawThread_stopAll()
+ *   - DrawThread_freeAll()
  * ============================================================================
  */
 
@@ -67,8 +67,8 @@ static Thread *roleWorker(int role) {
     return nullptr;
 }
 
-static void draw_job(Thread *self, any task) {
-    (void)self;
+static fn draw_job(Thread *self, any task) {
+    (fn)self;
     if (ComputeJob_run(task)) return;   // a generic job handed to this role
     if (!task)
         return;
@@ -96,12 +96,12 @@ bool DrawThread_submitTo(int role, any task) {
     return w && Thread_submit(w, task);
 }
 
-void DrawThread_stopAll(void) {
+fn DrawThread_stopAll() {
     for (int i = 0; i < DRAW_ROLE_SLOTS; i++)
         Thread_stop(s_roles[i].worker);
 }
 
-void DrawThread_freeAll(void) {
+fn DrawThread_freeAll() {
     for (int i = 0; i < DRAW_ROLE_SLOTS; i++) {
         Thread_free(s_roles[i].worker);
         s_roles[i].worker = nullptr;

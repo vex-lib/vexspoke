@@ -48,7 +48,7 @@ static DestructorEntry s_destructors[MAX_CUSTOM_DESTRUCTORS];
 static u32 s_destructorCount = 0;
 
 // Registers or replaces a custom destructor for a nonzero type ID when capacity permits.
-void Destructor_register(u64 typeId, DestructorFn fn) {
+fn Destructor_register(u64 typeId, DestructorFn fn) {
     if (fn == nullptr || typeId == 0) return;
     // Check if already registered to update
     for (u32 i = 0; i < s_destructorCount; i++) {
@@ -75,7 +75,7 @@ DestructorFn Destructor_lookup(u64 typeId) {
 }
 
 // Runs the matching registered destructor, then releases ptr through Memory_free.
-void c23_free(any ptr) {
+fn c23_free(any ptr) {
     if (!ptr) return;
 
     u64 typeId = Memory_type(ptr);

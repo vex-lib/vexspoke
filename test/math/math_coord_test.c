@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include <math.h>
 
 #include "math/coord_frame.h"
@@ -17,7 +16,7 @@ static int g_failures = 0;
 // Covers the 12 coordinate frames and the strict/fast math facade. The numeric
 // vector and matrix shapes belong to vex-c (vec2f/vec3f/vec4f/mat4f); the frame
 // table stays here so an agnostic coordinate consumer can map spatial axes.
-int main(void) {
+int main() {
     printf("=== Running 12-Frame Math & Vector Test Suite ===\n");
 
     // 1. The 12 Coordinate Frames

@@ -3,7 +3,6 @@
 
 #include "vex.h"
 
-
 // c23/fn.h — functions as data (the opcode-in-hand class).
 //
 //   int base = 10;
@@ -30,7 +29,7 @@ typedef struct Function {
 
 typedef any (*FunctionCallFn)(any context, any in);
 
-static inline Function Function_0(void) {
+static inline Function Function_0() {
     Function function;
     function.call = nullptr;
     function.context = nullptr;

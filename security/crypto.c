@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "security/crypto.h"
 
 ;;DEFINITION
@@ -51,7 +50,7 @@
  *   - Crypto_rngNextU64(rng)
  *   - Crypto_rngBytes(rng, dest, len)
  *   - Crypto_prngSeed(seed)   DETERMINISTIC; never for secrets
- *   - Crypto_prngU64(void)
+ *   - Crypto_prngU64()
  *   - Crypto_prngBytes(dest, len)
  *   - Crypto_toHex(Bytes, len, outHex)
  *   - Crypto_fromHex(hex, outBytes, maxBytes)
@@ -98,7 +97,7 @@ static const u32 K[64] = {
     0x90befffau, 0xa4506cebu, 0xbef9a3f7u, 0xc67178f2u
 };
 
-static void Crypto_sha256Transform(CryptoSha256 *ctx, const u8 data[64]) {
+static fn Crypto_sha256Transform(CryptoSha256 *ctx, const u8 data[64]) {
     u32 m[64];
     for (i32 i = 0; i < 16; i++) {
         m[i] = ((u32) data[i * 4] << 24) |
@@ -142,7 +141,7 @@ static void Crypto_sha256Transform(CryptoSha256 *ctx, const u8 data[64]) {
     (*ctx).state[7] += h;
 }
 
-void Crypto_sha256Init(CryptoSha256 *ctx) {
+fn Crypto_sha256Init(CryptoSha256 *ctx) {
     if (ctx == nullptr) return;
     (*ctx).count = 0;
     (*ctx).state[0] = 0x6a09e667u;
@@ -155,7 +154,7 @@ void Crypto_sha256Init(CryptoSha256 *ctx) {
     (*ctx).state[7] = 0x5be0cd19u;
 }
 
-void Crypto_sha256Update(CryptoSha256 *ctx, const_any data, bytes len) {
+fn Crypto_sha256Update(CryptoSha256 *ctx, const_any data, bytes len) {
     if (ctx == nullptr || data == nullptr || len == 0) return;
 
     const u8 *p = (const u8*) data;
@@ -188,7 +187,7 @@ void Crypto_sha256Update(CryptoSha256 *ctx, const_any data, bytes len) {
     }
 }
 
-void Crypto_sha256Final(CryptoSha256 *ctx, u8 outDigest[CRYPTO_SHA256_DIGEST_SIZE]) {
+fn Crypto_sha256Final(CryptoSha256 *ctx, u8 outDigest[CRYPTO_SHA256_DIGEST_SIZE]) {
     if (ctx == nullptr || outDigest == nullptr) return;
 
     u64 bitCount = (*ctx).count * 8ULL;
@@ -221,14 +220,14 @@ void Crypto_sha256Final(CryptoSha256 *ctx, u8 outDigest[CRYPTO_SHA256_DIGEST_SIZ
     }
 }
 
-void Crypto_sha256(const_any data, bytes len, u8 outDigest[CRYPTO_SHA256_DIGEST_SIZE]) {
+fn Crypto_sha256(const_any data, bytes len, u8 outDigest[CRYPTO_SHA256_DIGEST_SIZE]) {
     CryptoSha256 ctx;
     Crypto_sha256Init(&ctx);
     Crypto_sha256Update(&ctx, data, len);
     Crypto_sha256Final(&ctx, outDigest);
 }
 
-void Crypto_sha256Hex(const_any data, bytes len, char outHex[CRYPTO_SHA256_HEX_SIZE]) {
+fn Crypto_sha256Hex(const_any data, bytes len, char outHex[CRYPTO_SHA256_HEX_SIZE]) {
     u8 digest[CRYPTO_SHA256_DIGEST_SIZE];
     Crypto_sha256(data, len, digest);
     Crypto_toHex(digest, CRYPTO_SHA256_DIGEST_SIZE, outHex);
@@ -287,7 +286,7 @@ static u64 splitmix64(u64 *seed) {
     return z ^ (z >> 31);
 }
 
-void Crypto_rngInit(CryptoRng *rng, u64 seed) {
+fn Crypto_rngInit(CryptoRng *rng, u64 seed) {
     if (rng == nullptr) return;
     if (seed == 0) seed = 0x853c49e6748fea9bULL;
     u64 sm = seed;
@@ -305,7 +304,7 @@ u64 Crypto_rngNextU64(CryptoRng *rng) {
     return (*rng).s[1] + s0;
 }
 
-void Crypto_rngBytes(CryptoRng *rng, any dest, bytes len) {
+fn Crypto_rngBytes(CryptoRng *rng, any dest, bytes len) {
     if (rng == nullptr || dest == nullptr || len == 0) return;
     u8 *p = (u8*) dest;
     while (len >= 8) {
@@ -322,15 +321,15 @@ void Crypto_rngBytes(CryptoRng *rng, any dest, bytes len) {
 
 static CryptoRng g_defaultRng = { { 0x123456789abcdef0ULL, 0xfedcba9876543210ULL } };
 
-void Crypto_prngSeed(u64 seed) {
+fn Crypto_prngSeed(u64 seed) {
     Crypto_rngInit(&g_defaultRng, seed);
 }
 
-u64 Crypto_prngU64(void) {
+u64 Crypto_prngU64() {
     return Crypto_rngNextU64(&g_defaultRng);
 }
 
-void Crypto_prngBytes(any dest, bytes len) {
+fn Crypto_prngBytes(any dest, bytes len) {
     Crypto_rngBytes(&g_defaultRng, dest, len);
 }
 
@@ -340,7 +339,7 @@ void Crypto_prngBytes(any dest, bytes len) {
 
 static const char HEX_CHARS[] = "0123456789abcdef";
 
-void Crypto_toHex(const u8 *Bytes, bytes len, char *outHex) {
+fn Crypto_toHex(const u8 *Bytes, bytes len, char *outHex) {
     if (outHex == nullptr) return;
     if (Bytes == nullptr || len == 0) {
         outHex[0] = '\0';

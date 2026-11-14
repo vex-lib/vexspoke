@@ -34,7 +34,7 @@ static int g_failures = 0;
 // Validates f32 trigonometry, inverse-trig domains, and libm parity.
 // Checks strict trigonometric functions against reference values.
 // Checks strict f32 trigonometry, inverse-domain behavior, and libm agreement.
-static void test_trig(void) {
+static fn test_trig() {
     CHECK(StrictMath_sin(0.0f) == 0.0f);
     CHECK(CLOSE_F(StrictMath_sin(STRICT_MATH_HALF_PI), 1.0f, 1e-6f));
     CHECK(CLOSE_F(StrictMath_cos(0.0f), 1.0f, 1e-6f));
@@ -63,7 +63,7 @@ static void test_trig(void) {
 // Checks square-root, inverse-root, power, exponential, and logarithm cases.
 // Verifies strict root and power operations over representative inputs.
 // Verifies root, reciprocal-root, power, exponential, and logarithm semantics.
-static void test_roots_and_powers(void) {
+static fn test_roots_and_powers() {
     CHECK(StrictMath_sqrt(0.0f) == 0.0f);
     CHECK(StrictMath_sqrt(4.0f) == 2.0f);
     CHECK(StrictMath_sqrt(-1.0f) != StrictMath_sqrt(-1.0f)); // NaN
@@ -84,7 +84,7 @@ static void test_roots_and_powers(void) {
 // Exercises f32 absolute, rounding, clamp, and interpolation semantics.
 // Checks strict rounding operations at integral and fractional boundaries.
 // Tests absolute value, IEEE rounding, clamp, and interpolation endpoints.
-static void test_rounding(void) {
+static fn test_rounding() {
     CHECK(StrictMath_abs(-3.5f) == 3.5f);
     CHECK(StrictMath_abs(3.5f) == 3.5f);
     CHECK(StrictMath_abs(0.0f) == 0.0f);
@@ -111,7 +111,7 @@ static void test_rounding(void) {
 // Checks f32 angle conversion round trips and canonical constants.
 // Exercises strict angle conversions and normalization behavior.
 // Checks radians/degrees conversion round trips and named constants.
-static void test_angles(void) {
+static fn test_angles() {
     CHECK(CLOSE_F(StrictMath_toDegrees(StrictMath_toRadians(90.0f)), 90.0f, 1e-3f));
     CHECK(CLOSE_F(StrictMath_toRadians(180.0f), STRICT_MATH_PI, 1e-5f));
     CHECK(CLOSE_F(StrictMath_toRadians(90.0f), STRICT_MATH_HALF_PI, 1e-5f));
@@ -120,7 +120,7 @@ static void test_angles(void) {
 // Verifies the corresponding d64-precision operation surface.
 // Confirms d64-precision counterparts agree with their expected values.
 // Verifies d64-precision StrictMath counterparts across their public operations.
-static void test_f64_twins(void) {
+static fn test_f64_twins() {
     CHECK(StrictMath_sinD(0.0) == 0.0);
     CHECK(fabs(StrictMath_cosD(0.0) - 1.0) < 1e-15);
     CHECK(StrictMath_sqrtD(9.0) == 3.0);
@@ -146,7 +146,7 @@ static void test_f64_twins(void) {
 // Runs the strict f32 and d64 math contract checks.
 // Runs strict-math trigonometric, root, rounding, angle, and d64-precision checks.
 // Runs the strict f32 and d64 math contract cases.
-int main(void) {
+int main() {
     test_trig();
     test_roots_and_powers();
     test_rounding();

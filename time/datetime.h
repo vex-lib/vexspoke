@@ -21,14 +21,14 @@ typedef struct DateTime {
     i32 dayOfWeek;  // 1=Monday .. 7=Sunday
 } DateTime;
 
-static inline DateTime DateTime_0(void) { return (DateTime) {0}; }
+static inline DateTime DateTime_0() { return (DateTime) {0}; }
 #define DateTime(...) CONSTRUCTOR_DISPATCH(DateTime, __VA_ARGS__)
 
 // Set from the current system wall clock.
-void DateTime_set(DateTime *dt);
+fn DateTime_set(DateTime *dt);
 
 // Recompute every calendar field from epochMillis (Hinnant's algorithm).
-void setEpochMillis(DateTime *dt, int64_t epochMillis);
+fn setEpochMillis(DateTime *dt, int64_t epochMillis);
 
 int64_t DateTime_epochMillis(const DateTime *dt);
 i32 DateTime_year(const DateTime *dt);

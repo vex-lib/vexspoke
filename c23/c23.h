@@ -12,7 +12,6 @@
 // code uses.
 
 #include "vex.h"
-
 #include "c23/equals.h"
 #include "c23/fn.h"
 #include "c23/type_overload.h"

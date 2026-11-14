@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "exception/try_value.h"
 
 ;;DEFINITION
@@ -79,7 +78,7 @@ u64 TryValue_getValue(const TryValue *self) {
 }
 
 // Replaces the scalar payload when self is non-null.
-void TryValue_setValue(TryValue *self, u64 value) {
+fn TryValue_setValue(TryValue *self, u64 value) {
     if (!self)
         return;
     (*self).value = value;
@@ -93,7 +92,7 @@ TryCode TryValue_getCode(const TryValue *self) {
 }
 
 // Replaces the result code when self is non-null.
-void TryValue_setCode(TryValue *self, TryCode code) {
+fn TryValue_setCode(TryValue *self, TryCode code) {
     if (!self)
         return;
     (*self).code = code;
@@ -107,7 +106,7 @@ bool TryValue_isOk(const TryValue *self) {
 }
 
 // Formats a value-oriented summary into dest and reports capacity truncation.
-void TryValue_toString(const TryValue *self, char *dest, bytes cap, bool *outTruncated) {
+fn TryValue_toString(const TryValue *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (!dest || cap == 0u)
@@ -132,7 +131,7 @@ void TryValue_toString(const TryValue *self, char *dest, bytes cap, bool *outTru
 }
 
 // Formats the result fields into dest and reports capacity truncation.
-void TryValue_toStringStruct(const TryValue *self, char *dest, bytes cap, bool *outTruncated) {
+fn TryValue_toStringStruct(const TryValue *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (!dest || cap == 0u)

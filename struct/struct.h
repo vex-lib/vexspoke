@@ -9,7 +9,6 @@
 // code uses.
 
 #include "vex.h"
-
 #include "struct/collection.h"
 #include "struct/exhaustion.h"
 #include "struct/array.h"

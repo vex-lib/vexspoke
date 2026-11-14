@@ -6,7 +6,6 @@
 // the scratch arena so value views stay pointer-stable.
 
 #include "vex.h"
-
 #include "net/json.h"
 
 #include <stdlib.h>
@@ -108,7 +107,7 @@ static JsonRef allocNode(Parser *ps) {
     return (JsonRef)(*d).nodeCount++;
 }
 
-static void skipWs(Parser *ps) {
+static fn skipWs(Parser *ps) {
     while (*(*ps).p == ' ' || *(*ps).p == '\t' || *(*ps).p == '\n' || *(*ps).p == '\r')
         (*ps).p++;
 }

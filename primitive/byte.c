@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "primitive/byte.h"
 
 #include "nio/mem.h"
@@ -30,11 +29,11 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Constructors:
- *   - Byte_init(void)
+ *   - Byte_init()
  *
  * Core Functions:
- *   - Byte_shutdown(void)
- *   - Byte_alloc(void)
+ *   - Byte_shutdown()
+ *   - Byte_alloc()
  *   - Byte_allocArray(count)
  *   - Byte_free(ptr)
  *   - Byte_compareAndSet(ptr, expected, value)
@@ -53,16 +52,16 @@
 
 BitPool g_bytePool;
 
-bool Byte_init(void) {
+bool Byte_init() {
     g_bytePool = BitPool(1, 1024);
     return BitPool_live(&g_bytePool);
 }
 
-void Byte_shutdown(void) {
+fn Byte_shutdown() {
     BitPool_shutdown(&g_bytePool);
 }
 
-any Byte_alloc(void) {
+any Byte_alloc() {
     return BitPool_alloc(&g_bytePool, ID_BYTE);
 }
 
@@ -118,7 +117,7 @@ bytes Byte_length(any ptr) {
     return Memory_length(ptr);
 }
 
-any Byte_allocWithValue( value) {
+any Byte_allocWithValue(i8 value) {
     any ptr = Byte_alloc();
     if (ptr) Byte_set(ptr, value);
     return ptr;

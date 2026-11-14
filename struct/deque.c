@@ -80,7 +80,7 @@ Deque *Deque_3(u32 elementClass, bytes capacity, bytes count) {
     bytes cap = capacity < DEFAULT_CAPACITY ? DEFAULT_CAPACITY : capacity;
     Deque *deque = (Deque*) Memory_alloc(TYPE_DEQUE, sizeof(Deque));
     if (!deque) {
-        (void) Struct_reportConstructionExhaustion("deque", sizeof(Deque));
+        (fn) Struct_reportConstructionExhaustion("deque", sizeof(Deque));
         return nullptr;
     }
 
@@ -98,7 +98,7 @@ Deque *Deque_3(u32 elementClass, bytes capacity, bytes count) {
     u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, elementClass);
     (*c).data = (u8*) Memory_alloc(bufType, Bytes);
     if (!(*c).data) {
-        (void) Struct_reportConstructionExhaustion("deque", Bytes);
+        (fn) Struct_reportConstructionExhaustion("deque", Bytes);
         Memory_free(deque);
         return nullptr;
     }
@@ -140,7 +140,7 @@ Deque *Deque_2(u32 elementClass, bytes capacity) {
     return Deque_3(elementClass, capacity, 0);
 }
 
-void Deque_free(Deque *deque) {
+fn Deque_free(Deque *deque) {
     if (!deque) return;
     Collection *c = asCollection(deque);
     if ((*c).data)
@@ -148,7 +148,7 @@ void Deque_free(Deque *deque) {
     Memory_free(deque);
 }
 
-void Deque_addFirst(Deque *deque, u64 valueOrPointer) {
+fn Deque_addFirst(Deque *deque, u64 valueOrPointer) {
     if (!deque) return;
     Collection *c = asCollection(deque);
     if (!ensureCapacity(c))
@@ -165,7 +165,7 @@ void Deque_addFirst(Deque *deque, u64 valueOrPointer) {
     (*c).activeCount++;
 }
 
-void Deque_addLast(Deque *deque, u64 valueOrPointer) {
+fn Deque_addLast(Deque *deque, u64 valueOrPointer) {
     if (!deque) return;
     Collection *c = asCollection(deque);
     if (!ensureCapacity(c))

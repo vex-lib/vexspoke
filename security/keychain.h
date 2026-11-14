@@ -33,7 +33,7 @@ typedef enum KeychainCode {
 } KeychainCode;
 
 // True when this host has a backend. False means every call returns UNSUPPORTED.
-bool Keychain_isAvailable(void);
+bool Keychain_isAvailable();
 // Store or replace `len` bytes under (service, account). Replacing is idempotent.
 KeychainCode Keychain_store(const char *service, const char *account,
                             const u8 *secret, bytes len);

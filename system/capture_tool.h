@@ -45,7 +45,7 @@ typedef struct CaptureTool {
 
 // --- Constructor ---
 // Returns the shared directory handle (static, zero-init, never NULL).
-CaptureTool *CaptureTool_shared(void);
+CaptureTool *CaptureTool_shared();
 
 // --- Core functions ---
 // Total rows. Null-safe: 0 on NULL self.

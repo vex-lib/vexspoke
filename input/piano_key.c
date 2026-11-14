@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "input/piano_key.h"
 
 ;;DEFINITION
@@ -84,20 +83,20 @@ i32 PianoKey_octave(u8 note) {
     return ((i32) note / 12) - 1;
 }
 
-void PianoKey_noteName(u8 note, char *dest, bytes maxLen) {
+fn PianoKey_noteName(u8 note, char *dest, bytes maxLen) {
     if (dest == nullptr || maxLen == 0) return;
     PianoPitchClass pc = PianoKey_pitchClass(note);
     i32 oct = PianoKey_octave(note);
     snprintf(dest, maxLen, "%s%d", PITCH_NAMES[pc], oct);
 }
 
-PianoState PianoState_0(void) {
+PianoState PianoState_0() {
     PianoState state;
     memset(&state, 0, sizeof state);
     return state;
 }
 
-void PianoState_processEvent(PianoState *state, PianoKeyEvent event) {
+fn PianoState_processEvent(PianoState *state, PianoKeyEvent event) {
     if (state == nullptr || event.note >= PIANO_MAX_NOTES) {
         return;
     }

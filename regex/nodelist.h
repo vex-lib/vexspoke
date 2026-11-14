@@ -3,7 +3,6 @@
 
 #include "vex.h"
 
-
 // regex/nodelist.h — the RegexNodeList: the flat AST a parse produces and the
 // program builder walks. Single Class Per File Law: RegexNodeList (owning the
 // behaviorless RegexNode slot records).
@@ -58,7 +57,7 @@ typedef struct RegexNodeList {
 } RegexNodeList;
 
 // Create an empty list; allocates nothing.
-RegexNodeList RegexNodeList_0(void);
+RegexNodeList RegexNodeList_0();
 #define RegexNodeList(...) CONSTRUCTOR_DISPATCH(RegexNodeList, __VA_ARGS__)
 
 // Append a zeroed node of the given kind. Returns its index, or
@@ -72,6 +71,6 @@ RegexNode *RegexNodeList_get(RegexNodeList *list, u32 index);
 const RegexNode *RegexNodeList_at(const RegexNodeList *list, u32 index);
 
 // Release the node block and zero the list.
-void RegexNodeList_free(RegexNodeList *list);
+fn RegexNodeList_free(RegexNodeList *list);
 
 #endif

@@ -39,10 +39,10 @@ static inline GestureEvent GestureEvent_2(GesturePhase phase, f32 magnificationD
     return (GestureEvent) { .phase = phase, .magnificationDelta = magnificationDelta };
 }
 #define GestureEvent(...) CONSTRUCTOR_DISPATCH(GestureEvent, __VA_ARGS__)
-static inline void GestureEvent_setPhase(GestureEvent *event, GesturePhase phase) {
+static inline fn GestureEvent_setPhase(GestureEvent *event, GesturePhase phase) {
     if (event) (*event).phase = phase;
 }
-static inline void GestureEvent_setMagnificationDelta(GestureEvent *event, f32 delta) {
+static inline fn GestureEvent_setMagnificationDelta(GestureEvent *event, f32 delta) {
     if (event) (*event).magnificationDelta = delta;
 }
 
@@ -55,9 +55,9 @@ typedef struct GestureState {
     bool   isRotating;
 } GestureState;
 
-GestureState GestureState_0(void);
+GestureState GestureState_0();
 #define GestureState(...) CONSTRUCTOR_DISPATCH(GestureState, __VA_ARGS__)
-void GestureState_processEvent(GestureState *state, GestureEvent event);
-void GestureState_tick(GestureState *state, f32 deltaSeconds);
+fn GestureState_processEvent(GestureState *state, GestureEvent event);
+fn GestureState_tick(GestureState *state, f32 deltaSeconds);
 
 #endif

@@ -31,10 +31,10 @@ typedef struct Struct {
 _Static_assert(sizeof(Struct) == 40u, "Struct must stay 40 Bytes");
 
 bool Struct_init(Struct *self, const char *name);
-Struct *Struct_0(void);
+Struct *Struct_0();
 Struct *Struct_1(const char *name);
 #define Struct(...) CONSTRUCTOR_DISPATCH(Struct, __VA_ARGS__)
-void Struct_free(Struct *self);
+fn Struct_free(Struct *self);
 
 u64 Struct_kind(const Struct *self);
 bool Struct_check(const Struct *self, u64 typeId);
@@ -43,19 +43,19 @@ u32 Struct_add(Struct *self, const Field *field);
 // The field row at `index` (mutable, stable), or null.
 Field *Struct_get(const Struct *self, u32 index);
 // Visit every field row in order (cold). Must not mutate the Struct.
-typedef void (*StructVisitFn)(Field *field, u32 index, any userdata);
-void Struct_forEach(Struct *self, StructVisitFn fn, any userdata);
+typedef fn (*StructVisitFn)(Field *field, u32 index, any userdata);
+fn Struct_forEach(Struct *self, StructVisitFn fn, any userdata);
 
 bool Struct_setName(Struct *self, const char *name);
 // The entity row byte stride (0 = unknown). Struct_add does not lay out
 // offsets; a caller setting physical Fields also sets the row size.
-void Struct_setSize(Struct *self, u32 size);
+fn Struct_setSize(Struct *self, u32 size);
 u32 Struct_getSize(const Struct *self);
 const char *Struct_getName(const Struct *self);
 u32 Struct_count(const Struct *self);
 bool Struct_isEmpty(const Struct *self);
 
-void Struct_toString(const Struct *self, char *dest, bytes cap, bool *outTruncated);
-void Struct_toStringStruct(const Struct *self, char *dest, bytes cap, bool *outTruncated);
+fn Struct_toString(const Struct *self, char *dest, bytes cap, bool *outTruncated);
+fn Struct_toStringStruct(const Struct *self, char *dest, bytes cap, bool *outTruncated);
 
 #endif

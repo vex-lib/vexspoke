@@ -2,7 +2,6 @@
 #define STRUCT_STACK_H
 
 #include "vex.h"
-
 #include "struct/collection.h"
 #include "exception/try_value.h"
 
@@ -18,12 +17,12 @@ Stack *Stack_2(u32 element_class, bytes capacity);
 // Stack pre-filled to count slots (legacy allocate): active_count = count.
 Stack *Stack_3(u32 element_class, bytes capacity, bytes count);
 
-void Stack_free(Stack *stack);
+fn Stack_free(Stack *stack);
 
-// void for family consistency, but never silent: a growth whose arena
+// fn for family consistency, but never silent: a growth whose arena
 // allocation fails emits its THROW diagnostic and refuses the element.
 // Callers that need the reason use Stack_pushTry.
-void Stack_push(Stack *stack, u64 value_or_pointer);
+fn Stack_push(Stack *stack, u64 value_or_pointer);
 
 // `;;CHECKER` half of the pair; Stack_push is the `;;HOTCODE` half. Returns the
 // pushed value on TRY_OK, or the named reason: TRY_NULL_ARG, TRY_OVERFLOW

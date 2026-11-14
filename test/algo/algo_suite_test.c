@@ -14,7 +14,7 @@
 #include "lang/rect/rectangle.h"
 #include "nio/mem.h"
 
-static void test_radix_sort(void) {
+static fn test_radix_sort() {
     u32 a32[256];
     for (int i = 0; i < 256; i++) {
         a32[i] = (u32) ((255 - i) * 179424673u + 37u);
@@ -46,7 +46,7 @@ static void test_radix_sort(void) {
     }
 }
 
-static void test_dijkstra(void) {
+static fn test_dijkstra() {
     DijkstraGraph *g = Dijkstra(6);
     assert(g != nullptr);
 
@@ -74,7 +74,7 @@ static void test_dijkstra(void) {
     Dijkstra_free(g);
 }
 
-static void test_geometry_constructors(void) {
+static fn test_geometry_constructors() {
     Point *origin = Point();
     assert(origin != nullptr && (*origin).x == 0 && (*origin).y == 0);
     Point_free(origin);
@@ -90,7 +90,7 @@ static void test_geometry_constructors(void) {
     Rectangle_free(bounds);
 }
 
-static void test_kd_tree(void) {
+static fn test_kd_tree() {
     KdPoint pts[10];
     for (int i = 0; i < 10; i++) {
         pts[i].coord[0] = (f32) i;
@@ -117,7 +117,7 @@ static void test_kd_tree(void) {
     KdTree_free(tree);
 }
 
-static void test_bvh(void) {
+static fn test_bvh() {
     BvhPrimitive prims[3];
 
     // Primitive 0: box around (0, 0, 5)
@@ -159,15 +159,15 @@ static void test_bvh(void) {
 }
 
 static bool tree_sit_counter(const TreeSitTree *tree, i32 node_idx, int depth, any user_data) {
-    (void) tree;
-    (void) node_idx;
-    (void) depth;
+    (fn) tree;
+    (fn) node_idx;
+    (fn) depth;
     int *c = (int*) user_data;
     (*c)++;
     return true;
 }
 
-static void test_tree_sit(void) {
+static fn test_tree_sit() {
     TreeSitTree tree = TreeSitTree(16u);
     assert(tree.nodes != nullptr);
 
@@ -202,7 +202,7 @@ static void test_tree_sit(void) {
     TreeSitTree_destroy(&tree);
 }
 
-int main(void) {
+int main() {
     printf("[Algo Suite Test] Starting test suite...\n");
     assert(Memory_init(0u));
     test_radix_sort();

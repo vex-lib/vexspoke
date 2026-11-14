@@ -25,7 +25,7 @@ static int g_failures = 0;
     } while (0)
 
 // Exercises the Collection slot interface, including valid access and safe bounds handling.
-int main(void) {
+int main() {
     // Collection is Array's first member; build one and view it as its header.
     Array *a = Array_2(ID_INT, 4);
     CHECK(a != nullptr);

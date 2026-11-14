@@ -35,7 +35,7 @@ static const TryCode ALL_CODES[] = {
 
 // --- TryValue: constructors + the CONTRACT ---
 /** Verifies value-result constructors preserve successful values and error state. */
-static void testValueConstructors(void) {
+static fn testValueConstructors() {
     TryValue ok = TryValue_ok(42u);
     CHECK(TryValue_isOk(&ok));
     CHECK(TryValue_getValue(&ok) == 42u);
@@ -57,7 +57,7 @@ static void testValueConstructors(void) {
 
 // --- TryValue: setters round-trip (Symmetric Getter/Setter Completeness) ---
 /** Checks setters update the value/error alternative without corrupting the other state. */
-static void testValueSetters(void) {
+static fn testValueSetters() {
     TryValue t = TryValue_ok(1u);
     TryValue_setValue(&t, 99u);
     CHECK(TryValue_getValue(&t) == 99u);
@@ -70,7 +70,7 @@ static void testValueSetters(void) {
 
 // --- TryValue: the full domain has no spare sentinel ---
 /** Exercises zero, extreme, and empty values accepted by the value-result wrapper. */
-static void testValueBoundaries(void) {
+static fn testValueBoundaries() {
     TryValue zero = TryValue_ok(0u);
     CHECK(TryValue_isOk(&zero));
     CHECK(TryValue_getValue(&zero) == 0u);       // legal 0 distinguishes from error
@@ -82,7 +82,7 @@ static void testValueBoundaries(void) {
 
 // --- TryValue: null-safety of every accessor ---
 /** Verifies null inputs and accessors return the wrapper's documented safe results. */
-static void testValueNullSafety(void) {
+static fn testValueNullSafety() {
     CHECK(TryValue_isOk(nullptr) == false);
     CHECK(TryValue_getValue(nullptr) == 0u);
     CHECK(TryValue_getCode(nullptr) == TRY_NULL_ARG);
@@ -93,7 +93,7 @@ static void testValueNullSafety(void) {
 
 // --- TryValue: string projections ---
 /** Checks bounded string projections for successful and failed value results. */
-static void testValueStrings(void) {
+static fn testValueStrings() {
     char buf[128];
     bool trunc = false;
 
@@ -132,7 +132,7 @@ static void testValueStrings(void) {
 
 // --- TryPtr: the pointer-shaped sibling ---
 /** Exercises pointer-result success, failure, and null-pointee behavior. */
-static void testPtr(void) {
+static fn testPtr() {
     int payload = 1234;
     char buf[128];
     bool trunc = false;
@@ -177,7 +177,7 @@ static void testPtr(void) {
 
 // --- TryCode taxonomy ---
 /** Confirms error codes retain their declared categories and identifying values. */
-static void testCodeTaxonomy(void) {
+static fn testCodeTaxonomy() {
     bytes count = sizeof ALL_CODES / sizeof ALL_CODES[0];
     for (bytes i = 0; i < count; i++) {
         TryCode code = ALL_CODES[i];
@@ -190,7 +190,7 @@ static void testCodeTaxonomy(void) {
 }
 
 /** Runs the TryValue and TryPtr owner cases and reports aggregate assertion status. */
-int main(void) {
+int main() {
     testValueConstructors();
     testValueSetters();
     testValueBoundaries();

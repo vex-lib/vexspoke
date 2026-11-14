@@ -29,12 +29,12 @@ static int g_failures = 0;
 // Tests display registry overrides, monitor bounds, primary selection, and scalar properties.
 // Checks display resolution, scale, refresh, and capability queries.
 // Checks monitor registry access and DisplayInfo scalar/pointer round trips.
-int main(void) {
+int main() {
     CHECK(Memory_init(0));
 
     // Force bootstrap before overriding anything.
-    (void) DisplayInfo_getMonitorCount();
-    (void) DisplayInfo_getPrimaryMonitor();
+    (fn) DisplayInfo_getMonitorCount();
+    (fn) DisplayInfo_getPrimaryMonitor();
 
     // No monitors registered past the count.
     CHECK(DisplayInfo_getMonitor(9999) == nullptr);

@@ -11,7 +11,7 @@ static int g_failures = 0;
 #define CHECK(cond) do{ if(!(cond)){ printf("FAIL %s:%d %s\n",__FILE__,__LINE__,#cond); g_failures++; } }while(0)
 
 /* Creates a per-process temporary root and points VEX_HOME at it for the test. */
-static void setup_temp_vexhome(char *tmpdir, bytes tmpdir_sz) {
+static fn setup_temp_vexhome(char *tmpdir, bytes tmpdir_sz) {
     const char *tmp_base = getenv("TMPDIR");
     if (!tmp_base || *tmp_base == '\0')
         tmp_base = "/tmp";
@@ -22,13 +22,13 @@ static void setup_temp_vexhome(char *tmpdir, bytes tmpdir_sz) {
 }
 
 /* Removes the temporary VEX_HOME override and deletes its test directory. */
-static void teardown_temp_vexhome(const char *tmpdir) {
+static fn teardown_temp_vexhome(const char *tmpdir) {
     unsetenv("VEX_HOME");
     File_delete(tmpdir);
 }
 
 /* Verifies cache/index creation, preservation of an edited index, and root-cache fallbacks. */
-static void testVexHomeCache(void) {
+static fn testVexHomeCache() {
     char tmpdir[FILE_PATH_MAX];
     setup_temp_vexhome(tmpdir, sizeof(tmpdir));
 
@@ -116,7 +116,7 @@ static void testVexHomeCache(void) {
 }
 
 /* Verifies each VexHome path remains rooted beneath the configured temporary directory. */
-static void testVexHomePathsPrefix(void) {
+static fn testVexHomePathsPrefix() {
     char tmpdir[FILE_PATH_MAX];
     setup_temp_vexhome(tmpdir, sizeof(tmpdir));
 
@@ -158,7 +158,7 @@ static void testVexHomePathsPrefix(void) {
 }
 
 /* Runs the VexHome cache and path-layout owner cases and reports aggregate failure status. */
-int main(void) {
+int main() {
     testVexHomeCache();
     testVexHomePathsPrefix();
     if (g_failures == 0)

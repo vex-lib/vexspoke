@@ -32,7 +32,7 @@ static int g_failures = 0;
     } while (0)
 
 // Checks circle-array constructors, initial state, and invalid construction inputs.
-static void test_construction(void) {
+static fn test_construction() {
     CHECK(CircleArray(-1, ID_INT) == nullptr);   // negative radius refused
 
     CircleArray *r0 = CircleArray(0, ID_INT);
@@ -62,7 +62,7 @@ static void test_construction(void) {
 }
 
 // Verifies circle dimensions and computed storage geometry.
-static void test_geometry(void) {
+static fn test_geometry() {
     CircleArray *a = CircleArray(3, ID_INT);
     CHECK(a != nullptr);
 
@@ -90,7 +90,7 @@ static void test_geometry(void) {
 }
 
 // Checks indexed writes and reads across the circular array's logical bounds.
-static void test_access_round_trip(void) {
+static fn test_access_round_trip() {
     CircleArray *a = CircleArray(2, ID_INT);
     CHECK(a != nullptr);
 
@@ -144,7 +144,7 @@ typedef struct WalkStats {
 } WalkStats;
 
 // Accumulates callback count, coordinate consistency, and payload checksum.
-static void walkCell(i32 gridX, i32 gridY, i32 dx, i32 dy,
+static fn walkCell(i32 gridX, i32 gridY, i32 dx, i32 dy,
                      const_any element, any userData) {
     WalkStats *s = (WalkStats*) userData;
     (*s).count++;
@@ -164,7 +164,7 @@ static void walkCell(i32 gridX, i32 gridY, i32 dx, i32 dy,
 }
 
 // Confirms iteration visits each occupied circle-array element exactly once.
-static void test_for_each(void) {
+static fn test_for_each() {
     CircleArray *a = CircleArray(3, ID_INT);
     CHECK(a != nullptr);
 
@@ -196,7 +196,7 @@ static void test_for_each(void) {
 }
 
 // Runs circle-array construction, geometry, access, iteration, and teardown checks.
-int main(void) {
+int main() {
     test_construction();
     test_geometry();
     test_access_round_trip();

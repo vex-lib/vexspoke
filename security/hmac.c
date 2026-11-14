@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "security/hmac.h"
 #include "security/sha1.h"
 #include "security/crypto.h"
@@ -22,7 +21,7 @@
  * return; no allocation, no logging on success.
  * ======================================================================== */
 
-static void hmacSha1Block(const u8 *key, bytes keyLen, const u8 *data, bytes dataLen,
+static fn hmacSha1Block(const u8 *key, bytes keyLen, const u8 *data, bytes dataLen,
                           u8 out[HMAC_SHA1_DIGEST_SIZE]) {
     u8 pad[HMAC_SHA1_BLOCK_SIZE];
     u8 inner[HMAC_SHA1_DIGEST_SIZE];
@@ -57,7 +56,7 @@ static void hmacSha1Block(const u8 *key, bytes keyLen, const u8 *data, bytes dat
         inner[i] = 0u;
 }
 
-void Hmac_sha1(const u8 *key, bytes keyLen, const u8 *data, bytes dataLen,
+fn Hmac_sha1(const u8 *key, bytes keyLen, const u8 *data, bytes dataLen,
                u8 out[HMAC_SHA1_DIGEST_SIZE]) {
     if ((key == nullptr && keyLen != 0u) || (data == nullptr && dataLen != 0u) || out == nullptr) {
         THROW("Hmac_sha1: null input");
@@ -66,7 +65,7 @@ void Hmac_sha1(const u8 *key, bytes keyLen, const u8 *data, bytes dataLen,
     hmacSha1Block(key, keyLen, data, dataLen, out);
 }
 
-void Hmac_sha256(const u8 *key, bytes keyLen, const u8 *data, bytes dataLen,
+fn Hmac_sha256(const u8 *key, bytes keyLen, const u8 *data, bytes dataLen,
                  u8 out[HMAC_SHA256_DIGEST_SIZE]) {
     if ((key == nullptr && keyLen != 0u) || (data == nullptr && dataLen != 0u) || out == nullptr) {
         THROW("Hmac_sha256: null input");

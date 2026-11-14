@@ -30,12 +30,12 @@ typedef struct Variable {
 _Static_assert(sizeof(Variable) == 40u, "Variable must stay 40 Bytes");
 
 bool Variable_init(Variable *self, const char *name, VariableReadFn read, any target);
-Variable *Variable_0(void);
+Variable *Variable_0();
 Variable *Variable_1(const char *name);
 Variable *Variable_2(const char *name, VariableReadFn read);
 Variable *Variable_3(const char *name, VariableReadFn read, any target);
 #define Variable(...) CONSTRUCTOR_DISPATCH(Variable, __VA_ARGS__)
-void Variable_free(Variable *self);
+fn Variable_free(Variable *self);
 
 u64 Variable_kind(const Variable *self);
 bool Variable_check(const Variable *self, u64 typeId);
@@ -43,12 +43,12 @@ any Variable_read(Variable *self, any arg);
 
 bool Variable_setName(Variable *self, const char *name);
 const char *Variable_getName(const Variable *self);
-void Variable_setRead(Variable *self, VariableReadFn read);
+fn Variable_setRead(Variable *self, VariableReadFn read);
 VariableReadFn Variable_getRead(const Variable *self);
-void Variable_setTarget(Variable *self, any target);
+fn Variable_setTarget(Variable *self, any target);
 any Variable_getTarget(const Variable *self);
 
-void Variable_toString(const Variable *self, char *dest, bytes cap, bool *outTruncated);
-void Variable_toStringStruct(const Variable *self, char *dest, bytes cap, bool *outTruncated);
+fn Variable_toString(const Variable *self, char *dest, bytes cap, bool *outTruncated);
+fn Variable_toStringStruct(const Variable *self, char *dest, bytes cap, bool *outTruncated);
 
 #endif

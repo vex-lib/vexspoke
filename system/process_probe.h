@@ -22,7 +22,7 @@ typedef struct ProcessProbe {
 
 // --- Constructor ---
 // Returns the shared probe handle (static, zero-init, never NULL).
-ProcessProbe *ProcessProbe_shared(void);
+ProcessProbe *ProcessProbe_shared();
 
 // --- Core functions ---
 // true when any process's executable basename equals procName

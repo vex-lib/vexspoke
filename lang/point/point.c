@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "lang/point/point.h"
 #include "math/strict_math.h"
 #include "nio/mem.h"
@@ -64,7 +63,7 @@
  */
 
 // CONSTRUCTORS
-Point *Point_0(void) {
+Point *Point_0() {
     Point *p = (Point*) Memory_alloc(ID_POINT, POINT_BYTES);
     if (!p) return nullptr;
     (*p).x = 0;
@@ -80,14 +79,14 @@ Point *Point_2(i32 x, i32 y) {
     return p;
 }
 
-void Point_free(Point *p) {
+fn Point_free(Point *p) {
     if (p) Memory_free(p);
 }
 
 // SETTERS
-void Point_setX(Point *p, i32 x) { if (p) (*p).x = x; }
-void Point_setY(Point *p, i32 y) { if (p) (*p).y = y; }
-void Point_set(Point *p, i32 x, i32 y) {
+fn Point_setX(Point *p, i32 x) { if (p) (*p).x = x; }
+fn Point_setY(Point *p, i32 y) { if (p) (*p).y = y; }
+fn Point_set(Point *p, i32 x, i32 y) {
     if (!p) return;
     (*p).x = x;
     (*p).y = y;
@@ -98,43 +97,43 @@ i32 Point_getX(const Point *p) { return p ? (*p).x : 0; }
 i32 Point_getY(const Point *p) { return p ? (*p).y : 0; }
 
 // CORE FUNCTIONS
-void Point_copy(const Point *src, Point *dest) {
+fn Point_copy(const Point *src, Point *dest) {
     if (!src || !dest) return;
     (*dest).x = (*src).x;
     (*dest).y = (*src).y;
 }
 
-void Point_add(const Point *a, const Point *b, Point *dest) {
+fn Point_add(const Point *a, const Point *b, Point *dest) {
     if (!a || !b || !dest) return;
     (*dest).x = (*a).x + (*b).x;
     (*dest).y = (*a).y + (*b).y;
 }
 
-void Point_sub(const Point *a, const Point *b, Point *dest) {
+fn Point_sub(const Point *a, const Point *b, Point *dest) {
     if (!a || !b || !dest) return;
     (*dest).x = (*a).x - (*b).x;
     (*dest).y = (*a).y - (*b).y;
 }
 
-void Point_scale(const Point *a, i32 scalar, Point *dest) {
+fn Point_scale(const Point *a, i32 scalar, Point *dest) {
     if (!a || !dest) return;
     (*dest).x = (*a).x * scalar;
     (*dest).y = (*a).y * scalar;
 }
 
-void Point_negate(const Point *src, Point *dest) {
+fn Point_negate(const Point *src, Point *dest) {
     if (!src || !dest) return;
     (*dest).x = -(*src).x;
     (*dest).y = -(*src).y;
 }
 
-void Point_min(const Point *a, const Point *b, Point *dest) {
+fn Point_min(const Point *a, const Point *b, Point *dest) {
     if (!a || !b || !dest) return;
     (*dest).x = ((*a).x < (*b).x) ? (*a).x : (*b).x;
     (*dest).y = ((*a).y < (*b).y) ? (*a).y : (*b).y;
 }
 
-void Point_max(const Point *a, const Point *b, Point *dest) {
+fn Point_max(const Point *a, const Point *b, Point *dest) {
     if (!a || !b || !dest) return;
     (*dest).x = ((*a).x > (*b).x) ? (*a).x : (*b).x;
     (*dest).y = ((*a).y > (*b).y) ? (*a).y : (*b).y;

@@ -57,11 +57,11 @@
  *   - Thread_free(self)
  *   - Thread_queue(self)
  *   - Thread_purpose(self)
- *   - Thread_runAll(void)
- *   - Thread_stopAll(void)
- *   - Thread_freeAll(void)
- *   - Thread_freeAllSystem(void)
- *   - Thread_count(void)
+ *   - Thread_runAll()
+ *   - Thread_stopAll()
+ *   - Thread_freeAll()
+ *   - Thread_freeAllSystem()
+ *   - Thread_count()
  *
  * Getters:
  *   - Thread_isRunning(self)
@@ -89,7 +89,7 @@ static Map *s_workers = nullptr;
 
 static any platform_main(any arg);
 
-static Map *workers(void) {
+static Map *workers() {
     if (!s_workers)
         s_workers = Map(ID_LONG, ID_LONG, 16);
     return s_workers;
@@ -143,14 +143,14 @@ bool Thread_submit(Thread *self, any task) {
     return RingBuffer_push(&(*self).queue, &task);
 }
 
-static void joinPlatform(Thread *self) {
+static fn joinPlatform(Thread *self) {
     if ((*self).platformStarted) {
         pthread_join((*self).platform, nullptr);
         (*self).platformStarted = false;
     }
 }
 
-void Thread_stop(Thread *self) {
+fn Thread_stop(Thread *self) {
     if (!self || (*self).core)
         return;
     atomic_store(&(*self).state, 0);
@@ -158,7 +158,7 @@ void Thread_stop(Thread *self) {
 }
 
 // force=true is the system-shutdown path: cores die too (legacy freeAllSystem).
-static void freeInternal(Thread *self, bool force) {
+static fn freeInternal(Thread *self, bool force) {
     if (!self)
         return;
     if ((*self).core && !force)
@@ -170,7 +170,7 @@ static void freeInternal(Thread *self, bool force) {
     Memory_free(self);
 }
 
-void Thread_free(Thread *self) {
+fn Thread_free(Thread *self) {
     freeInternal(self, false);
 }
 
@@ -202,7 +202,7 @@ static any platform_main(any arg) {
     return nullptr;
 }
 
-static void walkPool(void (*visit)(Thread *self, bool system), bool system) {
+static fn walkPool(fn (*visit)(Thread *self, bool system), bool system) {
     Map *pool = workers();
     if (!pool)
         return;
@@ -217,37 +217,37 @@ static void walkPool(void (*visit)(Thread *self, bool system), bool system) {
     Array_free(keys);
 }
 
-static void visitRun(Thread *self, bool system) {
-    (void)system;
+static fn visitRun(Thread *self, bool system) {
+    (fn)system;
     Thread_run(self);
 }
 
-static void visitStop(Thread *self, bool system) {
-    (void)system;
+static fn visitStop(Thread *self, bool system) {
+    (fn)system;
     Thread_stop(self);
 }
 
-static void visitFree(Thread *self, bool system) {
+static fn visitFree(Thread *self, bool system) {
     freeInternal(self, system);
 }
 
-void Thread_runAll(void) {
+fn Thread_runAll() {
     walkPool(visitRun, false);
 }
 
-void Thread_stopAll(void) {
+fn Thread_stopAll() {
     walkPool(visitStop, false);
 }
 
-void Thread_freeAll(void) {
+fn Thread_freeAll() {
     walkPool(visitFree, false);
 }
 
-void Thread_freeAllSystem(void) {
+fn Thread_freeAllSystem() {
     walkPool(visitFree, true);
 }
 
-bytes Thread_count(void) {
+bytes Thread_count() {
     return s_workers ? Map_size(s_workers) : 0;
 }
 

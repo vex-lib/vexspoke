@@ -25,7 +25,7 @@ static int g_failures = 0;
 
 // Asserts exact epoch round-trip and all UTC date/time fields for one instant.
 // Compares all decoded UTC fields and the epoch round trip against a fixed case.
-static void expect(int64_t ms, i32 y, i32 mo, i32 d,
+static fn expect(int64_t ms, i32 y, i32 mo, i32 d,
                    i32 h, i32 mi, i32 s, i32 milli, i32 dow) {
     DateTime dt = DateTime();
     setEpochMillis(&dt, ms);
@@ -43,14 +43,14 @@ static void expect(int64_t ms, i32 y, i32 mo, i32 d,
 // Checks the calendar representation of Unix epoch zero.
 // Checks the Unix epoch origin and its ISO weekday.
 // Checks the Unix epoch's date, time, and weekday.
-static void test_epoch_zero(void) {
+static fn test_epoch_zero() {
     expect(0, 1970, 1, 1, 0, 0, 0, 0, 4);                 // Thursday
 }
 
 // Verifies conversion of selected known timestamps into date-time fields.
 // Validates pinned contemporary, leap-day, and subsecond epoch conversions.
 // Validates pinned ordinary, leap-day, and nonzero-time timestamps.
-static void test_known_epochs(void) {
+static fn test_known_epochs() {
     expect(946684800000LL, 2000, 1, 1, 0, 0, 0, 0, 6);    // Saturday
     expect(1582934400000LL, 2020, 2, 29, 0, 0, 0, 0, 6);  // leap day
     expect(1709210096789LL, 2024, 2, 29, 12, 34, 56, 789, 4);
@@ -61,7 +61,7 @@ static void test_known_epochs(void) {
 // Exercises timestamps before the Unix epoch and checks signed conversion.
 // Verifies negative millisecond epochs map to the preceding UTC dates correctly.
 // Checks timestamps immediately before the epoch, including negative-day edges.
-static void test_negative_epoch(void) {
+static fn test_negative_epoch() {
     // -1 ms is 1969-12-31 23:59:59.999 (Wednesday).
     expect(-1, 1969, 12, 31, 23, 59, 59, 999, 3);
     expect(-1000, 1969, 12, 31, 23, 59, 59, 0, 3);
@@ -72,7 +72,7 @@ static void test_negative_epoch(void) {
 // Confirms setters update the date-time snapshot observed through getters.
 // Checks DateTime_set snapshots a plausible current wall-clock date.
 // Verifies DateTime_set replaces an old value with plausible current fields.
-static void test_set_snapshot(void) {
+static fn test_set_snapshot() {
     DateTime dt = DateTime();
     setEpochMillis(&dt, 0);
     DateTime_set(&dt);
@@ -86,7 +86,7 @@ static void test_set_snapshot(void) {
 // Runs epoch conversion, pre-epoch, and date-time snapshot cases.
 // Runs epoch conversion, negative-time, and current-time snapshot checks.
 // Runs exact UTC timestamp breakdown and current-time snapshot checks.
-int main(void) {
+int main() {
     test_epoch_zero();
     test_known_epochs();
     test_negative_epoch();

@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "math/vex-math.h"
 
 ;;DEFINITION

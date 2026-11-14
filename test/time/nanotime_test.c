@@ -32,7 +32,7 @@ static int g_failures = 0;
 // Delays briefly for tests that observe monotonic time or timer elapsed values.
 // Waits briefly to create measurable intervals for monotonic timer assertions.
 // Sleeps for a bounded interval to make monotonic-clock progress observable.
-static void wait_ms(long ms) {
+static fn wait_ms(long ms) {
     struct timespec ts = { ms / 1000, (ms % 1000) * 1000000L };
     nanosleep(&ts, nullptr);
 }
@@ -40,7 +40,7 @@ static void wait_ms(long ms) {
 // Checks monotonic nanosecond time is available and does not regress.
 // Checks NanoTime initialization, idempotence, monotonicity, and elapsed time.
 // Tests lazy epoch initialization, idempotence, and monotonic readings.
-static void test_epoch(void) {
+static fn test_epoch() {
     // Before the first init the engine epoch is unmapped.
     CHECK(NanoTime_startNanos() == 0);
     CHECK(NanoTime_elapsedNanos() == 0);
@@ -67,7 +67,7 @@ static void test_epoch(void) {
 // Verifies timer reset restarts its elapsed-time measurement.
 // Verifies reset zeros every NanoTimer duration and timestamp projection.
 // Verifies reset zeroes timer deltas, totals, and elapsed timestamps.
-static void test_timer_reset(void) {
+static fn test_timer_reset() {
     NanoTimer t;
     NanoTimer_reset(&t);
     CHECK(NanoTimer_deltaTime(&t) == 0.0);
@@ -79,7 +79,7 @@ static void test_timer_reset(void) {
 // Checks timer tick reports elapsed time and advances its previous-tick state.
 // Checks tick derives delta and total durations from successive monotonic readings.
 // Checks real-time tick accumulation and consistency between seconds and nanoseconds.
-static void test_timer_tick(void) {
+static fn test_timer_tick() {
     NanoTimer t;
     NanoTimer_reset(&t);
 
@@ -105,7 +105,7 @@ static void test_timer_tick(void) {
 // Confirms timer measurements follow the associated clock's paused state.
 // Confirms a paused Clock freezes scaled timer duration while real nanos still advance.
 // Confirms a paused Clock suppresses virtual accumulation while measuring real elapsed time.
-static void test_timer_with_paused_clock(void) {
+static fn test_timer_with_paused_clock() {
     Clock c = Clock();
     Clock_setPaused(&c, true);
 
@@ -127,7 +127,7 @@ static void test_timer_with_paused_clock(void) {
 // Verifies timer elapsed values reflect the configured clock scale.
 // Checks timer deltas reflect a non-unit Clock time scale within scheduling tolerance.
 // Checks timer delta scaling against the measured real-time interval.
-static void test_timer_scale(void) {
+static fn test_timer_scale() {
     Clock c = Clock();
     Clock_setTimeScale(&c, 2.0);
 
@@ -145,7 +145,7 @@ static void test_timer_scale(void) {
 // Checks a timer without a clock returns its safe result.
 // Verifies a null Clock argument follows the ordinary unscaled tick path.
 // Verifies a null clock uses the same unscaled ticking path as NanoTimer_tick.
-static void test_tick_null_clock(void) {
+static fn test_tick_null_clock() {
     NanoTimer t;
     NanoTimer_reset(&t);
     wait_ms(2);
@@ -162,7 +162,7 @@ static void test_tick_null_clock(void) {
 // Runs monotonic-time and timer reset, tick, pause, scale, and null-clock cases.
 // Runs monotonic epoch and NanoTimer reset/tick/clock integration cases.
 // Runs epoch, reset, ticking, pause, scaling, and null-clock timer cases.
-int main(void) {
+int main() {
     test_epoch();
     test_timer_reset();
     test_timer_tick();

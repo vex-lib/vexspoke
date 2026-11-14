@@ -2,7 +2,6 @@
 #define REGEX_PROGRAM_H
 
 #include "vex.h"
-
 #include "regex/nodelist.h"
 
 // regex/program.h — the RegexProgram: the compiled instruction array, the
@@ -47,7 +46,7 @@ typedef struct RegexProgram {
 } RegexProgram;
 
 // Create an empty program; allocates nothing.
-RegexProgram RegexProgram_0(void);
+RegexProgram RegexProgram_0();
 #define RegexProgram(...) CONSTRUCTOR_DISPATCH(RegexProgram, __VA_ARGS__)
 
 // Emit the Thompson program for an AST rooted at `root`. Returns false when
@@ -62,6 +61,6 @@ u32 RegexProgram_count(const RegexProgram *program);
 const RegexInst *RegexProgram_at(const RegexProgram *program, u32 index);
 
 // Release the instruction block and zero the program.
-void RegexProgram_free(RegexProgram *program);
+fn RegexProgram_free(RegexProgram *program);
 
 #endif

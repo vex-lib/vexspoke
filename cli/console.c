@@ -13,22 +13,22 @@
  * ------------------------------------------------------------------------
  * STATE: none; no queue, allocation or retained message.
  * FUNCTION REGISTRY (exports)
- * Lifecycle: void Console_init(void), Console_drain(void), Console_shutdown(void)
+ * Lifecycle: fn Console_init(), Console_drain(), Console_shutdown()
  *   Compatibility no-ops; never acquire/clear a terminal.
- * Output: void Console_log(const char *message)
+ * Output: fn Console_log(const char *message)
  *   Borrowed NUL-terminated text, controls escaped, one final newline.
- * Output: void Console_logString(u8 *message)
+ * Output: fn Console_logString(u8 *message)
  *   Takes ownership of a live R2 string block; releases it after output.
  * PRIVATE BEHAVIOR: log writes printable bytes; escapes controls as \\xHH.
  * CONTRACT: cold caller-thread stdio; null rejects once with THROW. A write
  * failure reports once and may have written a prefix (no rollback of stdio).
  * Managed screens must route output through their presentation seam instead.
  * ======================================================================== */
-void Console_init(void) {}
-void Console_drain(void) {}
-void Console_shutdown(void) {}
+fn Console_init() {}
+fn Console_drain() {}
+fn Console_shutdown() {}
 
-void Console_log(const char *message) {
+fn Console_log(const char *message) {
     if (message == nullptr) {
         THROW("Console log: null message");
         return;
@@ -50,7 +50,7 @@ void Console_log(const char *message) {
         THROW("Console log: output failed");
 }
 
-void Console_logString(u8 *message) {
+fn Console_logString(u8 *message) {
     Console_log(string_get(message));
     string_free(message);
 }

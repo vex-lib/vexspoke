@@ -37,7 +37,7 @@
  * ----------------------------------------------------------------------------
  * Constructors:
  *   - MinHeap_1(capacity)
- *   - MinHeap_0(void)
+ *   - MinHeap_0()
  *
  * Core Functions:
  *   - MinHeap_free(heap)
@@ -56,7 +56,7 @@
 // minheap.c — MinHeap port (Legacy: struct/MinHeap.java). 1-based array, sift
 // up on push, sift down on pop, strictly lower priority rises to the root.
 
-static void sift_up(MinHeap *heap, bytes index) {
+static fn sift_up(MinHeap *heap, bytes index) {
     i32 item = (*heap).items[index];
     f32 prio = (*heap).priorities[index];
     while (index > 1) {
@@ -72,7 +72,7 @@ static void sift_up(MinHeap *heap, bytes index) {
     (*heap).priorities[index] = prio;
 }
 
-static void sift_down(MinHeap *heap, bytes index) {
+static fn sift_down(MinHeap *heap, bytes index) {
     bytes size = (bytes)(*heap).size;
     i32 item = (*heap).items[index];
     f32 prio = (*heap).priorities[index];
@@ -104,7 +104,7 @@ MinHeap *MinHeap_1(bytes capacity) {
     bytes slots = capacity + 1;
     MinHeap *heap = (MinHeap*) Memory_alloc(TYPE_MIN_HEAP, sizeof(MinHeap));
     if (!heap) {
-        (void) Struct_reportConstructionExhaustion("minheap", sizeof(MinHeap));
+        (fn) Struct_reportConstructionExhaustion("minheap", sizeof(MinHeap));
         return nullptr;
     }
 
@@ -123,7 +123,7 @@ MinHeap *MinHeap_1(bytes capacity) {
     return heap;
 }
 
-void MinHeap_free(MinHeap *heap) {
+fn MinHeap_free(MinHeap *heap) {
     if (!heap) return;
     Memory_free((*heap).items);
     Memory_free((*heap).priorities);
@@ -153,7 +153,7 @@ int MinHeap_push(MinHeap *heap, i32 item, f32 priority) {
     if (!heap) return 0;
     if ((*heap).size >= (*heap).capacity) {
         // A full fixed-capacity heap is a refusal, not a silent no-op.
-        (void) Struct_reportExhaustion(&(*heap).exhaustionCount, &(*heap).exhaustionReported,
+        (fn) Struct_reportExhaustion(&(*heap).exhaustionCount, &(*heap).exhaustionReported,
                                        "minheap", sizeof(i32) * 2u, (bytes) (*heap).capacity);
         return 0;
     }
@@ -185,6 +185,6 @@ i32 MinHeap_peekItem(MinHeap *heap) {
         return 0;
     return (*heap).items[1];
 }
-MinHeap *MinHeap_0(void) {
+MinHeap *MinHeap_0() {
     return MinHeap_1(16);
 }

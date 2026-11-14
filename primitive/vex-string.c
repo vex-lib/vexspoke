@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "primitive/vex-string.h"
 
 #include "nio/mem.h"
@@ -38,7 +37,7 @@
  *   - string_free(ptr)
  *   - string_length(ptr)
  *   - string_type(ptr)
- *   - string_classId(void)
+ *   - string_classId()
  *   - string_capacity(ptr)
  *   - string_copy(ptr)
  *   - string_equalsCString(ptr, value)
@@ -100,7 +99,7 @@ u8 *string_allocateUninitialized(bytes len) {
     return allocate_raw(len);
 }
 
-void string_free(u8 *ptr) {
+fn string_free(u8 *ptr) {
     if (ptr)
         Memory_free(ptr);
 }
@@ -129,7 +128,7 @@ bool string_isArray(const u8 *ptr) {
     return t != 0 && (t & FORM_ARRAY) == FORM_ARRAY;
 }
 
-u32 string_classId(void) {
+u32 string_classId() {
     return ID_STRING;
 }
 
@@ -324,7 +323,7 @@ u8 *String_appendLiterals(const char *a, const char *b) {
     return out;
 }
 
-void String_appendInto(const u8 *a, const u8 *b, u8 *dest) {
+fn String_appendInto(const u8 *a, const u8 *b, u8 *dest) {
     if (!a || !b || !dest)
         return;
     bytes aLen = string_length(a);

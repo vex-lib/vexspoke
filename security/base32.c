@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "security/base32.h"
 
 ;;DEFINITION
@@ -22,8 +21,13 @@
 
 static const char ALPHABET[] = BASE32_ALPHABET;
 
-bytes Base32_encodedLength(bytes byteLen) { return ((byteLen + 4u) / 5u) * 8u; }
-bytes Base32_decodedLength(bytes charLen) { return (charLen * 5u) / 8u; }
+bytes Base32_encodedLength(bytes byteLen) {
+    return ((byteLen + 4u) / 5u) * 8u;
+}
+
+bytes Base32_decodedLength(bytes charLen) {
+    return charLen * 5u / 8u;
+}
 
 static i32 decodeChar(char c) {
     if (c >= 'A' && c <= 'Z')

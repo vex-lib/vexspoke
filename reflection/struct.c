@@ -1,7 +1,6 @@
 // reflection/struct.c — the Struct metadata record ("struct { field }").
 
 #include "vex.h"
-
 #include "reflection/struct.h"
 
 #include "nio/mem.h"
@@ -74,7 +73,7 @@ bool Struct_init(Struct *self, const char *name) {
     return ensureFields(self);
 }
 
-Struct *Struct_0(void) {
+Struct *Struct_0() {
     Struct *self = (Struct*) Memory_alloc(TYPE_REFLECT_STRUCT, sizeof(Struct));
     if (self == nullptr)
         return nullptr;
@@ -97,7 +96,7 @@ Struct *Struct_1(const char *name) {
     return self;
 }
 
-void Struct_free(Struct *self) {
+fn Struct_free(Struct *self) {
     if (self == nullptr)
         return;
     if ((*self).fields)
@@ -139,7 +138,7 @@ Field *Struct_get(const Struct *self, u32 index) {
     return (Field*) ChunkedList_slot((*self).fields, index);
 }
 
-void Struct_forEach(Struct *self, StructVisitFn fn, any userdata) {
+fn Struct_forEach(Struct *self, StructVisitFn fn, any userdata) {
     if (self == nullptr || fn == nullptr || (*self).fields == nullptr)
         return;
     u32 n = (*self).count;
@@ -163,7 +162,7 @@ bool Struct_setName(Struct *self, const char *name) {
     return true;
 }
 
-void Struct_setSize(Struct *self, u32 size) {
+fn Struct_setSize(Struct *self, u32 size) {
     if (self != nullptr)
         (*self).size = size;
 }
@@ -190,7 +189,7 @@ bool Struct_isEmpty(const Struct *self) {
 
 // STRING PROJECTIONS (the toString Law)
 
-void Struct_toString(const Struct *self, char *dest, bytes cap, bool *outTruncated) {
+fn Struct_toString(const Struct *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (dest == nullptr || cap == 0u)
@@ -207,7 +206,7 @@ void Struct_toString(const Struct *self, char *dest, bytes cap, bool *outTruncat
     }
 }
 
-void Struct_toStringStruct(const Struct *self, char *dest, bytes cap, bool *outTruncated) {
+fn Struct_toStringStruct(const Struct *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (dest == nullptr || cap == 0u)

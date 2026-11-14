@@ -38,7 +38,7 @@ typedef struct Row16 {
 } Row16;
 
 // Checks empty-list defaults, row geometry, and initial capacity.
-static void testDefaults(void) {
+static fn testDefaults() {
     printf("[1] defaults: 128-byte budget, 16-byte rows -> 8 rows/chunk\n");
 
     ChunkedList *list = ChunkedList_3(ID_INT, 16u, VEX_CHUNKED_BYTES_DEFAULT);
@@ -80,7 +80,7 @@ static void testDefaults(void) {
 }
 
 // Verifies row addresses remain stable when the chunk directory grows.
-static void testStableAddresses(void) {
+static fn testStableAddresses() {
     printf("[2] stable addresses + chunk boundaries across growth\n");
 
     ChunkedList *list = ChunkedList_3(ID_INT, 16u, 128u);
@@ -157,7 +157,7 @@ static void testStableAddresses(void) {
 }
 
 // Exercises explicit reservation, including its accepted and rejected bounds.
-static void testReserve(void) {
+static fn testReserve() {
     printf("[3] reserve pre-allocates chunks without activating rows\n");
 
     ChunkedList *list = ChunkedList_3(ID_INT, 16u, 128u);
@@ -188,7 +188,7 @@ static void testReserve(void) {
 }
 
 // Checks packing rows into caller-provided storage and preserves output on rejection.
-static void testPackInto(void) {
+static fn testPackInto() {
     printf("[4] packInto snapshot: dest-last + truncation flag\n");
 
     ChunkedList *list = ChunkedList_3(ID_INT, 16u, 128u);
@@ -239,7 +239,7 @@ static void testPackInto(void) {
 }
 
 // Verifies chunk-byte budgeting limits admission without corrupting existing rows.
-static void testChunkBytesBudget(void) {
+static fn testChunkBytesBudget() {
     printf("[5] chunk byte budget: settable before growth, rejected after\n");
 
     ChunkedList *list = ChunkedList_3(ID_INT, 16u, 128u);
@@ -277,7 +277,7 @@ static void testChunkBytesBudget(void) {
 }
 
 // Confirms nullable list operations return safe defaults without mutation.
-static void testNullSafety(void) {
+static fn testNullSafety() {
     printf("[6] cold-path null safety (no crash on null self)\n");
 
     CHECK(ChunkedList_size(nullptr) == 0u);
@@ -300,7 +300,7 @@ static void testNullSafety(void) {
 }
 
 // Exercises overflow-checked capacity and byte-size calculations.
-static void testCheckedMath(void) {
+static fn testCheckedMath() {
     printf("[7] checked size math: extreme budgets fail closed, never wrap\n");
 
     // Stride 1 with the maximum budget: rowsPerChunk is 2^31. Construction is
@@ -347,7 +347,7 @@ static _Atomic bool g_concDone;
 
 // Appends a fixed batch of rows and stamps each admitted row with a unique sequence.
 static any concWriter(any arg) {
-    (void) arg;
+    (fn) arg;
     for (u32 i = 0u; i < CONC_ROWS; i++) {
         u8 *row = ChunkedList_addSlot(g_concList);
         if (!row)
@@ -360,7 +360,7 @@ static any concWriter(any arg) {
 
 // Scans all published rows until writers finish, rejecting holes or invalid stamps.
 static any concReader(any arg) {
-    (void) arg;
+    (fn) arg;
     while (!atomic_load(&g_concDone)) {
         u32 n = ChunkedList_size(g_concList);
         for (u32 i = 0u; i < n; i++) {
@@ -388,7 +388,7 @@ static int cmpPtr(const_any a, const_any b) {
 }
 
 // Runs concurrent appenders and checks completion and the resulting row set.
-static void testConcurrentWriters(void) {
+static fn testConcurrentWriters() {
     printf("[8] concurrent writers claim every row exactly once; readers see no holes\n");
 
     ChunkedList *list = ChunkedList_3(ID_INT, 16u, 128u);
@@ -468,7 +468,7 @@ static void testConcurrentWriters(void) {
 }
 
 // Runs the chunked-list geometry, stability, rejection, and concurrency cases.
-int main(void) {
+int main() {
     printf("=== ChunkedList Test Suite ===\n\n");
 
     testDefaults();

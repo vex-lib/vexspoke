@@ -12,12 +12,12 @@ typedef struct BvhAabb {
     f32 max_point[3];
 } BvhAabb;
 
-static inline BvhAabb BvhAabb_0(void) { return (BvhAabb) {0}; }
+static inline BvhAabb BvhAabb_0() { return (BvhAabb) {0}; }
 #define BvhAabb(...) CONSTRUCTOR_DISPATCH(BvhAabb, __VA_ARGS__)
-static inline void BvhAabb_setMinimum(BvhAabb *box, f32 x, f32 y, f32 z) {
+static inline fn BvhAabb_setMinimum(BvhAabb *box, f32 x, f32 y, f32 z) {
     if (box) { (*box).min_point[0] = x; (*box).min_point[1] = y; (*box).min_point[2] = z; }
 }
-static inline void BvhAabb_setMaximum(BvhAabb *box, f32 x, f32 y, f32 z) {
+static inline fn BvhAabb_setMaximum(BvhAabb *box, f32 x, f32 y, f32 z) {
     if (box) { (*box).max_point[0] = x; (*box).max_point[1] = y; (*box).max_point[2] = z; }
 }
 
@@ -39,13 +39,13 @@ static inline BvhRay BvhRay_8(f32 originX, f32 originY, f32 originZ,
     };
 }
 #define BvhRay(...) CONSTRUCTOR_DISPATCH(BvhRay, __VA_ARGS__)
-static inline void BvhRay_setOrigin(BvhRay *ray, f32 x, f32 y, f32 z) {
+static inline fn BvhRay_setOrigin(BvhRay *ray, f32 x, f32 y, f32 z) {
     if (ray) { (*ray).origin[0] = x; (*ray).origin[1] = y; (*ray).origin[2] = z; }
 }
-static inline void BvhRay_setDirection(BvhRay *ray, f32 x, f32 y, f32 z) {
+static inline fn BvhRay_setDirection(BvhRay *ray, f32 x, f32 y, f32 z) {
     if (ray) { (*ray).direction[0] = x; (*ray).direction[1] = y; (*ray).direction[2] = z; }
 }
-static inline void BvhRay_setRange(BvhRay *ray, f32 minimumDistance, f32 maximumDistance) {
+static inline fn BvhRay_setRange(BvhRay *ray, f32 minimumDistance, f32 maximumDistance) {
     if (ray) { (*ray).t_min = minimumDistance; (*ray).t_max = maximumDistance; }
 }
 
@@ -56,7 +56,7 @@ typedef struct BvhRayHit {
     f32 normal[3];
 } BvhRayHit;
 
-static inline BvhRayHit BvhRayHit_0(void) { return (BvhRayHit) {0}; }
+static inline BvhRayHit BvhRayHit_0() { return (BvhRayHit) {0}; }
 #define BvhRayHit(...) CONSTRUCTOR_DISPATCH(BvhRayHit, __VA_ARGS__)
 
 typedef struct BvhPrimitive {
@@ -90,16 +90,16 @@ typedef struct BvhTree {
     u32 primitive_count;
 } BvhTree;
 
-BvhAabb BvhAabb_empty(void);
+BvhAabb BvhAabb_empty();
 BvhAabb BvhAabb_from_points(const f32 min_pt[3], const f32 max_pt[3]);
-void BvhAabb_expand_point(const f32 point[3], BvhAabb *box);
-void BvhAabb_merge(const BvhAabb *other, BvhAabb *dest);
+fn BvhAabb_expand_point(const f32 point[3], BvhAabb *box);
+fn BvhAabb_merge(const BvhAabb *other, BvhAabb *dest);
 bool BvhAabb_intersect_ray(const BvhRay *ray, const BvhAabb *box, f32 *t_near_out);
 
-BvhTree BvhTree_0(void);
+BvhTree BvhTree_0();
 BvhTree BvhTree_1(u32 primitive_count);
 #define BvhTree(...) CONSTRUCTOR_DISPATCH(BvhTree, __VA_ARGS__)
-void BvhTree_destroy(BvhTree *tree);
+fn BvhTree_destroy(BvhTree *tree);
 bool BvhTree_build(const BvhPrimitive *prims, u32 count, BvhTree *tree);
 bool BvhTree_intersect_ray(const BvhTree *tree, const BvhRay *ray, BvhRayHit *hit_out);
 

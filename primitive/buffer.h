@@ -20,7 +20,7 @@ typedef struct Buffer {
 } Buffer;
 
 // Empty buffer, zero capacity.
-Buffer *Buffer_0(void);
+Buffer *Buffer_0();
 // Pre-sized buffer, zeroed, length == capacity == n.
 Buffer *Buffer_1(bytes n);
 // Copy of n bytes.
@@ -33,7 +33,7 @@ Buffer *Buffer_2(const u8 *data, bytes n);
     Buffer_2, Buffer_1, Buffer_0 \
 )(__VA_ARGS__)
 
-void Buffer_free(Buffer *self);
+fn Buffer_free(Buffer *self);
 
 // Contiguous payload. Stable until the next grow.
 u8 *Buffer_bytes(const Buffer *self);

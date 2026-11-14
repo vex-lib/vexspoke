@@ -8,9 +8,9 @@
 // Drains script/task handles off the _main thread. Pure queue consumer:
 // no idle ticking.
 
-Thread *ScriptingThread_invoke(void);
+Thread *ScriptingThread_invoke();
 bool ScriptingThread_submit(Thread *w, any task);
-void ScriptingThread_stop(Thread *w);
-void ScriptingThread_free(Thread *w);
+fn ScriptingThread_stop(Thread *w);
+fn ScriptingThread_free(Thread *w);
 
 #endif

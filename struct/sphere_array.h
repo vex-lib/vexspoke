@@ -2,7 +2,6 @@
 #define STRUCT_SPHERE_ARRAY_H
 
 #include "vex.h"
-
 #include "struct/collection.h"
 
 // struct/sphere_array.h — 3D Spherical Voxel Matrix evaluated via 3D Pythagorean Theorem.
@@ -21,7 +20,7 @@ typedef struct SphereArray {
 SphereArray *SphereArray_2(i32 radius, u32 elementClass);
 SphereArray *SphereArray_3(i32 radius, u32 elementClass, bytes stride);
 #define SphereArray(...) CONSTRUCTOR_DISPATCH(SphereArray, __VA_ARGS__)
-void SphereArray_free(SphereArray *self);
+fn SphereArray_free(SphereArray *self);
 
 i32 SphereArray_radius(const SphereArray *self);
 i32 SphereArray_diameter(const SphereArray *self);
@@ -45,7 +44,7 @@ u8 *SphereArray_slotGrid(SphereArray *self, i32 gx, i32 gy, i32 gz);
 u8 *SphereArray_slotOffset(SphereArray *self, i32 dx, i32 dy, i32 dz);
 
 // Iteration callback across all valid spherical voxels
-typedef void (*SphereArrayVoxelFn)(i32 gx, i32 gy, i32 gz, i32 dx, i32 dy, i32 dz, const_any voxel, any userData);
-void SphereArray_forEach(const SphereArray *self, SphereArrayVoxelFn callback, any userData);
+typedef fn (*SphereArrayVoxelFn)(i32 gx, i32 gy, i32 gz, i32 dx, i32 dy, i32 dz, const_any voxel, any userData);
+fn SphereArray_forEach(const SphereArray *self, SphereArrayVoxelFn callback, any userData);
 
 #endif

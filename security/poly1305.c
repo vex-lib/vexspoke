@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "security/poly1305.h"
 
 ;;DEFINITION
@@ -41,14 +40,14 @@ static u32 load32le(const u8 *p) {
            ((u32) p[2] << 16) | ((u32) p[3] << 24);
 }
 
-static void store32le(u8 *p, u32 v) {
+static fn store32le(u8 *p, u32 v) {
     p[0] = (u8) v;
     p[1] = (u8) (v >> 8);
     p[2] = (u8) (v >> 16);
     p[3] = (u8) (v >> 24);
 }
 
-void Poly1305_init(Poly1305 *self, const u8 key[POLY1305_KEY_SIZE]) {
+fn Poly1305_init(Poly1305 *self, const u8 key[POLY1305_KEY_SIZE]) {
     if (self == nullptr || key == nullptr) {
         THROW("Poly1305_init: null state or key");
         return;
@@ -63,7 +62,7 @@ void Poly1305_init(Poly1305 *self, const u8 key[POLY1305_KEY_SIZE]) {
         (*self).pad[i] = load32le(key + 16u + 4u * i);
 }
 
-static void blocks(Poly1305 *self, const u8 *m, bytes bytes) {
+static fn blocks(Poly1305 *self, const u8 *m, bytes bytes) {
     u32 r0 = (*self).r[0], r1 = (*self).r[1], r2 = (*self).r[2];
     u32 r3 = (*self).r[3], r4 = (*self).r[4];
     u32 s1 = r1 * 5u, s2 = r2 * 5u, s3 = r3 * 5u, s4 = r4 * 5u;
@@ -109,7 +108,7 @@ static void blocks(Poly1305 *self, const u8 *m, bytes bytes) {
     (*self).h[4] = h4;
 }
 
-void Poly1305_update(Poly1305 *self, const u8 *data, bytes len) {
+fn Poly1305_update(Poly1305 *self, const u8 *data, bytes len) {
     if (self == nullptr)
         return;
     if (len == 0u)

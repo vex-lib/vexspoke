@@ -10,7 +10,7 @@
 // Call poll (events) + Loop_stop from the tick to end the run.
 
 // A per-frame callback. userdata is whatever you passed in the loop struct.
-typedef void (*TickFn)(any userdata);
+typedef fn (*TickFn)(any userdata);
 
 typedef struct Loop {
     TickFn tick;      // called once per fixed step (never nullptr)
@@ -24,20 +24,20 @@ static inline Loop Loop_3(TickFn tick, any userdata, int64_t frameMilliseconds) 
         .running = false };
 }
 #define Loop(...) CONSTRUCTOR_DISPATCH(Loop, __VA_ARGS__)
-static inline void Loop_setTick(Loop *loop, TickFn tick) {
+static inline fn Loop_setTick(Loop *loop, TickFn tick) {
     if (loop) (*loop).tick = tick;
 }
-static inline void Loop_setUserdata(Loop *loop, any userdata) {
+static inline fn Loop_setUserdata(Loop *loop, any userdata) {
     if (loop) (*loop).userdata = userdata;
 }
-static inline void Loop_setFrameMilliseconds(Loop *loop, int64_t frameMilliseconds) {
+static inline fn Loop_setFrameMilliseconds(Loop *loop, int64_t frameMilliseconds) {
     if (loop) (*loop).frame_ms = frameMilliseconds;
 }
 
 // Run until Loop_stop is called (usually from inside the tick).
-void Loop_run(Loop *loop);
+fn Loop_run(Loop *loop);
 
 // Request the loop to stop at the next boundary.
-void Loop_stop(Loop *loop);
+fn Loop_stop(Loop *loop);
 
 #endif

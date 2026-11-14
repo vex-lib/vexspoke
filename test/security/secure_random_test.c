@@ -11,7 +11,6 @@
 //   - the telemetry counter tracks draws.
 
 #include "vex.h"
-
 #include "security/secure_random.h"
 
 static int g_failures = 0;
@@ -33,7 +32,7 @@ static bool anyNonZero(const u8 *buf, bytes len) {
 }
 
 // Checks SecureRandom output properties, accepted sizes, null rejection, and draw counts.
-int main(void) {
+int main() {
     SecureRandom *sr = SecureRandom();
     CHECK(sr != nullptr);
     if (!sr) {
@@ -83,8 +82,8 @@ int main(void) {
 
     // Scalar draws work and the telemetry counter advances.
     u64 before = SecureRandom_draws(sr);
-    (void) SecureRandom_u64(sr);
-    (void) SecureRandom_u32(sr);
+    (fn) SecureRandom_u64(sr);
+    (fn) SecureRandom_u32(sr);
     CHECK(SecureRandom_draws(sr) == before + 2);
     CHECK(SecureRandom_draws(nullptr) == 0);
 

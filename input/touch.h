@@ -2,7 +2,6 @@
 #define INPUT_TOUCH_H
 
 #include "vex.h"
-
 #include "event/touchhandler.h"
 
 // Window id carried by every queued event (0 = FOCUS_BROADCAST). windowId is
@@ -28,23 +27,23 @@ enum {
 
 #define TOUCH_MAX 10
 
-void Touch_init(void);
-void Touch_shutdown(void);
-void Touch_addListener(const TouchHandler *listener);
+fn Touch_init();
+fn Touch_shutdown();
+fn Touch_addListener(const TouchHandler *listener);
 bool Touch_removeListener(const TouchHandler *listener);
 
 // Window-scoped registration (see input/key.h for the routing rules).
-void Touch_attachWindow(u32 windowId, const TouchHandler *listener);
+fn Touch_attachWindow(u32 windowId, const TouchHandler *listener);
 bool Touch_detachWindow(u32 windowId, const TouchHandler *listener);
-void Touch_detachWindowAll(u32 windowId);
+fn Touch_detachWindowAll(u32 windowId);
 
 // Producer: Thread 0 only. touchId is the slot (0..TOUCH_MAX-1); windowId
 // tags the receiving window.
-void Touch_pushTouchEvent(u32 windowId, int touchId, int action, d64 x, d64 y,
+fn Touch_pushTouchEvent(u32 windowId, int touchId, int action, d64 x, d64 y,
                           d64 pressure, u64 holdThresholdNanos);
 
 // Consumer: drain the ring into the listeners. Game thread, once per frame.
-void Touch_dispatchEvents(void);
+fn Touch_dispatchEvents();
 
 // --- State queries ---
 bool    Touch_isDown(int touchId);

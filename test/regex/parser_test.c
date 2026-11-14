@@ -30,7 +30,7 @@ static u32 parse(const char *pattern, bool ignoreCase, RegexParser *parser) {
 }
 
 // Checks a clean parse: root shape, node access, group count and error state.
-static void testShapes(void) {
+static fn testShapes() {
     RegexParser parser;
 
     // A single literal folds (or not) and reports a CHAR root.
@@ -101,7 +101,7 @@ static void testShapes(void) {
 }
 
 // Checks class construction and the one-shot class transfer.
-static void testClasses(void) {
+static fn testClasses() {
     RegexParser parser;
     CHECK(parse("[a-z]", false, &parser) != REGEX_NODE_NONE);
     CHECK(RegexParser_groupCount(&parser) == 0);
@@ -125,7 +125,7 @@ static void testClasses(void) {
 }
 
 // Checks that every documented rejection records a reason and no root.
-static void testRejections(void) {
+static fn testRejections() {
     RegexParser parser;
     struct { const char *pattern; const char *fragment; } cases[] = {
         { "a+?", "quantifier unsupported" },
@@ -163,7 +163,7 @@ static void testRejections(void) {
 }
 
 // Checks the documented ceilings refuse rather than half-build.
-static void testCeilings(void) {
+static fn testCeilings() {
     RegexParser parser;
     CHECK(parse("a{1001}", false, &parser) == REGEX_NODE_NONE);
     CHECK(RegexParser_error(&parser) && strstr(RegexParser_error(&parser), "repetition") != nullptr);
@@ -207,7 +207,7 @@ static void testCeilings(void) {
 }
 
 // Checks init/free are reusable and null-safe across cycles.
-static void testLifecycle(void) {
+static fn testLifecycle() {
     RegexParser parser;
     for (int i = 0; i < 3; i++) {
         CHECK(parse("abc", false, &parser) != REGEX_NODE_NONE);
@@ -218,7 +218,7 @@ static void testLifecycle(void) {
     RegexParser_free(&parser);
 }
 
-int main(void) {
+int main() {
     testShapes();
     testClasses();
     testRejections();

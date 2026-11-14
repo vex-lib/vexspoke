@@ -86,7 +86,7 @@ static const u32 kCaptureToolCount =
 
 // CONSTRUCTORS
 
-CaptureTool *CaptureTool_shared(void) {
+CaptureTool *CaptureTool_shared() {
     static CaptureTool sCaptureShared; // zero-init singleton
     return &sCaptureShared;
 }
@@ -166,22 +166,22 @@ u32 CaptureTool_countRunningAll(const CaptureTool *self) {
 // GETTERS
 
 const char *CaptureTool_getSlug(const CaptureTool *self, const CaptureSlot *slot) {
-    (void)self;
+    (fn)self;
     return slot ? (*slot).slug : nullptr;
 }
 
 const char *CaptureTool_getDisplayName(const CaptureTool *self, const CaptureSlot *slot) {
-    (void)self;
+    (fn)self;
     return slot ? (*slot).displayName : nullptr;
 }
 
 const char *CaptureTool_getProcKey(const CaptureTool *self, const CaptureSlot *slot) {
-    (void)self;
+    (fn)self;
     return slot ? (*slot).procKey : nullptr;
 }
 
 const char *CaptureTool_getDriverDir(const CaptureTool *self, const CaptureSlot *slot) {
-    (void)self;
+    (fn)self;
     return slot ? (*slot).driverDir : nullptr;
 }
 
@@ -192,6 +192,6 @@ CaptureKind CaptureTool_getKind(const CaptureTool *self, const CaptureSlot *slot
 }
 
 const char *CaptureTool_getNote(const CaptureTool *self, const CaptureSlot *slot) {
-    (void)self;
+    (fn)self;
     return slot ? (*slot).note : nullptr;
 }

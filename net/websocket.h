@@ -105,7 +105,7 @@ typedef struct WebSocket {
 // --- Constructors ---
 // The empty instance: no socket, CLOSED, no owned buffer. Inline, like
 // HttpResponse, so the caller owns the storage and nothing is allocated here.
-static inline WebSocket WebSocket_0(void) {
+static inline WebSocket WebSocket_0() {
     return (WebSocket) { .fd = -1, .tls = nullptr, .state = WEBSOCKET_CLOSED,
                          .closeCode = 1005u, .timeoutMs = 5000u,
                          .maxMessageBytes = WS_MESSAGE_BYTES_DEFAULT };
@@ -120,7 +120,7 @@ bool WebSocket_open(WebSocket *self, const char *url, WebSocketConfig config);
 
 // Send a close frame when still open, close the socket and release the owned
 // buffer. Idempotent; safe on a zeroed instance.
-void WebSocket_close(WebSocket *self);
+fn WebSocket_close(WebSocket *self);
 
 // --- Core functions (all bounded; no thread, no unbounded wait) ---
 
@@ -150,7 +150,7 @@ u64 WebSocket_framesOut(const WebSocket *self);
 u64 WebSocket_pongsSent(const WebSocket *self);
 
 // --- String projections (the toString Law) ---
-void WebSocket_toString(const WebSocket *self, char *dest, bytes cap, bool *outTruncated);
-void WebSocket_toStringStruct(const WebSocket *self, char *dest, bytes cap, bool *outTruncated);
+fn WebSocket_toString(const WebSocket *self, char *dest, bytes cap, bool *outTruncated);
+fn WebSocket_toStringStruct(const WebSocket *self, char *dest, bytes cap, bool *outTruncated);
 
 #endif

@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "input/gesture.h"
 
 #include <math.h>
@@ -57,14 +56,14 @@
  * ============================================================================
  */
 
-GestureState GestureState_0(void) {
+GestureState GestureState_0() {
     GestureState state;
     memset(&state, 0, sizeof state);
     state.currentScale = 1.0f;
     return state;
 }
 
-void GestureState_processEvent(GestureState *state, GestureEvent event) {
+fn GestureState_processEvent(GestureState *state, GestureEvent event) {
     if (state == nullptr) return;
 
     (*state).focalPoint = event.focalPoint;
@@ -112,7 +111,7 @@ void GestureState_processEvent(GestureState *state, GestureEvent event) {
     }
 }
 
-void GestureState_tick(GestureState *state, f32 deltaSeconds) {
+fn GestureState_tick(GestureState *state, f32 deltaSeconds) {
     if (state == nullptr || deltaSeconds <= 0.0f) return;
 
     // Decay momentum velocity with smooth exponential friction

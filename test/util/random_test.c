@@ -43,11 +43,11 @@ static bool sameStream(u64 seed, RandomEngine engine) {
 // Tests seeded engine selection, reproducibility, ranges, weighted sampling, and null safety.
 // Verifies seeded random engines are reproducible and exercise their range contracts.
 // Verifies seed selection, reproducible streams, bounded draws, and weighted sampling.
-int main(void) {
+int main() {
     // The zero-argument chooser creates an independently owned casual stream.
     Random *defaultStream = Random();
     CHECK(defaultStream != nullptr);
-    (void) Random_nextLong(defaultStream);
+    (fn) Random_nextLong(defaultStream);
     Random_free(defaultStream);
 
     // Auto-selected engine: same seed -> same engine and same stream.
@@ -101,8 +101,8 @@ int main(void) {
             CHECK(f >= 0.0f && f < 1.0f);
             d64 d = Random_nextf64(r);
             CHECK(d >= 0.0 && d < 1.0);
-            (void) Random_nextInt(r);
-            (void) Random_nextChar(r);
+            (fn) Random_nextInt(r);
+            (fn) Random_nextChar(r);
             CHECK(isfinite((d64) Random_nextNDCFloat(r)));
         }
         Random_free(r);
@@ -130,7 +130,7 @@ int main(void) {
     // The shared system stream is live and draws.
     Random *sys = Random_system();
     CHECK(sys != nullptr);
-    (void) Random_nextLong(sys);
+    (fn) Random_nextLong(sys);
 
     Random_free(w);
 

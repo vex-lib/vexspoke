@@ -61,8 +61,8 @@ typedef enum Scenario {
 
 // --- Byte-level peer helpers (deliberately independent of the library) ---
 
-static bool peerWrite(int fd, const_any bytes, bytes length) {
-    const u8 *p = (const u8*) bytes;
+static bool peerWrite(int fd, const_any data, bytes length) {
+    const u8 *p = (const u8*) data;
     bytes sent = 0u;
     while (sent < length) {
         ssize_t n = send(fd, p + sent, length - sent, 0);
@@ -393,7 +393,7 @@ static bool openClient(WebSocket *client, const char *url) {
 }
 
 /** The happy path: handshake, one text frame, then a clean close. */
-static void testTextExchange(void) {
+static fn testTextExchange() {
     printf("[1] handshake, masked client frame, text message\n");
     char url[128];
     PeerContext peer;
@@ -424,7 +424,7 @@ static void testTextExchange(void) {
 }
 
 /** A ping is answered by the client itself and never surfaces as a message. */
-static void testPingPong(void) {
+static fn testPingPong() {
     printf("[2] a ping is answered inline and the text still arrives\n");
     char url[128];
     PeerContext peer;
@@ -443,7 +443,7 @@ static void testPingPong(void) {
 }
 
 /** Three frames must reassemble into one message. */
-static void testFragments(void) {
+static fn testFragments() {
     printf("[3] continuation frames reassemble into one message\n");
     char url[128];
     PeerContext peer;
@@ -463,7 +463,7 @@ static void testFragments(void) {
 }
 
 /** Binary payloads keep embedded NUL Bytes intact. */
-static void testBinary(void) {
+static fn testBinary() {
     printf("[4] binary message keeps embedded NUL Bytes\n");
     char url[128];
     PeerContext peer;
@@ -485,7 +485,7 @@ static void testBinary(void) {
 }
 
 /** A peer close reports its code and reason and ends the connection. */
-static void testPeerClose(void) {
+static fn testPeerClose() {
     printf("[5] peer close reports code and reason\n");
     char url[128];
     PeerContext peer;
@@ -506,7 +506,7 @@ static void testPeerClose(void) {
 }
 
 /** Handshake refusals: a bad accept hash, a non-101, a missing Upgrade. */
-static void testHandshakeRefusals(void) {
+static fn testHandshakeRefusals() {
     printf("[6] handshake refusals\n");
     struct { Scenario scenario; const char *label; } cases[] = {
         { SCENARIO_BAD_ACCEPT, "bad accept hash" },
@@ -529,7 +529,7 @@ static void testHandshakeRefusals(void) {
 }
 
 /** Bind an ephemeral port, then release it so nothing is listening there. */
-static int closedPort(void) {
+static int closedPort() {
     int fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd < 0)
         return -1;
@@ -553,7 +553,7 @@ static int closedPort(void) {
 }
 
 /** Unsupported URLs are refused before any socket is opened. */
-static void testUrlRefusals(void) {
+static fn testUrlRefusals() {
     printf("[7] unsupported and malformed URLs\n");
     WebSocket client = WebSocket();
     WebSocketConfig config = { .timeoutMs = 250u, .maxMessageBytes = WS_TEST_MESSAGE_CAP };
@@ -596,7 +596,7 @@ static void testUrlRefusals(void) {
 }
 
 /** Protocol violations must fail closed with their OWN refusal, not any error. */
-static void testHostileFrames(void) {
+static fn testHostileFrames() {
     printf("[8] hostile frames fail closed on their own guard\n");
     struct { Scenario scenario; const char *label; const char *expect; } cases[] = {
         { SCENARIO_MASKED_FRAME, "masked server frame",
@@ -638,7 +638,7 @@ static void testHostileFrames(void) {
 }
 
 /** Outbound text must be valid UTF-8 and control payloads stay in budget. */
-static void testOutboundRefusals(void) {
+static fn testOutboundRefusals() {
     printf("[9] outbound refusals and projections\n");
     char url[128];
     PeerContext peer;
@@ -671,7 +671,7 @@ static void testOutboundRefusals(void) {
     CHECK(peerFinish(&peer) == 0);
 }
 
-int main(void) {
+int main() {
     printf("=== WebSocket owner ===\n");
     signal(SIGPIPE, SIG_IGN);
     testTextExchange();

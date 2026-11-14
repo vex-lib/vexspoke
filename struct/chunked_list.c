@@ -382,7 +382,7 @@ static bool ensureChunks(ChunkedList *self, u32 needChunks) {
 }
 
 // Recompute the shift/mask tables from radices (geometry change, gate held).
-static void recomputeGeometry(ChunkedList *self) {
+static fn recomputeGeometry(ChunkedList *self) {
     u32 levels = (*self).levels;
     u32 *radices = (*self).radices;
     u32 *shifts = (*self).shifts;
@@ -413,7 +413,7 @@ static ChunkedList *buildPaged(u32 elementClass, bytes stride, const u32 *radixI
 
     ChunkedList *self = (ChunkedList*) Memory_alloc(TYPE_CHUNKED_LIST, sizeof(ChunkedList));
     if (!self) {
-        (void) Struct_reportConstructionExhaustion("chunked_list", sizeof(ChunkedList));
+        (fn) Struct_reportConstructionExhaustion("chunked_list", sizeof(ChunkedList));
         return nullptr;
     }
     memset(self, 0, sizeof(*self));
@@ -422,7 +422,7 @@ static ChunkedList *buildPaged(u32 elementClass, bytes stride, const u32 *radixI
     u32 *shifts = (u32*) Memory_alloc(TYPE_CHUNKED_LIST, (bytes)levels * sizeof(u32));
     u32 *masks = (u32*) Memory_alloc(TYPE_CHUNKED_LIST, (bytes)levels * sizeof(u32));
     if (!radices || !shifts || !masks) {
-        (void) Struct_reportConstructionExhaustion("chunked_list", (bytes)levels * sizeof(u32) * 3u);
+        (fn) Struct_reportConstructionExhaustion("chunked_list", (bytes)levels * sizeof(u32) * 3u);
         Memory_free(radices);
         Memory_free(shifts);
         Memory_free(masks);
@@ -481,7 +481,7 @@ ChunkedList *ChunkedList_3(u32 elementClass, u32 stride, u32 chunkBytes) {
 }
 
 // Recursive teardown: free a depth-`depth` object and everything under it.
-static void freeSubtree(u8 *node, const ChunkedList *self, u32 depth) {
+static fn freeSubtree(u8 *node, const ChunkedList *self, u32 depth) {
     if (!node)
         return;
     if (depth == (*self).levels - 1u) {
@@ -559,7 +559,7 @@ ChunkedList *ChunkedList_paged(u32 elementClass, u32 stride, const i32 *radices,
 
 // CORE FUNCTIONS
 
-void ChunkedList_free(ChunkedList *self) {
+fn ChunkedList_free(ChunkedList *self) {
     if (!self)
         return;
     ChunkDir *dir = directoryOf(self);
@@ -667,7 +667,7 @@ u8 *ChunkedList_nextChunk(const ChunkedList *self, const u8 *chunk) {
     return (u8*) atomic_load_explicit(link, memory_order_acquire);
 }
 
-void ChunkedList_forEachChunk(const ChunkedList *self, ChunkedListChunkFn fn, any userdata) {
+fn ChunkedList_forEachChunk(const ChunkedList *self, ChunkedListChunkFn fn, any userdata) {
     if (!self || !fn)
         return;
     u8 *chunk = ChunkedList_getChunk(self, 0u);
@@ -681,7 +681,7 @@ void ChunkedList_forEachChunk(const ChunkedList *self, ChunkedListChunkFn fn, an
 
 // SETTERS
 
-void ChunkedList_setChunkBytes(ChunkedList *self, u32 chunkBytes) {
+fn ChunkedList_setChunkBytes(ChunkedList *self, u32 chunkBytes) {
     if (!self)
         return;
     if (!SpinLock_tryLockTimeout(&(*self).lock, VEX_CHUNKED_LOCK_NANOS))

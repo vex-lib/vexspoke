@@ -39,11 +39,11 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Core Functions:
- *   - SystemDiscovery_bootstrap(void)
- *   - SystemDiscovery_refresh(void)
+ *   - SystemDiscovery_bootstrap()
+ *   - SystemDiscovery_refresh()
  *
  * Getters:
- *   - SystemDiscovery_isBootstrapped(void)
+ *   - SystemDiscovery_isBootstrapped()
  * ============================================================================
  */
 
@@ -55,16 +55,16 @@
 
 static _Atomic bool s_bootstrapped = false;
 
-bool SystemDiscovery_isBootstrapped(void) {
+bool SystemDiscovery_isBootstrapped() {
     return atomic_load_explicit(&s_bootstrapped, memory_order_acquire);
 }
 
-void SystemDiscovery_refresh(void) {
+fn SystemDiscovery_refresh() {
     atomic_store_explicit(&s_bootstrapped, false, memory_order_release);
     SystemDiscovery_bootstrap();
 }
 
-void SystemDiscovery_bootstrap(void) {
+fn SystemDiscovery_bootstrap() {
     bool expected = false;
     if (!atomic_compare_exchange_strong(&s_bootstrapped, &expected, true))
         return; // already bootstrapped

@@ -69,7 +69,7 @@ static i32 *allocateInts(bytes count) {
 SparseSet *SparseSet_3(bytes capacity, bytes maxEntities, bytes stride) {
     SparseSet *set = (SparseSet*) Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_SINGLETON, ID_SPARSE_SET), sizeof(SparseSet));
     if (!set) {
-        (void) Struct_reportConstructionExhaustion("sparseset", sizeof(SparseSet));
+        (fn) Struct_reportConstructionExhaustion("sparseset", sizeof(SparseSet));
         return nullptr;
     }
 
@@ -82,14 +82,14 @@ SparseSet *SparseSet_3(bytes capacity, bytes maxEntities, bytes stride) {
 
     (*set).dense = allocateInts(capacity);
     if (!(*set).dense) {
-        (void) Struct_reportConstructionExhaustion("sparseset", capacity * sizeof(i32));
+        (fn) Struct_reportConstructionExhaustion("sparseset", capacity * sizeof(i32));
         Memory_free(set);
         return nullptr;
     }
 
     (*set).sparse = allocateInts(maxEntities);
     if (!(*set).sparse) {
-        (void) Struct_reportConstructionExhaustion("sparseset", maxEntities * sizeof(i32));
+        (fn) Struct_reportConstructionExhaustion("sparseset", maxEntities * sizeof(i32));
         Memory_free((*set).dense);
         Memory_free(set);
         return nullptr;
@@ -102,7 +102,7 @@ SparseSet *SparseSet_3(bytes capacity, bytes maxEntities, bytes stride) {
         u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_SPARSE_SET);
         (*set).data = (u8*) Memory_alloc(bufType, Bytes);
         if (!(*set).data) {
-            (void) Struct_reportConstructionExhaustion("sparseset", Bytes);
+            (fn) Struct_reportConstructionExhaustion("sparseset", Bytes);
             Memory_free((*set).dense);
             Memory_free((*set).sparse);
             Memory_free(set);
@@ -114,7 +114,7 @@ SparseSet *SparseSet_3(bytes capacity, bytes maxEntities, bytes stride) {
     return set;
 }
 
-void SparseSet_free(SparseSet *set) {
+fn SparseSet_free(SparseSet *set) {
     if (!set) return;
     Memory_free((*set).dense);
     Memory_free((*set).sparse);
@@ -163,7 +163,7 @@ u8 *SparseSet_add(SparseSet *set, i32 entityId) {
 
     if ((*set).count >= (*set).capacity) {
         // The dense capacity is full: a refusal, reported (once per epoch).
-        (void) Struct_reportExhaustion(&(*set).exhaustionCount, &(*set).exhaustionReported,
+        (fn) Struct_reportExhaustion(&(*set).exhaustionCount, &(*set).exhaustionReported,
                                        "sparseset", (bytes) (*set).capacity, (bytes) (*set).capacity);
         return nullptr;
     }
@@ -178,7 +178,7 @@ u8 *SparseSet_add(SparseSet *set, i32 entityId) {
     return (*set).data;
 }
 
-void SparseSet_remove(SparseSet *set, i32 entityId) {
+fn SparseSet_remove(SparseSet *set, i32 entityId) {
     if (!set) return;
     if (entityId < 0 || entityId >= (*set).maxEntities)
         return;

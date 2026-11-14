@@ -1,7 +1,6 @@
 // reactive/reactive.c — the one reactive engine.
 
 #include "vex.h"
-
 #include "reactive/reactive.h"
 
 #include "nio/mem.h"
@@ -141,7 +140,7 @@ static bool listRemove(ReactiveObserverList **slot, any cb, any userdata) {
     return false;
 }
 
-static void listFree(ReactiveObserverList **slot) {
+static fn listFree(ReactiveObserverList **slot) {
     if (*slot == nullptr)
         return;
     if ((**slot).items != nullptr)
@@ -194,7 +193,7 @@ Reactive *Reactive_2(const Reactive *init, bytes count) {
     return p;
 }
 
-void Reactive_shutdown(Reactive *self) {
+fn Reactive_shutdown(Reactive *self) {
     if (self == nullptr)
         return;
     listFree(&(*self).onSet);
@@ -204,7 +203,7 @@ void Reactive_shutdown(Reactive *self) {
     (*self).active = false;
 }
 
-void Reactive_free(Reactive *self) {
+fn Reactive_free(Reactive *self) {
     if (self == nullptr)
         return;
     Reactive_shutdown(self);
@@ -231,7 +230,7 @@ pointer Reactive_load(Reactive *self) {
     return value;
 }
 
-void Reactive_store(Reactive *self, pointer word) {
+fn Reactive_store(Reactive *self, pointer word) {
     if (self == nullptr)
         return;
     // Any thread: move the word, mark dirty, fire nothing.
@@ -244,14 +243,14 @@ void Reactive_store(Reactive *self, pointer word) {
         fn(self);
 }
 
-void Reactive_setDelivery(Reactive *self, ReactiveDeliverFn deliver) {
+fn Reactive_setDelivery(Reactive *self, ReactiveDeliverFn deliver) {
     if (self == nullptr)
         return;
     (*self).deliver = deliver;
     (*self).deliverBound = true; // explicit (nullptr means "none", not "inherit")
 }
 
-void Reactive_clearDelivery(Reactive *self) {
+fn Reactive_clearDelivery(Reactive *self) {
     if (self == nullptr)
         return;
     (*self).deliver = nullptr;
@@ -262,15 +261,15 @@ ReactiveDeliverFn Reactive_getDelivery(const Reactive *self) {
     return self ? (*self).deliver : nullptr;
 }
 
-void Reactive_setDefaultDelivery(ReactiveDeliverFn deliver) {
+fn Reactive_setDefaultDelivery(ReactiveDeliverFn deliver) {
     s_defaultDelivery = deliver;
 }
 
-ReactiveDeliverFn Reactive_getDefaultDelivery(void) {
+ReactiveDeliverFn Reactive_getDefaultDelivery() {
     return s_defaultDelivery;
 }
 
-void Reactive_setValueOf(Reactive *self, ReactiveValueFn valueOf) {
+fn Reactive_setValueOf(Reactive *self, ReactiveValueFn valueOf) {
     if (self == nullptr)
         return;
     (*self).valueOf = valueOf;

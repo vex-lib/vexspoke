@@ -2,7 +2,6 @@
 #define THREAD_REACTIVE_H
 
 #include "vex.h"
-
 #include "thread/thread.h"
 #include "reactive/reactive.h"
 
@@ -21,16 +20,16 @@
 // nothing until the job publishes a result.
 
 // A private delivery worker (caller owns the handle).
-Thread *ReactiveThread_invoke(void);
+Thread *ReactiveThread_invoke();
 // The shared default worker (lazy, created running). wake() submits here.
-Thread *ReactiveThread_core(void);
+Thread *ReactiveThread_core();
 
 // Boot the default owner: start the shared worker and bind it as the PROCESS
 // default delivery, so a plain set on ANY box (that has not opted out) schedules
 // its drain here — set is the only verb. Call once at startup; idempotent.
-bool ReactiveThread_start(void);
+bool ReactiveThread_start();
 // Unbind the default delivery and tear the shared worker down.
-void ReactiveThread_shutdown(void);
+fn ReactiveThread_shutdown();
 
 // Queue a box for owner-thread drain. Safe from any thread. True when the box is
 // queued (or already was). false only when the worker is stopped or the queue is
@@ -44,14 +43,14 @@ bool ReactiveThread_wakeOn(Thread *worker, Reactive *box);
 // wiring — bind once at construction, then only ever set/get.
 bool ReactiveThread_adopt(Reactive *box);
 // Unbind a previously adopted box (and drop any pending wake).
-void ReactiveThread_release(Reactive *box);
+fn ReactiveThread_release(Reactive *box);
 
 // True while the box is waiting in the queue (not yet drained).
 bool ReactiveThread_isQueued(const Reactive *box);
 // Boxes waiting in the shared queue.
-bytes ReactiveThread_pending(void);
+bytes ReactiveThread_pending();
 
-void ReactiveThread_stop(Thread *worker);
-void ReactiveThread_free(Thread *worker);   // refuses the core
+fn ReactiveThread_stop(Thread *worker);
+fn ReactiveThread_free(Thread *worker);   // refuses the core
 
 #endif // THREAD_REACTIVE_H

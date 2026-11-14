@@ -50,14 +50,14 @@
  */
 
 
-static int64_t nowMs(void) {
+static int64_t nowMs() {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
     return (int64_t) ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
 }
 
 // Runs fixed-step ticks until stopped, limiting catch-up to four steps per pass.
-void Loop_run(Loop *loop) {
+fn Loop_run(Loop *loop) {
     if (!loop || !(*loop).tick)
         return;
     if ((*loop).frame_ms <= 0)
@@ -88,7 +88,7 @@ void Loop_run(Loop *loop) {
 }
 
 // Clears the atomic running flag so an active Loop_run can return.
-void Loop_stop(Loop *loop) {
+fn Loop_stop(Loop *loop) {
     if (loop)
         atomic_store_explicit(&(*loop).running, false, memory_order_release);
 }

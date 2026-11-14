@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "primitive/fixed32.h"
 
 #include "nio/mem.h"
@@ -31,11 +30,11 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Constructors:
- *   - Fixed32_init(void)
+ *   - Fixed32_init()
  *
  * Core Functions:
- *   - Fixed32_shutdown(void)
- *   - Fixed32_alloc(void)
+ *   - Fixed32_shutdown()
+ *   - Fixed32_alloc()
  *   - Fixed32_allocArray(count)
  *   - Fixed32_free(ptr)
  *   - Fixed32_compareAndSet(ptr, expected, value)
@@ -54,16 +53,16 @@
 
 BitPool g_fixed32Pool;
 
-bool Fixed32_init(void) {
+bool Fixed32_init() {
     g_fixed32Pool = BitPool(4, 1024);
     return BitPool_live(&g_fixed32Pool);
 }
 
-void Fixed32_shutdown(void) {
+fn Fixed32_shutdown() {
     BitPool_shutdown(&g_fixed32Pool);
 }
 
-any Fixed32_alloc(void) {
+any Fixed32_alloc() {
     return BitPool_alloc(&g_fixed32Pool, ID_FIXED32);
 }
 
@@ -79,7 +78,7 @@ any Fixed32_allocArray(bytes count) {
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_FIXED32), Bytes);
 }
 
-void Fixed32_free(any ptr) {
+fn Fixed32_free(any ptr) {
     if (!ptr)
         return;
     if (BitPool_contains(&g_fixed32Pool, ptr)) BitPool_free(&g_fixed32Pool, ptr);
@@ -92,7 +91,7 @@ i32 Fixed32_get(any ptr) {
     return *(i32*) ptr;
 }
 
-void Fixed32_set(any ptr, i32 value) {
+fn Fixed32_set(any ptr, i32 value) {
     if (!ptr)
         return;
     *(i32*) ptr = value;

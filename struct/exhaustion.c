@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "struct/exhaustion.h"
 
 ;;DEFINITION
@@ -66,7 +65,7 @@ u64 Struct_exhaustionCount(const u64 *count) {
 
 /** Start a fresh epoch for the owner. */
 ;;TEST
-void Struct_resetExhaustion(u64 *count, bool *reported) {
+fn Struct_resetExhaustion(u64 *count, bool *reported) {
     if (count) (*count) = 0;
     if (reported) (*reported) = false;
 }
@@ -92,13 +91,13 @@ bool Struct_reportConstructionExhaustion(const char *owner, bytes requestedBytes
 
 /** Return the process-wide construction-refusal count for the current epoch. */
 ;;TEST
-u64 Struct_constructionExhaustionCount(void) {
+u64 Struct_constructionExhaustionCount() {
     return s_constructionCount;
 }
 
 /** Start a fresh process-wide construction epoch. */
 ;;TEST
-void Struct_resetConstructionExhaustion(void) {
+fn Struct_resetConstructionExhaustion() {
     s_constructionCount = 0;
     s_constructionReported = false;
 }

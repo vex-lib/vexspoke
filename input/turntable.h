@@ -42,10 +42,10 @@ static inline TurntableEvent TurntableEvent_3(u8 deckIndex, bool platterTouched,
         .angularDeltaRad = angularDeltaRadians };
 }
 #define TurntableEvent(...) CONSTRUCTOR_DISPATCH(TurntableEvent, __VA_ARGS__)
-static inline void TurntableEvent_setPlatterTouched(TurntableEvent *event, bool touched) {
+static inline fn TurntableEvent_setPlatterTouched(TurntableEvent *event, bool touched) {
     if (event) (*event).platterTouched = touched;
 }
-static inline void TurntableEvent_setAngularDelta(TurntableEvent *event, f32 radians) {
+static inline fn TurntableEvent_setAngularDelta(TurntableEvent *event, f32 radians) {
     if (event) (*event).angularDeltaRad = radians;
 }
 
@@ -63,8 +63,8 @@ typedef struct TurntableState {
 
 TurntableState TurntableState_1(u8 deckIndex);
 #define TurntableState(...) CONSTRUCTOR_DISPATCH(TurntableState, __VA_ARGS__)
-void TurntableState_processEvent(TurntableState *state, TurntableEvent event);
-void TurntableState_tick(TurntableState *state, f32 deltaSeconds);
+fn TurntableState_processEvent(TurntableState *state, TurntableEvent event);
+fn TurntableState_tick(TurntableState *state, f32 deltaSeconds);
 
 // Crossfader volume calculation; returns both channel volumes by value.
 TurntableCrossfade Turntable_calculateCrossfade(f32 position, CrossfaderCurve curve);

@@ -72,13 +72,13 @@ static bool search(const char *pattern, const char *subject, bool anchored,
 }
 
 // A neutral options value (case sensitive, dot excludes newline, single line).
-static RegexOptions plain(void) {
+static RegexOptions plain() {
     RegexOptions options = RegexOptions(false, false, false);
     return options;
 }
 
 // Checks unanchored search, leftmost offsets, and a full consumption.
-static void testSearch(void) {
+static fn testSearch() {
     RegexSpan whole = RegexSpan_none();
     CHECK(search("hello", "say hello", false, plain(), &whole));
     CHECK(whole.start == 4 && whole.end == 9);
@@ -100,7 +100,7 @@ static void testSearch(void) {
 }
 
 // Checks the three options independently.
-static void testOptions(void) {
+static fn testOptions() {
     RegexOptions options = plain();
     CHECK(!search("HELLO", "hello", false, options, nullptr));
     options.ignoreCase = true;
@@ -120,7 +120,7 @@ static void testOptions(void) {
 }
 
 // Checks capture spans: the whole match plus each group.
-static void testCaptures(void) {
+static fn testCaptures() {
     RegexProgram program = RegexProgram();
     RegexCharClass *classes = nullptr;
     u32 classCount = 0;
@@ -160,7 +160,7 @@ static void testCaptures(void) {
 }
 
 // Checks bounded progress on the classic catastrophic-backtracking shape.
-static void testBoundedProgress(void) {
+static fn testBoundedProgress() {
     RegexSpan whole = RegexSpan_none();
     const char *hostile = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
     // (a+)+b.sh cannot match a run of bare a's; a backtracking engine explodes.
@@ -182,7 +182,7 @@ static void testBoundedProgress(void) {
 }
 
 // Checks the init/free lifecycle across repeated runs and a null-safe free.
-static void testLifecycle(void) {
+static fn testLifecycle() {
     RegexProgram program = RegexProgram();
     RegexCharClass *classes = nullptr;
     u32 classCount = 0;
@@ -205,7 +205,7 @@ static void testLifecycle(void) {
 }
 
 // Full admission must keep alternatives alive after a premature MATCH.
-static void testFullAdmission(void) {
+static fn testFullAdmission() {
     const char *patterns[] = {"a|ab", "|ab", "(a|ab)", "a?|ab", "a*|ab"};
     for (bytes i = 0; i < sizeof patterns / sizeof patterns[0]; i++) {
         RegexProgram program = RegexProgram();
@@ -228,7 +228,7 @@ static void testFullAdmission(void) {
     }
 }
 
-int main(void) {
+int main() {
     testFullAdmission();
     testSearch();
     testOptions();

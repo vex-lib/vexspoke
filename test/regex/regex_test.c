@@ -68,7 +68,7 @@ static bytes captureStop(int saved, const char *path, char *out, bytes outCap) {
 }
 
 // Checks literal search, offsets, and empty/longer pattern edges.
-static void testLiteralAndFind(void) {
+static fn testLiteralAndFind() {
     Regex *re = Regex_1("hello");
     CHECK(re != nullptr);
     CHECK(Regex_isMatch(re, "say hello world"));
@@ -99,7 +99,7 @@ static void testLiteralAndFind(void) {
 }
 
 // Checks the greedy quantifiers and their bounded behavior.
-static void testQuantifiers(void) {
+static fn testQuantifiers() {
     WITH("colou?r", REGEX_DEFAULT) {
         CHECK(Regex_isFullMatch(re, "color"));
         CHECK(Regex_isFullMatch(re, "colour"));
@@ -137,7 +137,7 @@ static void testQuantifiers(void) {
 }
 
 // Checks alternation, captures, unmatched groups, and non-capturing groups.
-static void testGroupsAndAlternation(void) {
+static fn testGroupsAndAlternation() {
     WITH("cat|dog", REGEX_DEFAULT) {
         CHECK(Regex_isFullMatch(re, "cat"));
         CHECK(Regex_isFullMatch(re, "dog"));
@@ -181,7 +181,7 @@ static void testGroupsAndAlternation(void) {
 }
 
 // Checks character classes, ranges, negation, and the \d \w \s families.
-static void testClasses(void) {
+static fn testClasses() {
     WITH("[abc]+", REGEX_DEFAULT) {
         CHECK(Regex_isFullMatch(re, "cab"));
         CHECK(!Regex_isFullMatch(re, "cad"));
@@ -227,7 +227,7 @@ static void testClasses(void) {
 }
 
 // Checks escapes and anchors.
-static void testEscapesAndAnchors(void) {
+static fn testEscapesAndAnchors() {
     WITH("\\d+\\.\\d+", REGEX_DEFAULT) {
         CHECK(Regex_isFullMatch(re, "3.14"));
         CHECK(!Regex_isFullMatch(re, "314"));
@@ -264,7 +264,7 @@ static void testEscapesAndAnchors(void) {
 }
 
 // Checks the three flags independently.
-static void testFlags(void) {
+static fn testFlags() {
     WITH("hello", REGEX_CASE_INSENSITIVE) {
         CHECK(Regex_isMatch(re, "HELLO"));
         CHECK(Regex_flags(re) == REGEX_CASE_INSENSITIVE);
@@ -284,7 +284,7 @@ static void testFlags(void) {
 }
 
 // Checks both string projections, their truncation flag, and null safety.
-static void testProjections(void) {
+static fn testProjections() {
     Regex *re = Regex_2("(ab)+", REGEX_CASE_INSENSITIVE);
     CHECK(re != nullptr);
 
@@ -318,7 +318,7 @@ static void testProjections(void) {
 }
 
 // Checks the loud compile rejections and that the [vex] diagnostic is emitted.
-static void testRejection(void) {
+static fn testRejection() {
     char path[256];
     char captured[512];
     int saved = captureStart(path, sizeof(path));
@@ -351,7 +351,7 @@ static void testRejection(void) {
 }
 
 // Checks bounded progress: the classic blow-up shape must not hang.
-static void testBoundedProgress(void) {
+static fn testBoundedProgress() {
     const char *hostile = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
     Regex *re = Regex_1("(a+)+b.sh");
     CHECK(re != nullptr);
@@ -379,7 +379,7 @@ static void testBoundedProgress(void) {
 }
 
 // Verifies null inputs are rejected by every entry point with safe results.
-static void testNullSafety(void) {
+static fn testNullSafety() {
     Regex *re = Regex_1("x");
     CHECK(!Regex_isMatch(nullptr, "x"));
     CHECK(!Regex_isMatch(re, nullptr));
@@ -399,7 +399,7 @@ static void testNullSafety(void) {
 }
 
 // Checks the documented safety ceilings reject loudly instead of half-compiling.
-static void testSafetyBounds(void) {
+static fn testSafetyBounds() {
     char path[256];
     char captured[16384];
     int saved = captureStart(path, sizeof(path));
@@ -476,7 +476,7 @@ static void testSafetyBounds(void) {
 }
 
 // Runs the regex owner cases.
-static void testFullAlternatives(void) {
+static fn testFullAlternatives() {
     const char *patterns[] = {"a|ab", "|ab", "(a|ab)", "a?|ab", "a*|ab"};
     for (bytes i = 0; i < sizeof patterns / sizeof patterns[0]; i++) {
         Regex *re = Regex(patterns[i]);
@@ -495,7 +495,7 @@ static void testFullAlternatives(void) {
     Regex_free(re);
 }
 
-static void testStrictSyntax(void) {
+static fn testStrictSyntax() {
     const char *patterns[] = {"a+?", "a++", "a**", "a{2}{3}", "a{2,3}?",
                               "\\b.sh", "\\B", "\\1", "\\q", "[\\b.sh]"};
     for (bytes i = 0; i < sizeof patterns / sizeof patterns[0]; i++) {
@@ -522,7 +522,7 @@ static void testStrictSyntax(void) {
     Regex_free(re);
 }
 
-int main(void) {
+int main() {
     testFullAlternatives();
     testStrictSyntax();
     testLiteralAndFind();

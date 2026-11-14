@@ -33,7 +33,7 @@ static int g_failures = 0;
     } while (0)
 
 // Tests Array introspection, round trips, hostile indices, observable rejection, and null safety.
-int main(void) {
+int main() {
     Array *a = Array_2(ID_INT, 8);
     CHECK(a != nullptr);
     if (!a)

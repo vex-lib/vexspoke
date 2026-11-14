@@ -17,7 +17,7 @@ static int g_failures = 0;
     } while (0)
 
 // Checks Local thread-slot reads, writes, growth, and null safety.
-int main(void) {
+int main() {
     Local *l = Local_0();
     CHECK(l != nullptr);
     CHECK(Local_get(l, 0) == 0); // unset -> 0

@@ -17,7 +17,7 @@ typedef struct RegexSpan {
 } RegexSpan;
 
 // The "did not participate" span (both ends REGEX_UNSET).
-RegexSpan RegexSpan_none(void);
+RegexSpan RegexSpan_none();
 
 // True when both ends are set, i.e. the group took part in the match.
 bool RegexSpan_isSet(RegexSpan span);

@@ -36,10 +36,10 @@
  * ----------------------------------------------------------------------------
  * Core Functions:
  *   - ComputeJob_isJob(task) / ComputeJob_run(task)
- *   - ComputeThread_invoke(void)
+ *   - ComputeThread_invoke()
  *   - ComputeThread_start(count)
  *   - ComputeThread_submit(job) / ComputeThread_submitTo(worker, job)
- *   - ComputeThread_stop(void) / ComputeThread_free(void) / ComputeThread_count(void)
+ *   - ComputeThread_stop() / ComputeThread_free() / ComputeThread_count()
  * ============================================================================
  */
 
@@ -52,8 +52,8 @@ static bytes s_poolCount = 0;
 static _Atomic bytes s_rr = 0;
 
 // The one body every compute worker runs: a popped task is a ComputeJob.
-static void compute_job(Thread *self, any task) {
-    (void) self;
+static fn compute_job(Thread *self, any task) {
+    (fn) self;
     ComputeJob_run(task);                    // ignores non-jobs (nullptr, foreign packets)
 }
 
@@ -73,7 +73,7 @@ bool ComputeJob_run(any task) {
     return true;
 }
 
-Thread *ComputeThread_invoke(void) {
+Thread *ComputeThread_invoke() {
     Thread *worker = Thread(TYPE_THREAD_COMPUTE_SINGLETON, compute_job, 4096, false, false);
     if (worker != nullptr)
         Thread_run(worker);
@@ -114,12 +114,12 @@ bool ComputeThread_submitTo(Thread *worker, ComputeJob *job) {
     return worker != nullptr && job != nullptr && Thread_submit(worker, job);
 }
 
-void ComputeThread_stop(void) {
+fn ComputeThread_stop() {
     for (bytes i = 0; i < COMPUTE_POOL_MAX; i++)
         Thread_stop(s_pool[i]);
 }
 
-void ComputeThread_free(void) {
+fn ComputeThread_free() {
     for (bytes i = 0; i < COMPUTE_POOL_MAX; i++) {
         Thread_free(s_pool[i]);
         s_pool[i] = nullptr;
@@ -127,6 +127,6 @@ void ComputeThread_free(void) {
     s_poolCount = 0;
 }
 
-bytes ComputeThread_count(void) {
+bytes ComputeThread_count() {
     return s_poolCount;
 }

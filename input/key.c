@@ -18,7 +18,6 @@
 // engine talks through.
 
 #include "vex.h"
-
 #include "input/key.h"
 
 #include "input/focus.h"
@@ -85,10 +84,10 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Constructors:
- *   - Key_init(void)
+ *   - Key_init()
  *
  * Core Functions:
- *   - Key_shutdown(void)
+ *   - Key_shutdown()
  *   - Key_addListener(listener)
  *   - Key_removeListener(listener)
  *   - Key_attachWindow(windowId, listener)
@@ -96,7 +95,7 @@
  *   - Key_detachWindowAll(windowId)
  *   - Key_pushEvent(windowId, keyCode, action, tapWindowNanos)
  *   - Key_pushCharEvent(windowId, c)
- *   - Key_dispatchEvents(void)
+ *   - Key_dispatchEvents()
  *   - Key_pressTime(keyCode)
  *   - Key_lastReleaseTime(keyCode)
  *   - Key_lastHoldDurationNanos(keyCode)
@@ -273,7 +272,7 @@ static const char *const s_names[KEY_COUNT] = {
     [KEY_MENU] = "Menu",              [KEY_FN] = "Fn",
 };
 
-void Key_init(void) {
+fn Key_init() {
     if (s_ready) return;
     NanoTime_init();
     s_queue = RingBuffer(sizeof(InputEvent), QUEUE_CAPACITY);
@@ -282,13 +281,13 @@ void Key_init(void) {
     s_ready = true;
 }
 
-void Key_shutdown(void) {
+fn Key_shutdown() {
     if (!s_ready) return;
     RingBuffer_shutdown(&s_queue);
     s_ready = false;
 }
 
-void Key_addListener(const KeyHandler *listener) {
+fn Key_addListener(const KeyHandler *listener) {
     if (listener == nullptr) return;
     if (!growSegment(&s_listeners, &s_listenerCap, s_listenerCount + 1)) return;
     s_listeners[s_listenerCount++] = listener;
@@ -306,7 +305,7 @@ bool Key_removeListener(const KeyHandler *listener) {
     return false;
 }
 
-void Key_attachWindow(u32 windowId, const KeyHandler *listener) {
+fn Key_attachWindow(u32 windowId, const KeyHandler *listener) {
     if (listener == nullptr || windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) {
@@ -335,7 +334,7 @@ bool Key_detachWindow(u32 windowId, const KeyHandler *listener) {
     return false;
 }
 
-void Key_detachWindowAll(u32 windowId) {
+fn Key_detachWindowAll(u32 windowId) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row != nullptr)
@@ -343,7 +342,7 @@ void Key_detachWindowAll(u32 windowId) {
 }
 
 // Modifier snapshot from live state, packed into the wire-format nibble.
-static int modifierMask(void) {
+static int modifierMask() {
     int mods = 0;
     if (Key_isDown(KEY_LEFT_SHIFT) || Key_isDown(KEY_RIGHT_SHIFT)) mods |= 1;
     if (Key_isDown(KEY_LEFT_CONTROL) || Key_isDown(KEY_RIGHT_CONTROL)) mods |= 2;
@@ -353,11 +352,11 @@ static int modifierMask(void) {
 }
 
 // Engine-epoch micros truncated to the 46-bit carrier field.
-static u64 epochMicros(void) {
+static u64 epochMicros() {
     return (NanoTime_elapsedNanos() / 1000ULL) & 0x3FFFFFFFFFFFULL;
 }
 
-void Key_pushEvent(u32 windowId, int keyCode, int action, u64 tapWindowNanos) {
+fn Key_pushEvent(u32 windowId, int keyCode, int action, u64 tapWindowNanos) {
     if (keyCode < 0 || keyCode >= KEY_COUNT) return;
     if (!s_ready) Key_init();
     if (!s_ready) return;
@@ -404,7 +403,7 @@ void Key_pushEvent(u32 windowId, int keyCode, int action, u64 tapWindowNanos) {
     RingBuffer_push(&s_queue, &ev);
 }
 
-void Key_pushCharEvent(u32 windowId, u32 c) {
+fn Key_pushCharEvent(u32 windowId, u32 c) {
     if (!s_ready) Key_init();
     if (!s_ready) return;
     InputEvent ev = { .packed = (epochMicros() << 18) | (((u64)c & 0xFFFF) << 2) | 3ULL,
@@ -414,7 +413,7 @@ void Key_pushCharEvent(u32 windowId, u32 c) {
 
 // Deliver one event to a scoped listener list. windowId 0 (FOCUS_BROADCAST)
 // is reserved and never attached; broadcast events fan _out to every row.
-static void deliverToWindow(u32 windowId, int action, int keyEvent, u64 exactNanos) {
+static fn deliverToWindow(u32 windowId, int action, int keyEvent, u64 exactNanos) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return;
@@ -431,7 +430,7 @@ static void deliverToWindow(u32 windowId, int action, int keyEvent, u64 exactNan
 }
 
 // Deliver a typed character to one window's scoped list.
-static void deliverChar(u32 windowId, u32 c) {
+static fn deliverChar(u32 windowId, u32 c) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return;
@@ -442,7 +441,7 @@ static void deliverChar(u32 windowId, u32 c) {
     }
 }
 
-void Key_dispatchEvents(void) {
+fn Key_dispatchEvents() {
     if (!s_ready) return;
 
     InputEvent ev;
@@ -536,7 +535,7 @@ int Key_taps(int keyCode) {
     return s_slots[keyCode].taps;
 }
 
-void Key_resetTaps(int keyCode) {
+fn Key_resetTaps(int keyCode) {
     if (keyCode < 0 || keyCode >= KEY_COUNT) return;
     s_slots[keyCode].taps = 0;
 }
@@ -560,7 +559,7 @@ bool Key_isLongPressFired(int keyCode) {
     return s_slots[keyCode].longPressFired != 0;
 }
 
-void Key_setLongPressFired(int keyCode, bool fired) {
+fn Key_setLongPressFired(int keyCode, bool fired) {
     if (keyCode < 0 || keyCode >= KEY_COUNT) return;
     s_slots[keyCode].longPressFired = (u8)(fired ? 1 : 0);
 }

@@ -32,11 +32,11 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Constructors:
- *   - f64_init(void)
+ *   - f64_init()
  *
  * Core Functions:
- *   - f64_shutdown(void)
- *   - f64_alloc(void)
+ *   - f64_shutdown()
+ *   - f64_alloc()
  *   - f64_allocArray(count)
  *   - f64_free(ptr)
  *   - f64_compareAndSet(ptr, expected, value)
@@ -55,16 +55,16 @@
 
 BitPool g_f64Pool;
 
-bool f64_init(void) {
+bool f64_init() {
     g_f64Pool = BitPool(8, 1024);
     return BitPool_live(&g_f64Pool);
 }
 
-void f64_shutdown(void) {
+fn f64_shutdown() {
     BitPool_shutdown(&g_f64Pool);
 }
 
-any f64_alloc(void) {
+any f64_alloc() {
     return BitPool_alloc(&g_f64Pool, ID_f64);
 }
 
@@ -80,7 +80,7 @@ any f64_allocArray(bytes count) {
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_f64), Bytes);
 }
 
-void f64_free(any ptr) {
+fn f64_free(any ptr) {
     if (!ptr)
         return;
     if (BitPool_contains(&g_f64Pool, ptr)) BitPool_free(&g_f64Pool, ptr);
@@ -93,7 +93,7 @@ d64 f64_get(any ptr) {
     return *(d64*) ptr;
 }
 
-void f64_set(any ptr, d64 value) {
+fn f64_set(any ptr, d64 value) {
     if (!ptr)
         return;
     *(d64*) ptr = value;

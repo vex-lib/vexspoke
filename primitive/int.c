@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "primitive/int.h"
 
 #include "nio/mem.h"
@@ -29,11 +28,11 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Constructors:
- *   - Int_init(void)
+ *   - Int_init()
  *
  * Core Functions:
- *   - Int_shutdown(void)
- *   - Int_alloc(void)
+ *   - Int_shutdown()
+ *   - Int_alloc()
  *   - Int_allocArray(count)
  *   - Int_free(ptr)
  *   - Int_compareAndSet(ptr, expected, value)
@@ -52,16 +51,16 @@
 
 BitPool g_intPool;
 
-bool Int_init(void) {
+bool Int_init() {
     g_intPool = BitPool(4, 1024);
     return BitPool_live(&g_intPool);
 }
 
-void Int_shutdown(void) {
+fn Int_shutdown() {
     BitPool_shutdown(&g_intPool);
 }
 
-any Int_alloc(void) {
+any Int_alloc() {
     return BitPool_alloc(&g_intPool, ID_INT);
 }
 
@@ -77,7 +76,7 @@ any Int_allocArray(bytes count) {
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_INT), Bytes);
 }
 
-void Int_free(any ptr) {
+fn Int_free(any ptr) {
     if (!ptr)
         return;
     if (BitPool_contains(&g_intPool, ptr)) BitPool_free(&g_intPool, ptr);
@@ -90,7 +89,7 @@ i32 Int_get(any ptr) {
     return *(i32*) ptr;
 }
 
-void Int_set(any ptr, i32 value) {
+fn Int_set(any ptr, i32 value) {
     if (!ptr)
         return;
     *(i32*) ptr = value;

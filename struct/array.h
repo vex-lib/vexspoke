@@ -2,7 +2,6 @@
 #define STRUCT_ARRAY_H
 
 #include "vex.h"
-
 #include "struct/collection.h"
 #include "exception/try_value.h"
 
@@ -19,11 +18,11 @@ typedef struct Array {
 Array *Array_2(u32 element_class, bytes length);
 
 // Free the array and its data buffer.
-void Array_free(Array *array);
+fn Array_free(Array *array);
 
 // Get/set the value or pointer at index (bounds-checked).
 u64 Array_get(Array *array, bytes index);
-void Array_set(Array *array, bytes index, u64 value);
+fn Array_set(Array *array, bytes index, u64 value);
 
 // Cold, checking accessor: the value or the named reason it is absent — the
 // `;;CHECKER` half of the pair; Array_get is the `;;HOTCODE` half.

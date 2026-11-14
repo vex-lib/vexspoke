@@ -25,10 +25,10 @@ Str Str_2(char *dest, bytes cap);
 #define Str(...) CONSTRUCTOR_DISPATCH(Str, __VA_ARGS__)
 
 // --- Core functions (all bounded) ---
-void Str_put(Str *s, const char *text);       // append a C string
-void Str_putc(Str *s, char c);                // append one char
-void Str_putQuoted(Str *s, const char *text); // append "text" with \n/\t/\" escapes
-void Str_printf(Str *s, const char *fmt, ...); // bounded printf (cold path)
+fn Str_put(Str *s, const char *text);       // append a C string
+fn Str_putc(Str *s, char c);                // append one char
+fn Str_putQuoted(Str *s, const char *text); // append "text" with \n/\t/\" escapes
+fn Str_printf(Str *s, const char *fmt, ...); // bounded printf (cold path)
 
 // --- Getters (the Symmetric Getter/Setter Completeness Law: null-safe) ---
 bool   Str_isTruncated(const Str *s);

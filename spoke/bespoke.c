@@ -64,7 +64,7 @@ Bespoke *Bespoke_0() {
     return &s_defaultBespoke;
 }
 
-void Bespoke_bridge(Bespoke *self) {
+fn Bespoke_bridge(Bespoke *self) {
     if (!self)
         return;
 
@@ -162,7 +162,7 @@ bool Bespoke_check(Bespoke *self) {
     return changed;
 }
 
-void bridgeBespoke() {
+fn bridgeBespoke() {
     Bespoke_bridge(&s_defaultBespoke);
 }
 

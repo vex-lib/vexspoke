@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "exception.h"
 
 #include <stdlib.h>
@@ -23,10 +22,10 @@
  * Projections: const char *Exception_categoryName(ExceptionCategory category)
  * Constructors: Exception_0(), Exception_5(..), Exception_6(..),
  *   Exception_7(..), Exception_8(..)
- * Lifecycle: void Exception_free(Exception *self)
- * Setters: void Exception_setDetails(Exception *self, const char *fmt, ...)
- *   void Exception_setDetailsV(Exception *self, const char *fmt, va_list args)
- * Operations: void Exception_print(const Exception *self)
+ * Lifecycle: fn Exception_free(Exception *self)
+ * Setters: fn Exception_setDetails(Exception *self, const char *fmt, ...)
+ *   fn Exception_setDetailsV(Exception *self, const char *fmt, va_list args)
+ * Operations: fn Exception_print(const Exception *self)
  * Private behavior: format sizing/copying is performed by exceptionInitializeV
  *   and setDetailsV;
  *   allocation failure preserves the prior details value on replacement.
@@ -52,7 +51,7 @@ const char *Exception_categoryName(ExceptionCategory category) {
 }
 
 // Initializes exception metadata and formats an optional message using args.
-static void exceptionInitializeV(Exception *self,
+static fn exceptionInitializeV(Exception *self,
                                  ExceptionCategory category,
                                  const char *site,
                                  const char *file,
@@ -83,7 +82,7 @@ static void exceptionInitializeV(Exception *self,
     }
 }
 
-Exception Exception_0(void) {
+Exception Exception_0() {
     Exception self;
     memset(&self, 0, sizeof self);
     self.type = TYPE_EXCEPTION_SINGLETON;
@@ -141,7 +140,7 @@ Exception Exception_8(ExceptionCategory category, const char *site,
 }
 
 // Replaces owned details with formatted args when formatting and allocation succeed.
-void Exception_setDetailsV(Exception *self, const char *fmt, va_list args) {
+fn Exception_setDetailsV(Exception *self, const char *fmt, va_list args) {
     if (self == nullptr || fmt == nullptr) return;
 
     va_list copy;
@@ -162,7 +161,7 @@ void Exception_setDetailsV(Exception *self, const char *fmt, va_list args) {
 }
 
 // Replaces owned details with formatted variadic text.
-void Exception_setDetails(Exception *self, const char *fmt, ...) {
+fn Exception_setDetails(Exception *self, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
     Exception_setDetailsV(self, fmt, args);
@@ -170,7 +169,7 @@ void Exception_setDetails(Exception *self, const char *fmt, ...) {
 }
 
 // Releases the owned message and details strings and clears their pointers.
-void Exception_free(Exception *self) {
+fn Exception_free(Exception *self) {
     if (self == nullptr) return;
 
     if ((*self).message != nullptr) {
@@ -184,7 +183,7 @@ void Exception_free(Exception *self) {
 }
 
 // Writes category, source location, message, and details to stderr.
-void Exception_print(const Exception *self) {
+fn Exception_print(const Exception *self) {
     if (self == nullptr) return;
 
     fprintf(stderr, "\n================================================================================\n");

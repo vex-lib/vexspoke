@@ -6,7 +6,6 @@
 // strncmp, strstr or strchr.
 
 #include "vex.h"
-
 #include "primitive/char_sequence.h"
 #include "primitive/vex-string.h"
 

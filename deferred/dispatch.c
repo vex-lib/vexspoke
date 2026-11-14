@@ -31,7 +31,7 @@
  * Payloads are borrowed and opaque. No scheduling, coalescing or ownership
  * transfer of context. Free requires external exclusion of all API callers.
  */
-Dispatch *Dispatch_0(void) {
+Dispatch *Dispatch_0() {
     Dispatch *self = (Dispatch*) calloc(1, sizeof(Dispatch));
     if (!self)
         return nullptr;

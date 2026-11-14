@@ -5,7 +5,6 @@
 // search. Cold path only.
 
 #include "vex.h"
-
 #include "algo/segment_index.h"
 
 #include "nio/mem.h"
@@ -196,7 +195,7 @@ static bool matchBefore(const SegmentIndex *index, const SegmentMatch *a, const 
 }
 
 // Insert into the bounded best-first output array (top-`cap`, insertion sort).
-static void insertMatch(const SegmentIndex *index, SegmentMatch *out, bytes cap, bytes *kept, const SegmentMatch *m) {
+static fn insertMatch(const SegmentIndex *index, SegmentMatch *out, bytes cap, bytes *kept, const SegmentMatch *m) {
     bytes pos = 0u;
     while (pos < *kept && !matchBefore(index, m, &out[pos]))
         pos++;
@@ -216,7 +215,7 @@ typedef struct BuildCtx {
     SegmentIndex *index;
 } BuildCtx;
 
-static void buildFn(VariableSlot *slot, any userdata) {
+static fn buildFn(VariableSlot *slot, any userdata) {
     BuildCtx *ctx = (BuildCtx*) userdata;
     const char *name = VariableSlot_getName(slot);
     if (!name)
@@ -224,8 +223,8 @@ static void buildFn(VariableSlot *slot, any userdata) {
     SegmentIndex_add((*ctx).index, name, (pointer) slot);
 }
 
-static void freePostingsFn(VariableSlot *slot, any userdata) {
-    (void) userdata;
+static fn freePostingsFn(VariableSlot *slot, any userdata) {
+    (fn) userdata;
     pointer value = VariableSlot_getPointer(slot);
     if (value)
         ChunkedList_free((ChunkedList*) value);
@@ -305,7 +304,7 @@ bool SegmentIndex_init(SegmentIndex *index) {
     return true;
 }
 
-void SegmentIndex_shutdown(SegmentIndex *index) {
+fn SegmentIndex_shutdown(SegmentIndex *index) {
     if (!index)
         return;
     if ((*index).postings) {
@@ -320,7 +319,7 @@ void SegmentIndex_shutdown(SegmentIndex *index) {
     (*index).active = false;
 }
 
-SegmentIndex *SegmentIndex_0(void) {
+SegmentIndex *SegmentIndex_0() {
     SegmentIndex *index = (SegmentIndex*) Memory_alloc(TYPE_SEGMENT_INDEX, sizeof(SegmentIndex));
     if (!index)
         return nullptr;
@@ -331,7 +330,7 @@ SegmentIndex *SegmentIndex_0(void) {
     return index;
 }
 
-void SegmentIndex_free(SegmentIndex *index) {
+fn SegmentIndex_free(SegmentIndex *index) {
     if (!index)
         return;
     SegmentIndex_shutdown(index);
@@ -340,7 +339,7 @@ void SegmentIndex_free(SegmentIndex *index) {
 
 // CORE FUNCTIONS
 
-void SegmentIndex_clear(SegmentIndex *index) {
+fn SegmentIndex_clear(SegmentIndex *index) {
     if (!index || !(*index).active)
         return;
     VariableHashMap_forEach((*index).postings, freePostingsFn, nullptr);
@@ -491,7 +490,7 @@ bool SegmentIndex_isEmpty(const SegmentIndex *index) {
 
 // STRING PROJECTIONS (the toString Law)
 
-void SegmentIndex_toString(const SegmentIndex *index, char *dest, bytes cap, bool *outTruncated) {
+fn SegmentIndex_toString(const SegmentIndex *index, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (!dest || cap == 0u)
@@ -507,7 +506,7 @@ void SegmentIndex_toString(const SegmentIndex *index, char *dest, bytes cap, boo
     }
 }
 
-void SegmentIndex_toStringStruct(const SegmentIndex *index, char *dest, bytes cap, bool *outTruncated) {
+fn SegmentIndex_toStringStruct(const SegmentIndex *index, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (!dest || cap == 0u)

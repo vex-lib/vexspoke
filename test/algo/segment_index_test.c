@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include <stdio.h>
 
 #include "algo/segment_index.h"
@@ -24,7 +23,7 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Core Functions:
- *   - main(void)
+ *   - main()
  * ============================================================================
  */
 
@@ -48,7 +47,7 @@ static const char *matchName(const SegmentIndex *index, const SegmentMatch *m) {
 }
 
 /** Adds the deterministic field fixture used by segment matching scenarios. */
-static void seed(SegmentIndex *index) {
+static fn seed(SegmentIndex *index) {
     SegmentIndex_add(index, "a.b.sh.c", 1u);
     SegmentIndex_add(index, "b.sh.c", 2u);
     SegmentIndex_add(index, "x.b.sh.c", 3u);
@@ -61,7 +60,7 @@ static void seed(SegmentIndex *index) {
 }
 
 /** Checks name segmentation for ordinary, dotted, empty, and malformed names. */
-static void testSplitter(void) {
+static fn testSplitter() {
     printf("[1] the '.' splitter\n");
 
     CHECK(SegmentIndex_segmentCount("health") == 1u);
@@ -86,7 +85,7 @@ static void testSplitter(void) {
 }
 
 /** Verifies index construction and lookup of the seeded field names. */
-static void testBuild(void) {
+static fn testBuild() {
     printf("[2] index build + getters + null-safety\n");
 
     SegmentIndex *index = SegmentIndex_0();
@@ -113,7 +112,7 @@ static void testBuild(void) {
 }
 
 /** Checks candidate ranking prefers the most specific matching field path. */
-static void testRanking(void) {
+static fn testRanking() {
     printf("[3] ranked phrase search: exact > suffix > contains\n");
 
     SegmentIndex *index = SegmentIndex_0();
@@ -184,7 +183,7 @@ static void testRanking(void) {
 }
 
 /** Exercises the mini-map bridge and confirms its matches resolve to source fields. */
-static void testBridge(void) {
+static fn testBridge() {
     printf("[4] buildFrom(VariableHashMap): payload is the VariableSlot*\n");
 
     VariableHashMap *map = VariableHashMap();
@@ -233,7 +232,7 @@ static void testBridge(void) {
 }
 
 /** Runs the SegmentIndex owner scenarios and reports aggregate assertion status. */
-int main(void) {
+int main() {
     printf("=== SegmentIndex (dotted-name search) Test Suite ===\n\n");
 
     testSplitter();

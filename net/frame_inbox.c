@@ -85,7 +85,7 @@ static u64 frameInboxNowNs() {
 }
 
 /** Sleep for one cancel-check interval used by bounded polling. */
-static void frameInboxSleepSlice() {
+static fn frameInboxSleepSlice() {
     struct timespec slice;
     slice.tv_sec = 0;
     slice.tv_nsec = 1000000L;
@@ -119,7 +119,7 @@ FrameInbox *FrameInbox_1(u64 timeoutNs) {
 
 // CORE FUNCTIONS
 /** Release the arena-backed client slot; callers must exclude concurrent polling. */
-void FrameInbox_free(FrameInbox *self) {
+fn FrameInbox_free(FrameInbox *self) {
     if (!self)
         return;
     Memory_free(self);
@@ -171,14 +171,14 @@ bool FrameInbox_poll(FrameInbox *self, u64 timeoutNs, u8 *dest,
 }
 
 /** Set the cancellation flag so current or future polls return without waiting further. */
-void FrameInbox_cancel(FrameInbox *self) {
+fn FrameInbox_cancel(FrameInbox *self) {
     if (!self)
         return;
     (*self).cancelled = true;
 }
 
 /** Discard all pending receive bytes without changing connection or cancellation state. */
-void FrameInbox_clear(FrameInbox *self) {
+fn FrameInbox_clear(FrameInbox *self) {
     if (!self)
         return;
     (*self).rxLen = 0;
@@ -186,14 +186,14 @@ void FrameInbox_clear(FrameInbox *self) {
 
 // SETTERS
 /** Replace the stored connection state when the client pointer is non-null. */
-void FrameInbox_setState(FrameInbox *self, FrameInboxState state) {
+fn FrameInbox_setState(FrameInbox *self, FrameInboxState state) {
     if (!self)
         return;
     (*self).state = state;
 }
 
 /** Set the default poll timeout, clamped to the maximum permitted interval. */
-void FrameInbox_setTimeoutNs(FrameInbox *self, u64 timeoutNs) {
+fn FrameInbox_setTimeoutNs(FrameInbox *self, u64 timeoutNs) {
     if (!self)
         return;
     if (timeoutNs > FRAME_INBOX_POLL_MAX_NS)
@@ -202,7 +202,7 @@ void FrameInbox_setTimeoutNs(FrameInbox *self, u64 timeoutNs) {
 }
 
 /** Set or clear the poll cancellation flag. */
-void FrameInbox_setCancelled(FrameInbox *self, bool cancelled) {
+fn FrameInbox_setCancelled(FrameInbox *self, bool cancelled) {
     if (!self)
         return;
     (*self).cancelled = cancelled;

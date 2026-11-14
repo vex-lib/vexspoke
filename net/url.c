@@ -3,7 +3,6 @@
 // reserves room for the NUL and fails clean instead of truncating.
 
 #include "vex.h"
-
 #include "net/url.h"
 
 #include <strings.h>

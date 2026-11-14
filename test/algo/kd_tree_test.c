@@ -39,7 +39,7 @@ static f32 dist_sq(const f32 a[3], const f32 b[3]) {
     return dx * dx + dy * dy + dz * dz;
 }
 
-static void test_build_and_null(void) {
+static fn test_build_and_null() {
     KdPoint p = mk(1, 2, 3, 1);
     CHECK(KdTree_build(nullptr, 3) == nullptr);
     CHECK(KdTree_build(&p, 0) == nullptr);
@@ -60,7 +60,7 @@ static void test_build_and_null(void) {
     KdTree_free(t);
 }
 
-static void test_nearest_known(void) {
+static fn test_nearest_known() {
     KdPoint pts[] = {
         mk(0, 0, 0, 100),
         mk(10, 0, 0, 200),
@@ -91,7 +91,7 @@ static void test_nearest_known(void) {
     KdTree_free(t);
 }
 
-static void test_oracle_random(void) {
+static fn test_oracle_random() {
     enum { N = 400 };
     KdPoint pts[N], ref[N];
     u64 seed = 0x1234abcdull;
@@ -155,7 +155,7 @@ static void test_oracle_random(void) {
     KdTree_free(t);
 }
 
-static void test_radius_boundary_and_duplicates(void) {
+static fn test_radius_boundary_and_duplicates() {
     KdPoint pts[] = {
         mk(0, 0, 0, 1),
         mk(3, 0, 0, 2),
@@ -186,7 +186,7 @@ static void test_radius_boundary_and_duplicates(void) {
     KdTree_free(t);
 }
 
-int main(void) {
+int main() {
     CHECK(Memory_init(0));
 
     test_build_and_null();

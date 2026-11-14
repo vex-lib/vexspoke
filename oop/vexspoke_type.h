@@ -2,7 +2,6 @@
 #define OOP_TYPE_H
 
 #include "vex.h"
-
 #include "re/type/re_type.h"
 
 // oop/vexspoke_type.h — vexspoke's OWN class registry (the One Type Registry Law).

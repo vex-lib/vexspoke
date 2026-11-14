@@ -32,7 +32,7 @@ static int g_failures = 0;
     } while (0)
 
 /** Checks graph creation, invalid endpoints, bidirectional-edge rejection, and null-safe cleanup. */
-static void test_construction(void) {
+static fn test_construction() {
     CHECK(Dijkstra(0) == nullptr);
     DijkstraGraph *g = Dijkstra(4);
     CHECK(g != nullptr);
@@ -47,7 +47,7 @@ static void test_construction(void) {
 }
 
 /** Verifies shortest-path choice, directed traversal, trivial paths, and unchanged distance on absence. */
-static void test_known_path(void) {
+static fn test_known_path() {
     DijkstraGraph *g = Dijkstra(4);                 // 0,1,2,3
     CHECK(g != nullptr);
     CHECK(Dijkstra_addBiEdge(g, 0, 1, 1.0f));
@@ -85,7 +85,7 @@ static void test_known_path(void) {
 }
 
 /** Exercises bounded path output and the solver's documented null and range refusals. */
-static void test_truncation_and_nulls(void) {
+static fn test_truncation_and_nulls() {
     DijkstraGraph *g = Dijkstra(3);
     CHECK(g != nullptr);
     CHECK(Dijkstra_addEdge(g, 0, 1, 1.0f));
@@ -113,7 +113,7 @@ static void test_truncation_and_nulls(void) {
 }
 
 /** Adds enough outgoing edges to grow adjacency storage and checks the resulting shortest path. */
-static void test_edge_growth(void) {
+static fn test_edge_growth() {
     DijkstraGraph *g = Dijkstra(32);
     CHECK(g != nullptr);
     // Node 0 gets 20 outgoing edges, forcing the initial capacity 4 to d64
@@ -133,7 +133,7 @@ static void test_edge_growth(void) {
 }
 
 /** Verifies exact path and distance on a long directed chain, including reverse unreachability. */
-static void test_chain(void) {
+static fn test_chain() {
     enum { N = 128 };
     DijkstraGraph *g = Dijkstra(N);
     CHECK(g != nullptr);
@@ -155,7 +155,7 @@ static void test_chain(void) {
 }
 
 /** Runs the Dijkstra owner scenarios and returns failure if any assertion was violated. */
-int main(void) {
+int main() {
     CHECK(Memory_init(0));
 
     test_construction();

@@ -1,7 +1,6 @@
 // regex/nodelist.c — the RegexNodeList flat AST array.
 
 #include "vex.h"
-
 #include "regex/nodelist.h"
 
 #include "nio/mem.h"
@@ -96,7 +95,7 @@ static bool growToOneMore(RegexNodeList *list) {
     return true;
 }
 
-RegexNodeList RegexNodeList_0(void) {
+RegexNodeList RegexNodeList_0() {
     RegexNodeList list;
     list.nodes = nullptr;
     list.count = 0u;
@@ -125,7 +124,7 @@ const RegexNode *RegexNodeList_at(const RegexNodeList *list, u32 index) {
     return &(*list).nodes[index];
 }
 
-void RegexNodeList_free(RegexNodeList *list) {
+fn RegexNodeList_free(RegexNodeList *list) {
     if ((*list).nodes)
         Memory_free((*list).nodes);
     *list = RegexNodeList();

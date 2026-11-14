@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "algo/kd_tree.h"
 
 #include "nio/mem.h"
@@ -64,7 +63,7 @@
  * ============================================================================
  */
 
-static void swapPoints(KdPoint *a, KdPoint *b) {
+static fn swapPoints(KdPoint *a, KdPoint *b) {
     KdPoint tmp = *a;
     *a = *b;
     *b = tmp;
@@ -83,7 +82,7 @@ static bytes partitionAxis(KdPoint *points, bytes left, bytes right, u8 axis) {
     return i;
 }
 
-static void quickSelectAxis(KdPoint *points, bytes left, bytes right, bytes k, u8 axis) {
+static fn quickSelectAxis(KdPoint *points, bytes left, bytes right, bytes k, u8 axis) {
     while (left < right) {
         bytes pivotIdx = partitionAxis(points, left, right, axis);
         if (pivotIdx == k) {
@@ -127,14 +126,14 @@ KdTree *KdTree_build(KdPoint *points, bytes count) {
     return tree;
 }
 
-static void KdNode_freeRecursive(KdNode *node) {
+static fn KdNode_freeRecursive(KdNode *node) {
     if (node == nullptr) return;
     if ((*node).left != nullptr) KdNode_freeRecursive((*node).left);
     if ((*node).right != nullptr) KdNode_freeRecursive((*node).right);
     Memory_free(node);
 }
 
-void KdTree_free(KdTree *tree) {
+fn KdTree_free(KdTree *tree) {
     if (tree == nullptr) return;
     if ((*tree).root != nullptr) {
         KdNode_freeRecursive((*tree).root);
@@ -150,7 +149,7 @@ static inline f32 distSq(const f32 a[3], const f32 b[3]) {
     return dx * dx + dy * dy + dz * dz;
 }
 
-static void nearestRecursive(const KdNode *node,
+static fn nearestRecursive(const KdNode *node,
                              const f32   query[3],
                              KdPoint      *bestPoint,
                              f32        *bestDistSq) {

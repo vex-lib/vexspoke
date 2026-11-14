@@ -45,7 +45,7 @@
  * ============================================================================
  */
 
-Buffer *Buffer_0(void) {
+Buffer *Buffer_0() {
     Buffer *self = (Buffer*) Memory_alloc(TYPE_BYTE_ARRAY, sizeof(Buffer));
 
     if (!self)
@@ -92,7 +92,7 @@ Buffer *Buffer_2(const u8 *data, bytes n) {
     return self;
 }
 
-void Buffer_free(Buffer *self) {
+fn Buffer_free(Buffer *self) {
     if (!self)
         return;
 

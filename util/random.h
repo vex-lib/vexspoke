@@ -2,7 +2,6 @@
 #define UTIL_RANDOM_H
 
 #include "vex.h"
-
 #include "objects/probable.h"
 #include "objects/probable_objects.h"
 
@@ -36,7 +35,7 @@ Random *Random_1(u64 seed);
 
 // New stream seeded from the monotonic clock for casual, non-reproducible draws.
 // This is not a cryptographic source; use SecureRandom for secrets.
-Random *Random_0(void);
+Random *Random_0();
 
 // New stream forced onto a specific engine (tests, deterministic reproduction).
 Random *Random_2(u64 seed, RandomEngine engine);
@@ -44,10 +43,10 @@ Random *Random_2(u64 seed, RandomEngine engine);
 // Which engine this stream runs (telemetry / tests; gameplay never needs it).
 RandomEngine Random_engine(const Random *r);
 
-void Random_free(Random *r);
+fn Random_free(Random *r);
 
 // Shared system stream, seeded from the monotonic clock on first use.
-Random *Random_system(void);
+Random *Random_system();
 
 u64 Random_nextLong(Random *r);
 i32 Random_nextInt(Random *r);

@@ -20,17 +20,17 @@ static int g_failures = 0;
 static u64 g_store = 0;
 // Supplies the external value used by the Passive getter hook.
 static u64 storeGet(any userdata) {
-    (void) userdata;
+    (fn) userdata;
     return g_store;
 }
 // Updates the external value used by the Passive setter hook.
-static void storeSet(u64 value, any userdata) {
-    (void) userdata;
+static fn storeSet(u64 value, any userdata) {
+    (fn) userdata;
     g_store = value;
 }
 
 // Checks hooked and cached Passive access, including absent hooks and nulls.
-int main(void) {
+int main() {
     int token = 1;
     Passive *p = Passive_3(storeGet, storeSet, &token);
     CHECK(p != nullptr);

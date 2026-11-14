@@ -141,14 +141,14 @@ typedef struct WsTarget {
 // PRIVATE HELPERS
 
 /** Monotonic milliseconds; the only clock the frame loop trusts. */
-static u64 wsNowMs(void) {
+static u64 wsNowMs() {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
     return (u64) ts.tv_sec * 1000u + (u64) (ts.tv_nsec / 1000000);
 }
 
 /** Bound both directions of one socket by the same transport budget. */
-static void wsSetTimeout(int fd, u32 timeoutMs) {
+static fn wsSetTimeout(int fd, u32 timeoutMs) {
     struct timeval tv;
     tv.tv_sec = (time_t) (timeoutMs / 1000u);
     tv.tv_usec = (suseconds_t) ((timeoutMs % 1000u) * 1000u);
@@ -390,7 +390,7 @@ static bool wsParseUrl(const char *url, WsTarget *out) {
 }
 
 /** Record a bounded diagnostic and make the connection terminal. */
-static void wsFail(WebSocket *self, const char *reason) {
+static fn wsFail(WebSocket *self, const char *reason) {
     if (self == nullptr)
         return;
     bytes cap = sizeof((*self).error);
@@ -634,7 +634,7 @@ static WebSocketMessage wsConsumeFrame(WebSocket *self) {
                 (*self).closeReasonTruncated = copy < textLength;
             }
             if ((*self).state == WEBSOCKET_OPEN)
-                (void) wsSendFrame(self, WEBSOCKET_CLOSE, true, (*self).control, (bytes) length);
+                (fn) wsSendFrame(self, WEBSOCKET_CLOSE, true, (*self).control, (bytes) length);
             (*self).state = WEBSOCKET_CLOSED;
             result.kind = WS_MESSAGE_CLOSE;
             result.closeCode = code;
@@ -869,12 +869,12 @@ bool WebSocket_open(WebSocket *self, const char *url, WebSocketConfig config) {
 }
 
 /** Send a normal close when open, drop the socket, release the owned buffer. */
-void WebSocket_close(WebSocket *self) {
+fn WebSocket_close(WebSocket *self) {
     if (self == nullptr)
         return;
     if ((*self).state == WEBSOCKET_OPEN &&
         ((*self).fd >= 0 || (*self).tls != nullptr))
-        (void) WebSocket_writeClose(self, 1000u, nullptr);
+        (fn) WebSocket_writeClose(self, 1000u, nullptr);
     if ((*self).tls != nullptr) {
         Tls_close((*self).tls);
         (*self).tls = nullptr;
@@ -1081,7 +1081,7 @@ static const char *wsStateName(WebSocketState state) {
 }
 
 /** The VALUE string: the live connection summary. */
-void WebSocket_toString(const WebSocket *self, char *dest, bytes cap, bool *outTruncated) {
+fn WebSocket_toString(const WebSocket *self, char *dest, bytes cap, bool *outTruncated) {
     Str out = Str(dest, cap);
     if (self == nullptr) {
         Str_put(&out, "nullptr");
@@ -1099,7 +1099,7 @@ void WebSocket_toString(const WebSocket *self, char *dest, bytes cap, bool *outT
 }
 
 /** The STRUCTURE string: this class's own fields, one layer, no recursion. */
-void WebSocket_toStringStruct(const WebSocket *self, char *dest, bytes cap,
+fn WebSocket_toStringStruct(const WebSocket *self, char *dest, bytes cap,
                               bool *outTruncated) {
     Str out = Str(dest, cap);
     if (self == nullptr) {

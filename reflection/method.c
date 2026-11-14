@@ -1,7 +1,6 @@
 // reflection/method.c — the Method metadata record.
 
 #include "vex.h"
-
 #include "reflection/method.h"
 
 #include "nio/mem.h"
@@ -65,7 +64,7 @@ bool Method_init(Method *self, const char *name, MethodFn invoke, any target) {
     return true;
 }
 
-Method *Method_0(void) {
+Method *Method_0() {
     Method *self = (Method*) Memory_alloc(TYPE_REFLECT_METHOD, sizeof(Method));
     if (self == nullptr)
         return nullptr;
@@ -92,7 +91,7 @@ Method *Method_3(const char *name, MethodFn invoke, any target) {
     return self;
 }
 
-void Method_free(Method *self) {
+fn Method_free(Method *self) {
     if (self != nullptr)
         Memory_free(self);
 }
@@ -130,13 +129,13 @@ bool Method_setName(Method *self, const char *name) {
     return true;
 }
 
-void Method_setInvoke(Method *self, MethodFn invoke) {
+fn Method_setInvoke(Method *self, MethodFn invoke) {
     if (self == nullptr)
         return;
     (*self).invoke = invoke;
 }
 
-void Method_setTarget(Method *self, any target) {
+fn Method_setTarget(Method *self, any target) {
     if (self == nullptr)
         return;
     (*self).target = target;
@@ -162,7 +161,7 @@ any Method_getTarget(const Method *self) {
 
 // STRING PROJECTIONS (the toString Law)
 
-void Method_toString(const Method *self, char *dest, bytes cap, bool *outTruncated) {
+fn Method_toString(const Method *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (dest == nullptr || cap == 0u)
@@ -178,7 +177,7 @@ void Method_toString(const Method *self, char *dest, bytes cap, bool *outTruncat
     }
 }
 
-void Method_toStringStruct(const Method *self, char *dest, bytes cap, bool *outTruncated) {
+fn Method_toStringStruct(const Method *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (dest == nullptr || cap == 0u)

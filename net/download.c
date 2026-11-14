@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "net/download.h"
 
 #include <stdlib.h>
@@ -49,7 +48,7 @@ extern char **environ;
 
 ;;INTENTION("Reliable download manager leveraging system curl and HTTP/TLS stacks")
 
-void DownloadResponse_free(DownloadResponse *res) {
+fn DownloadResponse_free(DownloadResponse *res) {
     if (!res) {
         return;
     }
@@ -178,7 +177,7 @@ bool Download_fetch_cached(
     char *cached_path_out,
     bytes path_cap
 ) {
-    (void) url; (void) subsystem; (void) ttl_sec; (void) opts;
-    (void) cached_path_out; (void) path_cap;
+    (fn) url; (fn) subsystem; (fn) ttl_sec; (fn) opts;
+    (fn) cached_path_out; (fn) path_cap;
     return false;
 }

@@ -33,7 +33,7 @@ static bool intSorted(const i32 *data, bytes n) {
 // Exercises in-place sorting, binary-search miss encoding, and byte utilities.
 // Exercises array utilities and checks their ordering and boundary behavior.
 // Verifies in-place sorting, binary-search insertion encoding, and byte operations.
-int main(void) {
+int main() {
     // sortInt: a scrambled buffer becomes ascending and keeps its multiset.
     i32 a[] = { 5, 3, 9, 1, 3, 7, 0, -2, 8, 3 };
     bytes n = sizeof a / sizeof a[0];

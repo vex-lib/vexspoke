@@ -19,23 +19,23 @@ typedef struct RegexCharClass {
 } RegexCharClass;
 
 // Zero every bit.
-void RegexCharClass_clear(RegexCharClass *cls);
+fn RegexCharClass_clear(RegexCharClass *cls);
 
 // Set one byte, and its opposite ASCII case when insensitive is true.
-void RegexCharClass_addByte(RegexCharClass *cls, u8 byte, bool insensitive);
+fn RegexCharClass_addByte(RegexCharClass *cls, u8 byte, bool insensitive);
 
 // Set an inclusive byte range, folding both cases when insensitive is true.
 // lo > hi is refused (the caller validates ranges; this stays total).
-void RegexCharClass_addRange(RegexCharClass *cls, u8 lo, u8 hi, bool insensitive);
+fn RegexCharClass_addRange(RegexCharClass *cls, u8 lo, u8 hi, bool insensitive);
 
 // Union one of the \d \D \w \W \s \S families; an unknown letter adds nothing.
-void RegexCharClass_addPredefined(RegexCharClass *cls, char letter);
+fn RegexCharClass_addPredefined(RegexCharClass *cls, char letter);
 
 // True when letter names a predefined family (\d \D \w \W \s \S).
 bool RegexCharClass_isPredefined(char letter);
 
 // Complement every bit.
-void RegexCharClass_negate(RegexCharClass *cls);
+fn RegexCharClass_negate(RegexCharClass *cls);
 
 // Test one byte.
 bool RegexCharClass_test(const RegexCharClass *cls, u8 byte);

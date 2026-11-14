@@ -2,7 +2,6 @@
 #define GENERIC_LIST_STAMPS_H
 
 #include "vex.h"
-
 #include "generic/list_tmpl.h"
 #include "generic/list_family.h"
 #include "oop/vexspoke_type.h"

@@ -27,7 +27,7 @@ u64 Struct_exhaustionCount(const u64 *count);
 
 // Start a fresh epoch for the owner (count zeroed, diagnostic armed again).
 ;;TEST
-void Struct_resetExhaustion(u64 *count, bool *reported);
+fn Struct_resetExhaustion(u64 *count, bool *reported);
 
 // --- Construction refusals (no owner instance exists yet) ---
 // A constructor that cannot allocate its struct or backing returns nullptr; the
@@ -40,10 +40,10 @@ bool Struct_reportConstructionExhaustion(const char *owner, bytes requestedBytes
 
 // The process-wide construction-refusal count for the current epoch.
 ;;TEST
-u64 Struct_constructionExhaustionCount(void);
+u64 Struct_constructionExhaustionCount();
 
 // Start a fresh process-wide construction epoch.
 ;;TEST
-void Struct_resetConstructionExhaustion(void);
+fn Struct_resetConstructionExhaustion();
 
 #endif

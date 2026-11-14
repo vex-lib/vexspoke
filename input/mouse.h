@@ -2,7 +2,6 @@
 #define INPUT_MOUSE_H
 
 #include "vex.h"
-
 #include "event/mousehandler.h"
 
 // Window id carried by every queued event (0 = FOCUS_BROADCAST). windowId is
@@ -40,27 +39,27 @@ enum {
     MOUSE_BUTTON_8 = 7,
 };
 
-void Mouse_init(void);
-void Mouse_shutdown(void);
-void Mouse_addListener(const MouseHandler *listener);
+fn Mouse_init();
+fn Mouse_shutdown();
+fn Mouse_addListener(const MouseHandler *listener);
 bool Mouse_removeListener(const MouseHandler *listener);
 
 // Window-scoped registration (see input/key.h for the routing rules).
-void Mouse_attachWindow(u32 windowId, const MouseHandler *listener);
+fn Mouse_attachWindow(u32 windowId, const MouseHandler *listener);
 bool Mouse_detachWindow(u32 windowId, const MouseHandler *listener);
-void Mouse_detachWindowAll(u32 windowId);
+fn Mouse_detachWindowAll(u32 windowId);
 
 // Producers: Thread 0 only. windowId tags the receiving window.
 // tapWindowNanos gates click settlement (see the header comment above).
-void Mouse_pushButtonEvent(u32 windowId, int button, int action, u64 tapWindowNanos);
-void Mouse_pushMoveEvent(u32 windowId, d64 x, d64 y);
-void Mouse_pushMoveDeltaEvent(u32 windowId, d64 dx, d64 dy);
-void Mouse_pushDragEvent(u32 windowId, int button, d64 x, d64 y);
-void Mouse_pushScrollEvent(u32 windowId, d64 dx, d64 dy);
-void Mouse_pushZoomEvent(u32 windowId, d64 magnification);
+fn Mouse_pushButtonEvent(u32 windowId, int button, int action, u64 tapWindowNanos);
+fn Mouse_pushMoveEvent(u32 windowId, d64 x, d64 y);
+fn Mouse_pushMoveDeltaEvent(u32 windowId, d64 dx, d64 dy);
+fn Mouse_pushDragEvent(u32 windowId, int button, d64 x, d64 y);
+fn Mouse_pushScrollEvent(u32 windowId, d64 dx, d64 dy);
+fn Mouse_pushZoomEvent(u32 windowId, d64 magnification);
 
 // Consumer: drain the ring into the listeners. Game thread, once per frame.
-void Mouse_dispatchEvents(void);
+fn Mouse_dispatchEvents();
 
 // --- State queries ---
 bool     Mouse_isDown(int button);
@@ -69,7 +68,7 @@ u64 Mouse_lastReleaseTime(int button);
 u64 Mouse_lastHoldDurationNanos(int button);
 u64 Mouse_currentHoldDurationNanos(int button);
 int      Mouse_taps(int button);
-void     Mouse_resetTaps(int button);
+fn     Mouse_resetTaps(int button);
 
 // --- Multi-tap gesture timeline (windowed settlement, mirrors KeyTapPhase) ---
 typedef enum MouseTapPhase {
@@ -85,13 +84,13 @@ MouseTapPhase Mouse_tapPhase(int button);
 
 // One-shot LONG_PRESS latch (mirrors Key_isLongPressFired).
 bool Mouse_isLongPressFired(int button);
-void Mouse_setLongPressFired(int button, bool fired);
+fn Mouse_setLongPressFired(int button, bool fired);
 
 // Last dispatched cursor position in content coordinates (top-left origin).
 // Written on dispatch of move/drag events — legacy left these dead; here they
 // are fed so cameras/UI can poll without a listener.
-d64 Mouse_x(void);
-d64 Mouse_y(void);
+d64 Mouse_x();
+d64 Mouse_y();
 
 // --- Packed mouseEvent helpers ---
 int  Mouse_button(int mouseEvent);

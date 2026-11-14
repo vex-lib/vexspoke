@@ -25,7 +25,7 @@ static bool getChecked(bool valid) {
     return false;
 }
 
-int main(void) {
+int main() {
     FILE *capture = tmpfile();
     if (capture == nullptr)
         return 1;

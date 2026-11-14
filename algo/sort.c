@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "algo/sort.h"
 
 #include "oop/vexspoke_type.h"
@@ -53,7 +52,7 @@ static const unsigned char *constElementAt(const_any values, bytes index,
     return (const unsigned char*) values + index * elementSize;
 }
 
-static void swapElements(any left, any right, bytes elementSize) {
+static fn swapElements(any left, any right, bytes elementSize) {
     if (left == right)
         return;
     unsigned char *a = left;
@@ -73,7 +72,7 @@ static bool validComparisonRange(const_any values, bytes count,
         && count <= SIZE_MAX / elementSize;
 }
 
-static void insertionSortRange(any values, bytes begin, bytes end,
+static fn insertionSortRange(any values, bytes begin, bytes end,
                                bytes elementSize, SortCompareFn compare) {
     for (bytes i = begin + (begin < end); i < end; ++i) {
         bytes current = i;
@@ -132,7 +131,7 @@ bool Sort_bubbleSort(any values, bytes count, bytes elementSize,
     return true;
 }
 
-static void siftDown(any values, bytes root, bytes count,
+static fn siftDown(any values, bytes root, bytes count,
                      bytes elementSize, SortCompareFn compare) {
     while (root < count / 2u) {
         bytes child = root * 2u + 1u;
@@ -149,7 +148,7 @@ static void siftDown(any values, bytes root, bytes count,
     }
 }
 
-static void heapSortRange(any values, bytes begin, bytes end,
+static fn heapSortRange(any values, bytes begin, bytes end,
                           bytes elementSize, SortCompareFn compare) {
     bytes count = end - begin;
     if (count < 2u)
@@ -205,7 +204,7 @@ static bytes partitionRange(any values, bytes begin, bytes end,
     return boundary;
 }
 
-static void quickSortRange(any values, bytes begin, bytes end,
+static fn quickSortRange(any values, bytes begin, bytes end,
                            bytes elementSize, SortCompareFn compare,
                            bytes depthLimit) {
     while (end - begin > 16u) {

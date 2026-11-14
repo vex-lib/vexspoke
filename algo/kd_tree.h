@@ -13,7 +13,7 @@ typedef struct KdPoint {
     u64 payload;
 } KdPoint;
 
-static inline KdPoint KdPoint_0(void) { return (KdPoint) {0}; }
+static inline KdPoint KdPoint_0() { return (KdPoint) {0}; }
 static inline KdPoint KdPoint_4(f32 horizontal, f32 vertical, f32 depth,
                                u64 payload) {
     return (KdPoint) { .coord = { horizontal, vertical, depth }, .payload = payload };
@@ -34,7 +34,7 @@ typedef struct KdTree {
 
 // Build a balanced KD-tree from an array of 3D points
 KdTree *KdTree_build(KdPoint *points, bytes count);
-void    KdTree_free(KdTree *tree);
+fn    KdTree_free(KdTree *tree);
 
 // Find single nearest neighbor to query point.
 // Dest-last order: writes to outNearest and outDistanceSquared.

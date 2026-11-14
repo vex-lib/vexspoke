@@ -3,7 +3,6 @@
 // waiver).
 
 #include "vex.h"
-
 #include "reactive/reactive_object.h"
 
 #include "nio/mem.h"
@@ -38,23 +37,23 @@
 
 // The standard objects' valueOf(): render the FIELDS, not the pointer. A null
 // value (the word is the object pointer) prints "null".
-static void vec2_str(const Vec2 *v, char *out, bytes cap) {
+static fn vec2_str(const Vec2 *v, char *out, bytes cap) {
     if (v == nullptr) { snprintf(out, cap, "null"); return; }
     snprintf(out, cap, "(%.3g, %.3g)", (d64) (*v).x, (d64) (*v).y);
 }
 
-static void vec3_str(const Vec3 *v, char *out, bytes cap) {
+static fn vec3_str(const Vec3 *v, char *out, bytes cap) {
     if (v == nullptr) { snprintf(out, cap, "null"); return; }
     snprintf(out, cap, "(%.3g, %.3g, %.3g)", (d64) (*v).x, (d64) (*v).y, (d64) (*v).z);
 }
 
-static void vec4_str(const Vec4 *v, char *out, bytes cap) {
+static fn vec4_str(const Vec4 *v, char *out, bytes cap) {
     if (v == nullptr) { snprintf(out, cap, "null"); return; }
     snprintf(out, cap, "(%.3g, %.3g, %.3g, %.3g)",
              (d64) (*v).x, (d64) (*v).y, (d64) (*v).z, (d64) (*v).w);
 }
 
-static void rectangle_str(const Rectangle *r, char *out, bytes cap) {
+static fn rectangle_str(const Rectangle *r, char *out, bytes cap) {
     if (r == nullptr) { snprintf(out, cap, "null"); return; }
     snprintf(out, cap, "[%.3g, %.3g, %.3g x %.3g]",
              (d64) (*r).x, (d64) (*r).y, (d64) (*r).width, (d64) (*r).height);
@@ -64,7 +63,7 @@ IMPLEMENT_REACTIVE_STR(Vec2, vec2_str);
 IMPLEMENT_REACTIVE_STR(Vec3, vec3_str);
 IMPLEMENT_REACTIVE_STR(Vec4, vec4_str);
 IMPLEMENT_REACTIVE_STR(Rectangle, rectangle_str);
-static void ld128_str(const Ld128 *v, char *out, bytes cap) {
+static fn ld128_str(const Ld128 *v, char *out, bytes cap) {
     if (v == nullptr) { snprintf(out, cap, "null"); return; }
     snprintf(out, cap, "(%.3g)", ld128_toD64(*v));
 }

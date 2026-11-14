@@ -29,7 +29,7 @@ static int g_failures = 0;
 // Converts epoch milliseconds and checks the expected calendar fields.
 // Converts epoch milliseconds and asserts the expected date and optional weekday.
 // Checks a timestamp's calendar fields and optionally its ISO weekday.
-static void expect_date(int64_t ms, i32 y, i32 mo, i32 d, i32 dow) {
+static fn expect_date(int64_t ms, i32 y, i32 mo, i32 d, i32 dow) {
     DateTime dt;
     setEpochMillis(&dt, ms);
     CHECK(DateTime_year(&dt) == y);
@@ -42,7 +42,7 @@ static void expect_date(int64_t ms, i32 y, i32 mo, i32 d, i32 dow) {
 // Checks leap-year classification at ordinary and century boundaries.
 // Checks Gregorian leap-year rules at ordinary and century boundaries.
 // Verifies Gregorian leap-year rules at ordinary and century boundaries.
-static void test_leap_year(void) {
+static fn test_leap_year() {
     CHECK(Calendar_isLeapYear(2000));
     CHECK(Calendar_isLeapYear(2400));
     CHECK(Calendar_isLeapYear(2024));
@@ -57,7 +57,7 @@ static void test_leap_year(void) {
 // Verifies month lengths, including February in leap and common years.
 // Verifies month lengths for leap/common years and rejects invalid month indices.
 // Checks month lengths, leap February, and invalid month handling.
-static void test_days_in_month(void) {
+static fn test_days_in_month() {
     CHECK(Calendar_daysInMonth(2024, 1) == 31);
     CHECK(Calendar_daysInMonth(2024, 2) == 29);
     CHECK(Calendar_daysInMonth(2023, 2) == 28);
@@ -80,7 +80,7 @@ static void test_days_in_month(void) {
 // Checks weekday conversion for selected known dates.
 // Compares weekday results with pinned Gregorian dates.
 // Pins weekday results for known dates, including leap days and Sunday.
-static void test_day_of_week(void) {
+static fn test_day_of_week() {
     CHECK(Calendar_dayOfWeek(1970, 1, 1) == 4);      // Thursday
     CHECK(Calendar_dayOfWeek(2000, 1, 1) == 6);      // Saturday
     CHECK(Calendar_dayOfWeek(2020, 2, 29) == 6);     // Saturday
@@ -92,7 +92,7 @@ static void test_day_of_week(void) {
 // Exercises day arithmetic across month and year transitions.
 // Tests day arithmetic across leap-day and year boundaries in both directions.
 // Exercises positive and negative day shifts across month, leap, and year edges.
-static void test_add_days(void) {
+static fn test_add_days() {
     DateTime dt;
     setEpochMillis(&dt, 1582848000000LL);            // 2020-02-28
     Calendar_addDays(&dt, 1);
@@ -112,7 +112,7 @@ static void test_add_days(void) {
 // Checks month arithmetic and end-of-month adjustment behavior.
 // Checks month arithmetic, year rollover, and clipping to target month length.
 // Checks month shifts, year rollover, and clipping into shorter target months.
-static void test_add_months(void) {
+static fn test_add_months() {
     DateTime dt;
 
     // Jan 31 + 1 month clips to Feb 29 in a leap year.
@@ -142,7 +142,7 @@ static void test_add_months(void) {
 // Verifies year arithmetic, including leap-day adjustment.
 // Verifies year arithmetic preserves or clips leap-day dates as appropriate.
 // Verifies year shifts preserve leap days when possible and clip otherwise.
-static void test_add_years(void) {
+static fn test_add_years() {
     DateTime dt;
     setEpochMillis(&dt, 1582934400000LL);            // 2020-02-29
     Calendar_addYears(&dt, 1);
@@ -158,7 +158,7 @@ static void test_add_years(void) {
 // Runs calendar conversion, boundary, and date-arithmetic cases.
 // Runs calendar leap-year, month, weekday, and date-arithmetic checks.
 // Runs the stateless Gregorian calendar arithmetic cases.
-int main(void) {
+int main() {
     test_leap_year();
     test_days_in_month();
     test_day_of_week();

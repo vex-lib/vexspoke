@@ -19,14 +19,14 @@
 #define HKDF_MAX_OUTPUT  (255u * HKDF_HASH_SIZE)    // the RFC's ceiling
 
 // PRK = HMAC-SHA256(salt, IKM). A null or empty salt uses 32 zero bytes.
-void Hkdf_extract(const u8 *salt, bytes saltLen,
+fn Hkdf_extract(const u8 *salt, bytes saltLen,
                   const u8 *ikm, bytes ikmLen,
                   u8 prk[HKDF_HASH_SIZE]);
 // OKM = T(1) || T(2) || ... . info may be null when infoLen is 0.
-void Hkdf_expand(const u8 prk[HKDF_HASH_SIZE], const u8 *info, bytes infoLen,
+fn Hkdf_expand(const u8 prk[HKDF_HASH_SIZE], const u8 *info, bytes infoLen,
                  u8 *okm, bytes okmLen);
 // extract then expand.
-void Hkdf(const u8 *salt, bytes saltLen, const u8 *ikm, bytes ikmLen,
+fn Hkdf(const u8 *salt, bytes saltLen, const u8 *ikm, bytes ikmLen,
           const u8 *info, bytes infoLen, u8 *okm, bytes okmLen);
 
 #endif

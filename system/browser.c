@@ -48,7 +48,7 @@ extern char **environ;
 
 static Browser gSharedBrowser = { 0u };
 
-Browser *Browser_shared(void) {
+Browser *Browser_shared() {
     return &gSharedBrowser;
 }
 

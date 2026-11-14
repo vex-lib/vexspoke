@@ -2,7 +2,6 @@
 #define STRUCT_QUEUE_H
 
 #include "vex.h"
-
 #include "struct/collection.h"
 
 // struct/queue.h — the Queue class, ported from struct/Queue.java.
@@ -17,9 +16,9 @@ Queue *Queue_2(u32 element_class, bytes capacity);
 // Queue pre-filled to count slots (legacy allocate): active_count = count.
 Queue *Queue_3(u32 element_class, bytes capacity, bytes count);
 
-void Queue_free(Queue *queue);
+fn Queue_free(Queue *queue);
 
-void Queue_push(Queue *queue, u64 value_or_pointer);
+fn Queue_push(Queue *queue, u64 value_or_pointer);
 u64 Queue_pop(Queue *queue);
 u64 Queue_peek(Queue *queue);
 u8 *Queue_slot(Queue *queue, bytes index);

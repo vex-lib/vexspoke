@@ -44,19 +44,19 @@
  *   - HardwareInfo_setBatteryStatus(val)
  *
  * Getters:
- *   - HardwareInfo_getOperatingSystem(void)
- *   - HardwareInfo_getSystemArchitecture(void)
- *   - HardwareInfo_getDeviceModel(void)
- *   - HardwareInfo_getCpuBrand(void)
- *   - HardwareInfo_getCpuCoreCount(void)
- *   - HardwareInfo_getCpuThreadCount(void)
- *   - HardwareInfo_getRamTotal(void)
- *   - HardwareInfo_getRamAvailable(void)
- *   - HardwareInfo_getStorageTotalSpace(void)
- *   - HardwareInfo_getStorageAvailableSpace(void)
- *   - HardwareInfo_hasBattery(void)
- *   - HardwareInfo_getBatteryLevel(void)
- *   - HardwareInfo_getBatteryStatus(void)
+ *   - HardwareInfo_getOperatingSystem()
+ *   - HardwareInfo_getSystemArchitecture()
+ *   - HardwareInfo_getDeviceModel()
+ *   - HardwareInfo_getCpuBrand()
+ *   - HardwareInfo_getCpuCoreCount()
+ *   - HardwareInfo_getCpuThreadCount()
+ *   - HardwareInfo_getRamTotal()
+ *   - HardwareInfo_getRamAvailable()
+ *   - HardwareInfo_getStorageTotalSpace()
+ *   - HardwareInfo_getStorageAvailableSpace()
+ *   - HardwareInfo_hasBattery()
+ *   - HardwareInfo_getBatteryLevel()
+ *   - HardwareInfo_getBatteryStatus()
  * ============================================================================
  */
 
@@ -75,136 +75,136 @@ static f32    s_batteryLevel = -1.0f;
 static bool     s_hasBattery = false;
 static char     s_batteryStatus[32] = "None";
 
-static inline void ensureDiscovered(void) {
+static inline fn ensureDiscovered() {
     SystemDiscovery_bootstrap();
 }
 
-bool HardwareInfo_hasBattery(void) {
+bool HardwareInfo_hasBattery() {
     ensureDiscovered();
     return s_hasBattery;
 }
 
-void HardwareInfo_setHasBattery(bool val) {
+fn HardwareInfo_setHasBattery(bool val) {
     s_hasBattery = val;
 }
 
-const char *HardwareInfo_getOperatingSystem(void) {
+const char *HardwareInfo_getOperatingSystem() {
     ensureDiscovered();
     return s_operatingSystem;
 }
 
-void HardwareInfo_setOperatingSystem(const char *val) {
+fn HardwareInfo_setOperatingSystem(const char *val) {
     if (val) {
         strncpy(s_operatingSystem, val, sizeof(s_operatingSystem) - 1);
         s_operatingSystem[sizeof(s_operatingSystem) - 1] = '\0';
     }
 }
 
-const char *HardwareInfo_getSystemArchitecture(void) {
+const char *HardwareInfo_getSystemArchitecture() {
     ensureDiscovered();
     return s_systemArchitecture;
 }
 
-void HardwareInfo_setSystemArchitecture(const char *val) {
+fn HardwareInfo_setSystemArchitecture(const char *val) {
     if (val) {
         strncpy(s_systemArchitecture, val, sizeof(s_systemArchitecture) - 1);
         s_systemArchitecture[sizeof(s_systemArchitecture) - 1] = '\0';
     }
 }
 
-const char *HardwareInfo_getDeviceModel(void) {
+const char *HardwareInfo_getDeviceModel() {
     ensureDiscovered();
     return s_deviceModel;
 }
 
-void HardwareInfo_setDeviceModel(const char *val) {
+fn HardwareInfo_setDeviceModel(const char *val) {
     if (val) {
         strncpy(s_deviceModel, val, sizeof(s_deviceModel) - 1);
         s_deviceModel[sizeof(s_deviceModel) - 1] = '\0';
     }
 }
 
-const char *HardwareInfo_getCpuBrand(void) {
+const char *HardwareInfo_getCpuBrand() {
     ensureDiscovered();
     return s_cpuBrand;
 }
 
-void HardwareInfo_setCpuBrand(const char *val) {
+fn HardwareInfo_setCpuBrand(const char *val) {
     if (val) {
         strncpy(s_cpuBrand, val, sizeof(s_cpuBrand) - 1);
         s_cpuBrand[sizeof(s_cpuBrand) - 1] = '\0';
     }
 }
 
-i32 HardwareInfo_getCpuCoreCount(void) {
+i32 HardwareInfo_getCpuCoreCount() {
     ensureDiscovered();
     return s_cpuCoreCount;
 }
 
-void HardwareInfo_setCpuCoreCount(i32 val) {
+fn HardwareInfo_setCpuCoreCount(i32 val) {
     s_cpuCoreCount = val;
 }
 
-i32 HardwareInfo_getCpuThreadCount(void) {
+i32 HardwareInfo_getCpuThreadCount() {
     ensureDiscovered();
     return s_cpuThreadCount;
 }
 
-void HardwareInfo_setCpuThreadCount(i32 val) {
+fn HardwareInfo_setCpuThreadCount(i32 val) {
     s_cpuThreadCount = val;
 }
 
-u64 HardwareInfo_getRamTotal(void) {
+u64 HardwareInfo_getRamTotal() {
     ensureDiscovered();
     return s_ramTotal;
 }
 
-void HardwareInfo_setRamTotal(u64 val) {
+fn HardwareInfo_setRamTotal(u64 val) {
     s_ramTotal = val;
 }
 
-u64 HardwareInfo_getRamAvailable(void) {
+u64 HardwareInfo_getRamAvailable() {
     ensureDiscovered();
     return s_ramAvailable;
 }
 
-void HardwareInfo_setRamAvailable(u64 val) {
+fn HardwareInfo_setRamAvailable(u64 val) {
     s_ramAvailable = val;
 }
 
-u64 HardwareInfo_getStorageTotalSpace(void) {
+u64 HardwareInfo_getStorageTotalSpace() {
     ensureDiscovered();
     return s_storageTotalSpace;
 }
 
-void HardwareInfo_setStorageTotalSpace(u64 val) {
+fn HardwareInfo_setStorageTotalSpace(u64 val) {
     s_storageTotalSpace = val;
 }
 
-u64 HardwareInfo_getStorageAvailableSpace(void) {
+u64 HardwareInfo_getStorageAvailableSpace() {
     ensureDiscovered();
     return s_storageAvailableSpace;
 }
 
-void HardwareInfo_setStorageAvailableSpace(u64 val) {
+fn HardwareInfo_setStorageAvailableSpace(u64 val) {
     s_storageAvailableSpace = val;
 }
 
-f32 HardwareInfo_getBatteryLevel(void) {
+f32 HardwareInfo_getBatteryLevel() {
     ensureDiscovered();
     return s_batteryLevel;
 }
 
-void HardwareInfo_setBatteryLevel(f32 val) {
+fn HardwareInfo_setBatteryLevel(f32 val) {
     s_batteryLevel = val;
 }
 
-const char *HardwareInfo_getBatteryStatus(void) {
+const char *HardwareInfo_getBatteryStatus() {
     ensureDiscovered();
     return s_batteryStatus;
 }
 
-void HardwareInfo_setBatteryStatus(const char *val) {
+fn HardwareInfo_setBatteryStatus(const char *val) {
     if (val) {
         strncpy(s_batteryStatus, val, sizeof(s_batteryStatus) - 1);
         s_batteryStatus[sizeof(s_batteryStatus) - 1] = '\0';

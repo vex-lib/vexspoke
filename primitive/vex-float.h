@@ -2,18 +2,19 @@
 #define PRIMITIVE_FLOAT_H
 
 #include "vex.h"
+
 // primitive/f32.h — Float primitive (Legacy: primitive/Float.java).
 // Delegates to Bit32 width pool (4B stride).
 
 extern BitPool g_f32Pool;
 
-bool Float_init(void);
-void Float_shutdown(void);
-any Float_alloc(void);
+bool Float_init();
+fn Float_shutdown();
+any Float_alloc();
 any Float_allocArray(bytes count);
-void Float_free(any ptr);
+fn Float_free(any ptr);
 f32 Float_get(any ptr);
-void Float_set(any ptr, f32 value);
+fn Float_set(any ptr, f32 value);
 bool Float_compareAndSet(any ptr, f32 expected, f32 value);
 u64 Float_type(any ptr);
 bytes Float_length(any ptr);

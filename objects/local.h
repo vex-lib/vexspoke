@@ -11,7 +11,7 @@
 typedef struct Local Local;
 
 // Allocate a new thread-local slot table
-Local *Local_0(void);
+Local *Local_0();
 
 // Free local memory
 
@@ -19,11 +19,11 @@ Local *Local_2(const Local *init, bytes count);
 
 #define Local(...) CONSTRUCTOR_DISPATCH(Local, __VA_ARGS__)
 
-void Local_free(Local *local);
+fn Local_free(Local *local);
 
 // Slot accessors per thread id — reads outside the live table return 0,
 // writes grow the table first.
 u64 Local_get(const Local *local, u32 threadId);
-void     Local_set(Local *local, u32 threadId, u64 value);
+fn     Local_set(Local *local, u32 threadId, u64 value);
 
 #endif

@@ -18,7 +18,7 @@
 
 // Master initializer: boots all core engine subsystems (time, input, cli, io).
 // Called exactly once at process start.
-void System_initializeAll(void);
+fn System_initializeAll();
 
 // --- Environment (the ONE process-environment handler; INTENTIONAL(vex)) ------
 // The environment is explicit session context, never an ambient global read.
@@ -29,6 +29,6 @@ void System_initializeAll(void);
 bool System_getEnvironment(const char *debugpath, const char *exportpath);
 const char *System_getEnvValue(const char *name);
 bool System_hasEnv(const char *name);
-void System_freeEnvironment(void);
+fn System_freeEnvironment();
 
 #endif

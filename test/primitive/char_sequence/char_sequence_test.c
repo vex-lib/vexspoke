@@ -16,7 +16,7 @@ static void check(bool condition, const char *label)
     }
 }
 
-int main(void)
+int main()
 {
     CharSequence alpha = CharSequence_cstr("alpha");
     CharSequence alphaCopy = CharSequence_cstr("alpha");

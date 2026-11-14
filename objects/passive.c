@@ -58,7 +58,7 @@ struct Passive {
     u64      cachedValue;
     PassiveGetter getter;
     PassiveSetter setter;
-    void         *userdata;
+    any userdata;
 };
 
 Passive *Passive_3(PassiveGetter getter, PassiveSetter setter, any userdata) {
@@ -85,7 +85,7 @@ Passive *Passive_2(const Passive *init, bytes count) {
     }
     return p;
 }
-void Passive_free(Passive *passive) {
+fn Passive_free(Passive *passive) {
     if (!passive) return;
     Memory_free(passive);
 }
@@ -98,7 +98,7 @@ u64 Passive_get(Passive *passive) {
     return (*passive).cachedValue;
 }
 
-void Passive_set(Passive *passive, u64 value) {
+fn Passive_set(Passive *passive, u64 value) {
     if (!passive) return;
     (*passive).cachedValue = value;
     if ((*passive).setter) {

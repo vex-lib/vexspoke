@@ -1,7 +1,6 @@
 // regex/program.c — the RegexProgram Thompson emitter.
 
 #include "vex.h"
-
 #include "regex/program.h"
 
 #include "nio/mem.h"
@@ -228,7 +227,7 @@ static bool emitNode(RegexProgram *program, const RegexNodeList *nodes, u32 inde
     }
 }
 
-RegexProgram RegexProgram_0(void) {
+RegexProgram RegexProgram_0() {
     RegexProgram program;
     program.insts = nullptr;
     program.count = 0u;
@@ -258,7 +257,7 @@ const RegexInst *RegexProgram_at(const RegexProgram *program, u32 index) {
     return &(*program).insts[index];
 }
 
-void RegexProgram_free(RegexProgram *program) {
+fn RegexProgram_free(RegexProgram *program) {
     if ((*program).insts)
         Memory_free((*program).insts);
     *program = RegexProgram();

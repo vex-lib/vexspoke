@@ -43,14 +43,14 @@ static int g_checks = 0;
         }                                                                       \
     } while (0)
 
-static u64 nowMs(void) {
+static u64 nowMs() {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
     return (u64) ts.tv_sec * 1000u + (u64) (ts.tv_nsec / 1000000);
 }
 
 /** The calling process's own CPU time, user + system, in milliseconds. */
-static u64 selfCpuMs(void) {
+static u64 selfCpuMs() {
     struct rusage usage;
     if (getrusage(RUSAGE_SELF, &usage) != 0)
         return 0u;
@@ -61,8 +61,8 @@ static u64 selfCpuMs(void) {
     return user + system;
 }
 
-static bool peerWrite(int fd, const_any bytes, bytes length) {
-    const u8 *p = (const u8*) bytes;
+static bool peerWrite(int fd, const_any data, bytes length) {
+    const u8 *p = (const u8*) data;
     bytes sent = 0u;
     while (sent < length) {
         ssize_t n = send(fd, p + sent, length - sent, 0);
@@ -163,7 +163,7 @@ static int peerRun(int readyWriteFd, u32 quietMillis) {
 }
 
 /** An idle session must cost ~no CPU and must still wake on a late message. */
-static void testIdleCost(void) {
+static fn testIdleCost() {
     printf("[1] idle cost: a quiet session must not burn CPU\n");
     const u32 quietMillis = 3000u;
     int fds[2];
@@ -226,7 +226,7 @@ static void testIdleCost(void) {
  * only when a URL is supplied, and it is the only place a completed TLS
  * handshake and a foreign server's framing are proved.
  */
-static void testLiveRoundTrip(void) {
+static fn testLiveRoundTrip() {
     const char *url = getenv("WS_SMOKE_URL");
     if (url == nullptr || url[0] == '\0') {
         printf("[2] live round-trip: SKIP (set WS_SMOKE_URL to run it)\n");
@@ -279,7 +279,7 @@ static void testLiveRoundTrip(void) {
  * against a production server. JSON is only searched, never parsed — reading
  * Discord's payloads is the gateway client's job, not the transport's.
  */
-static void testDiscordGateway(void) {
+static fn testDiscordGateway() {
     if (getenv("WS_SMOKE_DISCORD") == nullptr) {
         printf("[3] discord gateway: SKIP (set WS_SMOKE_DISCORD=1 to run it)\n");
         return;
@@ -340,7 +340,7 @@ static void testDiscordGateway(void) {
     WebSocket_close(&client);
 }
 
-int main(void) {
+int main() {
     printf("=== WebSocket smoke: idle cost, live round-trip, discord gateway ===\n");
     signal(SIGPIPE, SIG_IGN);
     testIdleCost();

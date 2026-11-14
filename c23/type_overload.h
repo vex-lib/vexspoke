@@ -29,7 +29,7 @@
 // div mirrors the engine's existing semantics (no zero guard). Header-only:
 // every helper is static inline, there should be zero allocations.
 
-static inline void ov_type_error(void) {
+static inline fn ov_type_error() {
 }
 
 // --- elementwise helpers ---------------------------------------------------
@@ -91,11 +91,11 @@ static inline vec4f ov_m4_transform(mat4f m, vec4f v) {
     return mat4f_multiplyVec(m, v);
 }
 
-static inline void ov_m4_d_mul(mat4f a, mat4f b, mat4f *d) {
+static inline fn ov_m4_d_mul(mat4f a, mat4f b, mat4f *d) {
     (*d) = mat4f_multiply(a, b);
 }
 
-static inline void ov_m4_d_transform(mat4f m, vec4f v, vec4f *d) {
+static inline fn ov_m4_d_transform(mat4f m, vec4f v, vec4f *d) {
     (*d) = mat4f_multiplyVec(m, v);
 }
 
@@ -108,10 +108,10 @@ static inline void ov_m4_d_transform(mat4f m, vec4f v, vec4f *d) {
     static inline long ov_f_##op##_ll(long a, long b) { return a OP b; }          \
     static inline f32 ov_f_##op##_ff(f32 a, f32 b) { return a OP b; }       \
     static inline d64 ov_f_##op##_dd(d64 a, d64 b) { return a OP b; }    \
-    static inline void ov_w_##op##_ii(int a, int b, int *d) { (*d) = a OP b; }    \
-    static inline void ov_w_##op##_ll(long a, long b, long *d) { (*d) = a OP b; } \
-    static inline void ov_w_##op##_ff(f32 a, f32 b, f32 *d) { (*d) = a OP b; } \
-    static inline void ov_w_##op##_dd(d64 a, d64 b, d64 *d) { (*d) = a OP b; }
+    static inline fn ov_w_##op##_ii(int a, int b, int *d) { (*d) = a OP b; }    \
+    static inline fn ov_w_##op##_ll(long a, long b, long *d) { (*d) = a OP b; } \
+    static inline fn ov_w_##op##_ff(f32 a, f32 b, f32 *d) { (*d) = a OP b; } \
+    static inline fn ov_w_##op##_dd(d64 a, d64 b, d64 *d) { (*d) = a OP b; }
 
 OV_SCALAR_FNS(add, +)
 OV_SCALAR_FNS(sub, -)
@@ -120,44 +120,44 @@ OV_SCALAR_FNS(div, /)
 
 // --- dest writers for vectors ------------------------------------------------
 
-static inline void ov_v2_d_add(vec2f a, vec2f b, vec2f *d) { (*d) = ov_v2_add(a, b); }
-static inline void ov_v2_d_sub(vec2f a, vec2f b, vec2f *d) { (*d) = ov_v2_sub(a, b); }
-static inline void ov_v2_d_mul(vec2f a, vec2f b, vec2f *d) { (*d) = ov_v2_mul(a, b); }
-static inline void ov_v2_d_div(vec2f a, vec2f b, vec2f *d) { (*d) = ov_v2_div(a, b); }
-static inline void ov_v2_vs_d_add(vec2f v, f32 s, vec2f *d) { (*d) = ov_v2_vs_add(v, s); }
-static inline void ov_v2_vs_d_sub(vec2f v, f32 s, vec2f *d) { (*d) = ov_v2_vs_sub(v, s); }
-static inline void ov_v2_vs_d_mul(vec2f v, f32 s, vec2f *d) { (*d) = ov_v2_vs_mul(v, s); }
-static inline void ov_v2_vs_d_div(vec2f v, f32 s, vec2f *d) { (*d) = ov_v2_vs_div(v, s); }
-static inline void ov_v2_sv_d_add(f32 s, vec2f v, vec2f *d) { (*d) = ov_v2_sv_add(s, v); }
-static inline void ov_v2_sv_d_sub(f32 s, vec2f v, vec2f *d) { (*d) = ov_v2_sv_sub(s, v); }
-static inline void ov_v2_sv_d_mul(f32 s, vec2f v, vec2f *d) { (*d) = ov_v2_sv_mul(s, v); }
-static inline void ov_v2_sv_d_div(f32 s, vec2f v, vec2f *d) { (*d) = ov_v2_sv_div(s, v); }
+static inline fn ov_v2_d_add(vec2f a, vec2f b, vec2f *d) { (*d) = ov_v2_add(a, b); }
+static inline fn ov_v2_d_sub(vec2f a, vec2f b, vec2f *d) { (*d) = ov_v2_sub(a, b); }
+static inline fn ov_v2_d_mul(vec2f a, vec2f b, vec2f *d) { (*d) = ov_v2_mul(a, b); }
+static inline fn ov_v2_d_div(vec2f a, vec2f b, vec2f *d) { (*d) = ov_v2_div(a, b); }
+static inline fn ov_v2_vs_d_add(vec2f v, f32 s, vec2f *d) { (*d) = ov_v2_vs_add(v, s); }
+static inline fn ov_v2_vs_d_sub(vec2f v, f32 s, vec2f *d) { (*d) = ov_v2_vs_sub(v, s); }
+static inline fn ov_v2_vs_d_mul(vec2f v, f32 s, vec2f *d) { (*d) = ov_v2_vs_mul(v, s); }
+static inline fn ov_v2_vs_d_div(vec2f v, f32 s, vec2f *d) { (*d) = ov_v2_vs_div(v, s); }
+static inline fn ov_v2_sv_d_add(f32 s, vec2f v, vec2f *d) { (*d) = ov_v2_sv_add(s, v); }
+static inline fn ov_v2_sv_d_sub(f32 s, vec2f v, vec2f *d) { (*d) = ov_v2_sv_sub(s, v); }
+static inline fn ov_v2_sv_d_mul(f32 s, vec2f v, vec2f *d) { (*d) = ov_v2_sv_mul(s, v); }
+static inline fn ov_v2_sv_d_div(f32 s, vec2f v, vec2f *d) { (*d) = ov_v2_sv_div(s, v); }
 
-static inline void ov_v3_d_add(vec3f a, vec3f b, vec3f *d) { (*d) = ov_v3_add(a, b); }
-static inline void ov_v3_d_sub(vec3f a, vec3f b, vec3f *d) { (*d) = ov_v3_sub(a, b); }
-static inline void ov_v3_d_mul(vec3f a, vec3f b, vec3f *d) { (*d) = ov_v3_mul(a, b); }
-static inline void ov_v3_d_div(vec3f a, vec3f b, vec3f *d) { (*d) = ov_v3_div(a, b); }
-static inline void ov_v3_vs_d_add(vec3f v, f32 s, vec3f *d) { (*d) = ov_v3_vs_add(v, s); }
-static inline void ov_v3_vs_d_sub(vec3f v, f32 s, vec3f *d) { (*d) = ov_v3_vs_sub(v, s); }
-static inline void ov_v3_vs_d_mul(vec3f v, f32 s, vec3f *d) { (*d) = ov_v3_vs_mul(v, s); }
-static inline void ov_v3_vs_d_div(vec3f v, f32 s, vec3f *d) { (*d) = ov_v3_vs_div(v, s); }
-static inline void ov_v3_sv_d_add(f32 s, vec3f v, vec3f *d) { (*d) = ov_v3_sv_add(s, v); }
-static inline void ov_v3_sv_d_sub(f32 s, vec3f v, vec3f *d) { (*d) = ov_v3_sv_sub(s, v); }
-static inline void ov_v3_sv_d_mul(f32 s, vec3f v, vec3f *d) { (*d) = ov_v3_sv_mul(s, v); }
-static inline void ov_v3_sv_d_div(f32 s, vec3f v, vec3f *d) { (*d) = ov_v3_sv_div(s, v); }
+static inline fn ov_v3_d_add(vec3f a, vec3f b, vec3f *d) { (*d) = ov_v3_add(a, b); }
+static inline fn ov_v3_d_sub(vec3f a, vec3f b, vec3f *d) { (*d) = ov_v3_sub(a, b); }
+static inline fn ov_v3_d_mul(vec3f a, vec3f b, vec3f *d) { (*d) = ov_v3_mul(a, b); }
+static inline fn ov_v3_d_div(vec3f a, vec3f b, vec3f *d) { (*d) = ov_v3_div(a, b); }
+static inline fn ov_v3_vs_d_add(vec3f v, f32 s, vec3f *d) { (*d) = ov_v3_vs_add(v, s); }
+static inline fn ov_v3_vs_d_sub(vec3f v, f32 s, vec3f *d) { (*d) = ov_v3_vs_sub(v, s); }
+static inline fn ov_v3_vs_d_mul(vec3f v, f32 s, vec3f *d) { (*d) = ov_v3_vs_mul(v, s); }
+static inline fn ov_v3_vs_d_div(vec3f v, f32 s, vec3f *d) { (*d) = ov_v3_vs_div(v, s); }
+static inline fn ov_v3_sv_d_add(f32 s, vec3f v, vec3f *d) { (*d) = ov_v3_sv_add(s, v); }
+static inline fn ov_v3_sv_d_sub(f32 s, vec3f v, vec3f *d) { (*d) = ov_v3_sv_sub(s, v); }
+static inline fn ov_v3_sv_d_mul(f32 s, vec3f v, vec3f *d) { (*d) = ov_v3_sv_mul(s, v); }
+static inline fn ov_v3_sv_d_div(f32 s, vec3f v, vec3f *d) { (*d) = ov_v3_sv_div(s, v); }
 
-static inline void ov_v4_d_add(vec4f a, vec4f b, vec4f *d) { (*d) = ov_v4_add(a, b); }
-static inline void ov_v4_d_sub(vec4f a, vec4f b, vec4f *d) { (*d) = ov_v4_sub(a, b); }
-static inline void ov_v4_d_mul(vec4f a, vec4f b, vec4f *d) { (*d) = ov_v4_mul(a, b); }
-static inline void ov_v4_d_div(vec4f a, vec4f b, vec4f *d) { (*d) = ov_v4_div(a, b); }
-static inline void ov_v4_vs_d_add(vec4f v, f32 s, vec4f *d) { (*d) = ov_v4_vs_add(v, s); }
-static inline void ov_v4_vs_d_sub(vec4f v, f32 s, vec4f *d) { (*d) = ov_v4_vs_sub(v, s); }
-static inline void ov_v4_vs_d_mul(vec4f v, f32 s, vec4f *d) { (*d) = ov_v4_vs_mul(v, s); }
-static inline void ov_v4_vs_d_div(vec4f v, f32 s, vec4f *d) { (*d) = ov_v4_vs_div(v, s); }
-static inline void ov_v4_sv_d_add(f32 s, vec4f v, vec4f *d) { (*d) = ov_v4_sv_add(s, v); }
-static inline void ov_v4_sv_d_sub(f32 s, vec4f v, vec4f *d) { (*d) = ov_v4_sv_sub(s, v); }
-static inline void ov_v4_sv_d_mul(f32 s, vec4f v, vec4f *d) { (*d) = ov_v4_sv_mul(s, v); }
-static inline void ov_v4_sv_d_div(f32 s, vec4f v, vec4f *d) { (*d) = ov_v4_sv_div(s, v); }
+static inline fn ov_v4_d_add(vec4f a, vec4f b, vec4f *d) { (*d) = ov_v4_add(a, b); }
+static inline fn ov_v4_d_sub(vec4f a, vec4f b, vec4f *d) { (*d) = ov_v4_sub(a, b); }
+static inline fn ov_v4_d_mul(vec4f a, vec4f b, vec4f *d) { (*d) = ov_v4_mul(a, b); }
+static inline fn ov_v4_d_div(vec4f a, vec4f b, vec4f *d) { (*d) = ov_v4_div(a, b); }
+static inline fn ov_v4_vs_d_add(vec4f v, f32 s, vec4f *d) { (*d) = ov_v4_vs_add(v, s); }
+static inline fn ov_v4_vs_d_sub(vec4f v, f32 s, vec4f *d) { (*d) = ov_v4_vs_sub(v, s); }
+static inline fn ov_v4_vs_d_mul(vec4f v, f32 s, vec4f *d) { (*d) = ov_v4_vs_mul(v, s); }
+static inline fn ov_v4_vs_d_div(vec4f v, f32 s, vec4f *d) { (*d) = ov_v4_vs_div(v, s); }
+static inline fn ov_v4_sv_d_add(f32 s, vec4f v, vec4f *d) { (*d) = ov_v4_sv_add(s, v); }
+static inline fn ov_v4_sv_d_sub(f32 s, vec4f v, vec4f *d) { (*d) = ov_v4_sv_sub(s, v); }
+static inline fn ov_v4_sv_d_mul(f32 s, vec4f v, vec4f *d) { (*d) = ov_v4_sv_mul(s, v); }
+static inline fn ov_v4_sv_d_div(f32 s, vec4f v, vec4f *d) { (*d) = ov_v4_sv_div(s, v); }
 
 // --- rows: scalar LHS (value + dest) ------------------------------------------
 // Family routing per LHS row: int keeps int/long math exact, long absorbs int,

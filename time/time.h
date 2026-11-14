@@ -8,7 +8,6 @@
 // code uses.
 
 #include "vex.h"
-
 #include "time/clock.h"
 #include "time/calendar.h"
 #include "time/datetime.h"

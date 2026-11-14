@@ -40,7 +40,7 @@ bool Tls_recv(TlsConn *conn, char *buf, bytes cap, bytes *gotOut);
 // Close and release a connection Tls_connect produced. Null-safe. NEVER call it
 // on a caller-owned TlsConn: the record is owned by the backend that created it,
 // and closing one the backend did not allocate is undefined.
-void Tls_close(TlsConn *conn);
+fn Tls_close(TlsConn *conn);
 
 // Non-consuming readiness: true when at least one Byte can be read within the
 // budget, false on a quiet budget or a broken connection. A poll loop uses it so
@@ -54,12 +54,12 @@ bool Tls_readable(TlsConn *conn, u32 budgetMs);
 // carry SO_RCVTIMEO and would outlive the caller's budget. Zero restores the
 // backend default; the getter proves the budget believed in is the budget in
 // force.
-void Tls_setBudget(TlsConn *conn, u32 timeoutMs);
+fn Tls_setBudget(TlsConn *conn, u32 timeoutMs);
 u32 Tls_getBudget(const TlsConn *conn);
 
 // Which backend answered the last successful connect; TLS_BACKEND_NONE until
 // one does. A host reports the transport it actually got, never the one it
 // hoped for.
-TlsBackendKind Tls_backend(void);
+TlsBackendKind Tls_backend();
 
 #endif

@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include <stdlib.h>
 
 #include "security/hkdf.h"
@@ -30,7 +29,7 @@
  * the work buffer are wiped. No logging beyond the cold rejection.
  * ======================================================================== */
 
-void Hkdf_extract(const u8 *salt, bytes saltLen,
+fn Hkdf_extract(const u8 *salt, bytes saltLen,
                   const u8 *ikm, bytes ikmLen,
                   u8 prk[HKDF_HASH_SIZE]) {
     static const u8 zeroSalt[HKDF_HASH_SIZE] = {0};
@@ -45,7 +44,7 @@ void Hkdf_extract(const u8 *salt, bytes saltLen,
     Hmac_sha256(salt, saltLen, ikm, ikmLen, prk);
 }
 
-void Hkdf_expand(const u8 prk[HKDF_HASH_SIZE], const u8 *info, bytes infoLen,
+fn Hkdf_expand(const u8 prk[HKDF_HASH_SIZE], const u8 *info, bytes infoLen,
                  u8 *okm, bytes okmLen) {
     if (prk == nullptr || (okm == nullptr && okmLen != 0u) ||
         (info == nullptr && infoLen != 0u) || okmLen > HKDF_MAX_OUTPUT) {
@@ -88,7 +87,7 @@ void Hkdf_expand(const u8 prk[HKDF_HASH_SIZE], const u8 *info, bytes infoLen,
     memset(t, 0, sizeof t);
 }
 
-void Hkdf(const u8 *salt, bytes saltLen, const u8 *ikm, bytes ikmLen,
+fn Hkdf(const u8 *salt, bytes saltLen, const u8 *ikm, bytes ikmLen,
           const u8 *info, bytes infoLen, u8 *okm, bytes okmLen) {
     u8 prk[HKDF_HASH_SIZE];
     Hkdf_extract(salt, saltLen, ikm, ikmLen, prk);

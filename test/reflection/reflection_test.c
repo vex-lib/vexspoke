@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include <stdio.h>
 
 #include "nio/mem.h"
@@ -27,7 +26,7 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Core Functions:
- *   - main(void)
+ *   - main()
  * ============================================================================
  */
 
@@ -58,12 +57,12 @@ static any holderGet(any receiver) {
 }
 
 // Writes the test Holder's value through the reflection setter signature.
-static void holderSet(any receiver, any value) {
+static fn holderSet(any receiver, any value) {
     (*(Holder*) receiver).value = (pointer) value;
 }
 
 // Pins the byte sizes of each reflection record, including embedded fields.
-static void testLayouts(void) {
+static fn testLayouts() {
     printf("[1] per-kind layouts stay fixed\n");
     CHECK(sizeof(Variable) == 40u);
     CHECK(sizeof(Field) == 72u);   // embedded Variable (40) + setter + physical layout
@@ -73,7 +72,7 @@ static void testLayouts(void) {
 }
 
 // Verifies each reflective class carries and checks its own type identity.
-static void testKinds(void) {
+static fn testKinds() {
     printf("[2] kind == the header typeId\n");
 
     Class *c = Class("Widget");
@@ -98,7 +97,7 @@ static void testKinds(void) {
 }
 
 // Checks folded dotted names and rejects malformed, overlong, and spaced names.
-static void testNames(void) {
+static fn testNames() {
     printf("[3] names use the atom grammar (fold + dotted)\n");
 
     Method *m = Method("Update.Physics");
@@ -117,7 +116,7 @@ static void testNames(void) {
 }
 
 // Checks Field's first-member Variable layout and delegated read/write accessors.
-static void testFieldEmbedsVariable(void) {
+static fn testFieldEmbedsVariable() {
     printf("[4] field embeds variable: name/read/target delegate, write is the setter\n");
 
     Holder holder = { 0u };
@@ -146,7 +145,7 @@ static void testFieldEmbedsVariable(void) {
 }
 
 // Checks Field physical metadata, derived stride, explicit size, flags, and null defaults.
-static void testFieldLayout(void) {
+static fn testFieldLayout() {
     printf("[8] field physical layout: typeId derives size, offset/flags round-trip\n");
 
     Field *f = Field("position.x", holderGet, holderSet, nullptr);
@@ -192,7 +191,7 @@ static void testFieldLayout(void) {
 }
 
 // Checks Struct field admission, indexed access, growth, and row address stability.
-static void testStruct(void) {
+static fn testStruct() {
     printf("[5] struct: a growable list of field rows\n");
 
     Struct *s = Struct("player");
@@ -229,7 +228,7 @@ static void testStruct(void) {
 }
 
 // Checks Class layout/constructor dispatch, method registration, and callable access.
-static void testClass(void) {
+static fn testClass() {
     printf("[6] class: struct layout + methods + construct\n");
 
     Struct *layout = Struct("player");
@@ -279,7 +278,7 @@ static void testClass(void) {
 }
 
 // Checks bounded value/structure projections, truncation, hierarchy null safety, and freeing.
-static void testStringsAndNull(void) {
+static fn testStringsAndNull() {
     printf("[7] string projections + null-safety\n");
 
     Variable *v = Variable("health", f64It, nullptr);
@@ -318,7 +317,7 @@ static void testStringsAndNull(void) {
 }
 
 // Runs layout, identity, name, field, struct, class, and projection contract cases.
-int main(void) {
+int main() {
     printf("=== Reflection (hierarchy) Test Suite ===\n\n");
 
     testLayouts();

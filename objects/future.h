@@ -9,7 +9,7 @@
 typedef struct Future Future;
 
 // Allocate a new unresolved Future instance
-Future *Future_0(void);
+Future *Future_0();
 
 // Free future memory
 
@@ -17,7 +17,7 @@ Future *Future_2(const Future *init, bytes count);
 
 #define Future(...) CONSTRUCTOR_DISPATCH(Future, __VA_ARGS__)
 
-void Future_free(Future *future);
+fn Future_free(Future *future);
 
 // Query whether the future value has been fulfilled
 bool Future_isGiven(const Future *future);

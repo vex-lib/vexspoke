@@ -17,7 +17,7 @@ static int g_failures = 0;
     } while (0)
 
 // Checks Global get/set, compare-and-set, and null-safe operations.
-int main(void) {
+int main() {
     Global *g = Global_1(10);
     CHECK(g != nullptr);
     CHECK(Global_get(g) == 10);

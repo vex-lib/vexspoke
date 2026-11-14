@@ -27,15 +27,15 @@ typedef struct CryptoSha256 {
 } CryptoSha256;
 
 // Streaming SHA-256 API
-void Crypto_sha256Init(CryptoSha256 *ctx);
-void Crypto_sha256Update(CryptoSha256 *ctx, const_any data, bytes len);
-void Crypto_sha256Final(CryptoSha256 *ctx, u8 outDigest[CRYPTO_SHA256_DIGEST_SIZE]);
+fn Crypto_sha256Init(CryptoSha256 *ctx);
+fn Crypto_sha256Update(CryptoSha256 *ctx, const_any data, bytes len);
+fn Crypto_sha256Final(CryptoSha256 *ctx, u8 outDigest[CRYPTO_SHA256_DIGEST_SIZE]);
 
 // One-shot SHA-256 digest (Dest-last order: fn(src, len, dest))
-void Crypto_sha256(const_any data, bytes len, u8 outDigest[CRYPTO_SHA256_DIGEST_SIZE]);
+fn Crypto_sha256(const_any data, bytes len, u8 outDigest[CRYPTO_SHA256_DIGEST_SIZE]);
 
 // One-shot SHA-256 formatted as a 64-character lowercase hex string
-void Crypto_sha256Hex(const_any data, bytes len, char outHex[CRYPTO_SHA256_HEX_SIZE]);
+fn Crypto_sha256Hex(const_any data, bytes len, char outHex[CRYPTO_SHA256_HEX_SIZE]);
 
 // Constant-time memory equality check (returns true iff memory matches; immune to timing attacks)
 bool Crypto_constantTimeEquals(const_any a, const_any b, bytes len);
@@ -49,9 +49,9 @@ typedef struct CryptoRng {
     u64 s[2];
 } CryptoRng;
 
-void     Crypto_rngInit(CryptoRng *rng, u64 seed);
+fn     Crypto_rngInit(CryptoRng *rng, u64 seed);
 u64 Crypto_rngNextU64(CryptoRng *rng);
-void     Crypto_rngBytes(CryptoRng *rng, any dest, bytes len);
+fn     Crypto_rngBytes(CryptoRng *rng, any dest, bytes len);
 
 // Global default PRNG.
 //
@@ -61,12 +61,12 @@ void     Crypto_rngBytes(CryptoRng *rng, any dest, bytes len);
 // tests. NEVER use it for tokens, keys, nonces, salts, or session ids. For
 // unpredictable randomness use security/SecureRandom (the OS CSPRNG).
 // DETERMINISTIC (XorShift128+). Reproducible by design; NEVER for secrets.
-void     Crypto_prngSeed(u64 seed);
-u64 Crypto_prngU64(void);
-void     Crypto_prngBytes(any dest, bytes len);
+fn     Crypto_prngSeed(u64 seed);
+u64 Crypto_prngU64();
+fn     Crypto_prngBytes(any dest, bytes len);
 
 // Hex helpers (Dest-last order)
-void   Crypto_toHex(const u8 *Bytes, bytes len, char *outHex);
+fn   Crypto_toHex(const u8 *Bytes, bytes len, char *outHex);
 bytes Crypto_fromHex(const char *hex, u8 *outBytes, bytes maxBytes);
 
 #endif

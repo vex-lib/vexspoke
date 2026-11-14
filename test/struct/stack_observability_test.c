@@ -1,6 +1,6 @@
 /* Owner test for the Stack's explicit fault reporting.
  *
- * Stack_push returns void for family consistency, but a refused element is now
+ * Stack_push returns fn for family consistency, but a refused element is now
  * EXPLICIT — never a silent drop:
  *   1. Stack_pushTry returns a named TryCode: TRY_NULL_ARG, TRY_OVERFLOW, or
  *      TRY_NO_MEMORY when the arena cannot grow the buffer; Stack_push emits the
@@ -32,7 +32,7 @@ static int g_failures = 0;
 #define ARENA_BYTES (32u * 1024u * 1024u)
 #define PUSH_LIMIT  6000000u   // exceeds the 64MB default arena's reachable capacity
 
-int main(void) {
+int main() {
     printf("=== Stack explicit-fault owner suite ===\n");
     // Must run before any other allocation so the small arena wins.
     CHECK("small arena initialized", Memory_init(ARENA_BYTES));

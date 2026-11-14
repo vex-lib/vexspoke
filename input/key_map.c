@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "input/key_map.h"
 
 #include <stdlib.h>
@@ -46,7 +45,7 @@
  *   KeyBinding *bindings;       flat array of registered combos (arena-allocated)
  *   u32    count;          active binding count
  *   u32    capacity;       allocated slots (doubling growth on bind)
- *   void       *arena;          opaque MemoryArena handle for allocations
+ *   any arena;          opaque MemoryArena handle for allocations
  *   bool        multiTapEnabled;  false = rhythm mode (instant singles, no f64s/triples)
  *   u64    longPressNanos;   LONG_PRESS hold threshold (0 = disabled on this map)
  *
@@ -109,7 +108,7 @@
 
 // ── Helpers ───────────────────────────────────────────────
 
-static int64_t modifierState(void)
+static int64_t modifierState()
 {
     int64_t mods = 0;
     if (Key_isDown(KEY_LEFT_SHIFT) || Key_isDown(KEY_RIGHT_SHIFT))
@@ -224,7 +223,7 @@ static bool gestureMatches(const KeyMap *map, int64_t combo)
 // A LONG_PRESS hit also latches the driver slot: while the same press is
 // still held nothing re-fires, and the tap count is gone so the release of
 // the same press never fires a TAP either.
-static void consumeGesture(int64_t combo)
+static fn consumeGesture(int64_t combo)
 {
     int64_t code = (combo & KEY_CODE_MASK);
     int64_t kmode = (combo & KMODE_MASK);
@@ -277,7 +276,7 @@ KeyMap *KeyMap_1(any arena)
 // CORE FUNCTIONS
 // ═══════════════════════════════════════════════════════════
 
-void KeyMap_destroy(KeyMap *map)
+fn KeyMap_destroy(KeyMap *map)
 {
     if (map == nullptr)
         return;
@@ -439,14 +438,14 @@ bool KeyMap_unbind(KeyMap *map, int64_t combo, KeyBindingFn fn)
     return false;
 }
 
-void KeyMap_setMultiTapEnabled(KeyMap *map, bool enabled)
+fn KeyMap_setMultiTapEnabled(KeyMap *map, bool enabled)
 {
     if (map == nullptr)
         return;
     (*map).multiTapEnabled = enabled;
 }
 
-void KeyMap_setLongPressNanos(KeyMap *map, u64 nanos)
+fn KeyMap_setLongPressNanos(KeyMap *map, u64 nanos)
 {
     if (map == nullptr)
         return;

@@ -7,7 +7,6 @@
 // code uses.
 
 #include "vex.h"
-
 #include "util/arrays.h"
 #include "util/hash.h"
 #include "util/random.h"

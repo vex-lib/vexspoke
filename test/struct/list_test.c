@@ -45,7 +45,7 @@ static any adder(any userData) {
 }
 
 // Verifies list insertion, indexed access, removal, growth, and empty-state behavior.
-int main(void) {
+int main() {
     // Construction + introspection.
     List *list = List_2(ID_INT, 4); // grows to the 1024 default
     CHECK(list != nullptr);

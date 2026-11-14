@@ -80,7 +80,7 @@ static bool processMatches(pid_t pid, const char *wanted) {
 // CONSTRUCTORS
 
 // Returns the address of the process-wide zero-initialized probe instance.
-ProcessProbe *ProcessProbe_shared(void) {
+ProcessProbe *ProcessProbe_shared() {
     static ProcessProbe sProbeShared; // zero-init singleton
     return &sProbeShared;
 }
@@ -107,7 +107,7 @@ bool ProcessProbe_isRunning(const ProcessProbe *self, const char *procName) {
     }
     return false;
 #else
-    (void)procName;
+    (fn)procName;
     return false;
 #endif
 }

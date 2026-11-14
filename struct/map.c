@@ -127,7 +127,7 @@ static u64 slotState(const u8 *slot) {
     return *(u64*) (slot + 24);
 }
 
-static void rehash(Collection *c, bytes newCap) {
+static fn rehash(Collection *c, bytes newCap) {
     bytes oldCap = (*c).capacity;
     u8 *oldData = (*c).data;
     bytes Bytes = newCap * SLOT_SIZE;
@@ -169,7 +169,7 @@ Map *Map_3(u32 keyClass, u32 valClass, bytes capacity) {
 
     Map *map = (Map*) Memory_alloc(TYPE_MAP, sizeof(Map));
     if (!map) {
-        (void) Struct_reportConstructionExhaustion("map", sizeof(Map));
+        (fn) Struct_reportConstructionExhaustion("map", sizeof(Map));
         return nullptr;
     }
 
@@ -187,7 +187,7 @@ Map *Map_3(u32 keyClass, u32 valClass, bytes capacity) {
     u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_MAP);
     (*c).data = (u8*) Memory_alloc(bufType, Bytes);
     if (!(*c).data) {
-        (void) Struct_reportConstructionExhaustion("map", Bytes);
+        (fn) Struct_reportConstructionExhaustion("map", Bytes);
         Memory_free(map);
         return nullptr;
     }
@@ -195,7 +195,7 @@ Map *Map_3(u32 keyClass, u32 valClass, bytes capacity) {
     return map;
 }
 
-void Map_free(Map *map) {
+fn Map_free(Map *map) {
     if (!map) return;
     Collection *c = asCollection(map);
     if ((*c).data)
@@ -203,7 +203,7 @@ void Map_free(Map *map) {
     Memory_free(map);
 }
 
-void Map_put(Map *map, u64 key, u64 value) {
+fn Map_put(Map *map, u64 key, u64 value) {
     if (!map) return;
     Collection *c = asCollection(map);
 

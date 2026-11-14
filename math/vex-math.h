@@ -2,7 +2,6 @@
 #define MATH_MATH_H
 
 #include "vex.h"
-
 #include "math/strict_math.h"
 #include "math/fast_math.h"
 

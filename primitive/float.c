@@ -31,11 +31,11 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Constructors:
- *   - Float_init(void)
+ *   - Float_init()
  *
  * Core Functions:
- *   - Float_shutdown(void)
- *   - Float_alloc(void)
+ *   - Float_shutdown()
+ *   - Float_alloc()
  *   - Float_allocArray(count)
  *   - Float_free(ptr)
  *   - Float_compareAndSet(ptr, expected, value)
@@ -54,16 +54,16 @@
 
 BitPool g_f32Pool;
 
-bool Float_init(void) {
+bool Float_init() {
     g_f32Pool = BitPool(4, 1024);
     return BitPool_live(&g_f32Pool);
 }
 
-void Float_shutdown(void) {
+fn Float_shutdown() {
     BitPool_shutdown(&g_f32Pool);
 }
 
-any Float_alloc(void) {
+any Float_alloc() {
     return BitPool_alloc(&g_f32Pool, ID_FLOAT);
 }
 
@@ -79,7 +79,7 @@ any Float_allocArray(bytes count) {
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_FLOAT), Bytes);
 }
 
-void Float_free(any ptr) {
+fn Float_free(any ptr) {
     if (!ptr)
         return;
     if (BitPool_contains(&g_f32Pool, ptr)) BitPool_free(&g_f32Pool, ptr);
@@ -92,7 +92,7 @@ f32 Float_get(any ptr) {
     return *(f32*) ptr;
 }
 
-void Float_set(any ptr, f32 value) {
+fn Float_set(any ptr, f32 value) {
     if (!ptr)
         return;
     *(f32*) ptr = value;

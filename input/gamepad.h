@@ -40,10 +40,10 @@ typedef struct GamepadState {
     bool     isConnected;
 } GamepadState;
 
-GamepadState GamepadState_0(void);
+GamepadState GamepadState_0();
 #define GamepadState(...) CONSTRUCTOR_DISPATCH(GamepadState, __VA_ARGS__)
 bool GamepadState_isDown(const GamepadState *state, u32 buttonMask);
-static inline void GamepadState_setButtons(GamepadState *state, u32 buttons) {
+static inline fn GamepadState_setButtons(GamepadState *state, u32 buttons) {
     if (state) (*state).buttons = buttons;
 }
 

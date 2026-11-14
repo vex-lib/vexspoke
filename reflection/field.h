@@ -20,7 +20,7 @@
 // Block layout:
 // [MemoryHeader 16][Variable 40][set 8][typeId 8][offset 4][size 4][flags 4][pad 4] = 88 Bytes.
 
-typedef void (*FieldSetFn)(any , any );
+typedef fn (*FieldSetFn)(any , any );
 
 // A Field's name is the embedded Variable's name (same 24-byte grammar).
 #define REFLECT_FIELD_NAME_BYTES REFLECT_VARIABLE_NAME_BYTES
@@ -45,13 +45,13 @@ typedef struct Field {
 _Static_assert(sizeof(Field) == 72u, "Field must stay 72 Bytes");
 
 bool Field_init(Field *self, const char *name, VariableReadFn read, FieldSetFn set, any target);
-Field *Field_0(void);
+Field *Field_0();
 Field *Field_1(const char *name);
 Field *Field_2(const char *name, VariableReadFn read);
 Field *Field_3(const char *name, VariableReadFn read, FieldSetFn set);
 Field *Field_4(const char *name, VariableReadFn read, FieldSetFn set, any target);
 #define Field(...) CONSTRUCTOR_DISPATCH(Field, __VA_ARGS__)
-void Field_free(Field *self);
+fn Field_free(Field *self);
 
 u64 Field_kind(const Field *self);
 bool Field_check(const Field *self, u64 typeId);
@@ -59,33 +59,33 @@ bool Field_check(const Field *self, u64 typeId);
 Variable *Field_getVariable(Field *self);
 // Read / write through the embedded reader and the setter (null-safe).
 any Field_read(Field *self, any receiver);
-void Field_write(Field *self, any receiver, any value);
+fn Field_write(Field *self, any receiver, any value);
 
 bool Field_setName(Field *self, const char *name);
 const char *Field_getName(const Field *self);
-void Field_setRead(Field *self, VariableReadFn read);
+fn Field_setRead(Field *self, VariableReadFn read);
 VariableReadFn Field_getRead(const Field *self);
-void Field_setSet(Field *self, FieldSetFn set);
+fn Field_setSet(Field *self, FieldSetFn set);
 FieldSetFn Field_getSet(const Field *self);
-void Field_setTarget(Field *self, any target);
+fn Field_setTarget(Field *self, any target);
 any Field_getTarget(const Field *self);
 
 // --- Physical layout (the entity-field half) ---
 // setTypeId stamps the value's type id and, when size is still unset (0),
 // derives the byte width from the class via Stride_get. setSize overrides.
-void Field_setTypeId(Field *self, u64 typeId);
+fn Field_setTypeId(Field *self, u64 typeId);
 u64 Field_getTypeId(const Field *self);
-void Field_setOffset(Field *self, u32 offset);
+fn Field_setOffset(Field *self, u32 offset);
 u32 Field_getOffset(const Field *self);
-void Field_setSize(Field *self, u32 size);
+fn Field_setSize(Field *self, u32 size);
 u32 Field_getSize(const Field *self);
-void Field_setFlags(Field *self, u32 flags);
+fn Field_setFlags(Field *self, u32 flags);
 u32 Field_getFlags(const Field *self);
 bool Field_isNullable(const Field *self);
 bool Field_isKey(const Field *self);
 bool Field_isIndexed(const Field *self);
 
-void Field_toString(const Field *self, char *dest, bytes cap, bool *outTruncated);
-void Field_toStringStruct(const Field *self, char *dest, bytes cap, bool *outTruncated);
+fn Field_toString(const Field *self, char *dest, bytes cap, bool *outTruncated);
+fn Field_toStringStruct(const Field *self, char *dest, bytes cap, bool *outTruncated);
 
 #endif

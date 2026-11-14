@@ -17,7 +17,7 @@ static int g_failures = 0;
     } while (0)
 
 // Exercises Long signed boundaries, constructors, CAS, arrays, metadata, and null safety.
-int main(void) {
+int main() {
     CHECK(Long_init());
 
     any p = Long_alloc();

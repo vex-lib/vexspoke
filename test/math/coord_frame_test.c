@@ -24,11 +24,11 @@ static int g_failures = 0;
 
 // axis[3] then sign[3] for each of the 12 frames, straight from the source
 // table (the oracle that catches a silent permutation/sign drift).
-static const  k_axis[12][3] = {
+static const i32 k_axis[12][3] = {
     {0,1,2},{0,1,2},{2,0,1},{0,2,1},{1,2,0},{1,0,2},
     {0,1,2},{0,1,2},{2,0,1},{0,2,1},{1,2,0},{1,0,2},
 };
-static const  k_sign[12][3] = {
+static const i32 k_sign[12][3] = {
     { 1, 1, 1},{ 1, 1,-1},{ 1, 1, 1},{ 1, 1, 1},{ 1, 1, 1},{ 1, 1, 1},
     { 1,-1, 1},{ 1,-1,-1},{ 1, 1,-1},{ 1, 1,-1},{-1, 1, 1},{-1, 1, 1},
 };
@@ -40,7 +40,7 @@ static const char *k_names[12] = {
 // Checks each coordinate frame's axis permutation and sign against the oracle tables.
 // Checks basis-vector mappings for the supported coordinate-frame conventions.
 // Compares each supported frame's axis permutation and signs against the oracle table.
-static void test_basis(void) {
+static fn test_basis() {
     for (int f = 0; f < 12; f++) {
         CoordBasis b = CoordFrame_getBasis((CoordFrame) f);
         for (int a = 0; a < 3; a++) {
@@ -55,7 +55,7 @@ static void test_basis(void) {
 // Verifies the canonical frame and its identity basis.
 // Verifies the default frame and its canonical basis mapping.
 // Checks the default frame constant and its identity basis.
-static void test_default_frame(void) {
+static fn test_default_frame() {
     CHECK(COORD_FRAME_DEFAULT == COORD_FRAME_Y_UP_LEFT);
     CoordBasis def = CoordFrame_getBasis(COORD_FRAME_DEFAULT);
     CHECK(def.axis[0] == 0 && def.axis[1] == 1 && def.axis[2] == 2);
@@ -65,7 +65,7 @@ static void test_default_frame(void) {
 // Confirms invalid frames and axes resolve to the documented safe defaults.
 // Confirms invalid frame or axis indices return the documented safe result.
 // Verifies invalid frames and axis indices return documented fallback values.
-static void test_out_of_range(void) {
+static fn test_out_of_range() {
     // An invalid frame resolves to the default basis.
     CoordBasis b = CoordFrame_getBasis((CoordFrame) 12);
     CHECK(b.axis[0] == 0 && b.axis[1] == 1 && b.axis[2] == 2 && b.sign[2] == 1);
@@ -84,7 +84,7 @@ static void test_out_of_range(void) {
 // Checks the accepted frame range and stable names, including unknown values.
 // Checks frame validity predicates and stable frame-name projections.
 // Checks frame validity classification and stable human-readable names.
-static void test_validity_and_names(void) {
+static fn test_validity_and_names() {
     for (u32 f = 0; f < 12; f++)
         CHECK(CoordFrame_isValid(f));
     CHECK(!CoordFrame_isValid(12));
@@ -100,7 +100,7 @@ static void test_validity_and_names(void) {
 // Runs all coordinate-frame lookup, boundary, validity, and naming checks.
 // Runs coordinate-frame basis, default, invalid-index, validity, and naming checks.
 // Runs coordinate basis, fallback, validity, and name assertions.
-int main(void) {
+int main() {
     test_basis();
     test_default_frame();
     test_out_of_range();

@@ -2,7 +2,6 @@
 #define INPUT_HARDWARE_EVENT_H
 
 #include "vex.h"
-
 #include "input/piano_key.h"
 #include "input/turntable.h"
 #include "input/gesture.h"

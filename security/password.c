@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "security/password.h"
 #include "security/argon2.h"
 #include "security/hmac.h"
@@ -31,7 +30,7 @@
  * reject through THROW with the output untouched; no allocation; no logging.
  * ======================================================================== */
 
-typedef void (*PasswordPrf)(const u8 *key, bytes keyLen, const u8 *data,
+typedef fn (*PasswordPrf)(const u8 *key, bytes keyLen, const u8 *data,
                             bytes dataLen, u8 *out);
 
 static bool derive(PasswordPrf prf, bytes digestSize, const char *password, bytes passwordLen,

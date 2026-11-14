@@ -82,13 +82,13 @@ SphereArray *SphereArray_3(i32 radius, u32 elementClass, bytes stride) {
 
     SphereArray *self = (SphereArray*) Memory_alloc(TYPE_SPHERE_ARRAY, sizeof(SphereArray));
     if (self == nullptr) {
-        (void) Struct_reportConstructionExhaustion("sphere_array", sizeof(SphereArray));
+        (fn) Struct_reportConstructionExhaustion("sphere_array", sizeof(SphereArray));
         return nullptr;
     }
 
     u8 *data = (u8*) Memory_alloc(TYPE_BYTE_ARRAY, dataBytes);
     if (data == nullptr) {
-        (void) Struct_reportConstructionExhaustion("sphere_array", dataBytes);
+        (fn) Struct_reportConstructionExhaustion("sphere_array", dataBytes);
         Memory_free(self);
         return nullptr;
     }
@@ -137,7 +137,7 @@ SphereArray *SphereArray_2(i32 radius, u32 elementClass) {
     return SphereArray_3(radius, elementClass, stride);
 }
 
-void SphereArray_free(SphereArray *self) {
+fn SphereArray_free(SphereArray *self) {
     if (self == nullptr) {
         return;
     }
@@ -266,7 +266,7 @@ bool SphereArray_setOffset(SphereArray *self, i32 dx, i32 dy, i32 dz, const_any 
     return SphereArray_setGrid(self, gx, gy, gz, src);
 }
 
-void SphereArray_forEach(const SphereArray *self, SphereArrayVoxelFn callback, any userData) {
+fn SphereArray_forEach(const SphereArray *self, SphereArrayVoxelFn callback, any userData) {
     if (self == nullptr || callback == nullptr) return;
     i32 r = (*self).radius;
     i32 d = (*self).diameter;

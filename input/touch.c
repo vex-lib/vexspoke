@@ -8,7 +8,6 @@
 // is a row keyed by the opaque OS window id, arena-backed, doubling on demand.
 
 #include "vex.h"
-
 #include "input/touch.h"
 
 #include "input/focus.h"
@@ -75,17 +74,17 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Constructors:
- *   - Touch_init(void)
+ *   - Touch_init()
  *
  * Core Functions:
- *   - Touch_shutdown(void)
+ *   - Touch_shutdown()
  *   - Touch_addListener(listener)
  *   - Touch_removeListener(listener)
  *   - Touch_attachWindow(windowId, listener)
  *   - Touch_detachWindow(windowId, listener)
  *   - Touch_detachWindowAll(windowId)
  *   - Touch_pushTouchEvent(windowId, touchId, action, x, y, pressure, holdThresholdNanos)
- *   - Touch_dispatchEvents(void)
+ *   - Touch_dispatchEvents()
  *   - Touch_pressTime(touchId)
  *   - Touch_lastHoldDuration(touchId)
  *   - Touch_taps(touchId)
@@ -199,7 +198,7 @@ static WinRow *rowFor(u32 windowId) {
     return nullptr;
 }
 
-void Touch_init(void) {
+fn Touch_init() {
     if (s_ready) return;
     NanoTime_init();
     s_queue = RingBuffer(sizeof(InputEvent), QUEUE_CAPACITY);
@@ -209,13 +208,13 @@ void Touch_init(void) {
     s_ready = true;
 }
 
-void Touch_shutdown(void) {
+fn Touch_shutdown() {
     if (!s_ready) return;
     RingBuffer_shutdown(&s_queue);
     s_ready = false;
 }
 
-void Touch_addListener(const TouchHandler *listener) {
+fn Touch_addListener(const TouchHandler *listener) {
     if (listener == nullptr) return;
     if (!growSegment(&s_listeners, &s_listenerCap, s_listenerCount + 1)) return;
     s_listeners[s_listenerCount++] = listener;
@@ -231,7 +230,7 @@ bool Touch_removeListener(const TouchHandler *listener) {
     return false;
 }
 
-void Touch_attachWindow(u32 windowId, const TouchHandler *listener) {
+fn Touch_attachWindow(u32 windowId, const TouchHandler *listener) {
     if (listener == nullptr || windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) {
@@ -260,14 +259,14 @@ bool Touch_detachWindow(u32 windowId, const TouchHandler *listener) {
     return false;
 }
 
-void Touch_detachWindowAll(u32 windowId) {
+fn Touch_detachWindowAll(u32 windowId) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row != nullptr)
         (*row).count = 0;
 }
 
-void Touch_pushTouchEvent(u32 windowId, int touchId, int action, d64 x, d64 y,
+fn Touch_pushTouchEvent(u32 windowId, int touchId, int action, d64 x, d64 y,
                           d64 pressure, u64 holdThresholdNanos) {
     if (touchId < 0 || touchId >= TOUCH_MAX) return;
     if (!s_ready) Touch_init();
@@ -307,7 +306,7 @@ void Touch_pushTouchEvent(u32 windowId, int touchId, int action, d64 x, d64 y,
 }
 
 // Deliver one touch event to one window's scoped list.
-static void deliverTouch(u32 windowId, int action, int touchId,
+static fn deliverTouch(u32 windowId, int action, int touchId,
                          d64 x, d64 y, d64 pressure, u64 exactNanos) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
@@ -326,7 +325,7 @@ static void deliverTouch(u32 windowId, int action, int touchId,
     }
 }
 
-void Touch_dispatchEvents(void) {
+fn Touch_dispatchEvents() {
     if (!s_ready) return;
 
     InputEvent ev;

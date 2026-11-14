@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "algo/bvh.h"
 
 #include <float.h>
@@ -82,7 +81,7 @@ BvhAabb BvhAabb_from_points(const f32 min_pt[3], const f32 max_pt[3]) {
     return box;
 }
 
-void BvhAabb_expand_point(const f32 point[3], BvhAabb *box) {
+fn BvhAabb_expand_point(const f32 point[3], BvhAabb *box) {
     if (!point || !box) {
         return;
     }
@@ -94,7 +93,7 @@ void BvhAabb_expand_point(const f32 point[3], BvhAabb *box) {
     (*box).max_point[2] = fmaxf_local((*box).max_point[2], point[2]);
 }
 
-void BvhAabb_merge(const BvhAabb *other, BvhAabb *dest) {
+fn BvhAabb_merge(const BvhAabb *other, BvhAabb *dest) {
     if (!other || !dest) {
         return;
     }
@@ -136,7 +135,7 @@ bool BvhAabb_intersect_ray(const BvhRay *ray, const BvhAabb *box, f32 *t_near_ou
     return true;
 }
 
-BvhTree BvhTree_0(void) {
+BvhTree BvhTree_0() {
     BvhTree tree;
     tree.nodes = nullptr;
     tree.primitive_indices = nullptr;
@@ -169,7 +168,7 @@ BvhTree BvhTree_1(u32 primitive_count) {
     return tree;
 }
 
-void BvhTree_destroy(BvhTree *tree) {
+fn BvhTree_destroy(BvhTree *tree) {
     if (!tree) {
         return;
     }

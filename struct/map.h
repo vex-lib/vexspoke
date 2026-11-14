@@ -2,7 +2,6 @@
 #define STRUCT_MAP_H
 
 #include "vex.h"
-
 #include "struct/array.h"
 #include "struct/collection.h"
 
@@ -20,10 +19,10 @@ typedef struct Map {
 // Empty map for key_class/val_class with initial slot capacity (min 4, power of two).
 Map *Map_3(u32 key_class, u32 val_class, bytes capacity);
 
-void Map_free(Map *map);
+fn Map_free(Map *map);
 
 // Insert or update key => value. Grows (rehashes) past the 0.75 load factor.
-void Map_put(Map *map, u64 key, u64 value);
+fn Map_put(Map *map, u64 key, u64 value);
 
 // Value for key, or 0 if absent.
 u64 Map_get(Map *map, u64 key);

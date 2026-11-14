@@ -2,7 +2,6 @@
 #define STRUCT_SPARSESET_H
 
 #include "vex.h"
-
 #include "struct/exhaustion.h"
 
 // struct/sparseset.h — the SparseSet class, ported from struct/SparseSet.java.
@@ -27,7 +26,7 @@ typedef struct SparseSet {
 // Set over entity ids [0, maxEntities) with optional component stride.
 SparseSet *SparseSet_3(bytes capacity, bytes maxEntities, bytes stride);
 
-void SparseSet_free(SparseSet *set);
+fn SparseSet_free(SparseSet *set);
 
 bytes SparseSet_count(SparseSet *set);
 // Refused-insertion count since construction (the Exhaustion Loudness Law).
@@ -43,7 +42,7 @@ bool SparseSet_contains(SparseSet *set, i32 entityId);
 u8 *SparseSet_add(SparseSet *set, i32 entityId);
 
 // Remove the entity if present; data is swap-removed to keep density.
-void SparseSet_remove(SparseSet *set, i32 entityId);
+fn SparseSet_remove(SparseSet *set, i32 entityId);
 
 // Component data pointer for the entity, or nullptr if absent (or stride == 0,
 // in which case a non-nullptr sentinel signals presence).

@@ -47,10 +47,10 @@ typedef struct TreeSitTree {
 
 typedef bool (*TreeSitVisitorFn)(const TreeSitTree *tree, i32 node_idx, int depth, any user_data);
 
-TreeSitTree TreeSitTree_0(void);
+TreeSitTree TreeSitTree_0();
 TreeSitTree TreeSitTree_1(u32 initial_capacity);
 #define TreeSitTree(...) CONSTRUCTOR_DISPATCH(TreeSitTree, __VA_ARGS__)
-void TreeSitTree_destroy(TreeSitTree *tree);
+fn TreeSitTree_destroy(TreeSitTree *tree);
 i32 TreeSitTree_add_node(
     i32 parent_idx,
     u16 kind,

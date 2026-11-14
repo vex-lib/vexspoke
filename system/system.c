@@ -49,20 +49,20 @@ extern char **environ;  // the process environment table (libc-owned)
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Core Functions:
- *   - System_initializeAll(void)
+ *   - System_initializeAll()
  * Environment:
  *   - System_getEnvironment(debugpath, exportpath) : capture + bind both paths
  *   - System_getEnvValue(name)                      : borrowed value or null
  *   - System_hasEnv(name)                           : presence test
- *   - System_freeEnvironment(void)                  : release the capture (idempotent)
+ *   - System_freeEnvironment()                  : release the capture (idempotent)
  * Private helpers (file-local):
  *   - duplicateText(text) : owned copy or null
- *   - releaseEnvState(void) : free the capture and reset to empty
+ *   - releaseEnvState() : free the capture and reset to empty
  * ============================================================================
  */
 
 
-void System_initializeAll(void) {
+fn System_initializeAll() {
     NanoTime_init();
     Console_init();
     Key_init();
@@ -98,7 +98,7 @@ static char *duplicateText(const char *text) {
     return copy;
 }
 
-static void releaseEnvState(void) {
+static fn releaseEnvState() {
     for (bytes i = 0; i < sEntryCount; ++i)
         free(sEntries[i]);
     free(sEntries);
@@ -163,6 +163,6 @@ bool System_hasEnv(const char *name) {
     return System_getEnvValue(name) != nullptr;
 }
 
-void System_freeEnvironment(void) {
+fn System_freeEnvironment() {
     releaseEnvState();
 }

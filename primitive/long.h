@@ -2,18 +2,19 @@
 #define PRIMITIVE_LONG_H
 
 #include "vex.h"
+
 // primitive/long.h — Long primitive (Legacy: primitive/Long.java).
 // Delegates to Bit64 width pool (8B stride).
 
 extern BitPool g_longPool;
 
-bool Long_init(void);
-void Long_shutdown(void);
-any Long_alloc(void);
+bool Long_init();
+fn Long_shutdown();
+any Long_alloc();
 any Long_allocArray(bytes count);
-void Long_free(any ptr);
+fn Long_free(any ptr);
 int64_t Long_get(any ptr);
-void Long_set(any ptr, int64_t value);
+fn Long_set(any ptr, int64_t value);
 bool Long_compareAndSet(any ptr, int64_t expected, int64_t value);
 u64 Long_type(any ptr);
 bytes Long_length(any ptr);

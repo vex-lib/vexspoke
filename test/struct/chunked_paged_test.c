@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "struct/chunked_list.h"
 #include "oop/vexspoke_type.h"
 
@@ -19,7 +18,7 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Core Functions:
- *   - main(void)
+ *   - main()
  * ============================================================================
  */
 
@@ -43,7 +42,7 @@ typedef struct Row16 {
 } Row16;
 
 // Confirms the public sentinel values used by paged chunk traversal.
-static void testSentinels(void) {
+static fn testSentinels() {
     printf("[1] sentinels: FourCC sugars are negative and byte-exact\n");
 
     // INTENTIONAL(vex): the values are the FourCCs with the high bit set.
@@ -54,7 +53,7 @@ static void testSentinels(void) {
 }
 
 // Checks page geometry and index-to-page calculations at their boundaries.
-static void testGeometry(void) {
+static fn testGeometry() {
     printf("[2] radix geometry: explicit depth, page leaf, pow2 rounding\n");
 
     // Three explicit levels, small radices so boundaries are cheap to cross.
@@ -88,7 +87,7 @@ static void testGeometry(void) {
 }
 
 // Verifies initial layer geometry and its empty-state defaults.
-static void testLayerDefaults(void) {
+static fn testLayerDefaults() {
     printf("[3] *_LAYER_DEFAULT presets select depth + page leaf\n");
 
     ChunkedList *two = ChunkedList(ID_INT, 16u, CHUNKED_LIST_TWO_LAYER_DEFAULT);
@@ -118,7 +117,7 @@ static void testLayerDefaults(void) {
 }
 
 // Exercises multi-level growth and checks that previously admitted entries remain accessible.
-static void testDeepGrowth(void) {
+static fn testDeepGrowth() {
     printf("[4] 3-level growth: stable rows across root doubling, leaf boundaries\n");
 
     ChunkedList *list = ChunkedList(ID_INT, 16u, 4, 4, 4); // 64 rows per root slot
@@ -193,7 +192,7 @@ typedef struct ChainProbe {
 } ChainProbe;
 
 // Records each chunk and index visited by the chain traversal callback.
-static void chainFn(u8 *chunk, u32 index, any userdata) {
+static fn chainFn(u8 *chunk, u32 index, any userdata) {
     ChainProbe *p = (ChainProbe*) userdata;
     if (!chunk || index != (*p).chunks)
         (*p).ok = false;
@@ -201,7 +200,7 @@ static void chainFn(u8 *chunk, u32 index, any userdata) {
 }
 
 // Verifies chain traversal visits the expected chunks in order.
-static void testChain(void) {
+static fn testChain() {
     printf("[5] leaf tail-link chain: nextChunk + forEachChunk\n");
 
     ChunkedList *list = ChunkedList(ID_INT, 16u, 4, 4, 4); // leaf rows 4
@@ -263,7 +262,7 @@ static void testChain(void) {
 }
 
 // Runs the paged-chunk sentinel, geometry, growth, and chain callback checks.
-int main(void) {
+int main() {
     printf("=== ChunkedList Paged (radix) Test Suite ===\n\n");
 
     testSentinels();

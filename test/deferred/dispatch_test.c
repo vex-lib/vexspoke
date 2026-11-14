@@ -28,7 +28,7 @@ typedef struct Job {
 } Job;
 
 // Records one delivery and asserts FIFO order and consumer-thread affinity.
-static void record(any context) {
+static fn record(any context) {
     Job *job = (Job*) context;
     REQUIRE(pthread_equal(pthread_self(), (*job).consumer));
     REQUIRE((*job).id == *(*job).next);
@@ -38,7 +38,7 @@ static void record(any context) {
 }
 
 // Posts a follow-up job and proves draining/freeing are refused while draining.
-static void repost(any context) {
+static fn repost(any context) {
     Job *job = (Job*) context;
     REQUIRE(Dispatch_post((*job).queue, record, job));
     REQUIRE(!Dispatch_drain((*job).queue));
@@ -61,7 +61,7 @@ static any producer(any context) {
 }
 
 // Exercises dispatch ordering, deferral, reuse, lock contention, and producers.
-int main(void) {
+int main() {
     alarm(20); // A broken queue fails rather than hanging CI or an unbounded join.
     REQUIRE(!Dispatch_post(nullptr, record, nullptr));
     REQUIRE(!Dispatch_drain(nullptr));
@@ -130,7 +130,7 @@ int main(void) {
         REQUIRE(pthread_create(&threads[t], nullptr, producer, row) == 0);
     }
     for (;;) {
-        (void) Dispatch_drain(queue);
+        (fn) Dispatch_drain(queue);
         bool done = true;
         for (int t = 0; t < 4; t++) {
             Job *first = concurrent[t];

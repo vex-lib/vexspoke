@@ -2,7 +2,6 @@
 #define STRUCT_DEQUE_H
 
 #include "vex.h"
-
 #include "struct/collection.h"
 
 // struct/deque.h — the Deque class, ported from struct/Deque.java.
@@ -18,10 +17,10 @@ Deque *Deque_2(u32 element_class, bytes capacity);
 // Deque pre-filled to count slots (legacy allocate): active_count = count.
 Deque *Deque_3(u32 element_class, bytes capacity, bytes count);
 
-void Deque_free(Deque *deque);
+fn Deque_free(Deque *deque);
 
-void Deque_addFirst(Deque *deque, u64 value_or_pointer);
-void Deque_addLast(Deque *deque, u64 value_or_pointer);
+fn Deque_addFirst(Deque *deque, u64 value_or_pointer);
+fn Deque_addLast(Deque *deque, u64 value_or_pointer);
 u64 Deque_removeFirst(Deque *deque);
 u64 Deque_removeLast(Deque *deque);
 u64 Deque_peekFirst(Deque *deque);

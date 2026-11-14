@@ -2,7 +2,6 @@
 #define REACTIVE_REACTIVE_OBJECT_H
 
 #include "vex.h"
-
 #include "lang/rect/rectangle.h"
 #include "reactive/generic.h"
 

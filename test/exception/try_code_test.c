@@ -23,7 +23,7 @@ static const TryCode ALL[] = {
     TRY_NOT_FOUND, TRY_IO, TRY_FORMAT, TRY_UNSUPPORTED, TRY_NO_MEMORY
 };
 
-int main(void) {
+int main() {
     bytes n = sizeof ALL / sizeof ALL[0];
     for (bytes i = 0; i < n; i++) {
         TryCode c = ALL[i];

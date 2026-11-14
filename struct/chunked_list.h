@@ -152,7 +152,7 @@ ChunkedList *ChunkedList_paged(u32 elementClass, u32 stride, const i32 *radices,
 
 // Core functions
 // Requires quiescence: no concurrent readers or writers.
-void ChunkedList_free(ChunkedList *self);
+fn ChunkedList_free(ChunkedList *self);
 // Append a zeroed row and return its stable address. Thread-safe: the gate
 // serializes claim, growth and commit, so every row is handed out exactly
 // once. Null on OOM, lock timeout, or index exhaustion. The returned pointer
@@ -178,13 +178,13 @@ u8 *ChunkedList_getChunk(const ChunkedList *self, u32 chunkIndex);
 u8 *ChunkedList_nextChunk(const ChunkedList *self, const u8 *chunk);
 // Walk every published leaf in chain order. Lock-free; safe concurrently with
 // writers (visits a prefix of the published leaves).
-typedef void (*ChunkedListChunkFn)(u8 *chunk, u32 chunkIndex, any userdata);
-void ChunkedList_forEachChunk(const ChunkedList *self, ChunkedListChunkFn fn, any userdata);
+typedef fn (*ChunkedListChunkFn)(u8 *chunk, u32 chunkIndex, any userdata);
+fn ChunkedList_forEachChunk(const ChunkedList *self, ChunkedListChunkFn fn, any userdata);
 
 // Setters
 // Byte budget for the leaf. Setup-time only: never concurrently with any other
 // call. No-op once the first leaf exists or the gate is contended.
-void ChunkedList_setChunkBytes(ChunkedList *self, u32 chunkBytes);
+fn ChunkedList_setChunkBytes(ChunkedList *self, u32 chunkBytes);
 
 // Getters (all lock-free atomic loads; safe concurrently with writers)
 u32 ChunkedList_size(const ChunkedList *self);

@@ -25,12 +25,12 @@ typedef struct CryptoSha1 {
     bytes   used;    // bytes buffered in block
 } CryptoSha1;
 
-static inline CryptoSha1 CryptoSha1_0(void) { return (CryptoSha1) {0}; }
+static inline CryptoSha1 CryptoSha1_0() { return (CryptoSha1) {0}; }
 #define CryptoSha1(...) CONSTRUCTOR_DISPATCH(CryptoSha1, __VA_ARGS__)
 
-void Crypto_sha1Init(CryptoSha1 *ctx);
-void Crypto_sha1Update(CryptoSha1 *ctx, const_any data, bytes len);
-void Crypto_sha1Final(CryptoSha1 *ctx, u8 outDigest[CRYPTO_SHA1_DIGEST_SIZE]);
-void Crypto_sha1(const_any data, bytes len, u8 outDigest[CRYPTO_SHA1_DIGEST_SIZE]);
+fn Crypto_sha1Init(CryptoSha1 *ctx);
+fn Crypto_sha1Update(CryptoSha1 *ctx, const_any data, bytes len);
+fn Crypto_sha1Final(CryptoSha1 *ctx, u8 outDigest[CRYPTO_SHA1_DIGEST_SIZE]);
+fn Crypto_sha1(const_any data, bytes len, u8 outDigest[CRYPTO_SHA1_DIGEST_SIZE]);
 
 #endif

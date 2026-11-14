@@ -81,7 +81,7 @@ typedef struct KeyMap {
 
 KeyMap *KeyMap_1(any arena);
 #define KeyMap(...) CONSTRUCTOR_DISPATCH(KeyMap, __VA_ARGS__)
-void    KeyMap_destroy(KeyMap *map);
+fn    KeyMap_destroy(KeyMap *map);
 
 // ── Binding ───────────────────────────────────────────────
 // Exact match: liveCombo must equal the registered combo exactly.
@@ -135,12 +135,12 @@ bool KeyMap_resolve(const KeyMap *map, int64_t *outCombo);
 // it off switches to rhythm-game mode — instant singles, no window latency,
 // no d64/triple resolution (bindings for them never fire).
 bool KeyMap_isMultiTapEnabled(const KeyMap *map);
-void KeyMap_setMultiTapEnabled(KeyMap *map, bool enabled);
+fn KeyMap_setMultiTapEnabled(KeyMap *map, bool enabled);
 
 // Hold threshold for LONG_PRESS resolution (default KEYMAP_LONG_PRESS_NANOS;
 // 0 disables long-press bindings on this map).
 u64 KeyMap_getLongPressNanos(const KeyMap *map);
-void     KeyMap_setLongPressNanos(KeyMap *map, u64 nanos);
+fn     KeyMap_setLongPressNanos(KeyMap *map, u64 nanos);
 
 // ── Combo builder ─────────────────────────────────────────
 // Reads current modifier state from vexspoke's Key_isDown / Key_taps,

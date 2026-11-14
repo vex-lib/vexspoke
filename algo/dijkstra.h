@@ -29,7 +29,7 @@ typedef struct DijkstraGraph {
 
 DijkstraGraph *Dijkstra_1(u32 nodeCount);
 #define Dijkstra(...) CONSTRUCTOR_DISPATCH(Dijkstra, __VA_ARGS__)
-void           Dijkstra_free(DijkstraGraph *graph);
+fn           Dijkstra_free(DijkstraGraph *graph);
 
 bool Dijkstra_addEdge(DijkstraGraph *graph, u32 from, u32 to, f32 weight);
 bool Dijkstra_addBiEdge(DijkstraGraph *graph, u32 a, u32 b, f32 weight);

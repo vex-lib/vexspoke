@@ -7,7 +7,6 @@
 // individually; this header is the door engine code uses.
 
 #include "vex.h"
-
 #include <stdarg.h>
 
 #include "exception/try_code.h"
@@ -38,7 +37,7 @@ typedef struct Exception {
 
 // Construct a diagnostic record. The empty form has no allocated strings;
 // formatted forms own their message until Exception_free.
-Exception Exception_0(void);
+Exception Exception_0();
 Exception Exception_5(ExceptionCategory category, const char *site,
                       const char *file, int line, const char *fmt, ...);
 Exception Exception_6(ExceptionCategory category, const char *site,
@@ -50,16 +49,16 @@ Exception Exception_8(ExceptionCategory category, const char *site,
 #define Exception(...) CONSTRUCTOR_DISPATCH(Exception, __VA_ARGS__)
 
 // Append or set context/variable details
-void Exception_setDetails(Exception *self, const char *fmt, ...);
-void Exception_setDetailsV(Exception *self, const char *fmt, va_list args);
+fn Exception_setDetails(Exception *self, const char *fmt, ...);
+fn Exception_setDetailsV(Exception *self, const char *fmt, va_list args);
 
 // Free dynamically allocated diagnostic strings
-void Exception_free(Exception *self);
+fn Exception_free(Exception *self);
 
 // Human-readable category string
 const char *Exception_categoryName(ExceptionCategory category);
 
 // Print Java-style runtime exception diagnostic banner to stderr
-void Exception_print(const Exception *self);
+fn Exception_print(const Exception *self);
 
 #endif // EXCEPTION_EXCEPTION_H

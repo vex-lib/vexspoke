@@ -15,8 +15,8 @@
 
 Thread *DrawThread_invokeRole(int role);
 bool DrawThread_submitTo(int role, any task);
-void DrawThread_stopAll(void);
-void DrawThread_stopAll(void);
-void DrawThread_freeAll(void);
+fn DrawThread_stopAll();
+fn DrawThread_stopAll();
+fn DrawThread_freeAll();
 
 #endif

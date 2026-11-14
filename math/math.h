@@ -8,7 +8,6 @@
 // code uses.
 
 #include "vex.h"
-
 #include "math/coord_frame.h"
 #include "math/strict_math.h"
 #include "math/fast_math.h"

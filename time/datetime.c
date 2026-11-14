@@ -5,7 +5,6 @@
 // All integer, all branches, zero allocation.
 
 #include "vex.h"
-
 #include "time/datetime.h"
 
 #include <time.h>
@@ -66,7 +65,7 @@
 
 
 // Stores epoch milliseconds and derives the corresponding UTC calendar fields.
-void setEpochMillis(DateTime *dt, int64_t epochMillis) {
+fn setEpochMillis(DateTime *dt, int64_t epochMillis) {
     (*dt).epochMillis = epochMillis;
 
     int64_t totalSeconds = epochMillis / 1000;
@@ -126,7 +125,7 @@ void setEpochMillis(DateTime *dt, int64_t epochMillis) {
 }
 
 // Captures the current realtime clock and decomposes it into UTC fields.
-void DateTime_set(DateTime *dt) {
+fn DateTime_set(DateTime *dt) {
     struct timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts);
     setEpochMillis(dt, (int64_t)ts.tv_sec * 1000 + ts.tv_nsec / 1000000);

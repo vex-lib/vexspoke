@@ -28,23 +28,23 @@ typedef struct CellPayload {
 
 // Counts visited circle-array cells and accumulates their grid coordinates.
 // Counts CircleArray callback visits for comparison with its valid-cell count.
-static void countCellsCb(i32 gx, i32 gy, i32 dx, i32 dy, const_any element, any userData) {
-    (void) gx; (void) gy; (void) dx; (void) dy; (void) element;
+static fn countCellsCb(i32 gx, i32 gy, i32 dx, i32 dy, const_any element, any userData) {
+    (fn) gx; (fn) gy; (fn) dx; (fn) dy; (fn) element;
     bytes *count = (bytes*) userData;
     (*count)++;
 }
 
 // Counts visited sphere-array voxels and accumulates their grid coordinates.
 // Counts SphereArray callback visits for comparison with its valid-voxel count.
-static void countVoxelsCb(i32 gx, i32 gy, i32 gz, i32 dx, i32 dy, i32 dz, const_any voxel, any userData) {
-    (void) gx; (void) gy; (void) gz; (void) dx; (void) dy; (void) dz; (void) voxel;
+static fn countVoxelsCb(i32 gx, i32 gy, i32 gz, i32 dx, i32 dy, i32 dz, const_any voxel, any userData) {
+    (fn) gx; (fn) gy; (fn) gz; (fn) dx; (fn) dy; (fn) dz; (fn) voxel;
     bytes *count = (bytes*) userData;
     (*count)++;
 }
 
 // Exercises circle-array placement, lookup, bounds, and callback traversal.
 // Tests CircleArray geometry, callback counts, payload round trips, and rejected cells.
-static void test_circle_array(void) {
+static fn test_circle_array() {
     printf("\n--- Testing CircleArray (Pythagorean 2D Matrix) ---\n");
     i32 r = 3;
     CircleArray *ca = CircleArray(r, ID_BYTE, sizeof(CellPayload));
@@ -94,7 +94,7 @@ static void test_circle_array(void) {
 
 // Checks sphere-array voxel access, geometry, bounds, and traversal callbacks.
 // Tests SphereArray containment, traversal counts, payload access, and outside rejection.
-static void test_sphere_array(void) {
+static fn test_sphere_array() {
     printf("\n--- Testing SphereArray (Pythagorean 3D Voxel Matrix) ---\n");
     i32 r = 2;
     SphereArray *sa = SphereArray(r, ID_BYTE, sizeof(CellPayload));
@@ -130,7 +130,7 @@ static void test_sphere_array(void) {
 
 // Verifies octree insertion and spatial query results for the tested tree.
 // Checks Octree insertion/splitting, range and sphere queries, clearing, and cleanup.
-static void test_octree(void) {
+static fn test_octree() {
     printf("\n--- Testing Octree (3D Spatial Partitioning) ---\n");
     OctreeAABB bounds = { -100.0f, -100.0f, -100.0f, 100.0f, 100.0f, 100.0f };
     Octree *oct = Octree(bounds, 4, 2); // capacity 2 items before subdividing
@@ -177,7 +177,7 @@ static void test_octree(void) {
 
 // Runs the circle-array, sphere-array, and octree spatial-structure cases.
 // Initializes memory and runs the three spatial-structure behavior suites.
-int main(void) {
+int main() {
     printf("=== Running Spatial Data Structures Test Suite ===\n");
     Memory_init(32 * 1024 * 1024);
 

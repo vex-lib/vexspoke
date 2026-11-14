@@ -71,7 +71,7 @@ Array *Array_2(u32 elementClass, bytes length) {
     bytes stride = Stride_get(elementClass);
     Array *array = (Array*) Memory_alloc(TYPE_ARRAY, sizeof(Array));
     if (!array) {
-        (void) Struct_reportConstructionExhaustion("array", sizeof(Array));
+        (fn) Struct_reportConstructionExhaustion("array", sizeof(Array));
         return nullptr;
     }
 
@@ -89,7 +89,7 @@ Array *Array_2(u32 elementClass, bytes length) {
     u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, elementClass);
     (*c).data = (u8*) Memory_alloc(bufType, Bytes);
     if (!(*c).data) {
-        (void) Struct_reportConstructionExhaustion("array", Bytes);
+        (fn) Struct_reportConstructionExhaustion("array", Bytes);
         Memory_free(array);
         return nullptr;
     }
@@ -97,7 +97,7 @@ Array *Array_2(u32 elementClass, bytes length) {
     return array;
 }
 
-void Array_free(Array *array) {
+fn Array_free(Array *array) {
     if (!array) return;
     Collection *c = asCollection(array);
     if ((*c).data)
@@ -128,7 +128,7 @@ TryValue Array_getTry(Array *array, bytes index) {
     return TryValue_ok(Collection_readSlot(c, index));
 }
 
-void Array_set(Array *array, bytes index, u64 value) {
+fn Array_set(Array *array, bytes index, u64 value) {
     if (!array) return;
     Collection *c = asCollection(array);
     if (index >= (*c).activeCount)

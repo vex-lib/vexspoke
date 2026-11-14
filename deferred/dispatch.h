@@ -2,7 +2,6 @@
 #define DISPATCH_DISPATCH_H
 
 #include "vex.h"
-
 #include "re/atomic/atomic.h"
 
 // MPSC mailbox: producers post; one designated consumer drains on its own
@@ -16,7 +15,7 @@
 // Reusable d64 buffers avoid allocation during drain. Post may grow its
 // pending buffer at a new high-water mark: not a hard realtime operation.
 // Reserve/growth budgeting and typed Signal coalescing are separate concerns.
-typedef void (*DispatchFn)(any context);
+typedef fn (*DispatchFn)(any context);
 
 // Behaviorless slot record, storage owned exclusively by Dispatch.
 typedef struct DispatchItem {
@@ -36,7 +35,7 @@ typedef struct Dispatch {
     _Atomic unsigned long drainedCount;
 } Dispatch;
 
-Dispatch *Dispatch_0(void);
+Dispatch *Dispatch_0();
 #define Dispatch() Dispatch_0()
 
 // Stop producers and exclude other callers BEFORE free; also never free from

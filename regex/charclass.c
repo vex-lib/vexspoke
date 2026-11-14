@@ -1,7 +1,6 @@
 // regex/charclass.c — the RegexCharClass 256-bit bitmap.
 
 #include "vex.h"
-
 #include "regex/charclass.h"
 
 ;;DEFINITION
@@ -62,12 +61,12 @@
  */
 
 // Sets one byte's bit.
-static void setBit(RegexCharClass *cls, u8 byte) {
+static fn setBit(RegexCharClass *cls, u8 byte) {
     (*cls).bits[byte >> 3] |= (u8)(1u << (byte & 7u));
 }
 
 // Sets a byte and, when folding, its opposite ASCII case (letters only).
-static void addFoldedByte(RegexCharClass *cls, u8 byte, bool insensitive) {
+static fn addFoldedByte(RegexCharClass *cls, u8 byte, bool insensitive) {
     setBit(cls, byte);
     if (!insensitive)
         return;
@@ -77,16 +76,16 @@ static void addFoldedByte(RegexCharClass *cls, u8 byte, bool insensitive) {
         setBit(cls, (u8)(byte - 32u));
 }
 
-void RegexCharClass_clear(RegexCharClass *cls) {
+fn RegexCharClass_clear(RegexCharClass *cls) {
     for (u32 i = 0; i < REGEX_CLASS_BYTES; i++)
         (*cls).bits[i] = 0;
 }
 
-void RegexCharClass_addByte(RegexCharClass *cls, u8 byte, bool insensitive) {
+fn RegexCharClass_addByte(RegexCharClass *cls, u8 byte, bool insensitive) {
     addFoldedByte(cls, byte, insensitive);
 }
 
-void RegexCharClass_addRange(RegexCharClass *cls, u8 lo, u8 hi, bool insensitive) {
+fn RegexCharClass_addRange(RegexCharClass *cls, u8 lo, u8 hi, bool insensitive) {
     if (hi < lo)
         return;
     for (u32 c = (u32) lo; c <= (u32) hi; c++)
@@ -98,7 +97,7 @@ bool RegexCharClass_isPredefined(char letter) {
            letter == 's' || letter == 'S';
 }
 
-void RegexCharClass_addPredefined(RegexCharClass *cls, char letter) {
+fn RegexCharClass_addPredefined(RegexCharClass *cls, char letter) {
     switch (letter) {
     case 'd':
         for (u32 c = '0'; c <= '9'; c++)
@@ -144,7 +143,7 @@ void RegexCharClass_addPredefined(RegexCharClass *cls, char letter) {
     }
 }
 
-void RegexCharClass_negate(RegexCharClass *cls) {
+fn RegexCharClass_negate(RegexCharClass *cls) {
     for (u32 i = 0; i < REGEX_CLASS_BYTES; i++)
         (*cls).bits[i] = (u8) ~(*cls).bits[i];
 }

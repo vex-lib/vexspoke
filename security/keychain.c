@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "security/keychain.h"
 
 #if defined(VEX_PLATFORM_APPLE)
@@ -18,7 +17,7 @@
 /** ========================================================================
  * MODULE: Keychain (security/keychain.c)
  * FUNCTION REGISTRY (exports)
- *   Keychain_isAvailable(void)
+ *   Keychain_isAvailable()
  *   Keychain_store(service, account, secret, len)
  *   Keychain_load(service, account, dest, cap, outLen)
  *   Keychain_remove(service, account)
@@ -71,7 +70,7 @@ static KeychainCode codeFor(OSStatus status) {
     }
 }
 
-bool Keychain_isAvailable(void) { return true; }
+bool Keychain_isAvailable() { return true; }
 
 KeychainCode Keychain_store(const char *service, const char *account,
                             const u8 *secret, bytes len) {
@@ -185,18 +184,18 @@ KeychainCode Keychain_remove(const char *service, const char *account) {
 
 // No backend on this host, and no fallback: the caller must know the secret has
 // nowhere safe to live rather than discover a plaintext copy later.
-bool Keychain_isAvailable(void) { return false; }
+bool Keychain_isAvailable() { return false; }
 
 KeychainCode Keychain_store(const char *service, const char *account,
                             const u8 *secret, bytes len) {
-    (void) service; (void) account; (void) secret; (void) len;
+    (fn) service; (fn) account; (fn) secret; (fn) len;
     THROW("Keychain_store: no keychain backend on this host");
     return KEYCHAIN_UNSUPPORTED;
 }
 
 KeychainCode Keychain_load(const char *service, const char *account,
                            u8 *dest, bytes cap, bytes *outLen) {
-    (void) service; (void) account; (void) dest; (void) cap;
+    (fn) service; (fn) account; (fn) dest; (fn) cap;
     if (outLen != nullptr)
         *outLen = 0u;
     THROW("Keychain_load: no keychain backend on this host");
@@ -204,7 +203,7 @@ KeychainCode Keychain_load(const char *service, const char *account,
 }
 
 KeychainCode Keychain_remove(const char *service, const char *account) {
-    (void) service; (void) account;
+    (fn) service; (fn) account;
     THROW("Keychain_remove: no keychain backend on this host");
     return KEYCHAIN_UNSUPPORTED;
 }

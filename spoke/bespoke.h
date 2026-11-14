@@ -39,26 +39,26 @@ typedef struct Bespoke {
 #  define BESPOKE_WEAK
 #endif
 
-extern bool         runGraphics(void)   BESPOKE_WEAK;
-extern BespokeState checkGraphics(void) BESPOKE_WEAK;
+extern bool         runGraphics()   BESPOKE_WEAK;
+extern BespokeState checkGraphics() BESPOKE_WEAK;
 
-extern bool         runNetworking(void)   BESPOKE_WEAK;
-extern BespokeState checkNetworking(void) BESPOKE_WEAK;
+extern bool         runNetworking()   BESPOKE_WEAK;
+extern BespokeState checkNetworking() BESPOKE_WEAK;
 
-extern bool         doSmth(void)        BESPOKE_WEAK;
-extern BespokeState checkSmth(void)     BESPOKE_WEAK;
+extern bool         doSmth()        BESPOKE_WEAK;
+extern BespokeState checkSmth()     BESPOKE_WEAK;
 
 // --- Public Hub Functions ---
-void         bridgeBespoke(void);
-bool         bridgeBespokeCheck(void);
-BespokeState bridgeBespokeGraphicsState(void);
-BespokeState bridgeBespokeNetworkingState(void);
-BespokeState bridgeBespokeSmthState(void);
+fn         bridgeBespoke();
+bool         bridgeBespokeCheck();
+BespokeState bridgeBespokeGraphicsState();
+BespokeState bridgeBespokeNetworkingState();
+BespokeState bridgeBespokeSmthState();
 
 // --- Class Functions ---
-Bespoke     *Bespoke_0(void);
+Bespoke     *Bespoke_0();
 #define Bespoke(...) CONSTRUCTOR_DISPATCH(Bespoke, __VA_ARGS__)
-void         Bespoke_bridge(Bespoke *self);
+fn         Bespoke_bridge(Bespoke *self);
 bool         Bespoke_check(Bespoke *self);
 
 #endif

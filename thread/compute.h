@@ -2,7 +2,6 @@
 #define THREAD_COMPUTE_H
 
 #include "vex.h"
-
 #include "thread/thread.h"
 
 // thread/compute.h — the heavy-work job system (the parking lot).
@@ -19,7 +18,7 @@
 
 #define COMPUTE_JOB_TAG 0x434F4D50554A4F42ull   // "COMPUJOB"
 
-typedef void (*ComputeJobFn)(any ctx);
+typedef fn (*ComputeJobFn)(any ctx);
 
 typedef struct ComputeJob {
     u64 tag;        // COMPUTE_JOB_TAG — recognition for any role thread
@@ -34,13 +33,13 @@ static inline ComputeJob ComputeJob_3(ComputeJobFn run, any context,
         .ctx = context, .onDone = onDone };
 }
 #define ComputeJob(...) CONSTRUCTOR_DISPATCH(ComputeJob, __VA_ARGS__)
-static inline void ComputeJob_setRun(ComputeJob *job, ComputeJobFn run) {
+static inline fn ComputeJob_setRun(ComputeJob *job, ComputeJobFn run) {
     if (job) (*job).run = run;
 }
-static inline void ComputeJob_setContext(ComputeJob *job, any context) {
+static inline fn ComputeJob_setContext(ComputeJob *job, any context) {
     if (job) (*job).ctx = context;
 }
-static inline void ComputeJob_setOnDone(ComputeJob *job, ComputeJobFn onDone) {
+static inline fn ComputeJob_setOnDone(ComputeJob *job, ComputeJobFn onDone) {
     if (job) (*job).onDone = onDone;
 }
 
@@ -51,7 +50,7 @@ bool ComputeJob_isJob(const_any task);
 bool ComputeJob_run(any task);             // true when handled as a job
 
 // A private compute worker (caller owns the handle), created running.
-Thread *ComputeThread_invoke(void);
+Thread *ComputeThread_invoke();
 
 // The shared pool: lazily starts `count` workers (idempotent; clamped 1..8).
 bool ComputeThread_start(bytes count);
@@ -60,8 +59,8 @@ bool ComputeThread_submit(ComputeJob *job);
 // Submit to a specific established worker (any role).
 bool ComputeThread_submitTo(Thread *worker, ComputeJob *job);
 
-void ComputeThread_stop(void);
-void ComputeThread_free(void);
-bytes ComputeThread_count(void);
+fn ComputeThread_stop();
+fn ComputeThread_free();
+bytes ComputeThread_count();
 
 #endif // THREAD_COMPUTE_H

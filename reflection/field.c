@@ -1,7 +1,6 @@
 // reflection/field.c — the Field metadata record ("field { variable }").
 
 #include "vex.h"
-
 #include "reflection/field.h"
 
 #include "nio/mem.h"
@@ -76,7 +75,7 @@ bool Field_init(Field *self, const char *name, VariableReadFn read, FieldSetFn s
     return true;
 }
 
-Field *Field_0(void) {
+Field *Field_0() {
     Field *self = (Field*) Memory_alloc(TYPE_REFLECT_FIELD, sizeof(Field));
     if (self == nullptr)
         return nullptr;
@@ -107,7 +106,7 @@ Field *Field_4(const char *name, VariableReadFn read, FieldSetFn set, any target
     return self;
 }
 
-void Field_free(Field *self) {
+fn Field_free(Field *self) {
     if (self != nullptr)
         Memory_free(self);
 }
@@ -139,7 +138,7 @@ any Field_read(Field *self, any receiver) {
     return Variable_read(variable, receiver);
 }
 
-void Field_write(Field *self, any receiver, any value) {
+fn Field_write(Field *self, any receiver, any value) {
     if (self == nullptr || (*self).set == nullptr)
         return;
     (*self).set(receiver, value);
@@ -154,20 +153,20 @@ bool Field_setName(Field *self, const char *name) {
     return Variable_setName(variable, name);
 }
 
-void Field_setRead(Field *self, VariableReadFn read) {
+fn Field_setRead(Field *self, VariableReadFn read) {
     if (self == nullptr)
         return;
     Variable *variable = &(*self).variable;
     Variable_setRead(variable, read);
 }
 
-void Field_setSet(Field *self, FieldSetFn set) {
+fn Field_setSet(Field *self, FieldSetFn set) {
     if (self == nullptr)
         return;
     (*self).set = set;
 }
 
-void Field_setTarget(Field *self, any target) {
+fn Field_setTarget(Field *self, any target) {
     if (self == nullptr)
         return;
     Variable *variable = &(*self).variable;
@@ -205,7 +204,7 @@ any Field_getTarget(const Field *self) {
 
 // PHYSICAL LAYOUT (the entity-field half)
 
-void Field_setTypeId(Field *self, u64 typeId) {
+fn Field_setTypeId(Field *self, u64 typeId) {
     if (self == nullptr)
         return;
     (*self).typeId = typeId;
@@ -217,7 +216,7 @@ u64 Field_getTypeId(const Field *self) {
     return self ? (*self).typeId : 0u;
 }
 
-void Field_setOffset(Field *self, u32 offset) {
+fn Field_setOffset(Field *self, u32 offset) {
     if (self != nullptr)
         (*self).offset = offset;
 }
@@ -226,7 +225,7 @@ u32 Field_getOffset(const Field *self) {
     return self ? (*self).offset : 0u;
 }
 
-void Field_setSize(Field *self, u32 size) {
+fn Field_setSize(Field *self, u32 size) {
     if (self != nullptr)
         (*self).size = size;
 }
@@ -235,7 +234,7 @@ u32 Field_getSize(const Field *self) {
     return self ? (*self).size : 0u;
 }
 
-void Field_setFlags(Field *self, u32 flags) {
+fn Field_setFlags(Field *self, u32 flags) {
     if (self != nullptr)
         (*self).flags = flags;
 }
@@ -258,7 +257,7 @@ bool Field_isIndexed(const Field *self) {
 
 // STRING PROJECTIONS (the toString Law)
 
-void Field_toString(const Field *self, char *dest, bytes cap, bool *outTruncated) {
+fn Field_toString(const Field *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (dest == nullptr || cap == 0u)
@@ -275,7 +274,7 @@ void Field_toString(const Field *self, char *dest, bytes cap, bool *outTruncated
     }
 }
 
-void Field_toStringStruct(const Field *self, char *dest, bytes cap, bool *outTruncated) {
+fn Field_toStringStruct(const Field *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (dest == nullptr || cap == 0u)

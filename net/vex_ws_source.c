@@ -146,7 +146,7 @@ bool VexWsSource_send(any handle, const u8 *data, u32 length) {
 }
 
 /** Close the connection and release the owned buffer. */
-void VexWsSource_close(any handle) {
+fn VexWsSource_close(any handle) {
     VexWsSource *self = (VexWsSource*) handle;
     if (self == nullptr)
         return;
@@ -180,7 +180,7 @@ bool VexWsSource_isOpen(const VexWsSource *self) {
 // STRING PROJECTIONS (the toString Law)
 
 /** The VALUE string: the seam-facing summary. */
-void VexWsSource_toString(const VexWsSource *self, char *dest, bytes cap,
+fn VexWsSource_toString(const VexWsSource *self, char *dest, bytes cap,
                           bool *outTruncated) {
     Str out = Str(dest, cap);
     if (self == nullptr) {
@@ -196,7 +196,7 @@ void VexWsSource_toString(const VexWsSource *self, char *dest, bytes cap,
 }
 
 /** The STRUCTURE string: this class's own fields, one layer, no recursion. */
-void VexWsSource_toStringStruct(const VexWsSource *self, char *dest, bytes cap,
+fn VexWsSource_toStringStruct(const VexWsSource *self, char *dest, bytes cap,
                                 bool *outTruncated) {
     Str out = Str(dest, cap);
     if (self == nullptr) {

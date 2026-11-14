@@ -42,7 +42,7 @@ static int g_failures = 0;
 // Compares approximate inverse square roots with libm and checks nonpositive guards.
 // Measures inverse-square-root results against the test's relative tolerance.
 // Measures approximate inverse-square-root error and its nonpositive guard.
-static void test_inv_sqrt(void) {
+static fn test_inv_sqrt() {
     f32 xs[] = { 0.25f, 1.0f, 2.0f, 4.0f, 9.0f, 100.0f, 0.001f };
     for (bytes i = 0; i < sizeof(xs) / sizeof(xs[0]); i++)
         CHECK(REL(FastMath_invSqrt(xs[i]), 1.0f / sqrtf(xs[i]), 0.01f));
@@ -53,7 +53,7 @@ static void test_inv_sqrt(void) {
 // Checks reciprocal accuracy for positive and negative inputs and the zero guard.
 // Checks fast reciprocal results against representative finite inputs.
 // Checks reciprocal approximation on normal inputs and the zero guard.
-static void test_inv(void) {
+static fn test_inv() {
     f32 xs[] = { 1.0f, 2.0f, 4.0f, 0.5f, 100.0f, -3.0f };
     for (bytes i = 0; i < sizeof(xs) / sizeof(xs[0]); i++)
         CHECK(REL(FastMath_inv(xs[i]), 1.0f / xs[i], 0.02f));
@@ -63,7 +63,7 @@ static void test_inv(void) {
 // Measures trigonometric approximation error, symmetries, periodicity, and tangent values.
 // Compares fast trigonometric operations with their expected reference values.
 // Compares approximate trigonometric functions with libm and symmetry/periodicity properties.
-static void test_trig(void) {
+static fn test_trig() {
     CHECK(fabsf(FastMath_sin(0.0f)) < 1e-6f);
     CHECK(fabsf(FastMath_cos(0.0f) - 1.0f) < 0.01f);
     for (int i = -10; i <= 10; i++) {
@@ -92,7 +92,7 @@ static void test_trig(void) {
 // Checks atan accuracy and atan2 quadrant/axis behavior against libm.
 // Exercises fast arctangent behavior over the inputs covered by the test.
 // Checks atan approximation error and atan2 quadrant and axis behavior.
-static void test_atan(void) {
+static fn test_atan() {
     for (int i = -20; i <= 20; i++) {
         f32 x = (f32) i * 0.25f;
         CHECK(fabsf(FastMath_atan(x) - atanf(x)) <= 0.03f);  // ~0.021 worst-case
@@ -109,7 +109,7 @@ static void test_atan(void) {
 // Exercises sign handling, rounding, interpolation, clamping, and approximate equality.
 // Verifies absolute-value, rounding, and clamping helpers at selected boundaries.
 // Tests sign handling, rounding, clamp, interpolation, and approximate equality.
-static void test_abs_round_clamp(void) {
+static fn test_abs_round_clamp() {
     CHECK(FastMath_abs(-3.5f) == 3.5f);
     CHECK(FastMath_abs(3.5f) == 3.5f);
     CHECK(FastMath_abs(0.0f) == 0.0f);
@@ -142,7 +142,7 @@ static void test_abs_round_clamp(void) {
 // Verifies degree/radian conversion consistency.
 // Checks angle conversion and normalization helpers.
 // Verifies degree/radian conversions against the named angle constants.
-static void test_angles(void) {
+static fn test_angles() {
     CHECK(fabsf(FastMath_toDegrees(FastMath_toRadians(90.0f)) - 90.0f) < 0.01f);
     CHECK(fabsf(FastMath_toRadians(180.0f) - FAST_MATH_PI) < 0.001f);
 }
@@ -150,7 +150,7 @@ static void test_angles(void) {
 // Runs the approximation, domain-guard, and conversion checks.
 // Runs the fast-math approximation and utility checks.
 // Runs approximation, boundary, angle, and recorded-gap checks for FastMath.
-int main(void) {
+int main() {
     test_inv_sqrt();
     test_inv();
     test_trig();

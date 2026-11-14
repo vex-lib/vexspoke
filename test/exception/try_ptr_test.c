@@ -20,7 +20,7 @@ static int g_failures = 0;
         }                                                                  \
     } while (0)
 
-int main(void) {
+int main() {
     int payload = 7;
     int other = 8;
 

@@ -30,7 +30,7 @@ static int g_failures = 0;
 // Asserts that facade constants exactly alias the strict-math constants.
 // Checks the math constants against their defined values and special cases.
 // Confirms facade constants are aliases of the strict-math constants.
-static void test_constants(void) {
+static fn test_constants() {
     CHECK(MATH_PI == STRICT_MATH_PI);
     CHECK(MATH_HALF_PI == STRICT_MATH_HALF_PI);
     CHECK(MATH_TWO_PI == STRICT_MATH_TWO_PI);
@@ -43,7 +43,7 @@ static void test_constants(void) {
 // Compares every strict facade operation with its StrictMath implementation.
 // Verifies generic math operations dispatch to strict-math implementations.
 // Compares every strict facade call with its StrictMath implementation.
-static void test_strict_dispatch(void) {
+static fn test_strict_dispatch() {
     f32 xs[] = { -3.0f, -0.5f, 0.0f, 0.25f, 1.0f, 3.3f };
     for (bytes i = 0; i < sizeof(xs) / sizeof(xs[0]); i++) {
         f32 x = xs[i];
@@ -78,7 +78,7 @@ static void test_strict_dispatch(void) {
 // Compares every fast facade operation with its FastMath implementation.
 // Verifies generic math operations dispatch to fast-math implementations.
 // Compares each fast facade call with its FastMath implementation.
-static void test_fast_dispatch(void) {
+static fn test_fast_dispatch() {
     f32 xs[] = { -2.5f, -0.5f, 0.0f, 0.5f, 2.5f };
     for (bytes i = 0; i < sizeof(xs) / sizeof(xs[0]); i++) {
         f32 x = xs[i];
@@ -100,7 +100,7 @@ static void test_fast_dispatch(void) {
 // Runs constant and strict/fast dispatch parity checks.
 // Runs math constant and strict/fast generic-dispatch checks.
 // Runs constant-alias and strict/fast facade dispatch checks.
-int main(void) {
+int main() {
     test_constants();
     test_strict_dispatch();
     test_fast_dispatch();

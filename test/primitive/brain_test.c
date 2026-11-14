@@ -22,7 +22,7 @@ static int g_failures = 0;
     } while (0)
 
 // Exercises Brain storage, bf3216 conversions, CAS, arrays, metadata, and null safety.
-int main(void) {
+int main() {
     CHECK(Brain_init());
 
     any p = Brain_alloc();

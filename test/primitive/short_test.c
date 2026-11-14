@@ -17,7 +17,7 @@ static int g_failures = 0;
     } while (0)
 
 // Exercises Short signed boundaries, constructors, CAS, arrays, metadata, and null safety.
-int main(void) {
+int main() {
     CHECK(Short_init());
 
     any p = Short_alloc();

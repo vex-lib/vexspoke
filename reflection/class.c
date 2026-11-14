@@ -1,7 +1,6 @@
 // reflection/class.c — the Class metadata record ("class { struct; methods }").
 
 #include "vex.h"
-
 #include "reflection/class.h"
 
 #include "nio/mem.h"
@@ -80,7 +79,7 @@ bool Class_init(Class *self, const char *name, Struct *layout, ClassConstructFn 
     return ensureMethods(self);
 }
 
-Class *Class_0(void) {
+Class *Class_0() {
     Class *self = (Class*) Memory_alloc(TYPE_REFLECT_CLASS, sizeof(Class));
     if (self == nullptr)
         return nullptr;
@@ -111,7 +110,7 @@ Class *Class_3(const char *name, Struct *layout, ClassConstructFn construct) {
     return self;
 }
 
-void Class_free(Class *self) {
+fn Class_free(Class *self) {
     if (self == nullptr)
         return;
     if ((*self).methods)
@@ -159,7 +158,7 @@ Method *Class_getMethod(const Class *self, u32 index) {
     return (Method*) ChunkedList_slot((*self).methods, index);
 }
 
-void Class_forEachMethod(Class *self, ClassMethodVisitFn fn, any userdata) {
+fn Class_forEachMethod(Class *self, ClassMethodVisitFn fn, any userdata) {
     if (self == nullptr || fn == nullptr || (*self).methods == nullptr)
         return;
     u32 n = (*self).methodCount;
@@ -183,13 +182,13 @@ bool Class_setName(Class *self, const char *name) {
     return true;
 }
 
-void Class_setLayout(Class *self, Struct *layout) {
+fn Class_setLayout(Class *self, Struct *layout) {
     if (self == nullptr)
         return;
     (*self).layout = layout;
 }
 
-void Class_setConstruct(Class *self, ClassConstructFn construct) {
+fn Class_setConstruct(Class *self, ClassConstructFn construct) {
     if (self == nullptr)
         return;
     (*self).construct = construct;
@@ -219,7 +218,7 @@ u32 Class_methodCount(const Class *self) {
 
 // STRING PROJECTIONS (the toString Law)
 
-void Class_toString(const Class *self, char *dest, bytes cap, bool *outTruncated) {
+fn Class_toString(const Class *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (dest == nullptr || cap == 0u)
@@ -236,7 +235,7 @@ void Class_toString(const Class *self, char *dest, bytes cap, bool *outTruncated
     }
 }
 
-void Class_toStringStruct(const Class *self, char *dest, bytes cap, bool *outTruncated) {
+fn Class_toStringStruct(const Class *self, char *dest, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
     if (dest == nullptr || cap == 0u)

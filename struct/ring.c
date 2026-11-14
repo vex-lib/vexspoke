@@ -81,7 +81,7 @@ static bytes nextPow2(bytes value) {
 }
 
 // Constructs the ring and allocates zeroed storage with rounded-up capacity.
-RingBuffer RingBuffer_0(void) {
+RingBuffer RingBuffer_0() {
     RingBuffer ring;
     memset(&ring, 0, sizeof ring);
     ring.lock = SPIN_LOCK_INIT;
@@ -107,7 +107,7 @@ RingBuffer RingBuffer_2(bytes elem_size, bytes capacity) {
 }
 
 // Frees ring storage and clears its storage pointer.
-void RingBuffer_shutdown(RingBuffer *ring) {
+fn RingBuffer_shutdown(RingBuffer *ring) {
     if (ring && (*ring).slots) {
         free((*ring).slots);
         (*ring).slots = nullptr;

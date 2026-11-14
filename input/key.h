@@ -2,7 +2,6 @@
 #define INPUT_KEY_H
 
 #include "vex.h"
-
 #include "event/keyhandler.h"
 
 // Window id carried by every queued event (0 = FOCUS_BROADCAST, no window).
@@ -162,20 +161,20 @@ enum {
 
 // Bootstrap the state table + event ring. Idempotent; called automatically on
 // first push if the backend forgot.
-void Key_init(void);
-void Key_shutdown(void);
+fn Key_init();
+fn Key_shutdown();
 
 // Register a global listener. The registry grows exponentially on demand;
 // registration is dropped only when the arena allocator runs out of memory.
-void Key_addListener(const KeyHandler *listener);
+fn Key_addListener(const KeyHandler *listener);
 bool Key_removeListener(const KeyHandler *listener);
 
 // Window-scoped registration: the listener only receives events whose
 // windowId tag matches (broadcast-tagged events reach every window). Any
 // nonzero windowId is accepted and grows the registry as needed.
-void Key_attachWindow(u32 windowId, const KeyHandler *listener);
+fn Key_attachWindow(u32 windowId, const KeyHandler *listener);
 bool Key_detachWindow(u32 windowId, const KeyHandler *listener);
-void Key_detachWindowAll(u32 windowId);
+fn Key_detachWindowAll(u32 windowId);
 
 // Producer: Thread 0 only. Updates the state table (with multi-tap counting
 // inside tapWindowNanos — the same window that gates when a tap sequence
@@ -184,15 +183,15 @@ void Key_detachWindowAll(u32 windowId);
 // without touching tap counts. A modifier-state change between presses breaks
 // the tap sequence (different modifiers => fresh sequence). windowId tags
 // which window the OS delivered the event to.
-void Key_pushEvent(u32 windowId, int keyCode, int action, u64 tapWindowNanos);
+fn Key_pushEvent(u32 windowId, int keyCode, int action, u64 tapWindowNanos);
 
 // Producer: text input, fired alongside down events that carry a character.
-void Key_pushCharEvent(u32 windowId, u32 c);
+fn Key_pushCharEvent(u32 windowId, u32 c);
 
 // Consumer: drain the ring into the listeners. Game thread, once per frame.
 // Global taps get every event; window-scoped listeners only get events
 // tagged with their window (or broadcast).
-void Key_dispatchEvents(void);
+fn Key_dispatchEvents();
 
 // --- State queries (lock-free reads of the state table) ---
 bool     Key_isDown(int keyCode);
@@ -203,7 +202,7 @@ u64 Key_currentHoldDurationNanos(int keyCode);
 u64 Key_holdDurationNanos(int keyCode); // current if held, else last
 u64 Key_durationSinceReleaseNanos(int keyCode);
 int      Key_taps(int keyCode);
-void     Key_resetTaps(int keyCode);
+fn     Key_resetTaps(int keyCode);
 
 // --- Multi-tap gesture timeline (windowed settlement) ---
 // The per-key tap counter is a windowed sequence: it is PENDING from the most
@@ -224,7 +223,7 @@ KeyTapPhase Key_tapPhase(int keyCode);
 // One-shot LONG_PRESS latch: set when a long-press gesture fired for this
 // press, cleared on release. Guards against re-firing while still held.
 bool Key_isLongPressFired(int keyCode);
-void Key_setLongPressFired(int keyCode, bool fired);
+fn Key_setLongPressFired(int keyCode, bool fired);
 
 // --- Packed keyEvent helpers ---
 int  Key_code(int keyEvent);

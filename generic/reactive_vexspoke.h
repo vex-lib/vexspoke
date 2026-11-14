@@ -2,7 +2,6 @@
 #define GENERIC_REACTIVE_VEXSPOKE_H
 
 #include "vex.h"
-
 #include "reactive/generic.h"
 #include "reactive/reactive_object.h"
 #include "reactive/dispatch.h"

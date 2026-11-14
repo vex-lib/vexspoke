@@ -51,7 +51,7 @@ static bool isSortedUint64(const u64 *values, bytes count) {
     return true;
 }
 
-static void checkSort(SortFunction sort, const u64 *input, bytes count) {
+static fn checkSort(SortFunction sort, const u64 *input, bytes count) {
     u64 actual[128];
     u64 expected[128];
     CHECK(count <= 128u);
@@ -65,7 +65,7 @@ static void checkSort(SortFunction sort, const u64 *input, bytes count) {
     CHECK(memcmp(actual, expected, count * sizeof(u64)) == 0);
 }
 
-static void testComparisonSorts(void) {
+static fn testComparisonSorts() {
     const u64 values[] = {
         UINT64_MAX, 7u, 2u, 7u, 0u, 0x8000000000000000ull, 1u, 5u
     };
@@ -106,7 +106,7 @@ static bool stableOrder(const StableItem *values, bytes count) {
     return true;
 }
 
-static void makeStableItems(StableItem *values) {
+static fn makeStableItems(StableItem *values) {
     values[0].key = 2u; values[0].sequence = 0u;
     values[1].key = 1u; values[1].sequence = 1u;
     values[2].key = 2u; values[2].sequence = 2u;
@@ -114,7 +114,7 @@ static void makeStableItems(StableItem *values) {
     values[4].key = 2u; values[4].sequence = 4u;
 }
 
-static void testStableSorts(void) {
+static fn testStableSorts() {
     StableItem insertion[5];
     StableItem bubble[5];
     StableItem merge[5];
@@ -132,7 +132,7 @@ static void testStableSorts(void) {
     CHECK(merge[2].sequence == 0u && merge[3].sequence == 2u);
 }
 
-static void testMergeBoundaries(void) {
+static fn testMergeBoundaries() {
     i32 values[] = { 4, 1, 3, 2 };
     i32 scratch[4];
     CHECK(!Sort_mergeSort(values, 4u, sizeof(i32), compareInt32, nullptr));
@@ -142,7 +142,7 @@ static void testMergeBoundaries(void) {
     CHECK(values[0] == 1 && values[1] == 2 && values[2] == 3 && values[3] == 4);
 }
 
-static void testInvalidRangesAndPartition(void) {
+static fn testInvalidRangesAndPartition() {
     i32 value = 7;
     CHECK(Sort_quickSort(nullptr, 1u, sizeof value, compareInt32) == false);
     CHECK(Sort_quickSort(&value, 1u, 0u, compareInt32) == false);
@@ -165,7 +165,7 @@ static void testInvalidRangesAndPartition(void) {
     CHECK(Sort_partitionInt32(keys, 0u, 0) == 0u);
 }
 
-int main(void) {
+int main() {
     testComparisonSorts();
     testStableSorts();
     testMergeBoundaries();

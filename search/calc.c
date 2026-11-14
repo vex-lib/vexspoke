@@ -58,7 +58,7 @@ typedef struct CalcParser {
 } CalcParser;
 
 // Advances the parser cursor past ASCII whitespace.
-static void skip_whitespace(CalcParser *cp) {
+static fn skip_whitespace(CalcParser *cp) {
     while (*(*cp).p != '\0' && isspace((unsigned char)*(*cp).p)) {
         (*cp).p++;
     }

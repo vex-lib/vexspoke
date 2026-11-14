@@ -32,13 +32,13 @@ typedef struct Reactive Reactive;
 // thread. It must NOT fire observers (that stays in Reactive_drain) — it only
 // hands the box to an owner's queue (thread/reactive.c) so the owner drains it.
 // nullptr = no auto-delivery: the caller or owner drains by hand as before.
-typedef void (*ReactiveDeliverFn)(Reactive *self);
+typedef fn (*ReactiveDeliverFn)(Reactive *self);
 
 // The value stringifier: formats the raw word as text FOR ITS TYPE. Bound by each
 // typed reactive (int -> "%d", f32 -> "%g", string -> the Bytes, …) so a
 // type-erased consumer (a Label's [] slot) can render any reactive as text — a
 // valueOf() in the reactive section.
-typedef void (*ReactiveValueFn)(pointer word, char *out, bytes cap);
+typedef fn (*ReactiveValueFn)(pointer word, char *out, bytes cap);
 
 struct Reactive {
     _Atomic(pointer) value;  // the live word (scalar, or ptr to an immutable block)
@@ -54,10 +54,10 @@ struct Reactive {
     ReactiveObserverList *onNullptr; // fires when a drained word is 0 (empty)
 };
 
-typedef void (*ReactiveSetFn)(Reactive *self, pointer newValue, any userdata);
-typedef void (*ReactiveChangedFn)(Reactive *self, pointer oldValue, pointer newValue, any userdata);
-typedef void (*ReactiveGetFn)(Reactive *self, pointer value, any userdata);
-typedef void (*ReactiveNullptrFn)(Reactive *self, any userdata);
+typedef fn (*ReactiveSetFn)(Reactive *self, pointer newValue, any userdata);
+typedef fn (*ReactiveChangedFn)(Reactive *self, pointer oldValue, pointer newValue, any userdata);
+typedef fn (*ReactiveGetFn)(Reactive *self, pointer value, any userdata);
+typedef fn (*ReactiveNullptrFn)(Reactive *self, any userdata);
 
 // --- Constructors ---
 // Embedded init: seed the word (its own shadow starts equal, so the first drain
@@ -71,8 +71,8 @@ Reactive *Reactive_2(const Reactive *init, bytes count);
 // is built through Reactive_1/Reactive_2, and typed reactives through Reactive(T).
 // Release the observer lists, WITHOUT freeing the block (embedded engines live
 // inside a typed facade, which frees itself). Freeing is just freeing.
-void Reactive_shutdown(Reactive *self);
-void Reactive_free(Reactive *self);
+fn Reactive_shutdown(Reactive *self);
+fn Reactive_free(Reactive *self);
 
 // --- Core functions ---
 // Atomic acquire load — safe from any thread. Fires the onGet observers
@@ -84,26 +84,26 @@ pointer Reactive_load(Reactive *self);
 // is a pointer to an immutable block (see the typed facades). When a delivery
 // hook is bound (below), store ENDS by calling it — so `set` alone can schedule
 // the owner's drain, without the caller ever naming Reactive_drain.
-void Reactive_store(Reactive *self, pointer word);
+fn Reactive_store(Reactive *self, pointer word);
 
 // Bind the auto-delivery hook (or nullptr to clear). Owner-affine: bind before
 // producers run. thread/reactive.c binds its wake here so an adopted box fires
 // its observers on the reactive thread after a plain set.
-void Reactive_setDelivery(Reactive *self, ReactiveDeliverFn deliver);
+fn Reactive_setDelivery(Reactive *self, ReactiveDeliverFn deliver);
 // Drop the box's own hook so it INHERITS the process default (see below).
-void Reactive_clearDelivery(Reactive *self);
+fn Reactive_clearDelivery(Reactive *self);
 ReactiveDeliverFn Reactive_getDelivery(const Reactive *self);
 
 // The process-wide default delivery hook: used by every box that has not bound
 // its own (deliverBound == false). thread/reactive.c sets this to its wake, so
 // a plain Reactive_store on ANY box schedules the reactive thread's drain — set
 // is the only verb, drain is never called by hand. nullptr restores manual drain.
-void Reactive_setDefaultDelivery(ReactiveDeliverFn deliver);
-ReactiveDeliverFn Reactive_getDefaultDelivery(void);
+fn Reactive_setDefaultDelivery(ReactiveDeliverFn deliver);
+ReactiveDeliverFn Reactive_getDefaultDelivery();
 
 // Bind the box's value stringifier (typed), or nullptr to fall back to the hex
 // word. The typed constructors bind their own; a hand-built engine may set one.
-void Reactive_setValueOf(Reactive *self, ReactiveValueFn valueOf);
+fn Reactive_setValueOf(Reactive *self, ReactiveValueFn valueOf);
 // Format the current value into `out` (nul-terminated within cap) and return it.
 // Falls back to "%llu" of the raw word when no stringifier is bound.
 const char *Reactive_valueOf(Reactive *self, char *out, bytes cap);

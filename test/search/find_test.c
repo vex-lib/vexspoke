@@ -26,7 +26,7 @@ static int g_failures = 0;
     } while (0)
 
 // Checks case modes, find offsets, empty patterns, and substring boundary misses.
-static void test_substring(void) {
+static fn test_substring() {
     CHECK(Search_match("Hello World", "world", FIND_DEFAULT));            // case-insensitive
     CHECK(!Search_match("Hello World", "world", FIND_CASE_SENSITIVE));
     CHECK(Search_match("Hello World", "World", FIND_CASE_SENSITIVE));
@@ -43,7 +43,7 @@ static void test_substring(void) {
 }
 
 // Checks whole-word delimiters and flag dispatch with both case-sensitivity modes.
-static void test_exact_word(void) {
+static fn test_exact_word() {
     CHECK(Search_exactWord("the cat sat", "cat", true));
     CHECK(Search_exactWord("cat", "cat", true));
     CHECK(Search_exactWord("cat.", "cat", true));                         // punctuation boundary
@@ -61,7 +61,7 @@ static void test_exact_word(void) {
 }
 
 // Checks SQL LIKE percent/underscore matching, case policy, and dispatch flags.
-static void test_like(void) {
+static fn test_like() {
     CHECK(Search_like("hello", "hello", false));
     CHECK(Search_like("hello", "h%o", false));
     CHECK(Search_like("hello", "h%", false));
@@ -83,7 +83,7 @@ static void test_like(void) {
 }
 
 // Verifies null inputs are rejected by each search operation with safe results.
-static void test_nulls(void) {
+static fn test_nulls() {
     CHECK(!Search_match(nullptr, "x", FIND_DEFAULT));
     CHECK(!Search_match("x", nullptr, FIND_DEFAULT));
     CHECK(!Search_match(nullptr, nullptr, FIND_DEFAULT));
@@ -96,7 +96,7 @@ static void test_nulls(void) {
 }
 
 // Runs substring, exact-word, wildcard, and null-input finder cases.
-int main(void) {
+int main() {
     test_substring();
     test_exact_word();
     test_like();

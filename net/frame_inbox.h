@@ -31,18 +31,18 @@ FrameInbox *FrameInbox_0();
 FrameInbox *FrameInbox_1(u64 timeoutNs);
 #define FrameInbox(...) CONSTRUCTOR_DISPATCH(FrameInbox, __VA_ARGS__)
 
-void FrameInbox_free(FrameInbox *self);
+fn FrameInbox_free(FrameInbox *self);
 bool FrameInbox_feed(FrameInbox *self, const u8 *Bytes, u32 len);
 bool FrameInbox_poll(FrameInbox *self, u64 timeoutNs, u8 *dest,
                      u32 destCap, u32 *outLen);
-void FrameInbox_cancel(FrameInbox *self);
-void FrameInbox_clear(FrameInbox *self);
+fn FrameInbox_cancel(FrameInbox *self);
+fn FrameInbox_clear(FrameInbox *self);
 
-void FrameInbox_setState(FrameInbox *self, FrameInboxState state);
+fn FrameInbox_setState(FrameInbox *self, FrameInboxState state);
 FrameInboxState FrameInbox_getState(const FrameInbox *self);
-void FrameInbox_setTimeoutNs(FrameInbox *self, u64 timeoutNs);
+fn FrameInbox_setTimeoutNs(FrameInbox *self, u64 timeoutNs);
 u64 FrameInbox_getTimeoutNs(const FrameInbox *self);
-void FrameInbox_setCancelled(FrameInbox *self, bool cancelled);
+fn FrameInbox_setCancelled(FrameInbox *self, bool cancelled);
 bool FrameInbox_isCancelled(const FrameInbox *self);
 u32 FrameInbox_getPending(const FrameInbox *self);
 

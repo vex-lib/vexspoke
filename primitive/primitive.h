@@ -8,7 +8,6 @@
 // code uses.
 
 #include "vex.h"
-
 #include "primitive/bool.h"
 #include "primitive/brain.h"
 #include "primitive/buffer.h"

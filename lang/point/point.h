@@ -27,28 +27,28 @@ typedef struct Point {
 // Constructors:
 //   Point()        — origin (0, 0)
 //   Point(x, y)    — explicit pixel position
-Point *Point_0(void);
+Point *Point_0();
 Point *Point_2(i32 x, i32 y);
 #define Point(...) CONSTRUCTOR_DISPATCH(Point, __VA_ARGS__)
-void Point_free(Point *p);
+fn Point_free(Point *p);
 
 // Setters
-void Point_setX(Point *p, i32 x);
-void Point_setY(Point *p, i32 y);
-void Point_set(Point *p, i32 x, i32 y);
+fn Point_setX(Point *p, i32 x);
+fn Point_setY(Point *p, i32 y);
+fn Point_set(Point *p, i32 x, i32 y);
 
 // Getters (null-safe: 0 on null)
 i32 Point_getX(const Point *p);
 i32 Point_getY(const Point *p);
 
 // Core functions (dest-last: (srcA, srcB, dest))
-void Point_copy(const Point *src, Point *dest);
-void Point_add(const Point *a, const Point *b, Point *dest);
-void Point_sub(const Point *a, const Point *b, Point *dest);
-void Point_scale(const Point *a, i32 scalar, Point *dest);
-void Point_negate(const Point *src, Point *dest);
-void Point_min(const Point *a, const Point *b, Point *dest);
-void Point_max(const Point *a, const Point *b, Point *dest);
+fn Point_copy(const Point *src, Point *dest);
+fn Point_add(const Point *a, const Point *b, Point *dest);
+fn Point_sub(const Point *a, const Point *b, Point *dest);
+fn Point_scale(const Point *a, i32 scalar, Point *dest);
+fn Point_negate(const Point *src, Point *dest);
+fn Point_min(const Point *a, const Point *b, Point *dest);
+fn Point_max(const Point *a, const Point *b, Point *dest);
 
 // Metrics (null-safe: 0 / false on null)
 int64_t Point_distanceSquared(const Point *a, const Point *b);

@@ -8,7 +8,6 @@
 // code uses.
 
 #include "vex.h"
-
 #include "search/calc.h"
 #include "search/find.h"
 #include "search/spotlight.h"

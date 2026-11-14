@@ -2,7 +2,6 @@
 #define REACTIVE_REACTIVE_PRIMITIVE_H
 
 #include "vex.h"
-
 #include "reactive/generic.h"
 #include "reactive/reactive.h"
 

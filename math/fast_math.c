@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "math/fast_math.h"
 
 ;;DEFINITION

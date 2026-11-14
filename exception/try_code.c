@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "exception/try_code.h"
 
 ;;DEFINITION

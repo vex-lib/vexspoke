@@ -35,14 +35,14 @@ static int g_checks = 0;
         }                                                                       \
     } while (0)
 
-static u64 nowMs(void) {
+static u64 nowMs() {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
     return (u64) ts.tv_sec * 1000u + (u64) (ts.tv_nsec / 1000000);
 }
 
 /** Bind an ephemeral port, then release it so nothing is listening there. */
-static int closedPort(void) {
+static int closedPort() {
     int fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd < 0)
         return -1;
@@ -65,7 +65,7 @@ static int closedPort(void) {
     return port;
 }
 
-int main(void) {
+int main() {
     printf("=== TLS Apple backend owner (refusal paths) ===\n");
 
     // No backend has answered yet: the seam says so instead of guessing.

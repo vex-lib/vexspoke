@@ -2,7 +2,6 @@
 #define STRUCT_CIRCLE_ARRAY_H
 
 #include "vex.h"
-
 #include "struct/collection.h"
 
 // struct/circle_array.h — 2D Circular Matrix evaluated via the Pythagorean Theorem.
@@ -21,7 +20,7 @@ typedef struct CircleArray {
 CircleArray *CircleArray_2(i32 radius, u32 elementClass);
 CircleArray *CircleArray_3(i32 radius, u32 elementClass, bytes stride);
 #define CircleArray(...) CONSTRUCTOR_DISPATCH(CircleArray, __VA_ARGS__)
-void CircleArray_free(CircleArray *self);
+fn CircleArray_free(CircleArray *self);
 
 i32 CircleArray_radius(const CircleArray *self);
 i32 CircleArray_diameter(const CircleArray *self);
@@ -46,7 +45,7 @@ u8 *CircleArray_slotGrid(CircleArray *self, i32 gridX, i32 gridY);
 u8 *CircleArray_slotOffset(CircleArray *self, i32 dx, i32 dy);
 
 // Iteration callback across all valid circular cells
-typedef void (*CircleArrayCellFn)(i32 gridX, i32 gridY, i32 dx, i32 dy, const_any element, any userData);
-void CircleArray_forEach(const CircleArray *self, CircleArrayCellFn callback, any userData);
+typedef fn (*CircleArrayCellFn)(i32 gridX, i32 gridY, i32 dx, i32 dy, const_any element, any userData);
+fn CircleArray_forEach(const CircleArray *self, CircleArrayCellFn callback, any userData);
 
 #endif

@@ -2,7 +2,6 @@
 #define STRUCT_MINHEAP_H
 
 #include "vex.h"
-
 #include "struct/exhaustion.h"
 
 // struct/minheap.h — the MinHeap class, ported from struct/MinHeap.java.
@@ -24,7 +23,7 @@ typedef struct MinHeap {
 // Heap with room for capacity entries.
 MinHeap *MinHeap_1(bytes capacity);
 
-void MinHeap_free(MinHeap *heap);
+fn MinHeap_free(MinHeap *heap);
 
 bytes MinHeap_size(MinHeap *heap);
 bytes MinHeap_capacity(MinHeap *heap);
@@ -43,7 +42,7 @@ i32 MinHeap_popItem(MinHeap *heap);
 i32 MinHeap_peekItem(MinHeap *heap);
 
 
-MinHeap *MinHeap_0(void);
+MinHeap *MinHeap_0();
 
 #define MinHeap(...) CONSTRUCTOR_DISPATCH(MinHeap, __VA_ARGS__)
 

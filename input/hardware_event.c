@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "input/hardware_event.h"
 
 ;;DEFINITION

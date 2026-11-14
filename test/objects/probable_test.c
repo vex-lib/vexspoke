@@ -15,7 +15,7 @@ static int g_failures = 0;
     } while (0)
 
 // Checks Probable fields, weighted draw behavior, and null-safe accessors.
-int main(void) {
+int main() {
     Probable *p = Probable_3((pointer) 0xABCD, 3, 10);
     CHECK(p != nullptr);
     CHECK(Probable_object(p) == (pointer) 0xABCD);

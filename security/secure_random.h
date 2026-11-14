@@ -23,9 +23,9 @@
 typedef struct SecureRandom SecureRandom;
 
 // New generator handle (no seed argument — entropy comes from the OS).
-SecureRandom *SecureRandom_0(void);
+SecureRandom *SecureRandom_0();
 #define SecureRandom(...) CONSTRUCTOR_DISPATCH(SecureRandom, __VA_ARGS__)
-void SecureRandom_free(SecureRandom *self);
+fn SecureRandom_free(SecureRandom *self);
 
 // Fill dest[0..len) with cryptographically secure Bytes. Returns false when the
 // OS source is unavailable (dest untouched). len 0 is a successful no-op.

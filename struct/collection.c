@@ -78,7 +78,7 @@ static u64 readSlotAt(const u8 *data, bytes stride) {
     }
 }
 
-static void writeSlotAt(u8 *data, bytes stride, u64 value) {
+static fn writeSlotAt(u8 *data, bytes stride, u64 value) {
     switch (stride) {
         case 1:  *(u8*) data = (u8)value;   break;
         case 2:  *(u16*) data = (u16)value; break;
@@ -151,7 +151,7 @@ u64 Collection_exhaustionCount(const Collection *c) {
 
 /** Start a fresh exhaustion epoch for this collection. */
 ;;TEST
-void Collection_resetExhaustion(Collection *c) {
+fn Collection_resetExhaustion(Collection *c) {
     if (!c) return;
     Struct_resetExhaustion(&(*c).exhaustionCount, &(*c).exhaustionReported);
 }
@@ -189,7 +189,7 @@ u64 Collection_readSlot(Collection *c, bytes index) {
     return readSlotAt((*c).data + offset, (*c).stride);
 }
 
-void Collection_writeSlot(Collection *c, bytes index, u64 value) {
+fn Collection_writeSlot(Collection *c, bytes index, u64 value) {
     if (!c)
         return;
     // Bound by CAPACITY, not activeCount: an append (List_add) writes the slot
@@ -217,7 +217,7 @@ u64 Collection_readSlotUnsafe(Collection *c, bytes index) {
     return readSlotAt((*c).data + index * (*c).stride, (*c).stride);
 }
 
-void Collection_writeSlotUnsafe(Collection *c, bytes index, u64 value) {
+fn Collection_writeSlotUnsafe(Collection *c, bytes index, u64 value) {
     if (!c)
         return;
     writeSlotAt((*c).data + index * (*c).stride, (*c).stride, value);

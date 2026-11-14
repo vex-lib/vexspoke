@@ -17,7 +17,7 @@ static int g_failures = 0;
     } while (0)
 
 // Exercises Bool initialization, scalar/array allocation, CAS, metadata, and null safety.
-int main(void) {
+int main() {
     CHECK(Bool_init());
 
     any p = Bool_alloc();

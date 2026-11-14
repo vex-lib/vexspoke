@@ -26,7 +26,7 @@ static int g_failures = 0;
     } while (0)
 
 /** Checks URL-safe base64 encoding against a fixed expected output string. */
-static void test_base64(const char *in, const char *want) {
+static fn test_base64(const char *in, const char *want) {
     char out[64];
     int64_t n = Url_base64((const u8*) in, strlen(in), out, sizeof(out));
     CHECK(n == (int64_t) strlen(want));
@@ -39,7 +39,7 @@ static void test_base64(const char *in, const char *want) {
 }
 
 /** Verifies default URL components and their safe initial values. */
-static void test_defaults(void) {
+static fn test_defaults() {
     CHECK(Url_defaultPort("https") == 443);
     CHECK(Url_defaultPort("HTTPS") == 443);
     CHECK(Url_defaultPort("http") == 80);
@@ -48,7 +48,7 @@ static void test_defaults(void) {
 }
 
 /** Checks credential handling and authorization formatting for URL requests. */
-static void test_auth(void) {
+static fn test_auth() {
     char out[256];
     int64_t n = Url_basicAuth("Aladdin", "open sesame", out, sizeof(out));
     CHECK(n == (int64_t) strlen("Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=="));
@@ -69,7 +69,7 @@ static void test_auth(void) {
 }
 
 /** Exercises URL assembly from its configured components and boundary inputs. */
-static void test_build(void) {
+static fn test_build() {
     char out[256];
     int64_t n = Url_build("https", "example.com", 0, "/path", out, sizeof(out));
     CHECK(n == (int64_t) strlen("https://example.com/path"));
@@ -99,7 +99,7 @@ static void test_build(void) {
 }
 
 /** Runs the URL owner scenarios and reports aggregate assertion status. */
-int main(void) {
+int main() {
     test_defaults();
     test_base64("", "");
     test_base64("f", "Zg==");

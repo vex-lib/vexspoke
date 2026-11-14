@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include <math.h>
 
 #include "nio/mem.h"
@@ -25,7 +24,7 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Core Functions:
- *   - main(void)
+ *   - main()
  * ============================================================================
  */
 
@@ -48,28 +47,28 @@ static i32 g_new = 0;
 static Vec3 *g_objectValue = nullptr;
 static i32 g_probableValue = 0;
 
-static void onObjectChanged(Vec3 *value) { g_objectValue = value; }
-static void onProbableChanged(i32 value) { g_probableValue = value; }
+static fn onObjectChanged(Vec3 *value) { g_objectValue = value; }
+static fn onProbableChanged(i32 value) { g_probableValue = value; }
 
 // Records typed integer change notifications and their old/new payloads.
-static void onChangedInt(Reactive *r, pointer o, pointer n, any ud) {
-    (void) r;
-    (void) ud;
+static fn onChangedInt(Reactive *r, pointer o, pointer n, any ud) {
+    (fn) r;
+    (fn) ud;
     g_changed++;
     g_old = (i32) (u32) o;
     g_new = (i32) (u32) n;
 }
 
 // Counts typed integer onSet notifications.
-static void onSetInt(Reactive *r, pointer v, any ud) {
-    (void) r;
-    (void) v;
-    (void) ud;
+static fn onSetInt(Reactive *r, pointer v, any ud) {
+    (fn) r;
+    (fn) v;
+    (fn) ud;
     g_sets++;
 }
 
 // Verifies a typed reactive begins at the same address as its raw Reactive base.
-static void testEmbedFirst(void) {
+static fn testEmbedFirst() {
     printf("[1] embed-first: a typed reactive* is a Reactive*\n");
     ReactiveInt *h = ReactiveInt(7);
     CHECK(h != nullptr);
@@ -81,7 +80,7 @@ static void testEmbedFirst(void) {
 }
 
 // Checks integer access, notifications/coalescing, raw writes, and negative values.
-static void testInt(void) {
+static fn testInt() {
     printf("[2] int: set/get, exact old/new, coalescing, out-of-band write\n");
     ReactiveInt *h = ReactiveInt(10);
     CHECK(h != nullptr);
@@ -123,7 +122,7 @@ static void testInt(void) {
 }
 
 // Checks boolean reactive round trips and the null getter default.
-static void testBool(void) {
+static fn testBool() {
     printf("[3] bool\n");
     ReactiveBool *b = ReactiveBool(false);
     CHECK(b != nullptr);
@@ -139,7 +138,7 @@ static void testBool(void) {
 }
 
 // Checks d64 round trips preserve signed zero and NaN payload meaning.
-static void testf64(void) {
+static fn testf64() {
     printf("[4] d64: bit-exact round trip, incl. -0.0 and NaN\n");
     Reactivef64 *d = Reactivef64(1.5);
     CHECK(d != nullptr);
@@ -166,7 +165,7 @@ static void testf64(void) {
 }
 
 // Checks borrowed string-pointer storage, rebinding notifications, and same-pointer writes.
-static void testString(void) {
+static fn testString() {
     printf("[5] string: pointer word, rebind is a change\n");
     const u8 *a = (const u8*) "hello";
     const u8 *b = (const u8*) "world";
@@ -192,7 +191,7 @@ static void testString(void) {
 }
 
 // Checks the object-family constructor chooser, typed object rebind, and merged probable constructor.
-static void testObjectAndProbable(void) {
+static fn testObjectAndProbable() {
     printf("[6] object and probable constructor choosers\n");
     Reactive(Vec2) *emptyVec2 = Reactive(Vec2)();
     Reactive(Vec4) *emptyVec4 = Reactive(Vec4)();
@@ -237,7 +236,7 @@ static void testObjectAndProbable(void) {
 }
 
 // Exercises null-safe setters, getters, and destructors for each typed reactive.
-static void testNull(void) {
+static fn testNull() {
     printf("[7] null-safety\n");
     ReactiveInt_set(nullptr, 1);
     CHECK(ReactiveInt_get(nullptr) == 0);
@@ -254,7 +253,7 @@ static void testNull(void) {
 }
 
 // Runs typed reactive embedding, scalar behavior, notifications, and null-safety cases.
-int main(void) {
+int main() {
     printf("=== Reactive (typed) Test Suite ===\n\n");
 
     testEmbedFirst();

@@ -40,7 +40,7 @@ typedef struct Trace {
 
 /** Records visited node indices and depths into the test's bounded observation buffer. */
 static bool record(const TreeSitTree *tree, i32 node_idx, int depth, any user_data) {
-    (void) tree;
+    (fn) tree;
     Trace *t = (Trace*) user_data;
     if ((*t).count < 64) {
         (*t).ids[(*t).count] = node_idx;
@@ -61,7 +61,7 @@ static TreeSitSpan span(u32 s, u32 e) {
 // Builds: root(0)->A(1)->g(4); root->B(2); root->C(3).
 // Returns the tree root index via the tree struct held by the caller.
 /** Populates a small deterministic tree used by the traversal and lookup cases. */
-static void build(TreeSitTree *tree) {
+static fn build(TreeSitTree *tree) {
     CHECK(TreeSitTree_add_node(-1, 1, "root", span(0, 100), tree) == 0);
     CHECK(TreeSitTree_add_node(0, 2, "A", span(0, 30), tree) == 1);
     CHECK(TreeSitTree_add_node(0, 2, "B", span(40, 60), tree) == 2);
@@ -70,7 +70,7 @@ static void build(TreeSitTree *tree) {
 }
 
 /** Verifies TreeSit initialization and teardown on a minimally populated tree. */
-static void test_lifecycle(void) {
+static fn test_lifecycle() {
     TreeSitTree defaultTree = TreeSitTree();
     CHECK(defaultTree.nodes != nullptr);
     CHECK(defaultTree.node_capacity == 16u);
@@ -96,7 +96,7 @@ static void test_lifecycle(void) {
 }
 
 /** Checks parent/child and sibling links remain consistent as nodes are connected. */
-static void test_linking(void) {
+static fn test_linking() {
     TreeSitTree t;
     t = TreeSitTree(16u); CHECK(t.nodes != nullptr);
     build(&t);
@@ -143,7 +143,7 @@ static void test_linking(void) {
 }
 
 /** Exercises the supported traversal orders and validates recorded node visits. */
-static void test_walks(void) {
+static fn test_walks() {
     TreeSitTree t;
     t = TreeSitTree(16u); CHECK(t.nodes != nullptr);
     build(&t);
@@ -188,7 +188,7 @@ static void test_walks(void) {
 }
 
 /** Verifies span lookup and subtree counting against the deterministic fixture. */
-static void test_find_and_count(void) {
+static fn test_find_and_count() {
     TreeSitTree t;
     t = TreeSitTree(16u); CHECK(t.nodes != nullptr);
     build(&t);
@@ -212,7 +212,7 @@ static void test_find_and_count(void) {
 }
 
 /** Runs the TreeSit owner scenarios and reports aggregate assertion status. */
-int main(void) {
+int main() {
     test_lifecycle();
     test_linking();
     test_walks();

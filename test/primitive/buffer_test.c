@@ -22,7 +22,7 @@ static int g_failures = 0;
     } \
 } while (0)
 
-int main(void) {
+int main() {
     Buffer *e = Buffer();
     CHECK(e != nullptr);
     CHECK(Buffer_length(e) == 0);

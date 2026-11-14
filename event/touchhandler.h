@@ -8,10 +8,10 @@
 
 typedef struct TouchHandler {
     any self; // the implementing object, handed back to every callback
-    void (*onTouchDown)(any self, int touchId, d64 x, d64 y, d64 pressure, u64 exactNanos);
-    void (*onTouchUp)(any self, int touchId, d64 x, d64 y, d64 pressure, u64 exactNanos);
-    void (*onTouchMove)(any self, int touchId, d64 x, d64 y, d64 pressure, u64 exactNanos);
-    void (*onTouchCancel)(any self, int touchId, u64 exactNanos); // default no-op in legacy
+    fn (*onTouchDown)(any self, int touchId, d64 x, d64 y, d64 pressure, u64 exactNanos);
+    fn (*onTouchUp)(any self, int touchId, d64 x, d64 y, d64 pressure, u64 exactNanos);
+    fn (*onTouchMove)(any self, int touchId, d64 x, d64 y, d64 pressure, u64 exactNanos);
+    fn (*onTouchCancel)(any self, int touchId, u64 exactNanos); // default no-op in legacy
 } TouchHandler;
 
 #endif

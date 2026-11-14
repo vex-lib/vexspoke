@@ -2,7 +2,6 @@
 #define GENERIC_CLASSGENERIC_REPO_H
 
 #include "vex.h"
-
 #include "generic/generic_cat.h"
 #include "generic/list_stamps.h"
 

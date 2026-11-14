@@ -102,7 +102,7 @@ ProbableObjects *ProbableObjects_2(const ProbableObjects *init, bytes count) {
         memset(p, 0, Bytes);
     return p;
 }
-void ProbableObjects_free(ProbableObjects *po) {
+fn ProbableObjects_free(ProbableObjects *po) {
     Memory_free(po);
 }
 

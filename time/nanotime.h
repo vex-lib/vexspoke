@@ -2,7 +2,6 @@
 #define TIME_NANOTIME_H
 
 #include "vex.h"
-
 #include "time/clock.h"
 
 // time/nanotime.h — the monotonic clock (Legacy: time/NanoTime.java).
@@ -16,16 +15,16 @@
 // it before any other thread exists — same assumption the Java static init made).
 
 // Capture the engine epoch. Idempotent: later calls are no-ops.
-void NanoTime_init(void);
+fn NanoTime_init();
 
 // Raw monotonic nanos (unrelated to the epoch; never goes backwards).
-u64 NanoTime_now(void);
+u64 NanoTime_now();
 
 // The engine epoch captured at init (0 before init).
-u64 NanoTime_startNanos(void);
+u64 NanoTime_startNanos();
 
 // Nanos since the engine epoch (0 before init).
-u64 NanoTime_elapsedNanos(void);
+u64 NanoTime_elapsedNanos();
 
 // --- Tickable timer (Legacy: NanoTime.allocate/tick) ---
 //
@@ -42,12 +41,12 @@ typedef struct NanoTimer {
 } NanoTimer;
 
 // Anchor all fields at now; deltas zero.
-void NanoTimer_reset(NanoTimer *timer);
+fn NanoTimer_reset(NanoTimer *timer);
 
 // Roll one frame. With a clock, delta is multiplied by its timeScale and
 // freezes while paused (real reading still advances — no resume jump).
-void NanoTimer_tick(NanoTimer *timer);
-void NanoTimer_tickWithClock(NanoTimer *timer, const Clock *clock);
+fn NanoTimer_tick(NanoTimer *timer);
+fn NanoTimer_tickWithClock(NanoTimer *timer, const Clock *clock);
 
 d64 NanoTimer_deltaTime(const NanoTimer *timer);
 d64 NanoTimer_totalTime(const NanoTimer *timer);

@@ -8,7 +8,6 @@
 // code uses.
 
 #include "vex.h"
-
 #include "oop/stride.h"
 #include "oop/vexspoke_type.h"
 

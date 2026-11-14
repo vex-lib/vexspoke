@@ -31,7 +31,7 @@ typedef struct AppDetect {
 
 // --- Constructor ---
 // Returns the shared detection handle (static, zero-init, never NULL).
-AppDetect *AppDetect_shared(void);
+AppDetect *AppDetect_shared();
 
 // --- Core functions (POSIX probes, no exec) ---
 // Full first PATH match for a bare command name, e.g. "opencode".

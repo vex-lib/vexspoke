@@ -4,7 +4,6 @@
 // the caller's; nothing here allocates.
 
 #include "vex.h"
-
 #include "net/net.h"
 
 

@@ -18,7 +18,7 @@ static int g_failures = 0;
         }                                                                  \
     } while (0)
 
-int main(void) {
+int main() {
     Exception empty = Exception();
     CHECK(empty.type == TYPE_EXCEPTION_SINGLETON);
     CHECK(empty.message == nullptr);

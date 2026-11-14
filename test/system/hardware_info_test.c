@@ -28,7 +28,7 @@ static int g_failures = 0;
 // Checks hardware discovery defaults, property round trips, and null-string preservation.
 // Verifies hardware-information queries return platform data or safe defaults.
 // Exercises lazy host discovery and HardwareInfo property round trips.
-int main(void) {
+int main() {
     // Force the one-time lazy bootstrap.
     const char *os = HardwareInfo_getOperatingSystem();
     const char *arch = HardwareInfo_getSystemArchitecture();

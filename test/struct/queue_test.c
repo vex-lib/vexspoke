@@ -18,7 +18,7 @@ static int g_failures = 0;
     } while (0)
 
 // Verifies FIFO insertion/removal, empty behavior, bounds, and safe cleanup.
-int main(void) {
+int main() {
     Queue *q = Queue_1(ID_INT);
     CHECK(q != nullptr);
     CHECK(Queue_isEmpty(q));

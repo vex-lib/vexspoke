@@ -19,7 +19,7 @@ static int g_failures = 0;
     } while (0)
 
 // Verifies minimum-heap ordering through insertion, peek, removal, and empty cases.
-int main(void) {
+int main() {
     MinHeap *h = MinHeap_1(8);
     CHECK(h != nullptr);
     CHECK(MinHeap_isEmpty(h));

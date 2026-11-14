@@ -28,7 +28,7 @@ static u64 projByte(u64 byte) {
 }
 
 // Checks type bit fields, predicates, parent registration, and project isolation.
-int main(void) {
+int main() {
     // --- Bit field isolation: make then read each field back exactly.
     u64 id = Type_make(PROJ_VEXSPOKE, FORM_SINGLETON, ID_INT);
     CHECK(id == TYPE_INT_SINGLETON);

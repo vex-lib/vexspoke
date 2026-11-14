@@ -37,7 +37,7 @@ static u32 addPair(RegexNodeList *nodes, u8 kind, u32 a, u32 b) {
 }
 
 // Checks the outer frame and a single literal.
-static void testFrame(void) {
+static fn testFrame() {
     RegexNodeList nodes;
     nodes = RegexNodeList();
     u32 character = addNode(&nodes, REGEX_NODE_CHAR);
@@ -64,7 +64,7 @@ static void testFrame(void) {
 }
 
 // Checks that concatenation emits left operand first.
-static void testConcat(void) {
+static fn testConcat() {
     RegexNodeList nodes;
     nodes = RegexNodeList();
     u32 a = addNode(&nodes, REGEX_NODE_CHAR);
@@ -87,7 +87,7 @@ static void testConcat(void) {
 }
 
 // Checks the alternation SPLIT/JUMP wiring and its patch targets.
-static void testAlternation(void) {
+static fn testAlternation() {
     RegexNodeList nodes;
     nodes = RegexNodeList();
     u32 a = addNode(&nodes, REGEX_NODE_CHAR);
@@ -115,7 +115,7 @@ static void testAlternation(void) {
 }
 
 // Checks STAR/PLUS/QUEST back-edges and their exits.
-static void testQuantifiers(void) {
+static fn testQuantifiers() {
     RegexNodeList nodes;
 
     // a* -> SAVE0, SPLIT(1->2, else 4), CHAR, JUMP->1, SAVE1, MATCH
@@ -169,7 +169,7 @@ static void testQuantifiers(void) {
 }
 
 // Checks capture SAVE slots and repetition expansion.
-static void testGroupAndRepeat(void) {
+static fn testGroupAndRepeat() {
     RegexNodeList nodes;
     nodes = RegexNodeList();
     u32 a = addNode(&nodes, REGEX_NODE_CHAR);
@@ -234,7 +234,7 @@ static void testGroupAndRepeat(void) {
 }
 
 // Checks refusal paths: a bad root and the instruction ceiling.
-static void testRefusal(void) {
+static fn testRefusal() {
     RegexNodeList nodes;
     nodes = RegexNodeList();
     u32 character = addNode(&nodes, REGEX_NODE_CHAR);
@@ -274,7 +274,7 @@ static void testRefusal(void) {
     RegexNodeList_free(&nodes);
 }
 
-int main(void) {
+int main() {
     testFrame();
     testConcat();
     testAlternation();

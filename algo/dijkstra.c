@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "algo/dijkstra.h"
 
 #include "nio/mem.h"
@@ -86,7 +85,7 @@ DijkstraGraph *Dijkstra_1(u32 nodeCount) {
     return graph;
 }
 
-void Dijkstra_free(DijkstraGraph *graph) {
+fn Dijkstra_free(DijkstraGraph *graph) {
     if (graph == nullptr) return;
     if ((*graph).nodes != nullptr) {
         for (u32 i = 0; i < (*graph).nodeCount; i++) {
@@ -142,7 +141,7 @@ typedef struct MinQ {
     u32 capacity;
 } MinQ;
 
-static void MinQ_push(MinQ *q, u32 node, f32 dist) {
+static fn MinQ_push(MinQ *q, u32 node, f32 dist) {
     if ((*q).size >= (*q).capacity) return;
     u32 i = (*q).size++;
     (*q).items[i].node = node;

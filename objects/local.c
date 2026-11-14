@@ -43,7 +43,7 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Constructors:
- *   - Local_0(void)
+ *   - Local_0()
  *   - Local_2(init, count)
  *
  * Core Functions:
@@ -90,7 +90,7 @@ static bool local_grow(Local *self, u32 threadId) {
     return true;
 }
 
-Local *Local_0(void) {
+Local *Local_0() {
     u64 type = Type_make(PROJ_VEXSPOKE, FORM_SINGLETON, ID_LOCAL) | MOD_LOCALE;
     Local *local = (Local*) Memory_alloc(type, sizeof(Local));
     if (!local)
@@ -125,7 +125,7 @@ Local *Local_2(const Local *init, bytes count) {
     }
     return p;
 }
-void Local_free(Local *local) {
+fn Local_free(Local *local) {
     if (!local) return;
     if ((*local).slots)
         Memory_free((*local).slots);
@@ -138,7 +138,7 @@ u64 Local_get(const Local *local, u32 threadId) {
     return (*local).slots[threadId];
 }
 
-void Local_set(Local *local, u32 threadId, u64 value) {
+fn Local_set(Local *local, u32 threadId, u64 value) {
     if (!local)
         return;
     if (threadId >= (*local).slotCap) {

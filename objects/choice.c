@@ -95,7 +95,7 @@ Choice *Choice_2(const Choice *init, bytes count) {
     return p;
 }
 // Releases the choice allocation through the engine-owned Memory ABI.
-void Choice_free(Choice *choice) {
+fn Choice_free(Choice *choice) {
     if (!choice) return;
     Memory_free(choice);
 }
@@ -113,7 +113,7 @@ u64 Choice_getObject(const Choice *choice, bytes index) {
 }
 
 // Invokes the selected option callback with its object payload and userdata.
-void Choice_trigger(const Choice *choice, bytes index, any userdata) {
+fn Choice_trigger(const Choice *choice, bytes index, any userdata) {
     if (!choice || index >= (*choice).count)
         return;
     ChoiceCallback cb = (*choice).slots[index].callback;

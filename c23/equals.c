@@ -40,25 +40,27 @@ bool isEqual(const_any a, const_any b) {
     if (!a || !b)
         return false;
 
-    u64 ta = Memory_type((any) a);
-    u64 tb = Memory_type((any) b);
+    const u64 ta = Memory_type((any) a);
+    const u64 tb = Memory_type((any) b);
+
     if (ta == 0 || tb == 0)
         return false;
     if (ta != tb)
         return false;
 
-    bytes la = Memory_length((any) a);
-    bytes lb = Memory_length((any) b);
+    const bytes la = Memory_length((any) a);
+    const bytes lb = Memory_length((any) b);
+
     if (la != lb)
         return false;
 
-    const u8 *pa = (const u8*) a;
-    const u8 *pb = (const u8*) b;
+    const auto pa = (const u8*) a;
+    const auto pb = (const u8*) b;
     return memcmp(pa, pb, la) == 0;
 }
 
 // Resolves both names in the table and compares their referenced values.
-bool isEquallyNamed(struct SymbolTable *v, const char *nameA, const char *nameB) {
+bool isEquallyNamed(SymbolTable *v, const char *nameA, const char *nameB) {
     if (!v || !nameA || !nameB)
         return false;
     i32 idA = SymbolTable_getId(v, nameA);

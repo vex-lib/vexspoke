@@ -2,7 +2,6 @@
 #define EXCEPTION_TRY_PTR_H
 
 #include "vex.h"
-
 #include "exception/try_code.h"
 
 ;;DRAFT
@@ -18,7 +17,7 @@
 // CONTRACT: `value` is valid ONLY when `code == TRY_OK`.
 
 typedef struct TryPtr {
-    void    *value;   // success payload; undefined unless code == TRY_OK
+    any value;   // success payload; undefined unless code == TRY_OK
     TryCode  code;    // TRY_OK or the named reason
 } TryPtr;
 
@@ -29,14 +28,14 @@ TryPtr TryPtr_error(TryCode code);
 #define TryPtr(...) CONSTRUCTOR_DISPATCH(TryPtr, __VA_ARGS__)
 
 // --- Setters / Getters (the Symmetric Getter/Setter Completeness Law) ---
-void   *TryPtr_getValue(const TryPtr *self);
-void    TryPtr_setValue(TryPtr *self, any value);
+any TryPtr_getValue(const TryPtr *self);
+fn    TryPtr_setValue(TryPtr *self, any value);
 TryCode TryPtr_getCode(const TryPtr *self);
-void    TryPtr_setCode(TryPtr *self, TryCode code);
+fn    TryPtr_setCode(TryPtr *self, TryCode code);
 bool    TryPtr_isOk(const TryPtr *self);
 
 // --- String projections (the toString Law) ---
-void TryPtr_toString(const TryPtr *self, char *dest, bytes cap, bool *outTruncated);
-void TryPtr_toStringStruct(const TryPtr *self, char *dest, bytes cap, bool *outTruncated);
+fn TryPtr_toString(const TryPtr *self, char *dest, bytes cap, bool *outTruncated);
+fn TryPtr_toStringStruct(const TryPtr *self, char *dest, bytes cap, bool *outTruncated);
 
 #endif

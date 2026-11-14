@@ -15,7 +15,7 @@
 #define TEST_SERVICE "com.vexgraph.darkbase.owner-test"
 #define TEST_ACCOUNT "keychain-owner"
 
-int main(void) {
+int main() {
     // Every refusal code has a name; unknown values do not crash.
     assert(strcmp(Keychain_codeName(KEYCHAIN_OK), "ok") == 0);
     assert(strcmp(Keychain_codeName(KEYCHAIN_ABSENT), "absent") == 0);

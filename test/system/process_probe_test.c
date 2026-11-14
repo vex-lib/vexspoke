@@ -30,7 +30,7 @@ static int g_failures = 0;
 // Tests singleton process/driver probes against the current process and a scratch directory.
 // Exercises process-probe matching and verifies the reported detection result.
 // Tests process-name lookup and case-insensitive driver-directory prefix scanning.
-int main(void) {
+int main() {
     ProcessProbe *p = ProcessProbe_shared();
     CHECK(p != nullptr);
     CHECK(ProcessProbe_shared() == p);                 // singleton

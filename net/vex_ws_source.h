@@ -2,7 +2,6 @@
 #define NET_VEX_WS_SOURCE_H
 
 #include "vex.h"
-
 #include "net/websocket.h"
 
 // net/vex_ws_source.h — the socket adapter behind a host's WsSource seam.
@@ -12,7 +11,7 @@
 // host expects lives here, next to the protocol it wraps. The four operations
 // below are declared with the shape a host's transport seam already uses
 // (`bool connect(any)`, `u32 poll(any, u64)`,
-// `bool send(any, const u8*, u32)`, `void close(any)`), so a host
+// `bool send(any, const u8*, u32)`, `fn close(any)`), so a host
 // that can see both this header and its own seam assigns them directly:
 //
 //     const HavenWsSource source = {
@@ -37,7 +36,7 @@ typedef struct VexWsSource {
 
 // --- Constructors ---
 // The empty handle: no socket, no target. Inline, so nothing is allocated here.
-static inline VexWsSource VexWsSource_0(void) {
+static inline VexWsSource VexWsSource_0() {
     return (VexWsSource) { .socket = { .fd = -1, .state = WEBSOCKET_CLOSED,
                                        .closeCode = 1005u },
                            .last = { .kind = WS_MESSAGE_NONE, .closeCode = 1005u } };
@@ -67,7 +66,7 @@ u32 VexWsSource_poll(any handle, u64 budgetMs);
 bool VexWsSource_send(any handle, const u8 *bytes, u32 length);
 
 // Close the connection and release the owned buffer. Safe on a null handle.
-void VexWsSource_close(any handle);
+fn VexWsSource_close(any handle);
 
 // --- Getters (the Symmetric Getter/Setter Completeness Law: null-safe) ---
 // The last delivered record; its payload borrows the client and stays valid
@@ -79,7 +78,7 @@ const char *VexWsSource_url(const VexWsSource *self);
 bool VexWsSource_isOpen(const VexWsSource *self);
 
 // --- String projections (the toString Law) ---
-void VexWsSource_toString(const VexWsSource *self, char *dest, bytes cap, bool *outTruncated);
-void VexWsSource_toStringStruct(const VexWsSource *self, char *dest, bytes cap, bool *outTruncated);
+fn VexWsSource_toString(const VexWsSource *self, char *dest, bytes cap, bool *outTruncated);
+fn VexWsSource_toStringStruct(const VexWsSource *self, char *dest, bytes cap, bool *outTruncated);
 
 #endif

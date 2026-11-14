@@ -17,7 +17,7 @@
 // the block. The typed channels are trampolines over the engine's uniform channels.
 
 // The typed stringifier: bound to the engine so Reactive_valueOf finds it.
-static void VEX_CAT(VEX_NAME, _valueOf)(pointer word, char *out, bytes cap) {
+static fn VEX_CAT(VEX_NAME, _valueOf)(pointer word, char *out, bytes cap) {
     VEX_T value = VEX_FROM_WORD(word);
     VEX_VALUE_OF(out, cap, value);
 }
@@ -31,18 +31,18 @@ VEX_NAME *VEX_CAT(VEX_NAME, _1)(VEX_T initial) {
     return self;
 }
 
-VEX_NAME *VEX_CAT(VEX_NAME, _0)(void) {
+VEX_NAME *VEX_CAT(VEX_NAME, _0)() {
     return VEX_CAT(VEX_NAME, _1)(VEX_ZERO);
 }
 
-void VEX_CAT(VEX_NAME, _free)(VEX_NAME *self) {
+fn VEX_CAT(VEX_NAME, _free)(VEX_NAME *self) {
     if (self == nullptr)
         return;
     Reactive_shutdown(&(*self).base);
     Memory_free(self);
 }
 
-void VEX_CAT(VEX_NAME, _set)(VEX_NAME *self, VEX_T value) {
+fn VEX_CAT(VEX_NAME, _set)(VEX_NAME *self, VEX_T value) {
     if (self == nullptr)
         return;
     Reactive_store(&(*self).base, VEX_TO_WORD(value));

@@ -8,7 +8,6 @@
 // code uses.
 
 #include "vex.h"
-
 #include "algo/bvh.h"
 #include "algo/dijkstra.h"
 #include "algo/kd_tree.h"

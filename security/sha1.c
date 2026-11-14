@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "security/sha1.h"
 
 ;;DEFINITION
@@ -25,7 +24,7 @@
 
 static u32 rotr(u32 v, u32 bits) { return (v >> bits) | (v << (32u - bits)); }
 
-static void sha1Compress(CryptoSha1 *ctx, const u8 *block) {
+static fn sha1Compress(CryptoSha1 *ctx, const u8 *block) {
     u32 w[80];
     for (u32 i = 0; i < 16u; ++i)
         w[i] = ((u32) block[i * 4] << 24) | ((u32) block[i * 4 + 1] << 16) |
@@ -63,7 +62,7 @@ static void sha1Compress(CryptoSha1 *ctx, const u8 *block) {
     (*ctx).state[4] += e;
 }
 
-void Crypto_sha1Init(CryptoSha1 *ctx) {
+fn Crypto_sha1Init(CryptoSha1 *ctx) {
     if (ctx == nullptr) {
         THROW("Crypto_sha1Init: null context");
         return;
@@ -77,7 +76,7 @@ void Crypto_sha1Init(CryptoSha1 *ctx) {
     (*ctx).used = 0u;
 }
 
-void Crypto_sha1Update(CryptoSha1 *ctx, const_any data, bytes len) {
+fn Crypto_sha1Update(CryptoSha1 *ctx, const_any data, bytes len) {
     if (ctx == nullptr || (data == nullptr && len != 0u)) {
         THROW("Crypto_sha1Update: null input");
         return;
@@ -99,7 +98,7 @@ void Crypto_sha1Update(CryptoSha1 *ctx, const_any data, bytes len) {
     }
 }
 
-void Crypto_sha1Final(CryptoSha1 *ctx, u8 outDigest[CRYPTO_SHA1_DIGEST_SIZE]) {
+fn Crypto_sha1Final(CryptoSha1 *ctx, u8 outDigest[CRYPTO_SHA1_DIGEST_SIZE]) {
     if (ctx == nullptr || outDigest == nullptr) {
         THROW("Crypto_sha1Final: null argument");
         return;
@@ -126,7 +125,7 @@ void Crypto_sha1Final(CryptoSha1 *ctx, u8 outDigest[CRYPTO_SHA1_DIGEST_SIZE]) {
         (*ctx).block[i] = 0u;
 }
 
-void Crypto_sha1(const_any data, bytes len, u8 outDigest[CRYPTO_SHA1_DIGEST_SIZE]) {
+fn Crypto_sha1(const_any data, bytes len, u8 outDigest[CRYPTO_SHA1_DIGEST_SIZE]) {
     CryptoSha1 ctx;
     Crypto_sha1Init(&ctx);
     Crypto_sha1Update(&ctx, data, len);

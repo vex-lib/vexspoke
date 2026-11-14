@@ -9,7 +9,6 @@
 // code uses.
 
 #include "vex.h"
-
 #include "security/argon2.h"
 #include "security/base32.h"
 #include "security/blake2b.h"

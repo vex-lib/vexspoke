@@ -31,8 +31,8 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Core Functions:
- *   - NetworkingThread_invoke(void)
- *   - NetworkingThread_core(void)
+ *   - NetworkingThread_invoke()
+ *   - NetworkingThread_core()
  *   - NetworkingThread_submit(w, batch)
  *   - NetworkingThread_stop(w)
  *   - NetworkingThread_free(w)
@@ -48,18 +48,18 @@
 
 static Thread *s_core = nullptr;
 
-static void networking_job(Thread *self, any task) {
-    (void)self;
+static fn networking_job(Thread *self, any task) {
+    (fn)self;
     if (ComputeJob_run(task)) return;   // a generic job handed to this role
-    (void)task; // TODO(net): PollRequest_executeAll(batch) once ported.
+    (fn)task; // TODO(net): PollRequest_executeAll(batch) once ported.
 }
 
-Thread *NetworkingThread_invoke(void) {
+Thread *NetworkingThread_invoke() {
     return Thread(TYPE_THREAD_NETWORKING_SINGLETON, networking_job,
                       2048, false, false);
 }
 
-Thread *NetworkingThread_core(void) {
+Thread *NetworkingThread_core() {
     if (!s_core)
         s_core = Thread(TYPE_THREAD_NETWORKING_SINGLETON, networking_job,
                             2048, false, true);
@@ -70,11 +70,11 @@ bool NetworkingThread_submit(Thread *w, any batch) {
     return Thread_submit(w, batch);
 }
 
-void NetworkingThread_stop(Thread *w) {
+fn NetworkingThread_stop(Thread *w) {
     Thread_stop(w);
 }
 
-void NetworkingThread_free(Thread *w) {
+fn NetworkingThread_free(Thread *w) {
     if (w == s_core)
         return;
     Thread_free(w);

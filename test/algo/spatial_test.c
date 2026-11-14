@@ -24,7 +24,7 @@ static unsigned countBits(u64 value) {
     return count;
 }
 
-int main(void) {
+int main() {
     CHECK(Spatial_morton3D(0u, 0u, 0u) == 0u);
     u64 xBit = Spatial_morton3D(1u, 0u, 0u);
     u64 yBit = Spatial_morton3D(0u, 1u, 0u);

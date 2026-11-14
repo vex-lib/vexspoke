@@ -111,7 +111,7 @@
 // buffer is safe.
 static char s_serverBody[SERVER_BODY_CAP];
 
-static void applyTimeout(int fd, u32 ms) {
+static fn applyTimeout(int fd, u32 ms) {
     struct timeval tv = { .tv_sec = ms / 1000, .tv_usec = (suseconds_t)((ms % 1000) * 1000) };
     setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
     setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
@@ -307,7 +307,7 @@ bool Http_perform(const HttpRequest *req, HttpResponse *resp) {
     return ok;
 }
 
-void Http_respond(int clientFd, int status, const char *contentType,
+fn Http_respond(int clientFd, int status, const char *contentType,
                   const char *body, bytes bodyLen) {
     const char *reason =
         status == 200 ? "OK" :
@@ -420,7 +420,7 @@ bool HttpServer_start(HttpServer *server, int port, HttpHandler handler,
     return pthread_create(&(*server).thread, nullptr, acceptLoop, server) == 0;
 }
 
-void HttpServer_stop(HttpServer *server) {
+fn HttpServer_stop(HttpServer *server) {
     if (!(*server).listenFd) return;
     (*server).running = false;      // loop notices within one poll period
     pthread_join((*server).thread, nullptr);

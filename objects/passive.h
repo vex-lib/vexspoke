@@ -7,7 +7,7 @@
 // Ported from legacy objects/Passive.java.
 
 typedef u64 (*PassiveGetter)(any userdata);
-typedef void (*PassiveSetter)(u64 value, any userdata);
+typedef fn (*PassiveSetter)(u64 value, any userdata);
 
 typedef struct Passive Passive;
 
@@ -20,10 +20,10 @@ Passive *Passive_2(const Passive *init, bytes count);
 
 #define Passive(...) CONSTRUCTOR_DISPATCH(Passive, __VA_ARGS__)
 
-void Passive_free(Passive *passive);
+fn Passive_free(Passive *passive);
 
 // Accessors invoking lazy hooks
 u64 Passive_get(Passive *passive);
-void     Passive_set(Passive *passive, u64 value);
+fn     Passive_set(Passive *passive, u64 value);
 
 #endif

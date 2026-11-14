@@ -2,7 +2,6 @@
 #define STRUCT_SET_H
 
 #include "vex.h"
-
 #include "struct/collection.h"
 #include "struct/list.h"
 
@@ -19,7 +18,7 @@ typedef struct Set {
 // Empty set for element_class with initial slot capacity (min 4, power of two).
 Set *Set_2(u32 element_class, bytes capacity);
 
-void Set_free(Set *set);
+fn Set_free(Set *set);
 
 // Add an element; returns 1 if inserted, 0 if already present.
 int Set_add(Set *set, u64 element);

@@ -28,7 +28,7 @@ static any subtractStep(any context, any input) {
     return value;
 }
 
-int main(void) {
+int main() {
     Function empty = Function();
     CHECK(Function_getCall(&empty) == nullptr);
     CHECK(Function_getContext(&empty) == nullptr);

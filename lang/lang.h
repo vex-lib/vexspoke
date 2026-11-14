@@ -8,7 +8,6 @@
 // code uses.
 
 #include "vex.h"
-
 #include "lang/str.h"
 #include "lang/point/point.h"
 #include "lang/rect/rectangle.h"

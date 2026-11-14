@@ -20,7 +20,7 @@ static int g_failures = 0;
     } while (0)
 
 // Checks an empty class, then single-byte membership.
-static void testBytes(void) {
+static fn testBytes() {
     RegexCharClass cls;
     RegexCharClass_clear(&cls);
     CHECK(!RegexCharClass_test(&cls, (u8) 'a'));
@@ -44,7 +44,7 @@ static void testBytes(void) {
 }
 
 // Checks inclusive ranges and their folding.
-static void testRanges(void) {
+static fn testRanges() {
     RegexCharClass cls;
     RegexCharClass_clear(&cls);
     RegexCharClass_addRange(&cls, (u8) 'a', (u8) 'z', false);
@@ -76,7 +76,7 @@ static void testRanges(void) {
 }
 
 // Checks the \d \D \w \W \s \S families and the letter predicate.
-static void testPredefined(void) {
+static fn testPredefined() {
     CHECK(RegexCharClass_isPredefined('d'));
     CHECK(RegexCharClass_isPredefined('W'));
     CHECK(RegexCharClass_isPredefined('s'));
@@ -133,7 +133,7 @@ static void testPredefined(void) {
 }
 
 // Checks negation over the whole 256-bit space.
-static void testNegate(void) {
+static fn testNegate() {
     RegexCharClass cls;
     RegexCharClass_clear(&cls);
     RegexCharClass_addByte(&cls, (u8) 'a', false);
@@ -148,7 +148,7 @@ static void testNegate(void) {
     CHECK(!RegexCharClass_test(&cls, (u8) 'b'));
 }
 
-int main(void) {
+int main() {
     testBytes();
     testRanges();
     testPredefined();

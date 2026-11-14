@@ -30,7 +30,7 @@ typedef struct Blake2b {
     bytes   outlen;                   // digest length chosen at init
 } Blake2b;
 
-static inline Blake2b Blake2b_0(void) { return (Blake2b) {0}; }
+static inline Blake2b Blake2b_0() { return (Blake2b) {0}; }
 #define Blake2b(...) CONSTRUCTOR_DISPATCH(Blake2b, __VA_ARGS__)
 
 // Init unkeyed. outlen in [1,64]. False (with THROW) on a null self or bad outlen.
@@ -39,7 +39,7 @@ bool Blake2b_init(Blake2b *self, bytes outlen);
 bool Blake2b_initKeyed(Blake2b *self, bytes outlen, const u8 *key, bytes keylen);
 
 // Absorb `len` bytes. A null self is a no-op; null data with a nonzero len rejects.
-void Blake2b_update(Blake2b *self, const_any data, bytes len);
+fn Blake2b_update(Blake2b *self, const_any data, bytes len);
 // Write (*self).outlen bytes into out. False (with THROW) when out is null or
 // outCap is shorter than outlen. Zeroes the context on success.
 bool Blake2b_final(Blake2b *self, u8 *out, bytes outCap);

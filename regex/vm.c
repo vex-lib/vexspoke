@@ -1,7 +1,6 @@
 // regex/vm.c — the RegexVm Pike-VM simulator.
 
 #include "vex.h"
-
 #include "regex/vm.h"
 
 #include "nio/mem.h"
@@ -140,7 +139,7 @@ static bool instMatches(const RegexCharClass *classes, const RegexInst *inst, u8
 // Epsilon-closure: adds pc0 and everything reachable without consuming a byte,
 // starting from parentCaps. Iterative (work stack), and a capture write is
 // paired with a restore marker so sibling branches never see each other.
-static void addThread(RegexVm *vm, RegexList *list, u32 pc0, const bytes *parentCaps,
+static fn addThread(RegexVm *vm, RegexList *list, u32 pc0, const bytes *parentCaps,
                       bytes pos, const char *subject, bytes length, bool multiline) {
     u32 stride = (*vm).capStride;
     u32 programCount = RegexProgram_count((*vm).program);
@@ -265,7 +264,7 @@ RegexVm RegexVm_2(const RegexProgram *program, u32 groupCount) {
     return vm;
 }
 
-void RegexVm_free(RegexVm *vm) {
+fn RegexVm_free(RegexVm *vm) {
     if ((*vm).clistPc) Memory_free((*vm).clistPc);
     if ((*vm).clistCap) Memory_free((*vm).clistCap);
     if ((*vm).clistSeen) Memory_free((*vm).clistSeen);

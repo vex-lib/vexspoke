@@ -37,11 +37,11 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Core Functions:
- *   - ReactiveThread_invoke(void)
- *   - ReactiveThread_core(void) / ReactiveThread_start(void) / ReactiveThread_shutdown(void)
+ *   - ReactiveThread_invoke()
+ *   - ReactiveThread_core() / ReactiveThread_start() / ReactiveThread_shutdown()
  *   - ReactiveThread_wake(box) / ReactiveThread_wakeOn(worker, box)
  *   - ReactiveThread_adopt(box) / ReactiveThread_release(box)
- *   - ReactiveThread_isQueued(box) / ReactiveThread_pending(void)
+ *   - ReactiveThread_isQueued(box) / ReactiveThread_pending()
  *   - ReactiveThread_stop(worker) / ReactiveThread_free(worker)
  * ============================================================================
  */
@@ -52,9 +52,9 @@ static Thread *s_core = nullptr;
 static SpinLock s_lock = SPIN_LOCK_INIT;
 static Map *s_queued = nullptr;
 
-static void deliverToReactiveThread(Reactive *box); // the default delivery hook
+static fn deliverToReactiveThread(Reactive *box); // the default delivery hook
 
-static Map *queued(void) {
+static Map *queued() {
     if (s_queued == nullptr)
         s_queued = Map_3(ID_LONG, ID_LONG, 64);
     return s_queued;
@@ -63,8 +63,8 @@ static Map *queued(void) {
 // One pass: pop a box, forget it is queued, drain it. Dropping the queued entry
 // BEFORE the drain lets a callback that re-wakes the same box queue it for the
 // NEXT pass (coalesced, and never a same-stack re-entry).
-static void reactive_job(Thread *self, any task) {
-    (void) self;
+static fn reactive_job(Thread *self, any task) {
+    (fn) self;
     if (task == nullptr)
         return;                              // no idle work: this worker only acts when nudged
     Reactive *box = (Reactive*) task;
@@ -76,11 +76,11 @@ static void reactive_job(Thread *self, any task) {
     Reactive_drain(box);                     // observers run HERE, on the reactive thread
 }
 
-Thread *ReactiveThread_invoke(void) {
+Thread *ReactiveThread_invoke() {
     return Thread(TYPE_THREAD_REACTIVE_SINGLETON, reactive_job, 2048, false, false);
 }
 
-Thread *ReactiveThread_core(void) {
+Thread *ReactiveThread_core() {
     if (s_core == nullptr) {
         s_core = Thread(TYPE_THREAD_REACTIVE_SINGLETON, reactive_job, 2048, false, false);
         if (s_core != nullptr)
@@ -91,7 +91,7 @@ Thread *ReactiveThread_core(void) {
 
 // Adopt the shared worker as the process default delivery: from here, a plain
 // set on any box that has not opted out schedules this worker's drain.
-bool ReactiveThread_start(void) {
+bool ReactiveThread_start() {
     Thread *core = ReactiveThread_core();
     if (core == nullptr)
         return false;
@@ -99,7 +99,7 @@ bool ReactiveThread_start(void) {
     return true;
 }
 
-void ReactiveThread_shutdown(void) {
+fn ReactiveThread_shutdown() {
     if (Reactive_getDefaultDelivery() == deliverToReactiveThread)
         Reactive_setDefaultDelivery(nullptr);
     if (s_core != nullptr) {
@@ -143,7 +143,7 @@ bool ReactiveThread_wake(Reactive *box) {
 
 // The delivery hook: bound to a box so a plain set schedules this worker. It
 // runs on the WRITER's thread and only queues — never fires observers.
-static void deliverToReactiveThread(Reactive *box) {
+static fn deliverToReactiveThread(Reactive *box) {
     ReactiveThread_wake(box);
 }
 
@@ -154,7 +154,7 @@ bool ReactiveThread_adopt(Reactive *box) {
     return true;
 }
 
-void ReactiveThread_release(Reactive *box) {
+fn ReactiveThread_release(Reactive *box) {
     if (box == nullptr)
         return;
     Reactive_setDelivery(box, nullptr);
@@ -173,18 +173,18 @@ bool ReactiveThread_isQueued(const Reactive *box) {
     return q;
 }
 
-bytes ReactiveThread_pending(void) {
+bytes ReactiveThread_pending() {
     SpinLock_lock(&s_lock);
     bytes n = (s_queued != nullptr) ? Map_size(s_queued) : 0;
     SpinLock_unlock(&s_lock);
     return n;
 }
 
-void ReactiveThread_stop(Thread *worker) {
+fn ReactiveThread_stop(Thread *worker) {
     Thread_stop(worker);
 }
 
-void ReactiveThread_free(Thread *worker) {
+fn ReactiveThread_free(Thread *worker) {
     if (worker == s_core)
         return;                              // the default owner outlives its callers
     Thread_free(worker);

@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include <stdarg.h>
 
 #include "lang/str.h"
@@ -70,7 +69,7 @@ Str Str_2(char *dest, bytes cap) {
     return result;
 }
 
-void Str_putc(Str *s, char c) {
+fn Str_putc(Str *s, char c) {
     if (s == nullptr)
         return;
     if ((*s).dest == nullptr || (*s).cap == 0) {
@@ -85,7 +84,7 @@ void Str_putc(Str *s, char c) {
     (*s).dest[(*s).len] = '\0';
 }
 
-void Str_put(Str *s, const char *text) {
+fn Str_put(Str *s, const char *text) {
     if (s == nullptr || text == nullptr)
         return;
     bytes n = strlen(text);
@@ -101,7 +100,7 @@ void Str_put(Str *s, const char *text) {
     }
 }
 
-void Str_putQuoted(Str *s, const char *text) {
+fn Str_putQuoted(Str *s, const char *text) {
     if (s == nullptr)
         return;
     Str_putc(s, '"');
@@ -120,7 +119,7 @@ void Str_putQuoted(Str *s, const char *text) {
     Str_putc(s, '"');
 }
 
-void Str_printf(Str *s, const char *fmt, ...) {
+fn Str_printf(Str *s, const char *fmt, ...) {
     if (s == nullptr || fmt == nullptr)
         return;
     if ((*s).dest == nullptr || (*s).cap == 0) {

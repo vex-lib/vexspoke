@@ -17,7 +17,7 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Core Functions:
- *   - main(void)
+ *   - main()
  *   - printf(===\n")
  *   - TouchID_discard(tok)
  * ============================================================================
@@ -25,7 +25,7 @@
 
 
 // Demonstrates authenticate-once token verification, discard, and prompt flow.
-int main(void) {
+int main() {
     printf("=== Secure TouchID token _test ===\n");
 
     /* 1. Start auth session */

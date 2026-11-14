@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include <stdlib.h>
 
 #include "security/argon2.h"
@@ -58,7 +57,7 @@ typedef struct Argon2Instance {
     u64 *memory;       // memoryBlocks * 128 words
 } Argon2Instance;
 
-static void storeLE32(u8 *p, u32 v) {
+static fn storeLE32(u8 *p, u32 v) {
     p[0] = (u8) v;
     p[1] = (u8) (v >> 8);
     p[2] = (u8) (v >> 16);
@@ -69,7 +68,7 @@ static u64 rotr64(u64 v, u32 bits) {
     return (v >> bits) | (v << (64u - bits));
 }
 
-static void secureWipe(any p, bytes n) {
+static fn secureWipe(any p, bytes n) {
     volatile u8 *v = (volatile u8*) p;
     while (n > 0u) {
         *v = 0u;
@@ -78,7 +77,7 @@ static void secureWipe(any p, bytes n) {
     }
 }
 
-static void mixArgon(u64 *v, u32 a, u32 b, u32 c, u32 d) {
+static fn mixArgon(u64 *v, u32 a, u32 b, u32 c, u32 d) {
     v[a] = v[a] + v[b] + 2u * (v[a] & 0xFFFFFFFFu) * (v[b] & 0xFFFFFFFFu);
     v[d] = rotr64(v[d] ^ v[a], 32u);
     v[c] = v[c] + v[d] + 2u * (v[c] & 0xFFFFFFFFu) * (v[d] & 0xFFFFFFFFu);
@@ -89,7 +88,7 @@ static void mixArgon(u64 *v, u32 a, u32 b, u32 c, u32 d) {
     v[b] = rotr64(v[b] ^ v[c], 63u);
 }
 
-static void roundP(u64 *v) {
+static fn roundP(u64 *v) {
     mixArgon(v, 0u, 4u, 8u, 12u);
     mixArgon(v, 1u, 5u, 9u, 13u);
     mixArgon(v, 2u, 6u, 10u, 14u);
@@ -100,7 +99,7 @@ static void roundP(u64 *v) {
     mixArgon(v, 3u, 4u, 9u, 14u);
 }
 
-static void fillBlock(const u64 *prev, const u64 *ref, u64 *next,
+static fn fillBlock(const u64 *prev, const u64 *ref, u64 *next,
                       bool withXor) {
     u64 r[ARGON2_BLOCK_WORDS];
     u64 tmp[ARGON2_BLOCK_WORDS];
@@ -131,7 +130,7 @@ static void fillBlock(const u64 *prev, const u64 *ref, u64 *next,
         next[i] = tmp[i] ^ r[i];
 }
 
-static void nextAddresses(u64 *addressBlock, u64 *inputBlock,
+static fn nextAddresses(u64 *addressBlock, u64 *inputBlock,
                           const u64 *zeroBlock) {
     inputBlock[6]++;
     fillBlock(zeroBlock, inputBlock, addressBlock, false);
@@ -171,7 +170,7 @@ static u32 indexAlpha(const Argon2Instance *inst, u32 pass, u32 slice,
     return (u32) (((u64) startPosition + relativePosition) % (*inst).laneLength);
 }
 
-static void fillSegment(Argon2Instance *inst, u32 pass, u32 lane, u32 slice) {
+static fn fillSegment(const Argon2Instance *inst, u32 pass, u32 lane, u32 slice) {
     bool dataIndependent = ((*inst).type == ARGON2_TYPE_ID && pass == 0u &&
                             slice < ARGON2_SYNC_POINTS / 2u);
     u64 addressBlock[ARGON2_BLOCK_WORDS] = {0};
@@ -299,7 +298,7 @@ bool Argon2id_derive(const Argon2Params *params,
     u32 laneLength = segmentLength * ARGON2_SYNC_POINTS;
 
     bytes memoryBytes = (bytes) memoryBlocks * ARGON2_BLOCK_BYTES;
-    u64 *memory = (u64*) malloc(memoryBytes);
+    u64 *memory = malloc(memoryBytes);
     if (memory == nullptr) {
         THROW("Argon2id_derive: work memory of %zu bytes was refused", memoryBytes);
         return false;

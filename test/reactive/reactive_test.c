@@ -32,19 +32,19 @@ static Reactive *g_self;
 static ReactiveChangedFn g_changedFnA;
 
 // Counts delivery to the first onSet observer.
-static void onSetA(Reactive *r, pointer v, any ud) { (void) r; (void) v; (void) ud; g_setA++; }
+static fn onSetA(Reactive *r, pointer v, any ud) { (fn) r; (fn) v; (fn) ud; g_setA++; }
 // Counts delivery to the second onSet observer.
-static void onSetB(Reactive *r, pointer v, any ud) { (void) r; (void) v; (void) ud; g_setB++; }
+static fn onSetB(Reactive *r, pointer v, any ud) { (fn) r; (fn) v; (fn) ud; g_setB++; }
 // Counts changed notifications and removes observer A during dispatch to test safe mutation.
-static void onChangedA(Reactive *r, pointer o, pointer n, any ud) {
-    (void) o; (void) n; (void) ud;
+static fn onChangedA(Reactive *r, pointer o, pointer n, any ud) {
+    (fn) o; (fn) n; (fn) ud;
     g_changedA++;
     // mid-fire removal: A removes itself; the fire must stay safe.
     if (r == g_self)
         Reactive_removeOnChanged(r, g_changedFnA, nullptr);
 }
 // Counts delivery to the second onChanged observer.
-static void onChangedB(Reactive *r, pointer o, pointer n, any ud) { (void) r; (void) o; (void) n; (void) ud; g_changedB++; }
+static fn onChangedB(Reactive *r, pointer o, pointer n, any ud) { (fn) r; (fn) o; (fn) n; (fn) ud; g_changedB++; }
 
 // A writer thread: hammer the reactive from a foreign thread. Must never fire an
 // observer there — it only stores + marks dirty.
@@ -58,7 +58,7 @@ static any setterLoop(any arg) {
 }
 
 // Proves observer fan-out/removal, owner-affine coalesced drain, thread-safe writes, and null handling.
-int main(void) {
+int main() {
     int failures = 0;
 
     Reactive *r = Reactive_1(0);

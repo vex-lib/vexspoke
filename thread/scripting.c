@@ -29,7 +29,7 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Core Functions:
- *   - ScriptingThread_invoke(void)
+ *   - ScriptingThread_invoke()
  *   - ScriptingThread_submit(w, task)
  *   - ScriptingThread_stop(w)
  *   - ScriptingThread_free(w)
@@ -42,13 +42,13 @@
 ;;INCOMPLETE // Script executor port: tasks are dequeued and dropped until the
 ;;INCOMPLETE // scripting surface lands. Queue and lifecycle are fully live.
 
-static void scripting_job(Thread *self, any task) {
-    (void)self;
+static fn scripting_job(Thread *self, any task) {
+    (fn)self;
     if (ComputeJob_run(task)) return;   // a generic job handed to this role
-    (void)task; // TODO(lang): execute(task) once the script surface lands.
+    (fn)task; // TODO(lang): execute(task) once the script surface lands.
 }
 
-Thread *ScriptingThread_invoke(void) {
+Thread *ScriptingThread_invoke() {
     return Thread(TYPE_THREAD_SCRIPTING_SINGLETON, scripting_job,
                       1024, false, false);
 }
@@ -57,10 +57,10 @@ bool ScriptingThread_submit(Thread *w, any task) {
     return Thread_submit(w, task);
 }
 
-void ScriptingThread_stop(Thread *w) {
+fn ScriptingThread_stop(Thread *w) {
     Thread_stop(w);
 }
 
-void ScriptingThread_free(Thread *w) {
+fn ScriptingThread_free(Thread *w) {
     Thread_free(w);
 }

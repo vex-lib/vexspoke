@@ -17,7 +17,7 @@ static int g_failures = 0;
     } while (0)
 
 // Exercises d64 values including signed zero, CAS, arrays, metadata, and null safety.
-int main(void) {
+int main() {
     CHECK(f64_init());
 
     any p = f64_alloc();

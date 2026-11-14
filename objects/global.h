@@ -17,11 +17,11 @@ Global *Global_2(const Global *init, bytes count);
 
 #define Global(...) CONSTRUCTOR_DISPATCH(Global, __VA_ARGS__)
 
-void Global_free(Global *global);
+fn Global_free(Global *global);
 
 // Atomic read/write
 u64 Global_get(const Global *global);
-void     Global_set(Global *global, u64 value);
+fn     Global_set(Global *global, u64 value);
 bool     Global_compareAndSet(Global *global, u64 expected, u64 value);
 
 #endif

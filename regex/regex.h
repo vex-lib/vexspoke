@@ -2,7 +2,6 @@
 #define REGEX_REGEX_H
 
 #include "vex.h"
-
 #include "regex/charclass.h"
 #include "regex/nodelist.h"
 #include "regex/parser.h"
@@ -75,7 +74,7 @@ Regex *Regex_2(const char *pattern, u32 flags);
 // reject, including lazy/possessive spellings; no literal fallback is offered.
 
 // Release the compiled pattern, its program and its class bitmaps. Null-safe.
-void Regex_free(Regex *regex);
+fn Regex_free(Regex *regex);
 
 #define Regex(...) CONSTRUCTOR_DISPATCH(Regex, __VA_ARGS__)
 

@@ -18,7 +18,6 @@
 // live polls instead of the dead getters the legacy shipped.
 
 #include "vex.h"
-
 #include "input/mouse.h"
 
 #include "input/focus.h"
@@ -84,10 +83,10 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Constructors:
- *   - Mouse_init(void)
+ *   - Mouse_init()
  *
  * Core Functions:
- *   - Mouse_shutdown(void)
+ *   - Mouse_shutdown()
  *   - Mouse_addListener(listener)
  *   - Mouse_removeListener(listener)
  *   - Mouse_attachWindow(windowId, listener)
@@ -99,7 +98,7 @@
  *   - Mouse_pushDragEvent(windowId, button, x, y)
  *   - Mouse_pushScrollEvent(windowId, dx, dy)
  *   - Mouse_pushZoomEvent(windowId, magnification)
- *   - Mouse_dispatchEvents(void)
+ *   - Mouse_dispatchEvents()
  *   - Mouse_pressTime(button)
  *   - Mouse_lastReleaseTime(button)
  *   - Mouse_lastHoldDurationNanos(button)
@@ -109,8 +108,8 @@
  *   - Mouse_tapPhase(button)
  *   - Mouse_isLongPressFired(button)
  *   - Mouse_setLongPressFired(button, fired)
- *   - Mouse_x(void)
- *   - Mouse_y(void)
+ *   - Mouse_x()
+ *   - Mouse_y()
  *   - Mouse_button(mouseEvent)
  *   - Mouse_name(button)
  *
@@ -220,7 +219,7 @@ static WinRow *rowFor(u32 windowId) {
     return nullptr;
 }
 
-void Mouse_init(void) {
+fn Mouse_init() {
     if (s_ready) return;
     NanoTime_init();
     s_queue = RingBuffer(sizeof(InputEvent), QUEUE_CAPACITY);
@@ -229,13 +228,13 @@ void Mouse_init(void) {
     s_ready = true;
 }
 
-void Mouse_shutdown(void) {
+fn Mouse_shutdown() {
     if (!s_ready) return;
     RingBuffer_shutdown(&s_queue);
     s_ready = false;
 }
 
-void Mouse_addListener(const MouseHandler *listener) {
+fn Mouse_addListener(const MouseHandler *listener) {
     if (listener == nullptr) return;
     if (!growSegment(&s_listeners, &s_listenerCap, s_listenerCount + 1)) return;
     s_listeners[s_listenerCount++] = listener;
@@ -251,7 +250,7 @@ bool Mouse_removeListener(const MouseHandler *listener) {
     return false;
 }
 
-void Mouse_attachWindow(u32 windowId, const MouseHandler *listener) {
+fn Mouse_attachWindow(u32 windowId, const MouseHandler *listener) {
     if (listener == nullptr || windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) {
@@ -280,14 +279,14 @@ bool Mouse_detachWindow(u32 windowId, const MouseHandler *listener) {
     return false;
 }
 
-void Mouse_detachWindowAll(u32 windowId) {
+fn Mouse_detachWindowAll(u32 windowId) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row != nullptr)
         (*row).count = 0;
 }
 
-static int modifierMask(void) {
+static int modifierMask() {
     int mods = 0;
     if (Key_isDown(KEY_LEFT_SHIFT) || Key_isDown(KEY_RIGHT_SHIFT)) mods |= 1;
     if (Key_isDown(KEY_LEFT_CONTROL) || Key_isDown(KEY_RIGHT_CONTROL)) mods |= 2;
@@ -296,11 +295,11 @@ static int modifierMask(void) {
     return mods;
 }
 
-static u64 epochMicros(void) {
+static u64 epochMicros() {
     return (NanoTime_elapsedNanos() / 1000ULL) & 0x3FFFFFFFFFFFULL;
 }
 
-void Mouse_pushButtonEvent(u32 windowId, int button, int action, u64 tapWindowNanos) {
+fn Mouse_pushButtonEvent(u32 windowId, int button, int action, u64 tapWindowNanos) {
     if (button < 0 || button >= BUTTON_COUNT) return;
     if (!s_ready) Mouse_init();
     if (!s_ready) return;
@@ -362,28 +361,28 @@ static d64 coordB(u64 packed) {
     return (d64) ((i16) ((packed >> 32) & 0xFFFFu));
 }
 
-void Mouse_pushMoveEvent(u32 windowId, d64 x, d64 y) {
+fn Mouse_pushMoveEvent(u32 windowId, d64 x, d64 y) {
     if (!s_ready) Mouse_init();
     if (!s_ready) return;
     InputEvent ev = { .packed = packCoords((255ULL << 8) | 5ULL, x, y), .windowId = windowId, .pad = 0 };
     RingBuffer_push(&s_queue, &ev);
 }
 
-void Mouse_pushMoveDeltaEvent(u32 windowId, d64 dx, d64 dy) {
+fn Mouse_pushMoveDeltaEvent(u32 windowId, d64 dx, d64 dy) {
     if (!s_ready) Mouse_init();
     if (!s_ready) return;
     InputEvent ev = { .packed = packCoords((255ULL << 8) | 9ULL, dx, dy), .windowId = windowId, .pad = 0 };
     RingBuffer_push(&s_queue, &ev);
 }
 
-void Mouse_pushDragEvent(u32 windowId, int button, d64 x, d64 y) {
+fn Mouse_pushDragEvent(u32 windowId, int button, d64 x, d64 y) {
     if (!s_ready) Mouse_init();
     if (!s_ready) return;
     InputEvent ev = { .packed = packCoords(((u64)button << 8) | 7ULL, x, y), .windowId = windowId, .pad = 0 };
     RingBuffer_push(&s_queue, &ev);
 }
 
-void Mouse_pushScrollEvent(u32 windowId, d64 dx, d64 dy) {
+fn Mouse_pushScrollEvent(u32 windowId, d64 dx, d64 dy) {
     if (!s_ready) Mouse_init();
     if (!s_ready) return;
 
@@ -402,7 +401,7 @@ void Mouse_pushScrollEvent(u32 windowId, d64 dx, d64 dy) {
     RingBuffer_push(&s_queue, &ev);
 }
 
-void Mouse_pushZoomEvent(u32 windowId, d64 magnification) {
+fn Mouse_pushZoomEvent(u32 windowId, d64 magnification) {
     if (!s_ready) Mouse_init();
     if (!s_ready) return;
 
@@ -418,7 +417,7 @@ void Mouse_pushZoomEvent(u32 windowId, d64 magnification) {
 
 // Deliver one motion-class event (move/delta/zoom/scroll/drag) to one
 // window's scoped list.
-static void deliverMotion(u32 windowId, int action8, int button,
+static fn deliverMotion(u32 windowId, int action8, int button,
                           d64 a, d64 b) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
@@ -438,7 +437,7 @@ static void deliverMotion(u32 windowId, int action8, int button,
 }
 
 // Zoom rides the same routing but carries f32 bits instead of coords.
-static void deliverZoom(u32 windowId, d64 magnification) {
+static fn deliverZoom(u32 windowId, d64 magnification) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return;
@@ -450,7 +449,7 @@ static void deliverZoom(u32 windowId, d64 magnification) {
 }
 
 // Deliver one button-class event to one window's scoped list.
-static void deliverButton(u32 windowId, int action, int mouseEvent, u64 exactNanos) {
+static fn deliverButton(u32 windowId, int action, int mouseEvent, u64 exactNanos) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return;
@@ -466,7 +465,7 @@ static void deliverButton(u32 windowId, int action, int mouseEvent, u64 exactNan
     }
 }
 
-void Mouse_dispatchEvents(void) {
+fn Mouse_dispatchEvents() {
     if (!s_ready) return;
 
     InputEvent ev;
@@ -612,7 +611,7 @@ int Mouse_taps(int button) {
     return s_slots[button].taps;
 }
 
-void Mouse_resetTaps(int button) {
+fn Mouse_resetTaps(int button) {
     if (button < 0 || button >= BUTTON_COUNT) return;
     s_slots[button].taps = 0;
 }
@@ -636,16 +635,16 @@ bool Mouse_isLongPressFired(int button) {
     return s_slots[button].longPressFired != 0;
 }
 
-void Mouse_setLongPressFired(int button, bool fired) {
+fn Mouse_setLongPressFired(int button, bool fired) {
     if (button < 0 || button >= BUTTON_COUNT) return;
     s_slots[button].longPressFired = (u8)(fired ? 1 : 0);
 }
 
-d64 Mouse_x(void) {
+d64 Mouse_x() {
     return s_posX;
 }
 
-d64 Mouse_y(void) {
+d64 Mouse_y() {
     return s_posY;
 }
 

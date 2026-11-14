@@ -55,7 +55,7 @@
  *
  * Core Functions:
  *   - Random_free(r)
- *   - Random_system(void)
+ *   - Random_system()
  *   - Random_nextLong(r)
  *   - Random_nextInt(r)
  *   - Random_nextFloat(r)
@@ -83,7 +83,7 @@ static const __uint128_t PCG64_MULT =
 
 static Random *system_rng = nullptr;
 
-static u64 systemSeed(void) {
+static u64 systemSeed() {
 #if defined(VEX_PLATFORM_APPLE)
     u64 ticks = (u64) mach_absolute_time();
 #else
@@ -133,7 +133,7 @@ static RandomEngine pickEngine(u64 seed) {
     return (RandomEngine)(Hash_murmur3Mix64(seed) % (u64) RANDOM_ENGINE_COUNT);
 }
 
-static void initState(Random *r, u64 seed, RandomEngine engine) {
+static fn initState(Random *r, u64 seed, RandomEngine engine) {
     (*r).engine = engine;
     (*r).counter = 0;
     (*r).inc = 0;
@@ -167,11 +167,11 @@ Random *Random_1(u64 seed) {
     return Random_2(seed, pickEngine(seed));
 }
 
-Random *Random_0(void) {
+Random *Random_0() {
     return Random_1(systemSeed());
 }
 
-void Random_free(Random *r) {
+fn Random_free(Random *r) {
     Memory_free(r);
 }
 
@@ -179,7 +179,7 @@ RandomEngine Random_engine(const Random *r) {
     return r ? (*r).engine : RANDOM_ENGINE_MURMUR;
 }
 
-Random *Random_system(void) {
+Random *Random_system() {
     if (!system_rng)
         system_rng = Random_1(systemSeed());
     return system_rng;

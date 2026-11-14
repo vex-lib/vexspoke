@@ -27,23 +27,23 @@ static int g_fires = 0;
 static int64_t g_firedCombo = 0;
 
 // Records the most recent combo delivered by a KeyMap binding.
-static void onFire(any userdata, int64_t combo) {
-    (void) userdata;
+static fn onFire(any userdata, int64_t combo) {
+    (fn) userdata;
     g_fires++;
     g_firedCombo = combo;
 }
 
 // Adds a distinct callback marker to verify replacement and dispatch routing.
-static void onFire2(any userdata, int64_t combo) {
-    (void) userdata;
-    (void) combo;
+static fn onFire2(any userdata, int64_t combo) {
+    (fn) userdata;
+    (fn) combo;
     g_fires += 10;
 }
 
 // ── Tests ─────────────────────────────────────────────────
 
 // Checks arena-backed map creation, empty state, and destruction.
-static void test_create_destroy(void) {
+static fn test_create_destroy() {
     MemoryArena *arena = MemoryArena_create(64u << 20);
     CHECK(arena != nullptr);
 
@@ -60,7 +60,7 @@ static void test_create_destroy(void) {
 }
 
 // Checks safe results for null map arguments across the public operations.
-static void test_null_safety(void) {
+static fn test_null_safety() {
     // All operations on NULL should be safe
     CHECK(KeyMap(nullptr) == nullptr);
     CHECK(KeyMap_count(nullptr) == 0);
@@ -73,7 +73,7 @@ static void test_null_safety(void) {
 }
 
 // Checks exact combo binding, lookup hits, misses, and count updates.
-static void test_bind_and_match(void) {
+static fn test_bind_and_match() {
     MemoryArena *arena = MemoryArena_create(64u << 20);
     KeyMap *map = KeyMap(arena);
 
@@ -112,7 +112,7 @@ static void test_bind_and_match(void) {
 }
 
 // Checks rebinding a combo updates its userdata without duplicating the entry.
-static void test_bind_replaces(void) {
+static fn test_bind_replaces() {
     MemoryArena *arena = MemoryArena_create(64u << 20);
     KeyMap *map = KeyMap(arena);
 
@@ -133,7 +133,7 @@ static void test_bind_replaces(void) {
 }
 
 // Checks removal of selected bindings and preservation of unrelated entries.
-static void test_unbind(void) {
+static fn test_unbind() {
     MemoryArena *arena = MemoryArena_create(64u << 20);
     KeyMap *map = KeyMap(arena);
 
@@ -162,7 +162,7 @@ static void test_unbind(void) {
 }
 
 // Checks the binding table grows beyond its initial capacity and remains searchable.
-static void test_growth(void) {
+static fn test_growth() {
     MemoryArena *arena = MemoryArena_create(64u << 20);
     KeyMap *map = KeyMap(arena);
 
@@ -186,7 +186,7 @@ static void test_growth(void) {
 }
 
 // Checks encoded modifier, gesture, key, and mask bit positions.
-static void test_combo_constants(void) {
+static fn test_combo_constants() {
     // Verify the combo bit layout is correct via compile-time constants
     // Cmd+A: modifier nibble at bit 36, key code A=0x41
     int64_t cmdA = KMOD_CMD | KEY_A;
@@ -206,7 +206,7 @@ static void test_combo_constants(void) {
 }
 
 // Checks combo construction from current key modifier state.
-static void test_build_combo(void) {
+static fn test_build_combo() {
     // buildCombo reads modifier state from Key_isDown.
     // No modifiers held → combo should be just gestureType | keyCode.
     Key_init();
@@ -243,7 +243,7 @@ static void test_build_combo(void) {
 }
 
 // Checks hold-duration threshold mapping into the gesture bits.
-static void test_build_combo_with_hold(void) {
+static fn test_build_combo_with_hold() {
     Key_init();
 
     // Press A and check hold duration builds long-press gesture
@@ -274,10 +274,10 @@ static int g_fireCount = 0;
 static int64_t g_fireCombo = -1;
 
 // Records callback count and resolved combo for gesture-resolution cases.
-static void onResolveFire(any userdata, int64_t combo) {
+static fn onResolveFire(any userdata, int64_t combo) {
     g_fireCount++;
     g_fireCombo = combo;
-    (void) userdata;
+    (fn) userdata;
 }
 
 // Short tap window + settle sleep: settlement is an OWNERSHIP of the pending
@@ -287,7 +287,7 @@ static void onResolveFire(any userdata, int64_t combo) {
 #define SETTLE_SLEEP_US 40000    // 40 ms > window, so settlement always lands
 
 // Sends one synthetic key press/release using the requested tap window.
-static void tapKeyWin(int key, u64 winNanos) {
+static fn tapKeyWin(int key, u64 winNanos) {
     Key_pushEvent(0, key, KEY_ACTION_DOWN, winNanos);
     Key_dispatchEvents();
     Key_pushEvent(0, key, KEY_ACTION_UP, winNanos);
@@ -295,18 +295,18 @@ static void tapKeyWin(int key, u64 winNanos) {
 }
 
 // Waits beyond the configured short tap window so pending taps settle.
-static void settle(void) {
+static fn settle() {
     usleep(SETTLE_SLEEP_US);
 }
 
 // Presses or releases the synthetic Super modifier and dispatches it.
-static void holdSuper(bool down) {
+static fn holdSuper(bool down) {
     Key_pushEvent(0, KEY_LEFT_SUPER, down ? KEY_ACTION_DOWN : KEY_ACTION_UP, 250000000ULL);
     Key_dispatchEvents();
 }
 
 // Checks one pending tap settles, fires its binding once, and is consumed.
-static void test_resolve_tap(void) {
+static fn test_resolve_tap() {
     // Cmd+A tap: while the tap window is open nothing settles (pending);
     // once it closes, resolve fires exactly the Cmd+A binding once, and the
     // consumed tap cannot re-fire on the next frame.
@@ -345,7 +345,7 @@ static void test_resolve_tap(void) {
 }
 
 // Checks a settled d64 tap selects the more specific d64-tap binding.
-static void test_resolve_specificity(void) {
+static fn test_resolve_specificity() {
     // A TAP and A f64_TAP both bound: two taps within the window settle as
     // d64 and resolve the f64_TAP binding (higher KMODE wins), never the
     // TAP — settlement is what makes the d64 reachable.
@@ -381,7 +381,7 @@ static void test_resolve_specificity(void) {
 }
 
 // Checks modifier matching is exact for plain and Cmd-modified bindings.
-static void test_resolve_modifier_exact(void) {
+static fn test_resolve_modifier_exact() {
     // Plain A and Cmd+A both bound. Exact modifier equality: with Super held
     // only Cmd+A fires; without modifiers only plain A fires.
     Key_init();
@@ -418,7 +418,7 @@ static void test_resolve_modifier_exact(void) {
 }
 
 // Checks a settled right-button d64 click resolves and consumes its binding.
-static void test_resolve_mouse(void) {
+static fn test_resolve_mouse() {
     // Right-button d64-click settles and resolves the MOUSE_RIGHT
     // f64_TAP binding; Mouse_resetTaps consumes it via the winner path.
     Mouse_init();
@@ -458,7 +458,7 @@ static void test_resolve_mouse(void) {
 }
 
 // Checks a long press fires after its threshold and remains latched until release.
-static void test_resolve_long_press(void) {
+static fn test_resolve_long_press() {
     // Hold A past KEYMAP_LONG_PRESS_NANOS: the LONG_PRESS binding fires.
     // Uses a real 450 ms hold — single deliberate sleep in the suite.
     Key_init();
@@ -497,7 +497,7 @@ static void test_resolve_long_press(void) {
 }
 
 // Checks a long-press hit consumes the press so release cannot also fire tap.
-static void test_long_press_single_fire(void) {
+static fn test_long_press_single_fire() {
     // ONE press → at most ONE fire: a LONG_PRESS hit consumes the tap count
     // as well, so releasing the same press never ALSO fires a TAP.
     Key_init();
@@ -534,7 +534,7 @@ static void test_long_press_single_fire(void) {
 }
 
 // Checks disabled multi-tap mode resolves taps immediately and excludes f64s.
-static void test_multi_tap_disabled(void) {
+static fn test_multi_tap_disabled() {
     // Rhythm-game mode (KeyMap_setMultiTapEnabled(false)): every press-release
     // is a single tap resolved IMMEDIATELY — zero window latency; d64 and
     // TRIPLE bindings never resolve.
@@ -572,7 +572,7 @@ static void test_multi_tap_disabled(void) {
 }
 
 // Checks per-key gesture phases through pending, settlement, and consumption.
-static void test_tap_phase(void) {
+static fn test_tap_phase() {
     // Public per-key gesture timeline: NONE → PENDING (window open) →
     // settled SINGLE/d64/TRIPLE once the window closes. Consumed → NONE.
     Key_init();
@@ -624,7 +624,7 @@ static void test_tap_phase(void) {
 }
 
 // Checks a modifier change starts a fresh tap sequence rather than accumulating.
-static void test_modifier_breaks_sequence(void) {
+static fn test_modifier_breaks_sequence() {
     // A modifier-state change between presses breaks the tap sequence:
     // plain Q then Cmd+Q within the window must NOT accumulate into a
     // d64 — the Cmd+Q key press starts a fresh single sequence.
@@ -653,7 +653,7 @@ static void test_modifier_breaks_sequence(void) {
 }
 
 // Runs KeyMap lifecycle, binding, combo construction, and gesture-resolution cases.
-int main(void) {
+int main() {
     test_create_destroy();
     test_null_safety();
     test_bind_and_match();

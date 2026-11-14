@@ -5,8 +5,8 @@
 
 // system/discovery.h — native hardware, display, and GPU probe (Legacy: system/SystemDiscovery.java)
 
-void SystemDiscovery_bootstrap(void);
-void SystemDiscovery_refresh(void);
-bool SystemDiscovery_isBootstrapped(void);
+fn SystemDiscovery_bootstrap();
+fn SystemDiscovery_refresh();
+bool SystemDiscovery_isBootstrapped();
 
 #endif

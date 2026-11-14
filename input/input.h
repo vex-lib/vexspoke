@@ -8,7 +8,6 @@
 // code uses.
 
 #include "vex.h"
-
 #include "input/gamepad.h"
 #include "input/gesture.h"
 #include "input/piano_key.h"

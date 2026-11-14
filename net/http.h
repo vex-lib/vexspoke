@@ -37,20 +37,20 @@ static inline HttpRequest HttpRequest_3(const char *host, int port, const char *
         .port = port, .path = path, .timeoutMs = 5000u };
 }
 #define HttpRequest(...) CONSTRUCTOR_DISPATCH(HttpRequest, __VA_ARGS__)
-static inline void HttpRequest_setScheme(HttpRequest *request, const char *scheme) {
+static inline fn HttpRequest_setScheme(HttpRequest *request, const char *scheme) {
     if (request) (*request).scheme = scheme;
 }
-static inline void HttpRequest_setMethod(HttpRequest *request, const char *method) {
+static inline fn HttpRequest_setMethod(HttpRequest *request, const char *method) {
     if (request) (*request).method = method;
 }
-static inline void HttpRequest_setHeaders(HttpRequest *request,
+static inline fn HttpRequest_setHeaders(HttpRequest *request,
                                           const HttpHeader *headers, u32 count) {
     if (request) { (*request).headers = headers; (*request).headerCount = count; }
 }
-static inline void HttpRequest_setBody(HttpRequest *request, const char *body, bytes length) {
+static inline fn HttpRequest_setBody(HttpRequest *request, const char *body, bytes length) {
     if (request) { (*request).body = body; (*request).bodyLen = length; }
 }
-static inline void HttpRequest_setTimeout(HttpRequest *request, u32 timeoutMilliseconds) {
+static inline fn HttpRequest_setTimeout(HttpRequest *request, u32 timeoutMilliseconds) {
     if (request) (*request).timeoutMs = timeoutMilliseconds;
 }
 
@@ -83,7 +83,7 @@ typedef struct HttpExchange {
     bytes bodyLen;
 } HttpExchange;
 
-typedef void (*HttpHandler)(const HttpExchange *exchange, int clientFd, any userdata);
+typedef fn (*HttpHandler)(const HttpExchange *exchange, int clientFd, any userdata);
 
 typedef struct HttpServer {
     int listenFd;
@@ -99,10 +99,10 @@ bool HttpServer_start(HttpServer *server, int port, HttpHandler handler,
                       any userdata, int *portOut);
 
 // Stop accepting and close the listener. In-flight handler finishes.
-void HttpServer_stop(HttpServer *server);
+fn HttpServer_stop(HttpServer *server);
 
 // Handler-side responder: writes a full response on the open connection.
-void Http_respond(int clientFd, int status, const char *contentType,
+fn Http_respond(int clientFd, int status, const char *contentType,
                   const char *body, bytes bodyLen);
 
 #endif

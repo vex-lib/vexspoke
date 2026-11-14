@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "algo/spatial.h"
 
 ;;DEFINITION

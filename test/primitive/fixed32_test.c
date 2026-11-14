@@ -17,7 +17,7 @@ static int g_failures = 0;
     } while (0)
 
 // Exercises Fixed32 boundary values, constructors, CAS, arrays, and null safety.
-int main(void) {
+int main() {
     CHECK(Fixed32_init());
 
     any p = Fixed32_alloc();

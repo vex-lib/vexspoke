@@ -34,7 +34,7 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Core Functions:
- *   - EventThread_invoke(void)
+ *   - EventThread_invoke()
  *   - EventThread_submit(w, packet)
  *   - EventThread_stop(w)
  *   - EventThread_free(w)
@@ -44,8 +44,8 @@
 
 // thread/event.c — event dispatcher worker (Legacy: EventThread.java).
 
-static void event_job(Thread *self, any task) {
-    (void)self;
+static fn event_job(Thread *self, any task) {
+    (fn)self;
     if (ComputeJob_run(task)) return;   // a generic job handed to this role
     if (!task) {
         Key_dispatchEvents();
@@ -56,7 +56,7 @@ static void event_job(Thread *self, any task) {
     // Reserved for off-heap custom event packet dispatchers (legacy dispatch()).
 }
 
-Thread *EventThread_invoke(void) {
+Thread *EventThread_invoke() {
     return Thread(TYPE_THREAD_EVENT_SINGLETON, event_job, 1024, true, false);
 }
 
@@ -64,10 +64,10 @@ bool EventThread_submit(Thread *w, any packet) {
     return Thread_submit(w, packet);
 }
 
-void EventThread_stop(Thread *w) {
+fn EventThread_stop(Thread *w) {
     Thread_stop(w);
 }
 
-void EventThread_free(Thread *w) {
+fn EventThread_free(Thread *w) {
     Thread_free(w);
 }

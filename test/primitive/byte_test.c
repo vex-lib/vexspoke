@@ -17,7 +17,7 @@ static int g_failures = 0;
     } while (0)
 
 // Exercises signed Byte values, constructors, CAS, arrays, metadata, and null safety.
-int main(void) {
+int main() {
     CHECK(Byte_init());
 
     any p = Byte_alloc();

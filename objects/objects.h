@@ -8,7 +8,6 @@
 // code uses.
 
 #include "vex.h"
-
 #include "objects/choice.h"
 #include "objects/future.h"
 #include "objects/global.h"

@@ -2,7 +2,6 @@
 #define THREAD_THREAD_H
 
 #include "vex.h"
-
 #include "struct/ring.h"
 
 // thread/thread.h — the worker-thread engine (Legacy: the six *Thread.java
@@ -42,7 +41,7 @@ const char *ThreadRole_name(ThreadRole role);
 typedef struct Thread Thread;
 
 // Per-pass body. Runs on the worker platform thread.
-typedef void (*Thread_Job)(Thread *self, any task);
+typedef fn (*Thread_Job)(Thread *self, any task);
 
 // Create a stopped handle. typeId stamps the block header (one of the
 // ID_THREAD_* classes); queueCapacity holds any tasks. Core handles reject
@@ -58,24 +57,24 @@ bool Thread_run(Thread *self);
 bool Thread_submit(Thread *self, any task);
 
 // Ask the loop to exit and join. No-op when already stopped. Refused on cores.
-void Thread_stop(Thread *self);
+fn Thread_stop(Thread *self);
 
 // Stop, tear down the ring, unregister, release the block. Cores are immune
 // until shutdown calls Thread_freeAllSystem().
-void Thread_free(Thread *self);
+fn Thread_free(Thread *self);
 
 bool Thread_isRunning(Thread *self);
 RingBuffer *Thread_queue(Thread *self);
 u64 Thread_purpose(Thread *self);
 
 // Pool-wide walkers over the central registry (legacy runAll/stopAll/freeAll).
-void Thread_runAll(void);
-void Thread_stopAll(void);
-void Thread_freeAll(void);
+fn Thread_runAll();
+fn Thread_stopAll();
+fn Thread_freeAll();
 
 // Shutdown-only: frees even core handles. Nothing survives this call.
-void Thread_freeAllSystem(void);
+fn Thread_freeAllSystem();
 
-bytes Thread_count(void);
+bytes Thread_count();
 
 #endif

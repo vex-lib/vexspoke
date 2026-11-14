@@ -20,19 +20,19 @@ static bytes fromHex(const char *hex, u8 *out, bytes cap) {
     return n;
 }
 
-static void toHex(const u8 *data, bytes len, char *out) {
+static fn toHex(const u8 *data, bytes len, char *out) {
     for (bytes i = 0; i < len; ++i)
         snprintf(out + i * 2u, 3u, "%02x", data[i]);
     out[len * 2u] = '\0';
 }
 
-static void check(const u8 *okm, bytes len, const char *hex) {
+static fn check(const u8 *okm, bytes len, const char *hex) {
     char got[512];
     toHex(okm, len, got);
     assert(strcmp(got, hex) == 0);
 }
 
-int main(void) {
+int main() {
     // RFC 5869 A.1: basic.
     u8 ikm[22], salt[13], info[10], prk[32], okm[82];
     memset(ikm, 0x0b, sizeof ikm);
@@ -69,7 +69,7 @@ int main(void) {
     // The RFC ceiling refuses.
     assert(HKDF_MAX_OUTPUT == 8160u);
     u8 tooBig[8];
-    (void) tooBig;
+    (fn) tooBig;
 
     printf("hkdf_test: OK\n");
     return 0;

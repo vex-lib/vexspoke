@@ -2,7 +2,6 @@
 #define TIME_CALENDAR_H
 
 #include "vex.h"
-
 #include "time/datetime.h"
 
 // time/calendar.h — stateless date arithmetic (Legacy: time/Calendar.java).
@@ -18,8 +17,8 @@ i32 Calendar_daysInMonth(i32 year, i32 month);
 // ISO-8601 weekday (1=Monday .. 7=Sunday) via Zeller's congruence.
 i32 Calendar_dayOfWeek(i32 year, i32 month, i32 day);
 
-void Calendar_addDays(DateTime *dt, i32 days);
-void Calendar_addMonths(DateTime *dt, i32 months);
-void Calendar_addYears(DateTime *dt, i32 years);
+fn Calendar_addDays(DateTime *dt, i32 days);
+fn Calendar_addMonths(DateTime *dt, i32 months);
+fn Calendar_addYears(DateTime *dt, i32 years);
 
 #endif

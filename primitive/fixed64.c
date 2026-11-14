@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "primitive/fixed64.h"
 
 #include "nio/mem.h"
@@ -31,11 +30,11 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Constructors:
- *   - Fixed64_init(void)
+ *   - Fixed64_init()
  *
  * Core Functions:
- *   - Fixed64_shutdown(void)
- *   - Fixed64_alloc(void)
+ *   - Fixed64_shutdown()
+ *   - Fixed64_alloc()
  *   - Fixed64_allocArray(count)
  *   - Fixed64_free(ptr)
  *   - Fixed64_compareAndSet(ptr, expected, value)
@@ -54,16 +53,16 @@
 
 BitPool g_fixed64Pool;
 
-bool Fixed64_init(void) {
+bool Fixed64_init() {
     g_fixed64Pool = BitPool(8, 1024);
     return BitPool_live(&g_fixed64Pool);
 }
 
-void Fixed64_shutdown(void) {
+fn Fixed64_shutdown() {
     BitPool_shutdown(&g_fixed64Pool);
 }
 
-any Fixed64_alloc(void) {
+any Fixed64_alloc() {
     return BitPool_alloc(&g_fixed64Pool, ID_FIXED64);
 }
 
@@ -79,7 +78,7 @@ any Fixed64_allocArray(bytes count) {
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_FIXED64), Bytes);
 }
 
-void Fixed64_free(any ptr) {
+fn Fixed64_free(any ptr) {
     if (!ptr)
         return;
     if (BitPool_contains(&g_fixed64Pool, ptr)) BitPool_free(&g_fixed64Pool, ptr);
@@ -92,7 +91,7 @@ int64_t Fixed64_get(any ptr) {
     return *(int64_t*) ptr;
 }
 
-void Fixed64_set(any ptr, int64_t value) {
+fn Fixed64_set(any ptr, int64_t value) {
     if (!ptr)
         return;
     *(int64_t*) ptr = value;

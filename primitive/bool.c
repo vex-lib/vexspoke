@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "primitive/bool.h"
 
 #include "nio/mem.h"
@@ -32,11 +31,11 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Constructors:
- *   - Bool_init(void)
+ *   - Bool_init()
  *
  * Core Functions:
- *   - Bool_shutdown(void)
- *   - Bool_alloc(void)
+ *   - Bool_shutdown()
+ *   - Bool_alloc()
  *   - Bool_allocArray(count)
  *   - Bool_free(ptr)
  *   - Bool_compareAndSet(ptr, expected, value)
@@ -55,16 +54,16 @@
 
 BitPool g_boolPool;
 
-bool Bool_init(void) {
+bool Bool_init() {
     g_boolPool = BitPool(1, 1024);
     return BitPool_live(&g_boolPool);
 }
 
-void Bool_shutdown(void) {
+fn Bool_shutdown() {
     BitPool_shutdown(&g_boolPool);
 }
 
-any Bool_alloc(void) {
+any Bool_alloc() {
     return BitPool_alloc(&g_boolPool, ID_BOOL);
 }
 
@@ -80,7 +79,7 @@ any Bool_allocArray(bytes count) {
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_BOOL), Bytes);
 }
 
-void Bool_free(any ptr) {
+fn Bool_free(any ptr) {
     if (!ptr)
         return;
     if (BitPool_contains(&g_boolPool, ptr)) BitPool_free(&g_boolPool, ptr);
@@ -93,7 +92,7 @@ bool Bool_get(any ptr) {
     return *(bool*) ptr;
 }
 
-void Bool_set(any ptr, bool value) {
+fn Bool_set(any ptr, bool value) {
     if (!ptr)
         return;
     *(bool*) ptr = value;

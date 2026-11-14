@@ -72,7 +72,6 @@
  */
 
 #include "vex.h"
-
 #include "security/touchid.h"
 
 ;;DEFINITION
@@ -115,7 +114,7 @@
 
 
 TouchIDToken TouchID_authenticate(const char *reason) {
-    (void)reason; // Stub must fail closed: no biometrics off Apple platforms.
+    (fn)reason; // Stub must fail closed: no biometrics off Apple platforms.
     TouchIDToken tok = {
         .magic = { 0ULL, 0ULL },
         .consumed = true
@@ -127,11 +126,11 @@ bool TouchID_verify(TouchIDToken tok) {
 #ifdef ALLOW_INSECURE_STUB
     return !tok.consumed;
 #else
-    (void)tok;
+    (fn)tok;
     return false;
 #endif
 }
 
-void TouchID_discard(TouchIDToken tok) {
-    (void)tok; // by-value token: nothing to consume here; verify already gates.
+fn TouchID_discard(TouchIDToken tok) {
+    (fn)tok; // by-value token: nothing to consume here; verify already gates.
 }

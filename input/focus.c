@@ -5,7 +5,6 @@
 // this module is the firewall between the game thread and the OS.
 
 #include "vex.h"
-
 #include "input/focus.h"
 
 ;;DEFINITION
@@ -34,7 +33,7 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Core Functions:
- *   - Focus_id(void)
+ *   - Focus_id()
  *
  * Setters:
  *   - Focus_set(windowId)
@@ -47,11 +46,11 @@
 
 static _Atomic u32 s_focusId = FOCUS_BROADCAST;
 
-void Focus_set(u32 windowId) {
+fn Focus_set(u32 windowId) {
     atomic_store_explicit(&s_focusId, windowId, memory_order_release);
 }
 
-u32 Focus_id(void) {
+u32 Focus_id() {
     return atomic_load_explicit(&s_focusId, memory_order_acquire);
 }
 

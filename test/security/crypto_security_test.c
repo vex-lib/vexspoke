@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include <stdlib.h>
 
 #include "security/crypto.h"
@@ -17,7 +16,7 @@ static int g_failures = 0;
 } while (0)
 
 // Compares one-shot and chunked SHA-256 output with published NIST vectors.
-static void test_sha256_nist_vectors(void) {
+static fn test_sha256_nist_vectors() {
     printf("\n--- Testing NIST FIPS 180-4 SHA-256 Vectors ---\n");
 
     // Vector 1: Empty string
@@ -54,7 +53,7 @@ static void test_sha256_nist_vectors(void) {
 }
 
 // Checks equality results for equal buffers and differences at both ends.
-static void test_constant_time_equals(void) {
+static fn test_constant_time_equals() {
     printf("\n--- Testing Constant-Time Equality Check ---\n");
     u8 a[32] = { 1, 2, 3, 4, 5, 6, 7, 8 };
     u8 b[32] = { 1, 2, 3, 4, 5, 6, 7, 8 };
@@ -68,7 +67,7 @@ static void test_constant_time_equals(void) {
 }
 
 // Checks relational hash nonzero output, deterministic repeats, and distinction.
-static void test_relational_hash(void) {
+static fn test_relational_hash() {
     printf("\n--- Testing Fast Relational Hash Mixers ---\n");
     u64 h1 = Crypto_hash64("transform.position", 18);
     u64 h2 = Crypto_hash64("transform.rotation", 18);
@@ -84,7 +83,7 @@ static void test_relational_hash(void) {
 }
 
 // Checks seeded PRNG repeatability, successive values, and random-byte filling.
-static void test_prng(void) {
+static fn test_prng() {
     printf("\n--- Testing XorShift128+ PRNG Engine ---\n");
     CryptoRng rng1, rng2;
     Crypto_rngInit(&rng1, 0xCAFEBABEDEADBEEFULL);
@@ -111,7 +110,7 @@ static void test_prng(void) {
 }
 
 // Checks lowercase hexadecimal encoding and byte-for-byte decode round trips.
-static void test_hex_conversion(void) {
+static fn test_hex_conversion() {
     printf("\n--- Testing Hex Serialization Helpers ---\n");
     u8 raw[4] = { 0xDE, 0xAD, 0xBE, 0xEF };
     char hex[9];
@@ -125,7 +124,7 @@ static void test_hex_conversion(void) {
 }
 
 // Checks consumed/discarded TouchID tokens cannot verify successfully.
-static void test_touchid_security(void) {
+static fn test_touchid_security() {
     printf("\n--- Testing Biometric TouchID Token Verification Protocol ---\n");
     TouchIDToken nullTok = { .magic = {0, 0}, .consumed = true };
     TEST_ASSERT(!TouchID_verify(nullTok), "consumed / null token cannot be verified");
@@ -135,7 +134,7 @@ static void test_touchid_security(void) {
 }
 
 // Runs crypto vectors, equality/hash/random/hex checks, and the TouchID token case.
-int main(void) {
+int main() {
     printf("=== Running Security & Cryptography Test Suite ===\n");
 
     test_sha256_nist_vectors();

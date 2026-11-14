@@ -2,18 +2,19 @@
 #define PRIMITIVE_f64_H
 
 #include "vex.h"
+
 // primitive/d64.h — d64 primitive (Legacy: primitive/d64.java).
 // Delegates to Bit64 width pool (8B stride).
 
 extern BitPool g_f64Pool;
 
-bool f64_init(void);
-void f64_shutdown(void);
-any f64_alloc(void);
+bool f64_init();
+fn f64_shutdown();
+any f64_alloc();
 any f64_allocArray(bytes count);
-void f64_free(any ptr);
+fn f64_free(any ptr);
 d64 f64_get(any ptr);
-void f64_set(any ptr, d64 value);
+fn f64_set(any ptr, d64 value);
 bool f64_compareAndSet(any ptr, d64 expected, d64 value);
 u64 f64_type(any ptr);
 bytes f64_length(any ptr);

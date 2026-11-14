@@ -24,14 +24,14 @@ static any g_lastUserdata = (any) 0;
 static int g_fired = 0;
 
 // Captures the object and caller context delivered by Choice_trigger.
-static void cb(u64 objectPtr, any userdata) {
+static fn cb(u64 objectPtr, any userdata) {
     g_lastObject = objectPtr;
     g_lastUserdata = userdata;
     g_fired++;
 }
 
 // Checks Choice indexing, callback dispatch, invalid indices, and null safety.
-int main(void) {
+int main() {
     u64 objects[3] = { 100, 200, 300 };
     ChoiceCallback callbacks[3] = { cb, cb, cb };
 

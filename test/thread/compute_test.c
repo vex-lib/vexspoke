@@ -34,7 +34,7 @@ static int g_failures = 0;
 // Sleeps for the requested millisecond interval during bounded polling loops.
 // Waits briefly for asynchronous compute-pool progress in lifecycle scenarios.
 // Delays briefly between bounded polling attempts in asynchronous job assertions.
-static void wait_ms(long ms) {
+static fn wait_ms(long ms) {
     struct timespec ts = { ms / 1000, (ms % 1000) * 1000000L };
     nanosleep(&ts, nullptr);
 }
@@ -45,30 +45,30 @@ static atomic_int g_done_count;
 // Increments the atomic count used to observe job execution.
 // Records that a submitted compute job began running.
 // Increments the atomic counter used to observe job execution.
-static void on_run(any ctx) {
-    (void) ctx;
+static fn on_run(any ctx) {
+    (fn) ctx;
     atomic_fetch_add(&g_run_count, 1);
 }
 
 // Increments the atomic count used to observe completion callbacks.
 // Records completion of a compute job for the bounded progress check.
 // Increments the atomic counter used to observe job completion callbacks.
-static void on_done(any ctx) {
-    (void) ctx;
+static fn on_done(any ctx) {
+    (fn) ctx;
     atomic_fetch_add(&g_done_count, 1);
 }
 
 // Builds a tagged job wired to the test's run and completion counters.
 // Builds a callback/context pair used to exercise job recognition and submission.
 // Builds a tagged job wired to the test's run and completion counters.
-static ComputeJob make_job(void) {
+static ComputeJob make_job() {
     return ComputeJob(on_run, nullptr, on_done);
 }
 
 // Checks job-tag recognition, callback order/counts, and invalid packet rejection.
 // Checks whether job descriptors are recognized as eligible compute work.
 // Checks job tag validation and run/onDone dispatch, including optional completion.
-static void test_recognize(void) {
+static fn test_recognize() {
     ComputeJob job = make_job();
     CHECK(ComputeJob_isJob(&job));
     CHECK(!ComputeJob_isJob(nullptr));
@@ -108,7 +108,7 @@ static bool wait_for(atomic_int *count, int target) {
 // Exercises compute-pool sizing, submission, targeted dispatch, and teardown.
 // Exercises compute-pool submission, callbacks, completion, and shutdown.
 // Tests worker-pool sizing, submission, targeted dispatch, and shutdown behavior.
-static void test_pool(void) {
+static fn test_pool() {
     ComputeThread_free();                       // reset any prior pool state
     CHECK(ComputeThread_count() == 0);
     CHECK(!ComputeThread_submit(nullptr));      // no pool -> refused
@@ -167,7 +167,7 @@ static void test_pool(void) {
 // Runs job validation and compute-pool lifecycle tests.
 // Runs compute-job recognition and pool lifecycle/progress scenarios.
 // Runs ComputeJob validation and ComputeThread pool lifecycle scenarios.
-int main(void) {
+int main() {
     test_recognize();
     test_pool();
 

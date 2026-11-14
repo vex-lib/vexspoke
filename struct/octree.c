@@ -135,7 +135,7 @@ static OctreeNode *OctreeNode_2(OctreeAABB bounds, u32 capacity) {
     return node;
 }
 
-static void OctreeNode_free(OctreeNode *node) {
+static fn OctreeNode_free(OctreeNode *node) {
     if (node == nullptr) {
         return;
     }
@@ -154,7 +154,7 @@ static void OctreeNode_free(OctreeNode *node) {
     Memory_free(node);
 }
 
-static void OctreeNode_subdivide(OctreeNode *node, u32 childCapacity) {
+static fn OctreeNode_subdivide(OctreeNode *node, u32 childCapacity) {
     OctreeAABB bounds = (*node).bounds;
     f32 midX = (bounds.minX + bounds.maxX) * 0.5f;
     f32 midY = (bounds.minY + bounds.maxY) * 0.5f;
@@ -199,7 +199,7 @@ static bool OctreeNode_insert(Octree *owner, OctreeNode *node, OctreeItem item, 
                 OctreeItem *newItems = (OctreeItem*) Memory_alloc(TYPE_BYTE_ARRAY, (bytes) newCap * sizeof(OctreeItem));
                 if (newItems == nullptr) {
                     // A refused leaf growth is reported at the owner level.
-                    (void) Struct_reportExhaustion(&(*owner).exhaustionCount, &(*owner).exhaustionReported,
+                    (fn) Struct_reportExhaustion(&(*owner).exhaustionCount, &(*owner).exhaustionReported,
                                                    "octree", (bytes) newCap * sizeof(OctreeItem),
                                                    (bytes) (*node).itemCapacity * sizeof(OctreeItem));
                     return false;
@@ -247,7 +247,7 @@ Octree *Octree_3(OctreeAABB bounds, u32 maxDepth, u32 maxItemsPerNode) {
 
     Octree *self = (Octree*) Memory_alloc(TYPE_OCTREE, sizeof(Octree));
     if (self == nullptr) {
-        (void) Struct_reportConstructionExhaustion("octree", sizeof(Octree));
+        (fn) Struct_reportConstructionExhaustion("octree", sizeof(Octree));
         return nullptr;
     }
 
@@ -258,7 +258,7 @@ Octree *Octree_3(OctreeAABB bounds, u32 maxDepth, u32 maxItemsPerNode) {
     (*self).exhaustionReported = false;
     (*self).root = OctreeNode_2(bounds, maxItemsPerNode);
     if ((*self).root == nullptr) {
-        (void) Struct_reportConstructionExhaustion("octree", sizeof(OctreeNode));
+        (fn) Struct_reportConstructionExhaustion("octree", sizeof(OctreeNode));
         Memory_free(self);
         return nullptr;
     }
@@ -266,7 +266,7 @@ Octree *Octree_3(OctreeAABB bounds, u32 maxDepth, u32 maxItemsPerNode) {
     return self;
 }
 
-void Octree_free(Octree *self) {
+fn Octree_free(Octree *self) {
     if (self == nullptr) {
         return;
     }
@@ -366,7 +366,7 @@ u64 Octree_exhaustionCount(const Octree *self) {
     return self ? Struct_exhaustionCount(&(*self).exhaustionCount) : 0;
 }
 
-void Octree_clear(Octree *self) {
+fn Octree_clear(Octree *self) {
     if (self == nullptr || (*self).root == nullptr) return;
     const OctreeNode *root = (*self).root;
     OctreeAABB bounds = (*root).bounds;

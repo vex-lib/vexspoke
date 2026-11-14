@@ -47,7 +47,7 @@ bool TouchID_verify(TouchIDToken tok);
 /* Explicitly discard a token without verifying it.
  * Use this if the user cancels the dialog or you decide not to proceed
  * after auth. After calling this the token is consumed. */
-void TouchID_discard(TouchIDToken tok);
+fn TouchID_discard(TouchIDToken tok);
 
 /* Convenience 1-line prompt wrapper.
  * Initiates an authentication session with reason, verifies the resulting

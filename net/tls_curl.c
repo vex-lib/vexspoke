@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "net/tls.h"
 
 ;;DEFINITION
@@ -70,26 +69,26 @@ bool Tls_recv(TlsConn *conn, char *buf, bytes cap, bytes *gotOut) {
 // accessors exist only so a host compiles and links identically on every
 // platform and can see for itself that this backend answered nothing.
 bool Tls_readable(TlsConn *conn, u32 budgetMs) {
-    (void) conn;
-    (void) budgetMs;
+    (fn) conn;
+    (fn) budgetMs;
     return false;
 }
 
-void Tls_setBudget(TlsConn *conn, u32 timeoutMs) {
-    (void) conn;
-    (void) timeoutMs;
+fn Tls_setBudget(TlsConn *conn, u32 timeoutMs) {
+    (fn) conn;
+    (fn) timeoutMs;
 }
 
 u32 Tls_getBudget(const TlsConn *conn) {
-    (void) conn;
+    (fn) conn;
     return 0u;
 }
 
-TlsBackendKind Tls_backend(void) {
+TlsBackendKind Tls_backend() {
     return TLS_BACKEND_NONE;
 }
 
-void Tls_close(TlsConn *conn) {
+fn Tls_close(TlsConn *conn) {
     if (!conn)
         return;
     (*conn).opaque = 0;

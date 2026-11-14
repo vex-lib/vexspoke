@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-int main(void) {
+int main() {
     FILE *out = tmpfile(), *errors = tmpfile();
     assert(out && errors);
     fflush(stdout); fflush(stderr);

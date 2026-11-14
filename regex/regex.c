@@ -1,7 +1,6 @@
 // regex/regex.c — the public Regex class: compile once, match in linear time.
 
 #include "vex.h"
-
 #include <stdarg.h>
 
 #include "regex/regex.h"
@@ -138,7 +137,7 @@ static bool runSearch(const Regex *regex, const char *subject, bytes length,
 }
 
 // Appends a NUL-terminated string, flagging a truncation instead of overrunning.
-static void textAppend(RegexText *text, const char *s) {
+static fn textAppend(RegexText *text, const char *s) {
     bytes len = strlen(s);
     if ((*text).used + len >= (*text).cap) {
         bytes room = (*text).cap > (*text).used + 1u ? (*text).cap - (*text).used - 1u : 0;
@@ -154,7 +153,7 @@ static void textAppend(RegexText *text, const char *s) {
     (*text).dest[(*text).used] = '\0';
 }
 
-static void textPrintf(RegexText *text, const char *fmt, ...) {
+static fn textPrintf(RegexText *text, const char *fmt, ...) {
     char buffer[256];
     va_list args;
     va_start(args, fmt);
@@ -244,7 +243,7 @@ Regex *Regex_1(const char *pattern) {
     return Regex_2(pattern, REGEX_DEFAULT);
 }
 
-void Regex_free(Regex *regex) {
+fn Regex_free(Regex *regex) {
     if (!regex)
         return;
     RegexProgram_free(&(*regex).program);

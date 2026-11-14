@@ -83,13 +83,13 @@ CircleArray *CircleArray_3(i32 radius, u32 elementClass, bytes stride) {
 
     CircleArray *self = (CircleArray*) Memory_alloc(TYPE_CIRCLE_ARRAY, sizeof(CircleArray));
     if (self == nullptr) {
-        (void) Struct_reportConstructionExhaustion("circle_array", sizeof(CircleArray));
+        (fn) Struct_reportConstructionExhaustion("circle_array", sizeof(CircleArray));
         return nullptr;
     }
 
     u8 *data = (u8*) Memory_alloc(TYPE_BYTE_ARRAY, dataBytes);
     if (data == nullptr) {
-        (void) Struct_reportConstructionExhaustion("circle_array", dataBytes);
+        (fn) Struct_reportConstructionExhaustion("circle_array", dataBytes);
         Memory_free(self);
         return nullptr;
     }
@@ -132,7 +132,7 @@ CircleArray *CircleArray_2(i32 radius, u32 elementClass) {
     return CircleArray_3(radius, elementClass, stride);
 }
 
-void CircleArray_free(CircleArray *self) {
+fn CircleArray_free(CircleArray *self) {
     if (self == nullptr) {
         return;
     }
@@ -251,7 +251,7 @@ bool CircleArray_setOffset(CircleArray *self, i32 dx, i32 dy, const_any src) {
     return CircleArray_setGrid(self, gridX, gridY, src);
 }
 
-void CircleArray_forEach(const CircleArray *self, CircleArrayCellFn callback, any userData) {
+fn CircleArray_forEach(const CircleArray *self, CircleArrayCellFn callback, any userData) {
     if (self == nullptr || callback == nullptr) return;
     i32 r = (*self).radius;
     i32 d = (*self).diameter;

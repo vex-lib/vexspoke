@@ -17,7 +17,7 @@ static int g_failures = 0;
     } while (0)
 
 // Exercises Float values including signed zero, constructors, CAS, arrays, and null safety.
-int main(void) {
+int main() {
     CHECK(Float_init());
 
     any p = Float_alloc();

@@ -1,5 +1,4 @@
 #include "vex.h"
-
 #include "security/totp.h"
 #include "security/hmac.h"
 #include "security/crypto.h"
@@ -32,7 +31,7 @@ static u32 digitsModulus(u32 digits) {
     }
 }
 
-static void stepCounter(u64 step, u8 out[8]) {
+static fn stepCounter(u64 step, u8 out[8]) {
     for (u32 i = 0; i < 8u; ++i)
         out[i] = (u8) (step >> (56u - i * 8u));
 }

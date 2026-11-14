@@ -2,7 +2,6 @@
 // See reactive/reactive_probable.h (the ;;INTENTION).
 
 #include "vex.h"
-
 #include "reactive/reactive_probable.h"
 
 #include "nio/mem.h"

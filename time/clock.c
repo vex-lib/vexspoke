@@ -6,7 +6,6 @@
 // simulation.
 
 #include "vex.h"
-
 #include "time/clock.h"
 
 #include <time.h>
@@ -47,7 +46,7 @@
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
  * Constructors:
- *   - Clock(void)
+ *   - Clock()
  *
  * Core Functions:
  *   - Clock_tick(clock)
@@ -67,21 +66,21 @@
 
 // Wall-clock millis (legacy used System.currentTimeMillis(); kept for the
 // informational base anchor).
-static u64 currentTimeMillis(void) {
+static u64 currentTimeMillis() {
     struct timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts);
     return (u64)ts.tv_sec * 1000ULL + (u64)ts.tv_nsec / 1000000ULL;
 }
 
 // Monotonic millis for the accrual side.
-static u64 monoMillis(void) {
+static u64 monoMillis() {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
     return (u64)ts.tv_sec * 1000ULL + (u64)ts.tv_nsec / 1000000ULL;
 }
 
 // Returns a value-initialized clock anchored to current real and monotonic time.
-Clock Clock_0(void) {
+Clock Clock_0() {
     Clock c;
     c.timeScale = 1.0;
     c.baseRealMillis = currentTimeMillis();
@@ -92,7 +91,7 @@ Clock Clock_0(void) {
 }
 
 // Accrues monotonic elapsed milliseconds scaled by timeScale unless paused.
-void Clock_tick(Clock *clock) {
+fn Clock_tick(Clock *clock) {
     u64 now = monoMillis();
     u64 lastReal = (*clock).lastTickRealMillis;
     u64 elapsedReal = now - lastReal;
@@ -103,7 +102,7 @@ void Clock_tick(Clock *clock) {
 }
 
 // Sets the multiplier applied to elapsed real time on subsequent ticks.
-void Clock_setTimeScale(Clock *clock, d64 scale) {
+fn Clock_setTimeScale(Clock *clock, d64 scale) {
     (*clock).timeScale = scale;
 }
 
@@ -115,7 +114,7 @@ d64 Clock_timeScale(const Clock *clock) {
 }
 
 // Enables or disables virtual-time accrual while ticks continue updating the real anchor.
-void Clock_setPaused(Clock *clock, bool paused) {
+fn Clock_setPaused(Clock *clock, bool paused) {
     (*clock).paused = paused;
 }
 
@@ -130,7 +129,7 @@ u64 Clock_virtualTimeMillis(const Clock *clock) {
 }
 
 // Reanchors real readings and clears accumulated virtual time.
-void Clock_reset(Clock *clock) {
+fn Clock_reset(Clock *clock) {
     (*clock).baseRealMillis = currentTimeMillis();
     (*clock).lastTickRealMillis = monoMillis();
     (*clock).virtualTimeMillis = 0;

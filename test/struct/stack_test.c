@@ -18,7 +18,7 @@ static int g_failures = 0;
     } while (0)
 
 // Verifies LIFO push/pop behavior, empty defaults, and stack cleanup.
-int main(void) {
+int main() {
     Stack *s = Stack_1(ID_INT);
     CHECK(Stack_exhaustionCount(s) == 0);   // fresh: no refused grows yet
     CHECK(s != nullptr);
@@ -52,7 +52,7 @@ int main(void) {
     CHECK(Stack_slot(s, SIZE_MAX) == nullptr);
 
     // Explicit-fault sibling: Stack_pushTry names the reason. Stack_push stays
-    // void for family consistency but is no longer silent.
+    // fn for family consistency but is no longer silent.
     TryValue okPush = Stack_pushTry(s, 7);
     CHECK(TryValue_isOk(&okPush));
     CHECK(TryValue_getValue(&okPush) == 7);

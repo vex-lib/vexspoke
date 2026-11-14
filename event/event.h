@@ -8,7 +8,6 @@
 // code uses.
 
 #include "vex.h"
-
 #include "event/keyhandler.h"
 #include "event/mousehandler.h"
 #include "event/touchhandler.h"

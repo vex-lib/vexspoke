@@ -8,7 +8,7 @@
 // Runs system discovery and prints the host, graphics, and display snapshots.
 // Runs system discovery and reports hardware, graphics, and connected-display information.
 // Runs the host discovery probe and prints hardware, graphics, and display snapshots.
-int main(void) {
+int main() {
     printf("=== Vex System Discovery Probe ===\n\n");
 
     // Force discovery or query lazily
