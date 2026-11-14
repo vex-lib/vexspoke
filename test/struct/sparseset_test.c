@@ -3,7 +3,7 @@
 // Dense-entity set with payload slots. Proves add/contains/get/remove and the
 // dense projections, plus the hostile entity id (negative / out of range).
 
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "struct/sparseset.h"

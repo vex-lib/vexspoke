@@ -12,11 +12,9 @@
 //   - all-identical centroids still build (degenerate leaf) and are hittable;
 //   - nullptr safety and hit_out initialization.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <math.h>
-#include <f32.h>
 
 #include "algo/bvh.h"
 

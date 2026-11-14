@@ -1,11 +1,11 @@
 #ifndef SYSTEM_SYSTEM_H
 #define SYSTEM_SYSTEM_H
 
-#include "vex.h"
 
 // system/system.h — Unified native system information, discovery, and display subsystem
 // (Legacy: darling/system/* in anti Java engine)
 
+#include "vex.h"
 #include "system/discovery.h"
 #include "system/display_info.h"
 #include "system/display_monitor.h"

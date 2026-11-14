@@ -1,11 +1,11 @@
 // Owner: security/otpauth.c — the otpauth:// setup URI every authenticator reads.
-#include "vex.h"
 
+#include "vex.h"
 #include <assert.h>
 
 #include "security/otpauth.h"
 
-int main(void) {
+int main() {
     char uri[512];
     bool cut = true;
     // A 5-byte secret is "fooba", whose base32 form is the RFC 4648 vector MZXW6YTB,

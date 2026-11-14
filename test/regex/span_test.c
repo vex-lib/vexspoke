@@ -3,7 +3,7 @@
 // Proves the RegexSpan value: the "did not participate" span, the participation
 // predicate, and the measured length across set, unset and inverted spans.
 
-#include <stddef.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "regex/span.h"

@@ -11,9 +11,7 @@
 //   - null submits are refused; after stop/free the pool reports zero and
 //     refuses submissions.
 
-#include <stdatomic.h>
-#include <stdbool.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <string.h>
 #include <time.h>

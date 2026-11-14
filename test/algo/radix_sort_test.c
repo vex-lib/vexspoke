@@ -11,8 +11,7 @@
 //     ordering for equal keys (LSD radix is stable);
 //   - nullptr keys or values in pairsU64 is rejected without touching keys.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

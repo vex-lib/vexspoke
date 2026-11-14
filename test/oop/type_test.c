@@ -6,8 +6,7 @@
 // with a non-zero count, PROJ_VEXSPOKE itself), IDEMPOTENCE, exponential slate
 // growth under many projects, and the FAILURE ATOMICITY of every rejection.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "oop/vexspoke_type.h"

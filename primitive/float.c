@@ -1,5 +1,5 @@
 #include "vex.h"
-#include "primitive/vex-f32.h"
+#include "primitive/vex-float.h"
 
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"

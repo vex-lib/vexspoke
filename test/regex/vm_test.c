@@ -6,7 +6,7 @@
 // refuses to match past a full consumption, stays linear on the classic
 // backtracking blow-up shape, and frees cleanly.
 
-#include <stddef.h>
+#include "vex.h"
 #include <stdio.h>
 #include <string.h>
 

@@ -1,6 +1,7 @@
 #ifndef THREAD_SCRIPTING_H
 #define THREAD_SCRIPTING_H
 
+#include "vex.h"
 #include "thread/thread.h"
 
 // thread/scripting.h — the scripting worker (Legacy: ScriptingThread.java).

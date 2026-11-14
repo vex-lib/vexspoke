@@ -2,9 +2,8 @@
 // registry. Covers lifecycle, bind/match/unbind, growth, empty/null safety,
 // combo building from live modifier state, and per-frame resolution.
 
+#include "vex.h"
 #include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
 #include <unistd.h>
 
 #include "input/key_map.h"

@@ -1,8 +1,8 @@
+#include "vex.h"
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdatomic.h>
 #include "struct/chunked_list.h"
 #include "oop/vexspoke_type.h"
 

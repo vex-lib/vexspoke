@@ -1,4 +1,5 @@
 #include "vex.h"
+#include <stdlib.h>
 #include "deferred/dispatch.h"
 
 #include <pthread.h>

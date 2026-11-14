@@ -9,8 +9,7 @@
 //   - addMonths rolls the year and CLIPS the day into the target month;
 //   - addYears clips Feb 29 in a common year.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "time/calendar.h"

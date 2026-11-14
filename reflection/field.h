@@ -1,9 +1,7 @@
 #ifndef REFLECTION_FIELD_H
 #define REFLECTION_FIELD_H
 
-#include <stdbool.h>
 #include "vex.h"
-
 #include "reflection/variable.h"
 
 // reflection/field.h — the Field metadata record.

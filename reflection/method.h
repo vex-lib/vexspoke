@@ -1,9 +1,7 @@
 #ifndef REFLECTION_METHOD_H
 #define REFLECTION_METHOD_H
 
-#include <stdbool.h>
 #include "vex.h"
-
 #include "substrate/variable/variable_slot.h"
 
 // reflection/method.h — the Method metadata record.

@@ -1,9 +1,7 @@
 #ifndef REFLECTION_CLASS_H
 #define REFLECTION_CLASS_H
 
-#include <stdbool.h>
 #include "vex.h"
-
 #include "reflection/method.h"
 #include "reflection/struct.h"
 #include "struct/chunked_list.h"

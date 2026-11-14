@@ -17,14 +17,17 @@
 // The class embeds the engine FIRST, so a typed reactive pointer IS a Reactive
 // pointer (embed-first, the Reactive engine contract).
 
+
+#include "vex.h"
+
 typedef struct VEX_NAME {
     Reactive base;
 } VEX_NAME;
 
-VEX_NAME *VEX_CAT(VEX_NAME, _0)(void);
+VEX_NAME *VEX_CAT(VEX_NAME, _0)();
 VEX_NAME *VEX_CAT(VEX_NAME, _1)(VEX_T initial);
-void VEX_CAT(VEX_NAME, _free)(VEX_NAME *self);
-void VEX_CAT(VEX_NAME, _set)(VEX_NAME *self, VEX_T value);
+fn VEX_CAT(VEX_NAME, _free)(VEX_NAME *self);
+fn VEX_CAT(VEX_NAME, _set)(VEX_NAME *self, VEX_T value);
 VEX_T VEX_CAT(VEX_NAME, _get)(const VEX_NAME *self);
 
 // The four typed channels (onSet / onChanged / onGet / onNullptr): the callback

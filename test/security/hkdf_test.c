@@ -3,8 +3,8 @@
 // Proves appendix A test cases 1, 2 and 3: the basic case, the long-input case
 // that crosses the expand block boundary several times, and the zero-length
 // salt/info case. A wrong HKDF still returns plausible bytes.
-#include "vex.h"
 
+#include "vex.h"
 #include <assert.h>
 
 #include "security/hkdf.h"

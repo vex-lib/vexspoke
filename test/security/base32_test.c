@@ -1,11 +1,11 @@
 // Owner: security/base32.c — RFC 4648 base32 (the TOTP setup-secret transport form).
-#include "vex.h"
 
+#include "vex.h"
 #include <assert.h>
 
 #include "security/base32.h"
 
-static void roundTrip(const char *text) {
+static fn roundTrip(const char *text) {
     u8 raw[64];
     bytes len = 0;
     assert(Base32_decode(text, strlen(text), raw, sizeof raw, &len));

@@ -7,8 +7,7 @@
 //   - every getter returns the field and epochMillis round-trips;
 //   - DateTime_set snapshots a plausible current wall-clock year.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "time/datetime.h"

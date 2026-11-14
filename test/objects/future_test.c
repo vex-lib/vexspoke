@@ -3,6 +3,7 @@
 // Single-assignment: get before set is 0, set once succeeds, a second set is
 // refused and the value is preserved.
 
+#include "vex.h"
 #include <stdio.h>
 
 #include "objects/future.h"

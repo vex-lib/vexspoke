@@ -1,7 +1,6 @@
 // vexspoke/test/struct/stack_test.c — the Stack class _test (LIFO, volume, hostile).
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "struct/stack.h"

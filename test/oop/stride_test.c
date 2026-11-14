@@ -4,6 +4,7 @@
 // exact width; a full TYPE_ id is masked to its class field; unknown ids answer
 // the pointer-sized default (8). Pure, stateless, headless.
 
+#include "vex.h"
 #include <stdio.h>
 
 #include "oop/stride.h"

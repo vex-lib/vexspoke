@@ -3,11 +3,11 @@
 // Bridges the C11 token-based TouchID API to Apple's LocalAuthentication framework
 // (LAContext). Evaluates biometric policy (TouchID) with passcode fallback if configured.
 
-#include "vex.h"
 
 #import <Foundation/Foundation.h>
 #import <LocalAuthentication/LocalAuthentication.h>
 
+#include "vex.h"
 #include "security/touchid.h"
 
 ;;DEFINITION

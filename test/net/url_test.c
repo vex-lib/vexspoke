@@ -8,8 +8,7 @@
 //   - build joins scheme/host/path, omits the default port, keeps a non-default
 //     port, prepends a missing slash, and reports truncation as -1.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <string.h>
 

@@ -12,10 +12,8 @@
 //   - real MPMC concurrency under a bounded watchdog: every pushed value is
 //     popped exactly once, never torn, never lost, never duplicated.
 
+#include "vex.h"
 #include <pthread.h>
-#include <stdatomic.h>
-#include <stdbool.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <sched.h>
 

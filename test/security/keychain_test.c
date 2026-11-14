@@ -5,8 +5,8 @@
 // opt-in: without DARKBASE_KEYCHAIN_TEST=1 this owner returns B_TEST_SKIP rather
 // than silently claiming a write path it never exercised.
 #define _POSIX_C_SOURCE 200809L
-#include "vex.h"
 
+#include "vex.h"
 #include <assert.h>
 #include <stdlib.h>
 

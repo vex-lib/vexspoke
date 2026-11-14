@@ -11,8 +11,7 @@
 //   - tryCalculate delegates to Calc_eval: a real expression computes, a
 //     non-expression returns false, and nullptr is refused.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <string.h>
 

@@ -1,18 +1,18 @@
 // Owner: security/hmac.c — RFC 2104 HMAC over SHA-1 and SHA-256.
-#include "vex.h"
 
+#include "vex.h"
 #include <assert.h>
 
 #include "security/hmac.h"
 #include "security/crypto.h"
 
-static void expectHex(const u8 *d, bytes n, const char *want) {
+static fn expectHex(const u8 *d, bytes n, const char *want) {
     char h[65];
     Crypto_toHex(d, n, h);
     assert(strcmp(h, want) == 0);
 }
 
-int main(void) {
+int main() {
     u8 key20[20], out32[32], out20[20];
     memset(key20, 0x0b, sizeof key20);
     const char *data = "Hi There";

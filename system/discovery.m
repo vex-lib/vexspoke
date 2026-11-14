@@ -1,7 +1,5 @@
 #include "vex.h"
 #include "system/discovery.h"
-#include <stdatomic.h>
-#include "util/platform.h"
 
 #include "system/display_info.h"
 #include "system/display_monitor.h"

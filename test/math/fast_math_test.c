@@ -13,8 +13,7 @@
 //   - FastMath_round is RECORDED as a defect (magic constant 16384 rounds to
 //     the f32 ulp at 2^14, not to integers); asserted as a known gap.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <math.h>
 

@@ -1,6 +1,5 @@
 #include "vex.h"
-
-#include "primitive/d64.h"
+#include "primitive/double.h"
 
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"

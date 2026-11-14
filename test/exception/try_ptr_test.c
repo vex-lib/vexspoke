@@ -4,7 +4,7 @@
 // meaningful only when code == TRY_OK), symmetric getters/setters, null
 // safety, and the bounded string projections.
 
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <string.h>
 

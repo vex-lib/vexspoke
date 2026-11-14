@@ -1,14 +1,14 @@
 // Owner: security/sha1.c — SHA-1 as a streaming digest (kept for HMAC-SHA1).
-#include "vex.h"
 
+#include "vex.h"
 #include <assert.h>
 
 #include "security/sha1.h"
 #include "security/crypto.h"
 
-static void hex(const u8 *d, bytes n, char *out) { Crypto_toHex(d, n, out); }
+static fn hex(const u8 *d, bytes n, char *out) { Crypto_toHex(d, n, out); }
 
-int main(void) {
+int main() {
     // FIPS 180-4 / RFC 3174 vectors.
     u8 d[CRYPTO_SHA1_DIGEST_SIZE];
     char h[CRYPTO_SHA1_DIGEST_SIZE * 2 + 1];

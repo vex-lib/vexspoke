@@ -15,8 +15,7 @@
 //     (touching boxes), intersectsSphere;
 //   - every entry point tolerates nullptr.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "struct/octree.h"

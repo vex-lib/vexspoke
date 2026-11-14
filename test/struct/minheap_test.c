@@ -3,7 +3,7 @@
 // A fixed-capacity binary min-heap (1-based). Proves heap order (popItem yields
 // ascending priorities), the capacity-full rejection, and null-safety.
 
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "struct/minheap.h"

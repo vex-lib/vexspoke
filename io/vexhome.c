@@ -1,7 +1,7 @@
-#include "vex.h"
 
 // Vexspoke io; per-user layout policy above re File.
 
+#include "vex.h"
 #include "io/vexhome.h"
 #include "lang/platform.h"
 

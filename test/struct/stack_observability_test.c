@@ -12,8 +12,8 @@
  * and Backend Trust Law) so the fault is actually reached, then identifies it by
  * code and proves the stack stays coherent.
  */
-#include <stddef.h>
-#include <stdint.h>
+
+#include "vex.h"
 #include <stdio.h>
 #include <string.h>
 

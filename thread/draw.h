@@ -1,6 +1,7 @@
 #ifndef THREAD_DRAW_H
 #define THREAD_DRAW_H
 
+#include "vex.h"
 #include "thread/thread.h"
 
 // thread/draw.h — the rendering worker pool (Legacy: DrawThread.java).

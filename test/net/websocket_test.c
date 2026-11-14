@@ -8,6 +8,8 @@
 // text of ITS OWN guard, so one guard firing for another's frame fails the
 // case; the 64-bit-length frame is deliberately unmasked so the mask rule
 // cannot mask the length rule. No live network, no TLS, no wss://, no proxy.
+
+#include "vex.h"
 #include "net/websocket.h"
 
 #include "lang/str.h"
@@ -16,7 +18,6 @@
 
 #include <errno.h>
 #include <signal.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

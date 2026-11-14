@@ -1,6 +1,8 @@
 #ifndef C23_ZERO_H
 #define C23_ZERO_H
 
+#include "vex.h"
+
 // c23/zero.h — the generic zero factory: zero(T t), typed by example.
 //
 //   int   i = zero(n);        // 0            — same type as n

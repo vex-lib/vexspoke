@@ -12,8 +12,8 @@
 //
 // Deterministic, headless, zero allocation.
 
+#include "vex.h"
 #include <stdio.h>
-#include <stdint.h>
 #include <string.h>
 
 #include "exception/try.h"

@@ -7,7 +7,7 @@
 // repetition expansion, out-of-range roots, the instruction ceiling, and the
 // borrow/free lifecycle.
 
-#include <stddef.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "regex/program.h"

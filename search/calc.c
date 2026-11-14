@@ -1,6 +1,5 @@
 #include "vex.h"
 #include "search/calc.h"
-#include "types.h"
 #include "math/strict_math.h"
 
 #include <ctype.h>

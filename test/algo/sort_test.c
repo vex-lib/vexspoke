@@ -1,8 +1,6 @@
 // vexspoke/test/algo/sort_test.c — owner tests for the Sort algorithms.
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

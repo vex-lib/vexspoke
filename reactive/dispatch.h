@@ -1,6 +1,7 @@
 #ifndef REACTIVE_DISPATCH_H
 #define REACTIVE_DISPATCH_H
 
+#include "vex.h"
 #include "reactive/generic.h"
 #include "reactive/reactive.h"
 #include "reactive/reactive_primitive.h"

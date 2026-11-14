@@ -12,11 +12,12 @@
 // connection fails fast rather than burning the deadline, so the bounded wait is
 // real; the seam reports no backend until a handshake actually completes; and
 // every null-safety path on send/recv/close holds.
+
+#include "vex.h"
 #include "net/tls.h"
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>

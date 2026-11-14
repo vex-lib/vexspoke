@@ -1,4 +1,6 @@
 // Vexspoke io owner test for the VexHome cache factory and layout.
+
+#include "vex.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

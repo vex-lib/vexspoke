@@ -1,6 +1,6 @@
 // Owner: security/totp.c — RFC 6238 TOTP: codes, clock window, replay refusal.
-#include "vex.h"
 
+#include "vex.h"
 #include <assert.h>
 
 #include "security/totp.h"

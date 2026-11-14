@@ -13,8 +13,7 @@
 //   - a 128-node chain yields the exact cumulative distance;
 //   - nullptr safety on free.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <math.h>
 

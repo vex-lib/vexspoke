@@ -2,6 +2,7 @@
 //
 // Thread-local slot table: unset reads 0, writes grow the table on demand.
 
+#include "vex.h"
 #include <stdio.h>
 
 #include "objects/local.h"

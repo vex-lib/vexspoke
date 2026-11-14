@@ -7,7 +7,7 @@
 // stray ')'), enforces the documented ceilings, and transfers its class array
 // exactly once.
 
-#include <stddef.h>
+#include "vex.h"
 #include <stdio.h>
 #include <string.h>
 

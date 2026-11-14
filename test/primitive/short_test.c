@@ -1,6 +1,6 @@
 // vexspoke/test/primitive/short_test.c — the Short class _test.
 
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "primitive/short.h"

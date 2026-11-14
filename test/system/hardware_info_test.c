@@ -8,8 +8,7 @@
 //     battery flag/level/status);
 //   - a nullptr string setter is a no-op (the previous value survives).
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <string.h>
 

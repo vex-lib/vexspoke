@@ -6,7 +6,7 @@
 // STATED GAP: isEquallyNamed's success path needs a live SymbolTable and is
 // exercised by the relational owner test; here only its null-guard is pinned.
 
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <string.h>
 

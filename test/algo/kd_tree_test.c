@@ -12,8 +12,7 @@
 //   - duplicate points are all retained;
 //   - a single-point tree works.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <math.h>
 

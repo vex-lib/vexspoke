@@ -6,8 +6,7 @@
 // trips (name, vendor/device ids, API string, capability flags, max texture
 // size, VRAM totals). A nullptr string setter is a no-op.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <string.h>
 

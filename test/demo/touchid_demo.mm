@@ -1,10 +1,13 @@
+
+#include "vex.h"
+
 #import <Foundation/Foundation.h>
 #import <LocalAuthentication/LocalAuthentication.h>
 
 // Runs a native LocalAuthentication request and reports its completion.
 int main(int argc, const char * argv[]) {
-    (void)argc;
-    (void)argv;
+    ()argc;
+    ()argv;
     @autoreleasepool {
         LAContext *ctx = [[LAContext alloc] init];
         NSString *localizedReason = @"Authenticate to confirm action";

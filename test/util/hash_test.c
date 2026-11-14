@@ -6,8 +6,7 @@
 // contract). FNV-1a is pinned to published reference vectors so a silent
 // algorithm drift is caught, not merely "some hash changed".
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <string.h>
 

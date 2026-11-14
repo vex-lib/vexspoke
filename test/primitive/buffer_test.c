@@ -5,6 +5,8 @@
 //   - append grows by cold doubling, bytes stay contiguous;
 //   - setLength clamps, reserve grows, null-safe everywhere;
 //   - free releases payload + record.
+
+#include "vex.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>

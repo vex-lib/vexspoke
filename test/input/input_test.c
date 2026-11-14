@@ -6,6 +6,7 @@
 // markers, and the button classes the legacy dispatcher dropped silently
 // (right-down, middle-up).
 
+#include "vex.h"
 #include <stdio.h>
 
 #include "input/focus.h"

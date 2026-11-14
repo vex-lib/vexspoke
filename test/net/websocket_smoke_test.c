@@ -14,10 +14,11 @@
 //     against that endpoint, which is the only place a completed TLS handshake
 //     and real-server framing are ever proved. The shared suite never contacts
 //     it (the Offline-Proof Law); an unset URL is an explicit skip.
+
+#include "vex.h"
 #include "net/websocket.h"
 
 #include <signal.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -1,6 +1,6 @@
 // vexspoke/test/algo/spatial_test.c — owner tests for Spatial indexing helpers.
 
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "algo/spatial.h"

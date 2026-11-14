@@ -1,6 +1,6 @@
 // vexspoke/test/primitive/fixed64_test.c — the Fixed64 class _test.
 
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "primitive/fixed64.h"

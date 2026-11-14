@@ -12,8 +12,7 @@
 //   - toRadians/toDegrees round trip and exact constants;
 //   - the d64-precision twins mirror the f32 behavior.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <math.h>
 

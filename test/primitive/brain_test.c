@@ -4,8 +4,8 @@
 // conversion. 3.5 is exactly representable in bf3216, so those round trips
 // are exact; other values are checked within the bf3216 epsilon.
 
+#include "vex.h"
 #include <math.h>
-#include <stdint.h>
 #include <stdio.h>
 
 #include "primitive/brain.h"

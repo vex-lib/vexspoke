@@ -8,8 +8,8 @@
 // STATED GAP: Random_probablePool needs a ProbableObjects pool and is owned by
 // the objects/ owner test.
 
+#include "vex.h"
 #include <math.h>
-#include <stdint.h>
 #include <stdio.h>
 
 #include "util/random.h"

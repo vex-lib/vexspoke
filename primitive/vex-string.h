@@ -57,7 +57,6 @@ bool string_equalsCString(const u8 *ptr, const char *value);
 
 // — Capital String class — vex reserved word String() — file stays string.h lowercase per prefs
 // String("hello"), String(u8*), String() → ""
-#include "vex.h"
 #define String_0(...) string_allocate("")
 #define String_1(value) _Generic((value), const char*: string_allocate, char*: string_allocate, u8*: string_copy, const u8*: string_copy, default: string_allocate)(value)
 #define String(...) CONSTRUCTOR_DISPATCH(String, __VA_ARGS__)

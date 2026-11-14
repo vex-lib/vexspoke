@@ -1,6 +1,7 @@
 #ifndef THREAD_NETWORKING_H
 #define THREAD_NETWORKING_H
 
+#include "vex.h"
 #include "thread/thread.h"
 
 // thread/networking.h — the networking worker (Legacy: NetworkingThread.java).

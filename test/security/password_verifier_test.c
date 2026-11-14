@@ -1,12 +1,12 @@
 // Owner: security/password.c — versioned PBKDF2/Argon2id verifier records.
-#include "vex.h"
 
+#include "vex.h"
 #include <assert.h>
 
 #include "security/password.h"
 #include "security/argon2.h"
 
-int main(void) {
+int main() {
     PasswordVerifier pbkdf2 = Password_createVerifier(PASSWORD_KDF_PBKDF2_SHA256, "correct horse");
     assert(PasswordVerifier_isValid(&pbkdf2));
     assert(PasswordVerifier_verify(&pbkdf2, "correct horse"));

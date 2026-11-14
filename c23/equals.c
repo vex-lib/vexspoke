@@ -1,7 +1,8 @@
 #include "vex.h"
 #include "c23/equals.h"
 
-#include "re/nio/mem.h"
+#include "nio/mem.h"
+#include "substrate/relational/symbol_table.h"
 
 ;;DEFINITION
 /**

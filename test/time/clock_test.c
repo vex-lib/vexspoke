@@ -12,8 +12,7 @@
 // Timing is bounded by a small sleep and asserted with inequalities, never an
 // exact duration, so the test is deterministic in outcome.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <time.h>
 

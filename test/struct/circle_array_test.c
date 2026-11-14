@@ -14,8 +14,7 @@
 //   - forEach visits exactly the valid cells, once each, with correct dx/dy;
 //   - every entry point tolerates nullptr.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "struct/circle_array.h"

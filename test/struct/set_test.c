@@ -1,6 +1,6 @@
 // vexspoke/test/struct/set_test.c — the Set class _test (membership, volume, dedup).
 
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "struct/set.h"

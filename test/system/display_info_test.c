@@ -8,8 +8,7 @@
 //   - primary monitor pointer round trips;
 //   - every resolution/refresh/density/HDR scalar round trips.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "system/display_info.h"

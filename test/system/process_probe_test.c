@@ -8,8 +8,7 @@
 //   - isDriverLoaded scans a directory for a case-insensitive prefix match,
 //     and rejects a missing directory, an absent prefix, empty, and nullptr.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

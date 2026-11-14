@@ -1,6 +1,6 @@
 // vexspoke/test/primitive/fixed32_test.c — the Fixed32 class _test.
 
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "primitive/fixed32.h"

@@ -13,8 +13,7 @@
 //     capacity is always length+1 so the `cap >= len+bLen+1` gate is never
 //     met for a non-empty suffix. Asserted as a known gap.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <string.h>
 

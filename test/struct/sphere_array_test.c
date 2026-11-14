@@ -12,8 +12,7 @@
 //   - forEach visits exactly the valid voxels with correct dx/dy/dz;
 //   - every entry point tolerates nullptr.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "struct/sphere_array.h"

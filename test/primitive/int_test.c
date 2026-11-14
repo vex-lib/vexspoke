@@ -4,7 +4,7 @@
 // set/get across the int32 boundaries, compare-and-set, type/length identity
 // (pool vs arena routing), the constructor macros, and null-safety.
 
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "primitive/int.h"

@@ -4,6 +4,7 @@
 // known UTC instants, and Calendar arithmetic (leap years, month clipping,
 // Zeller weekdays).
 
+#include "vex.h"
 #include <stdio.h>
 #include <time.h>
 

@@ -10,8 +10,7 @@
 //   - every getter is null-safe with the documented defaults, setters and free
 //     are null-safe.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <string.h>
 

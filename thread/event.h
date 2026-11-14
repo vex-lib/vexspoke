@@ -1,6 +1,7 @@
 #ifndef THREAD_EVENT_H
 #define THREAD_EVENT_H
 
+#include "vex.h"
 #include "thread/thread.h"
 
 // thread/event.h — the event dispatcher worker (Legacy: EventThread.java).

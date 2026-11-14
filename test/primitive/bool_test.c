@@ -1,6 +1,6 @@
 // vexspoke/test/primitive/bool_test.c — the Bool class _test.
 
-#include <stdbool.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "primitive/bool.h"

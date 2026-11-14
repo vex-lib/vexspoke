@@ -1,7 +1,7 @@
 #ifndef STRUCT_COLLECTION_H
 #define STRUCT_COLLECTION_H
 
-#include "vex.h"
+
 
 // struct/collection.h — the Collection metadata struct, ported from
 // struct/Collection.java.
@@ -43,6 +43,8 @@ u8 *Collection_dataBuffer(Collection *c);
 // emits the epoch's single THROW naming the requested bytes. Always returns
 // false so a caller can `return Collection_reportExhaustion(...)`. A collection
 // constructed (or reset) starts a fresh epoch.
+#include "vex.h"
+
 ;;VALIDATOR
 bool Collection_reportExhaustion(Collection *c, bytes requestedBytes);
 // The number of refused grows since the collection was constructed or reset.

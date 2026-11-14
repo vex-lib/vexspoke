@@ -4,7 +4,7 @@
 // null fn), Destructor_lookup, and c23_free routing a block's runtime type
 // through the dynamic table before reclaiming it with Memory_free.
 
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "c23/free.h"

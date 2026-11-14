@@ -17,10 +17,10 @@
 #ifndef VEXSPOKE_H
 #define VEXSPOKE_H
 
-#include "vex.h"
 
 // --- floor-adjacent: types, storage, structs, scalar vocabulary -----------
 
+#include "vex.h"
 #include "algo/algo.h"
 #include "c23/c23.h"
 #include "event/event.h"

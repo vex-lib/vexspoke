@@ -2,12 +2,11 @@
 // Ordinary paths must produce no diagnostic. This POSIX test is wired in both
 // Debug and Release; CHECK never disappears under NDEBUG.
 
-#include <stdbool.h>
+#include "vex.h"
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 
-#include "vex.h"
 
 static int failures = 0;
 

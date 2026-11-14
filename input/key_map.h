@@ -1,7 +1,7 @@
 #ifndef INPUT_KEY_MAP_H
 #define INPUT_KEY_MAP_H
 
-#include "vex.h"
+
 
 // input/key_map.h — input binding registry (combo → fn pointer).
 //
@@ -54,24 +54,26 @@
 
 // ── Types ─────────────────────────────────────────────────
 
-typedef void (*KeyBindingFn)(any userdata, int64_t combo);
+typedef fn (*KeyBindingFn)(any userdata, int64_t combo);
 
 typedef struct KeyBinding {
     int64_t       combo;       // the encoded combo
     KeyBindingFn  fn;          // callback
-    void         *userdata;    // opaque context
+    any userdata;    // opaque context
 } KeyBinding;
 
 typedef struct KeyMap {
     KeyBinding *bindings;      // flat array of registered combos
     u32    count;         // active binding count
     u32    capacity;      // allocated slots (doubling growth)
-    void       *arena;         // opaque MemoryArena handle
+    any arena;         // opaque MemoryArena handle
     bool        multiTapEnabled; // false = rhythm mode: every press an instant single
     u64    longPressNanos;  // LONG_PRESS hold threshold (0 = disabled on this map)
 } KeyMap;
 
 // ── Lifecycle ─────────────────────────────────────────────
+
+#include "vex.h"
 
 ;;DRAFT
 ;;INTENTION("exact-match only by design (2026-09-16 session); wildcard "

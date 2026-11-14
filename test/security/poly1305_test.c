@@ -2,8 +2,8 @@
 //
 // Proves the section 2.5.2 vector and that streaming equals one-shot across a
 // block boundary. A wrong Poly1305 still returns 16 plausible bytes.
-#include "vex.h"
 
+#include "vex.h"
 #include <assert.h>
 
 #include "security/poly1305.h"

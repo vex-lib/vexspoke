@@ -1,6 +1,7 @@
 #ifndef THREAD_UI_H
 #define THREAD_UI_H
 
+#include "vex.h"
 #include "thread/thread.h"
 
 // thread/ui.h — the UI worker (Legacy: UIThread.java).

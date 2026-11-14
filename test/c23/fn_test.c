@@ -1,5 +1,6 @@
 // vexspoke/test/c23/fn_test.c — callback and captured-context value contract.
 
+#include "vex.h"
 #include <stdio.h>
 
 #include "c23/fn.h"

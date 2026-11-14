@@ -8,9 +8,8 @@
 //     concurrent use; the count must be exact and the multiset exact);
 //   - null-safety.
 
+#include "vex.h"
 #include <pthread.h>
-#include <stddef.h>
-#include <stdint.h>
 #include <stdio.h>
 
 #include "struct/list.h"

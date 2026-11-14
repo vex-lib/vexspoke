@@ -1,9 +1,7 @@
 #ifndef REFLECTION_VARIABLE_H
 #define REFLECTION_VARIABLE_H
 
-#include <stdbool.h>
 #include "vex.h"
-
 #include "substrate/variable/variable_slot.h"
 
 // reflection/variable.h — the Variable metadata record (base of the hierarchy).

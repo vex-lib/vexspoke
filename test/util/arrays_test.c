@@ -4,7 +4,7 @@
 // the legacy -(insertion+1) miss encoding, and byte fill/copy. Deterministic,
 // headless, no allocation.
 
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <string.h>
 

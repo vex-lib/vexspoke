@@ -1,9 +1,10 @@
 // vexspoke/test/primitive/f32_test.c — the Float class _test.
 
+#include "vex.h"
 #include <math.h>
 #include <stdio.h>
 
-#include "primitive/vex-f32.h"
+#include "primitive/vex-float.h"
 #include "oop/vexspoke_type.h"
 
 static int g_failures = 0;

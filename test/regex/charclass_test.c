@@ -4,7 +4,7 @@
 // ranges, ASCII case folding at insert time, the backslash-d/w/s families and
 // their complements, negation, and the boundary bytes 0x00 and 0xFF.
 
-#include <stddef.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "regex/charclass.h"

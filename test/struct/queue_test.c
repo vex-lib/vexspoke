@@ -1,7 +1,6 @@
 // vexspoke/test/struct/queue_test.c — the Queue class _test (FIFO, volume, hostile).
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "struct/queue.h"

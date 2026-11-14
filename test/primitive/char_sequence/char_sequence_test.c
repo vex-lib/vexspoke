@@ -1,12 +1,12 @@
+#include "vex.h"
 #include "primitive/char_sequence.h"
 
-#include <stdint.h>
 #include <stdio.h>
 
 static int failures = 0;
 static int checks = 0;
 
-static void check(bool condition, const char *label)
+static fn check(bool condition, const char *label)
 {
     ++checks;
     if (!condition)

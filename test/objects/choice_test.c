@@ -4,7 +4,7 @@
 // option's callback. Proves length/getObject bounds, trigger dispatch, hostile
 // index, and null-safety.
 
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "objects/choice.h"

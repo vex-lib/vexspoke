@@ -1,7 +1,6 @@
 // vexspoke/test/struct/deque_test.c — the Deque class _test (both ends, volume, hostile).
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "struct/deque.h"

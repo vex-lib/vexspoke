@@ -6,8 +6,7 @@
 // facade constants alias the strict constants. That is the Public Surface
 // Proof Law for a facade: no function silently routes to the wrong engine.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <math.h>
 

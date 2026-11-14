@@ -13,8 +13,7 @@
 //   - the low-level bounded `Collection_readSlot` refuses an out-of-range index
 //     with a safe default, not UB.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "struct/array.h"

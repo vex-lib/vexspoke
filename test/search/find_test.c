@@ -9,8 +9,7 @@
 //     one char), case folding, and empty pattern rejection;
 //   - nullptr safety on every entry point.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "search/find.h"

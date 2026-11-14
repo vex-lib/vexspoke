@@ -3,6 +3,7 @@
 // Proves constructor arities, formatted message ownership, detail replacement,
 // and idempotent release of owned diagnostic strings.
 
+#include "vex.h"
 #include <stdio.h>
 #include <string.h>
 

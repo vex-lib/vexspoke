@@ -1,6 +1,6 @@
 // vexspoke/test/primitive/long_test.c — the Long class _test.
 
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "primitive/long.h"

@@ -1,6 +1,5 @@
 #include "vex.h"
 #include "system/process_probe.h"
-#include "util/platform.h"
 
 #include <dirent.h>
 #include <strings.h>

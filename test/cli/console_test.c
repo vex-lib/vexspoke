@@ -1,6 +1,8 @@
 // Bare R2 Console owner (registered as bare_console_test, not R1 Console).
 // Compatibility lifecycle is no-op; literal control escaping produces one
 // stdout line per call and consumes owned String exactly once. No terminal UI.
+
+#include "vex.h"
 #include "cli/console.h"
 #include "primitive/vex-string.h"
 #include "nio/mem.h"

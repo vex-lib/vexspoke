@@ -1,6 +1,5 @@
 #include "vex.h"
 #include "system/browser.h"
-#include "util/platform.h"
 
 
 #if defined(VEX_PLATFORM_WINDOWS)

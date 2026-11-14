@@ -3,6 +3,7 @@
 
 // io/io.h — Vexspoke's higher-level IO policy door.
 
+#include "vex.h"
 #include "io/vexhome.h"
 
 #endif

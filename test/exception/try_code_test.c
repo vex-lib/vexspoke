@@ -3,6 +3,7 @@
 // Proves exception/try_code.c: the taxonomy's two projections are stable,
 // complete, and null-free, and TryCode_isOk is true only for TRY_OK.
 
+#include "vex.h"
 #include <stdio.h>
 #include <string.h>
 

@@ -1,6 +1,6 @@
 // vexspoke/test/primitive/byte_test.c — the Byte class _test.
 
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "primitive/byte.h"

@@ -4,6 +4,7 @@
 // endpoints; the client + JSON + URL layers are exercised against it. No
 // external network anywhere.
 
+#include "vex.h"
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>

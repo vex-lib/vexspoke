@@ -23,6 +23,7 @@
 // owns the method-first names in this translation unit, and the typed macros
 // are the surface under test.
 
+#include "vex.h"
 #include <stdio.h>
 
 #include "generic/generic.h"

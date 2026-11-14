@@ -5,7 +5,7 @@
 // indices addressing the same nodes, out-of-range access returns nullptr, and
 // free is null-safe and reusable.
 
-#include <stddef.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "regex/nodelist.h"

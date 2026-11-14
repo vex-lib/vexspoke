@@ -4,10 +4,8 @@
 // dense indexes, and roles must round-trip. Atomics: C23 stdatomic primitives,
 // contended counters landing exactly, CAS races, and SpinLock correctness.
 
+#include "vex.h"
 #include <pthread.h>
-#include <stdatomic.h>
-#include <stdbool.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>

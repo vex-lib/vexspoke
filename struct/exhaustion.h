@@ -1,7 +1,7 @@
 #ifndef STRUCT_EXHAUSTION_H
 #define STRUCT_EXHAUSTION_H
 
-#include "vex.h"
+
 
 // struct/exhaustion.h — the shared loud-refusal seam (the Exhaustion Loudness
 // Law) for owners that own finite storage but do not embed a Collection.
@@ -17,6 +17,8 @@
 // caller can write `return Struct_reportExhaustion(...)`. `boundBytes` is the
 // capacity the owner hit (0 when there is no meaningful bound), so the
 // diagnostic names the request AND the bound (the Exhaustion Loudness Law).
+#include "vex.h"
+
 ;;VALIDATOR
 bool Struct_reportExhaustion(u64 *count, bool *reported, const char *owner,
                              bytes requestedBytes, bytes boundBytes);

@@ -1,13 +1,13 @@
 // Owner: security/password.c — PBKDF2, the slow password hash.
-#include "vex.h"
 
+#include "vex.h"
 #include <assert.h>
 
 #include "security/password.h"
 #include "security/hmac.h"
 #include "security/crypto.h"
 
-int main(void) {
+int main() {
     // RFC 6070 PBKDF2-HMAC-SHA1 vectors, verbatim.
     u8 key[32];
     char hex[65];

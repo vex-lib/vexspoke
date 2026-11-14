@@ -1,5 +1,6 @@
 // vexspoke/test/objects/probable_test.c — the Probable class _test.
 
+#include "vex.h"
 #include <stdio.h>
 
 #include "objects/probable.h"

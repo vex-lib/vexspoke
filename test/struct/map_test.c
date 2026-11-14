@@ -1,6 +1,6 @@
 // vexspoke/test/struct/map_test.c — the Map class _test (key/value, volume).
 
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "struct/map.h"

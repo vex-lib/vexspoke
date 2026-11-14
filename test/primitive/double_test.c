@@ -1,9 +1,10 @@
 // vexspoke/test/primitive/f64_test.c — the d64 class _test.
 
+#include "vex.h"
 #include <math.h>
 #include <stdio.h>
 
-#include "primitive/d64.h"
+#include "primitive/double.h"
 #include "oop/vexspoke_type.h"
 
 static int g_failures = 0;

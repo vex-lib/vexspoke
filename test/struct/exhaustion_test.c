@@ -4,7 +4,7 @@
 // owner-agnostic exhaustion seam that non-Collection owners (MinHeap, SparseSet,
 // Octree) route their refusals through (the Exhaustion Loudness Law).
 
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "struct/exhaustion.h"

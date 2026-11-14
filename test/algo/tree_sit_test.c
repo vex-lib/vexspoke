@@ -15,8 +15,7 @@
 //   - count_kind counts matches across the whole flat array;
 //   - walk/find/count are safe on an empty or destroyed tree and on nullptr.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "algo/tree_sit.h"

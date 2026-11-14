@@ -2,6 +2,7 @@
 //
 // Atomic global pointer/value: get/set round trip + compare-and-set.
 
+#include "vex.h"
 #include <stdio.h>
 
 #include "objects/global.h"

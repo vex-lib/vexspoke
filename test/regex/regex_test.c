@@ -17,9 +17,8 @@
 //     a clean non-match, not hang (the Pike VM is linear);
 //   - nullptr safety on every entry point.
 
+#include "vex.h"
 #include <fcntl.h>
-#include <stddef.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>

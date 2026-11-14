@@ -5,8 +5,7 @@
 // documented table, checks the default fallback for an out-of-range frame,
 // the per-axis out-of-range guards, validity, and human-readable names.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 #include <string.h>
 

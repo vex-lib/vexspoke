@@ -1,12 +1,14 @@
 // Engine-owned bounded frame slot: full buffer, preservation, retry, timeout and
 // cancellation. Single-owner API; no concurrent cancellation claim is tested.
 // Existing silent rejection policy is retained; THROW/toString gaps remain.
+
+#include "vex.h"
 #include "net/net.h"
 #include "re/nio/mem.h"
 #include <assert.h>
 #include <string.h>
 
-int main(void) {
+int main() {
     FrameInbox *a = FrameInbox();
     FrameInbox *b = FrameInbox(UINT64_MAX);
     assert(a && b);

@@ -3,8 +3,8 @@
 // Proves the section 2.3.2 block-function vector and the section 2.4.2
 // encryption vector, plus that the XOR is symmetric. A wrong ChaCha20 still
 // emits a plausible keystream, so the vectors are the only evidence.
-#include "vex.h"
 
+#include "vex.h"
 #include <assert.h>
 
 #include "security/chacha20.h"

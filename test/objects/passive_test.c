@@ -3,6 +3,7 @@
 // Lazy getter/setter hooks: reads and writes route through the injected hooks,
 // and a null hook degrades to 0 / no-op.
 
+#include "vex.h"
 #include <stdio.h>
 
 #include "objects/passive.h"

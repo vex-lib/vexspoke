@@ -4,8 +4,8 @@
 // ciphertext bit must both refuse and leave no plaintext. A broken AEAD still
 // returns plausible plaintext, so both the vector and the refusals are the
 // evidence.
-#include "vex.h"
 
+#include "vex.h"
 #include <assert.h>
 
 #include "security/chacha20poly1305.h"

@@ -6,8 +6,7 @@
 // an out-of-bounds dereference. The deliberately-UNSAFE pair stays unchecked but
 // null-guarded.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "vex.h"
 #include <stdio.h>
 
 #include "struct/collection.h"
