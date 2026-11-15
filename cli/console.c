@@ -34,8 +34,8 @@ fn Console_log(const char *message) {
         return;
     }
     bool ok = true;
-    for (const unsigned char *p = (const unsigned char*) message; *p != 0; ++p) {
-        unsigned char ch = *p;
+    for (const u8 *p = (const u8*) message; *p != 0; ++p) {
+        u8 ch = *p;
         if (ch < 32 || ch == 127) {
             if (fprintf(stdout, "\\x%02X", ch) < 0)
                 ok = false;

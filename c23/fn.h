@@ -5,9 +5,9 @@
 
 // c23/fn.h — functions as data (the opcode-in-hand class).
 //
-//   int base = 10;
+//   i32 base = 10;
 //   Function f = Function(addTen_impl, &base);
-//   int *out = Function_run(&f, &x);              // like Java's runnable.run()
+//   i32 *out = Function_run(&f, &x);              // like Java's runnable.run()
 //
 // A Function is pure data: one code pointer + one environment pointer — the
 // same shape as Loop.tick/userdata, promoted to a reusable class. Capture is

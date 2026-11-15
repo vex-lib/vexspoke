@@ -32,8 +32,8 @@
 #include "net/url.h"
 #include "security/sha1.h"
 
-static int g_failures = 0;
-static int g_checks = 0;
+static i32 g_failures = 0;
+static i32 g_checks = 0;
 
 #define CHECK(condition)                                                        \
     do {                                                                        \
@@ -62,7 +62,7 @@ static u64 selfCpuMs() {
     return user + system;
 }
 
-static bool peerWrite(int fd, const_any data, bytes length) {
+static bool peerWrite(i32 fd, const_any data, bytes length) {
     const u8 *p = (const u8*) data;
     bytes sent = 0u;
     while (sent < length) {
@@ -75,11 +75,11 @@ static bool peerWrite(int fd, const_any data, bytes length) {
 }
 
 /** The peer: handshake, wait out the idle window, then send one late message. */
-static int peerRun(int readyWriteFd, u32 quietMillis) {
-    int listener = socket(AF_INET, SOCK_STREAM, 0);
+static i32 peerRun(i32 readyWriteFd, u32 quietMillis) {
+    i32 listener = socket(AF_INET, SOCK_STREAM, 0);
     if (listener < 0)
         return 90;
-    int reuse = 1;
+    i32 reuse = 1;
     setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
     struct sockaddr_in address;
     memset(&address, 0, sizeof(address));
@@ -93,14 +93,14 @@ static int peerRun(int readyWriteFd, u32 quietMillis) {
         return 92;
     if (listen(listener, 1) != 0)
         return 93;
-    int port = ntohs(address.sin_port);
+    i32 port = ntohs(address.sin_port);
     if (write(readyWriteFd, &port, sizeof(port)) != (ssize_t) sizeof(port))
         return 94;
     close(readyWriteFd);
 
     struct timeval timeout = { .tv_sec = 10, .tv_usec = 0 };
     setsockopt(listener, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
-    int peer = accept(listener, nullptr, nullptr);
+    i32 peer = accept(listener, nullptr, nullptr);
     if (peer < 0)
         return 95;
     setsockopt(peer, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
@@ -139,7 +139,7 @@ static int peerRun(int readyWriteFd, u32 quietMillis) {
     if (Url_base64(hash, CRYPTO_SHA1_DIGEST_SIZE, accept, sizeof(accept)) <= 0)
         return 99;
     char response[256];
-    int written = snprintf(response, sizeof(response),
+    i32 written = snprintf(response, sizeof(response),
         "HTTP/1.1 101 Switching Protocols\r\n"
         "Upgrade: websocket\r\nConnection: Upgrade\r\n"
         "Sec-WebSocket-Accept: %s\r\n\r\n", accept);
@@ -149,7 +149,7 @@ static int peerRun(int readyWriteFd, u32 quietMillis) {
 
     // Go quiet for the whole window the parent is measuring, then say one word.
     struct timespec quiet = { .tv_sec = (time_t) (quietMillis / 1000u),
-                              .tv_nsec = (long) ((quietMillis % 1000u) * 1000000L) };
+                              .tv_nsec = (i64) ((quietMillis % 1000u) * 1000000L) };
     nanosleep(&quiet, nullptr);
     const char *late = "late";
     u8 header[4] = { 0x81u, 0x04u, 0u, 0u };
@@ -167,7 +167,7 @@ static int peerRun(int readyWriteFd, u32 quietMillis) {
 static fn testIdleCost() {
     printf("[1] idle cost: a quiet session must not burn CPU\n");
     const u32 quietMillis = 3000u;
-    int fds[2];
+    i32 fds[2];
     if (pipe(fds) != 0) {
         CHECK(false);
         return;
@@ -178,7 +178,7 @@ static fn testIdleCost() {
         _exit(peerRun(fds[1], quietMillis));
     }
     close(fds[1]);
-    int port = 0;
+    i32 port = 0;
     if (read(fds[0], &port, sizeof(port)) != (ssize_t) sizeof(port)) {
         CHECK(false);
         return;
@@ -206,7 +206,7 @@ static fn testIdleCost() {
     u64 elapsed = nowMs() - started;
 
     printf("  idled %llu ms over %u polls, self CPU %llu ms\n",
-           (unsigned long long) elapsed, polls, (unsigned long long) cpuSpent);
+           (u64) elapsed, polls, (u64) cpuSpent);
     // A spin loop would spend ~elapsed of CPU. Sleeping in poll() costs a
     // fraction of that; 10% of the window is a generous ceiling that still
     // fails loudly if anyone turns the wait into a busy loop.
@@ -217,7 +217,7 @@ static fn testIdleCost() {
     CHECK(message.payload != nullptr);
 
     WebSocket_close(&client);
-    int status = 0;
+    i32 status = 0;
     CHECK(waitpid(child, &status, 0) == child);
     CHECK(WIFEXITED(status) && WEXITSTATUS(status) == 0);
 }
@@ -261,12 +261,12 @@ static fn testLiveRoundTrip() {
         bytes shown = message.length < 120u ? message.length : 120u;
         bool echoed = message.length == strlen(probe) &&
                       memcmp(message.payload, probe, message.length) == 0;
-        printf("  first frame: %llu Bytes%s\n", (unsigned long long) message.length,
+        printf("  first frame: %llu Bytes%s\n", (u64) message.length,
                echoed ? " (echoed our probe)" : "");
-        printf("  payload: %.*s\n", (int) shown, (const char*) message.payload);
+        printf("  payload: %.*s\n", (i32) shown, (const char*) message.payload);
         CHECK(message.length > 0u);
     } else {
-        printf("  no frame: kind=%d error=%s\n", (int) message.kind, message.error);
+        printf("  no frame: kind=%d error=%s\n", (i32) message.kind, message.error);
         CHECK(message.kind == WS_MESSAGE_TEXT);
     }
     WebSocket_close(&client);
@@ -303,7 +303,7 @@ static fn testDiscordGateway() {
     bool hasInterval = hello.kind == WS_MESSAGE_TEXT &&
         memmem(hello.payload, hello.length, "\"heartbeat_interval\"", 20u) != nullptr;
     printf("  HELLO: %llu Bytes, op10=%s, heartbeat_interval=%s\n",
-           (unsigned long long) hello.length, isHello ? "yes" : "NO",
+           (u64) hello.length, isHello ? "yes" : "NO",
            hasInterval ? "present" : "MISSING");
     CHECK(isHello);
     CHECK(hasInterval);
@@ -316,7 +316,7 @@ static fn testDiscordGateway() {
     WebSocketMessage ack = WebSocket_poll(&client, 5000u);
     bool acked = ack.kind == WS_MESSAGE_TEXT &&
         memmem(ack.payload, ack.length, "\"op\":11", 7u) != nullptr;
-    printf("  heartbeat: kind=%d%s\n", (int) ack.kind, acked ? ", op 11 ACK" : "");
+    printf("  heartbeat: kind=%d%s\n", (i32) ack.kind, acked ? ", op 11 ACK" : "");
     CHECK(acked);
 
     // A deliberately invalid IDENTIFY must be refused, loudly.
@@ -329,19 +329,19 @@ static fn testDiscordGateway() {
     bool invalidSession = refused.kind == WS_MESSAGE_TEXT &&
         memmem(refused.payload, refused.length, "\"op\":9", 6u) != nullptr;
     bool closed = refused.kind == WS_MESSAGE_CLOSE;
-    printf("  invalid IDENTIFY: kind=%d closeCode=%u%s\n", (int) refused.kind,
-           (unsigned) refused.closeCode, invalidSession ? " (op 9 invalid session)" : "");
+    printf("  invalid IDENTIFY: kind=%d closeCode=%u%s\n", (i32) refused.kind,
+           (u32) refused.closeCode, invalidSession ? " (op 9 invalid session)" : "");
     CHECK(closed || invalidSession);
     if (closed)
         printf("  refused with close code %u: \"%s\"\n",
-               (unsigned) WebSocket_closeCode(&client), WebSocket_closeReason(&client));
+               (u32) WebSocket_closeCode(&client), WebSocket_closeReason(&client));
 
     // The exchange really moved frames: HELLO and the ACK at minimum.
     CHECK(WebSocket_framesIn(&client) >= 2u);
     WebSocket_close(&client);
 }
 
-int main() {
+i32 main() {
     printf("=== WebSocket smoke: idle cost, live round-trip, discord gateway ===\n");
     signal(SIGPIPE, SIG_IGN);
     testIdleCost();

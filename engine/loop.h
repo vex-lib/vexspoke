@@ -15,11 +15,11 @@ typedef fn (*TickFn)(any userdata);
 typedef struct Loop {
     TickFn tick;      // called once per fixed step (never nullptr)
     any userdata;         // opaque context handed to tick
-    int64_t frame_ms;       // fixed timestep in milliseconds (>0)
+    i64 frame_ms;       // fixed timestep in milliseconds (>0)
     _Atomic bool running;   // Loop_stop flips this to end the loop
 } Loop;
 
-static inline Loop Loop_3(TickFn tick, any userdata, int64_t frameMilliseconds) {
+static inline Loop Loop_3(TickFn tick, any userdata, i64 frameMilliseconds) {
     return (Loop) { .tick = tick, .userdata = userdata, .frame_ms = frameMilliseconds,
         .running = false };
 }
@@ -30,7 +30,7 @@ static inline fn Loop_setTick(Loop *loop, TickFn tick) {
 static inline fn Loop_setUserdata(Loop *loop, any userdata) {
     if (loop) (*loop).userdata = userdata;
 }
-static inline fn Loop_setFrameMilliseconds(Loop *loop, int64_t frameMilliseconds) {
+static inline fn Loop_setFrameMilliseconds(Loop *loop, i64 frameMilliseconds) {
     if (loop) (*loop).frame_ms = frameMilliseconds;
 }
 

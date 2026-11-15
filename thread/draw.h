@@ -14,8 +14,8 @@
 #define DRAW_ROLE_UI     3 // event-driven UI renderer (not ImGui)
 #define DRAW_ROLE_USER   4 // start of user-generated registers
 
-Thread *DrawThread_invokeRole(int role);
-bool DrawThread_submitTo(int role, any task);
+Thread *DrawThread_invokeRole(i32 role);
+bool DrawThread_submitTo(i32 role, any task);
 fn DrawThread_stopAll();
 fn DrawThread_stopAll();
 fn DrawThread_freeAll();

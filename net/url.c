@@ -43,14 +43,14 @@
  */
 
 
-int Url_defaultPort(const char *scheme) {
+i32 Url_defaultPort(const char *scheme) {
     if (scheme && strcasecmp(scheme, "https") == 0) return 443;
     return 80;
 }
 
 static const char HTTP[] = "http";
 
-int64_t Url_build(const char *scheme, const char *host, int port,
+i64 Url_build(const char *scheme, const char *host, i32 port,
                      const char *path, char *out, bytes cap) {
     const char *s = scheme ? scheme : HTTP;
     const char *h = host ? host : "";
@@ -60,26 +60,26 @@ int64_t Url_build(const char *scheme, const char *host, int port,
     char joined[1024];
     const char *p = pIn;
     if (*p != '/') {
-        int j = snprintf(joined, sizeof(joined), "/%s", pIn);
+        i32 j = snprintf(joined, sizeof(joined), "/%s", pIn);
         if (j < 0 || (bytes)j >= sizeof(joined)) return -1;
         p = joined;
     }
 
-    int defaultPort = Url_defaultPort(s);
-    int n;
+    i32 defaultPort = Url_defaultPort(s);
+    i32 n;
     if (port > 0 && port != defaultPort)
         n = snprintf(out, cap, "%s://%s:%d%s", s, h, port, p);
     else
         n = snprintf(out, cap, "%s://%s%s", s, h, p);
     if (n < 0) return -1;
     if (cap == 0 || (bytes)n >= cap) return -1; // truncated — contract says -1
-    return (int64_t)n;
+    return (i64)n;
 }
 
 // the characters of base64
 static const char B64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-int64_t Url_base64(const u8 *in, bytes len, char *out, bytes cap) {
+i64 Url_base64(const u8 *in, bytes len, char *out, bytes cap) {
     bytes needed = 4 * ((len + 2) / 3);
     if (cap < needed + 1) return -1;
 
@@ -108,27 +108,27 @@ int64_t Url_base64(const u8 *in, bytes len, char *out, bytes cap) {
         out[o++] = '=';
     }
     out[o] = '\0';
-    return (int64_t)o;
+    return (i64)o;
 }
 
-int64_t Url_basicAuth(const char *user, const char *pass, char *out, bytes cap) {
+i64 Url_basicAuth(const char *user, const char *pass, char *out, bytes cap) {
     char creds[512];
-    int c = snprintf(creds, sizeof(creds), "%s:%s", user ? user : "", pass ? pass : "");
+    i32 c = snprintf(creds, sizeof(creds), "%s:%s", user ? user : "", pass ? pass : "");
     if (c < 0 || (bytes)c >= sizeof(creds)) return -1;
 
     char encoded[768];
-    int64_t e = Url_base64((const u8*) creds, (bytes)c, encoded, sizeof(encoded));
+    i64 e = Url_base64((const u8*) creds, (bytes)c, encoded, sizeof(encoded));
     if (e < 0) return -1;
 
-    int n = snprintf(out, cap, "Basic %s", encoded);
+    i32 n = snprintf(out, cap, "Basic %s", encoded);
     if (n < 0) return -1;
     if (cap == 0 || (bytes)n >= cap) return -1;
-    return (int64_t)n;
+    return (i64)n;
 }
 
-int64_t Url_bearerAuth(const char *token, char *out, bytes cap) {
-    int n = snprintf(out, cap, "Bearer %s", token ? token : "");
+i64 Url_bearerAuth(const char *token, char *out, bytes cap) {
+    i32 n = snprintf(out, cap, "Bearer %s", token ? token : "");
     if (n < 0) return -1;
     if (cap == 0 || (bytes)n >= cap) return -1;
-    return (int64_t)n;
+    return (i64)n;
 }

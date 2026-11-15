@@ -227,7 +227,7 @@ fn Class_toString(const Class *self, char *dest, bytes cap, bool *outTruncated) 
         snprintf(dest, cap, "nullptr");
         return;
     }
-    int written = snprintf(dest, cap, "Class(%s, methods=%u)",
+    i32 written = snprintf(dest, cap, "Class(%s, methods=%u)",
                            (*self).name[0] == '\0' ? "?" : (*self).name, (*self).methodCount);
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
@@ -244,11 +244,11 @@ fn Class_toStringStruct(const Class *self, char *dest, bytes cap, bool *outTrunc
         snprintf(dest, cap, "nullptr");
         return;
     }
-    int written = snprintf(dest, cap, "Class { name=\"%s\", construct=0x%llx, layout=0x%llx, methods=0x%llx, methodCount=%u }",
+    i32 written = snprintf(dest, cap, "Class { name=\"%s\", construct=0x%llx, layout=0x%llx, methods=0x%llx, methodCount=%u }",
                            (*self).name,
-                           (unsigned long long) (pointer) (*self).construct,
-                           (unsigned long long) (pointer) (*self).layout,
-                           (unsigned long long) (pointer) (*self).methods,
+                           (u64) (pointer) (*self).construct,
+                           (u64) (pointer) (*self).layout,
+                           (u64) (pointer) (*self).methods,
                            (*self).methodCount);
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)

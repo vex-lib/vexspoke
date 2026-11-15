@@ -142,7 +142,7 @@ bool AppDetect_isAppBundle(const AppDetect *self, const char *name) {
         return true;
     if (n + 6 > sizeof(bundle))
         return false;
-    bundle[14] = (char)toupper((unsigned char)bundle[14]);
+    bundle[14] = (char)toupper((u8)bundle[14]);
     return access(bundle, F_OK) == 0;
 }
 

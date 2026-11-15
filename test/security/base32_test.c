@@ -16,7 +16,7 @@ static fn roundTrip(const char *text) {
     assert(strcmp(back, text) == 0);
 }
 
-int main() {
+i32 main() {
     // RFC 4648 section 10 vectors, verbatim.
     static const struct { const char *plain, *encoded; } cases[] = {
         { "f",      "MY======" },

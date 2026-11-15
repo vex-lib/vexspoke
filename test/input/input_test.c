@@ -15,7 +15,7 @@
 #include "input/touch.h"
 #include "time/nanotime.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -25,29 +25,29 @@ static int g_failures = 0;
         }                                                                  \
     } while (0)
 
-static int g_keyDowns = 0, g_keyUps = 0, g_keyRepeats = 0, g_chars = 0;
-static int g_lastKeyEvent = -1;
+static i32 g_keyDowns = 0, g_keyUps = 0, g_keyRepeats = 0, g_chars = 0;
+static i32 g_lastKeyEvent = -1;
 static u64 g_lastNanos = 0;
 
 // Records a key-down callback's event and timestamp for dispatch assertions.
-static fn k_down(any self, int e, u64 n) {
+static fn k_down(any self, i32 e, u64 n) {
     (discard)self; g_keyDowns++; g_lastKeyEvent = e; g_lastNanos = n;
 }
 // Counts key-up delivery and saves its packed event.
-static fn k_up(any self, int e, u64 n) { (discard)self; (discard)n; g_keyUps++; g_lastKeyEvent = e; }
+static fn k_up(any self, i32 e, u64 n) { (discard)self; (discard)n; g_keyUps++; g_lastKeyEvent = e; }
 // Counts repeated-key delivery without changing the recorded event.
-static fn k_repeat(any self, int e, u64 n) { (discard)self; (discard)e; (discard)n; g_keyRepeats++; }
+static fn k_repeat(any self, i32 e, u64 n) { (discard)self; (discard)e; (discard)n; g_keyRepeats++; }
 // Accumulates typed character values received by the listener.
-static fn k_char(any self, u32 c) { (discard)self; g_chars += (int)c; }
+static fn k_char(any self, u32 c) { (discard)self; g_chars += (i32)c; }
 
-static int g_mouseDowns = 0, g_mouseUps = 0;
-static int g_lastMouseEvent = -1;
+static i32 g_mouseDowns = 0, g_mouseUps = 0;
+static i32 g_lastMouseEvent = -1;
 static d64 g_scrollX = 0, g_scrollY = 0, g_zoom = 0, g_moveX = -1, g_moveY = -1;
 
 // Counts mouse-down events and remembers the last button.
-static fn m_down(any self, int e, u64 n) { (discard)self; (discard)n; g_mouseDowns++; g_lastMouseEvent = e; }
+static fn m_down(any self, i32 e, u64 n) { (discard)self; (discard)n; g_mouseDowns++; g_lastMouseEvent = e; }
 // Counts mouse-up events and remembers the last button.
-static fn m_up(any self, int e, u64 n) { (discard)self; (discard)n; g_mouseUps++; g_lastMouseEvent = e; }
+static fn m_up(any self, i32 e, u64 n) { (discard)self; (discard)n; g_mouseUps++; g_lastMouseEvent = e; }
 // Saves the latest pointer coordinates delivered by the mouse dispatcher.
 static fn m_move(any self, d64 x, d64 y) { (discard)self; g_moveX = x; g_moveY = y; }
 // Saves the latest horizontal and vertical scroll deltas.
@@ -55,27 +55,27 @@ static fn m_scroll(any self, d64 dx, d64 dy) { (discard)self; g_scrollX = dx; g_
 // Saves the latest zoom magnification delivered by the mouse dispatcher.
 static fn m_zoom(any self, d64 mag) { (discard)self; g_zoom = mag; }
 
-static int g_touchDowns = 0, g_touchUps = 0;
+static i32 g_touchDowns = 0, g_touchUps = 0;
 static d64 g_touchPressure = 0;
 
 // Records touch-down delivery and pressure for the selected touch.
-static fn t_down(any self, int id, d64 x, d64 y, d64 p, u64 n) {
+static fn t_down(any self, i32 id, d64 x, d64 y, d64 p, u64 n) {
     (discard)self; (discard)id; (discard)x; (discard)y; (discard)n; g_touchDowns++; g_touchPressure = p;
 }
 // Counts touch-up delivery after the touch has been released.
-static fn t_up(any self, int id, d64 x, d64 y, d64 p, u64 n) {
+static fn t_up(any self, i32 id, d64 x, d64 y, d64 p, u64 n) {
     (discard)self; (discard)id; (discard)x; (discard)y; (discard)p; (discard)n; g_touchUps++;
 }
 
 // A second key listener used to prove removal stops delivery.
-static int g_otherDowns = 0;
+static i32 g_otherDowns = 0;
 // Counts events received by the secondary listener used for routing checks.
-static fn k_other_down(any self, int e, u64 n) {
+static fn k_other_down(any self, i32 e, u64 n) {
     (discard)self; (discard)e; (discard)n; g_otherDowns++;
 }
 
 // Drives keyboard, mouse, touch, removal, and window-routing paths headlessly.
-int main() {
+i32 main() {
     Key_init();
     Mouse_init();
     Touch_init();

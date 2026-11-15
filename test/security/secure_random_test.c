@@ -13,7 +13,7 @@
 #include "vex.h"
 #include "security/secure_random.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -32,7 +32,7 @@ static bool anyNonZero(const u8 *buf, bytes len) {
 }
 
 // Checks SecureRandom output properties, accepted sizes, null rejection, and draw counts.
-int main() {
+i32 main() {
     SecureRandom *sr = SecureRandom();
     CHECK(sr != nullptr);
     if (!sr) {

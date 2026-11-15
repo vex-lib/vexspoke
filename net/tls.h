@@ -23,13 +23,13 @@ typedef enum TlsBackendKind {
 } TlsBackendKind;
 
 typedef struct TlsConn {
-    int backend;   // TlsBackendKind that produced this connection
+    i32 backend;   // TlsBackendKind that produced this connection
     any opaque;  // backend-owned session; released only by Tls_close
 } TlsConn;
 
 // Connect with TLS to host:port. connOut is filled on success.
 // Returns false when scheme is unsupported or handshake fails.
-bool Tls_connect(const char *host, int port, TlsConn **connOut);
+bool Tls_connect(const char *host, i32 port, TlsConn **connOut);
 
 // Send Bytes over an established TLS connection.
 bool Tls_send(TlsConn *conn, const char *buf, bytes len);
@@ -48,7 +48,7 @@ fn Tls_close(TlsConn *conn);
 // since a TLS connection has no descriptor to poll.
 bool Tls_readable(TlsConn *conn, u32 budgetMs);
 
-// The per-connection IO budget: every send and receive waits at most this long.
+// The per-connection IO budget: every send and receive waits at most this i64.
 // A caller driving a bounded poll loop sets it so the transport honours the same
 // slice the loop promises its own caller — without it a TLS read has no fd to
 // carry SO_RCVTIMEO and would outlive the caller's budget. Zero restores the

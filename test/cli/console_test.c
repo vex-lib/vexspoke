@@ -10,11 +10,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-int main() {
+i32 main() {
     FILE *out = tmpfile(), *errors = tmpfile();
     assert(out && errors);
     fflush(stdout); fflush(stderr);
-    int savedOut = dup(STDOUT_FILENO), savedErr = dup(STDERR_FILENO);
+    i32 savedOut = dup(STDOUT_FILENO), savedErr = dup(STDERR_FILENO);
     assert(savedOut >= 0 && savedErr >= 0);
     assert(dup2(fileno(out), STDOUT_FILENO) >= 0);
     assert(dup2(fileno(errors), STDERR_FILENO) >= 0);

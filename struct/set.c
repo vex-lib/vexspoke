@@ -70,7 +70,7 @@ static Collection *asCollection(Set *set) {
     return (Collection*) set;
 }
 
-static int isReferenceClass(u32 classId) {
+static i32 isReferenceClass(u32 classId) {
     return classId == ID_STRING || classId >= ID_LIST;
 }
 
@@ -87,7 +87,7 @@ static u64 computeHash(u32 elementClass, u64 element) {
     return Hash_murmur3Mix64(element);
 }
 
-static int elementsEqual(u32 elementClass, u64 e1, u64 e2) {
+static i32 elementsEqual(u32 elementClass, u64 e1, u64 e2) {
     if (e1 == e2) return 1;
     if (e1 == 0 || e2 == 0) return 0;
     if (isReferenceClass(elementClass) && e1 >= 4096u && e2 >= 4096u) {
@@ -199,7 +199,7 @@ fn Set_free(Set *set) {
     Memory_free(set);
 }
 
-int Set_add(Set *set, u64 element) {
+i32 Set_add(Set *set, u64 element) {
     if (!set) return 0;
     Collection *c = asCollection(set);
 
@@ -258,7 +258,7 @@ bool Set_contains(Set *set, u64 element) {
     return false;
 }
 
-int Set_remove(Set *set, u64 element) {
+i32 Set_remove(Set *set, u64 element) {
     if (!set) return 0;
     Collection *c = asCollection(set);
     if ((*c).capacity == 0) return 0;
@@ -307,7 +307,7 @@ List *Set_toSortedList(Set *set) {
         if (stride == 4)
             Arrays_sortInt((i32*) buf, n);
         else if (stride == 8)
-            Arrays_sortLong((int64_t*) buf, n);
+            Arrays_sortLong((i64*) buf, n);
     }
     return list;
 }

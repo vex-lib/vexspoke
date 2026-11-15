@@ -12,7 +12,7 @@
 
 #include "time/datetime.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -24,7 +24,7 @@ static int g_failures = 0;
 
 // Asserts exact epoch round-trip and all UTC date/time fields for one instant.
 // Compares all decoded UTC fields and the epoch round trip against a fixed case.
-static fn expect(int64_t ms, i32 y, i32 mo, i32 d,
+static fn expect(i64 ms, i32 y, i32 mo, i32 d,
                    i32 h, i32 mi, i32 s, i32 milli, i32 dow) {
     DateTime dt = DateTime();
     setEpochMillis(&dt, ms);
@@ -85,7 +85,7 @@ static fn test_set_snapshot() {
 // Runs epoch conversion, pre-epoch, and date-time snapshot cases.
 // Runs epoch conversion, negative-time, and current-time snapshot checks.
 // Runs exact UTC timestamp breakdown and current-time snapshot checks.
-int main() {
+i32 main() {
     test_epoch_zero();
     test_known_epochs();
     test_negative_epoch();

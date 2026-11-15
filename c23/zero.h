@@ -5,7 +5,7 @@
 
 // c23/zero.h — the generic zero factory: zero(T t), typed by example.
 //
-//   int   i = zero(n);        // 0            — same type as n
+//   i32   i = zero(n);        // 0            — same type as n
 //   f32 f = zero(x);
 //   Vec3  v = zero(other);    // {0,0,0}
 //   mat4f m = zero(model);    // every element zeroed

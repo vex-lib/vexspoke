@@ -6,7 +6,7 @@
 #include "math/fast_math.h"
 #include "math/vex-math.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(name, cond) do { \
     if (cond) { printf("[math_coord_test] PASS %s\n", name); } \
@@ -16,7 +16,7 @@ static int g_failures = 0;
 // Covers the 12 coordinate frames and the strict/fast math facade. The numeric
 // vector and matrix shapes belong to vex-c (vec2f/vec3f/vec4f/mat4f); the frame
 // table stays here so an agnostic coordinate consumer can map spatial axes.
-int main() {
+i32 main() {
     printf("=== Running 12-Frame Math & Vector Test Suite ===\n");
 
     // 1. The 12 Coordinate Frames

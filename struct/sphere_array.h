@@ -29,8 +29,8 @@ bytes  SphereArray_validVoxelCount(const SphereArray *self);
 // 3D Pythagorean containment tests
 bool SphereArray_containsGrid(const SphereArray *self, i32 gx, i32 gy, i32 gz);
 bool SphereArray_containsOffset(const SphereArray *self, i32 dx, i32 dy, i32 dz);
-int64_t SphereArray_distanceSquaredGrid(const SphereArray *self, i32 gx, i32 gy, i32 gz);
-int64_t SphereArray_distanceSquaredOffset(i32 dx, i32 dy, i32 dz);
+i64 SphereArray_distanceSquaredGrid(const SphereArray *self, i32 gx, i32 gy, i32 gz);
+i64 SphereArray_distanceSquaredOffset(i32 dx, i32 dy, i32 dz);
 
 // Voxel access by grid coordinates [0, diameter - 1] (get output first, set input last)
 bool SphereArray_getGrid(any dest, const SphereArray *self, i32 gx, i32 gy, i32 gz);

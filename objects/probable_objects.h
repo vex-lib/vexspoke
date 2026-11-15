@@ -40,10 +40,10 @@ u32 ProbableObjects_totalWeight(ProbableObjects *po);
 
 // Append a choice. Returns 0 without changing the pool if full or if the
 // cumulative u32 weight would overflow.
-int ProbableObjects_add(ProbableObjects *po, pointer object, u32 weight);
+i32 ProbableObjects_add(ProbableObjects *po, pointer object, u32 weight);
 
 // Append the object/weight of an existing Probable.
-int ProbableObjects_addProbable(ProbableObjects *po, const Probable *probable);
+i32 ProbableObjects_addProbable(ProbableObjects *po, const Probable *probable);
 
 // Slot accessors (used by Random.probablePool's binary search).
 pointer ProbableObjects_objectAt(ProbableObjects *po, bytes index);

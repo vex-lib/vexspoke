@@ -24,8 +24,8 @@
 #include <time.h>
 #include <unistd.h>
 
-static int g_failures = 0;
-static int g_checks = 0;
+static i32 g_failures = 0;
+static i32 g_checks = 0;
 
 #define CHECK(condition)                                                        \
     do {                                                                        \
@@ -43,8 +43,8 @@ static u64 nowMs() {
 }
 
 /** Bind an ephemeral port, then release it so nothing is listening there. */
-static int closedPort() {
-    int fd = socket(AF_INET, SOCK_STREAM, 0);
+static i32 closedPort() {
+    i32 fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd < 0)
         return -1;
     struct sockaddr_in address;
@@ -61,12 +61,12 @@ static int closedPort() {
         close(fd);
         return -1;
     }
-    int port = ntohs(address.sin_port);
+    i32 port = ntohs(address.sin_port);
     close(fd);
     return port;
 }
 
-int main() {
+i32 main() {
     printf("=== TLS Apple backend owner (refusal paths) ===\n");
 
     // No backend has answered yet: the seam says so instead of guessing.
@@ -91,13 +91,13 @@ int main() {
     // unresolvable peer in `waiting` rather than `failed`), so this asserts
     // boundedness and prints the observed cost instead of assuming a fast
     // refusal -- a silent 10s stall was the first thing this owner caught.
-    int port = closedPort();
+    i32 port = closedPort();
     CHECK(port > 0);
     if (port > 0) {
         u64 started = nowMs();
         bool connected = Tls_connect("127.0.0.1", port, &conn);
         u64 elapsed = nowMs() - started;
-        printf("  refused connect returned in %llu ms\n", (unsigned long long) elapsed);
+        printf("  refused connect returned in %llu ms\n", (u64) elapsed);
         CHECK(!connected);
         CHECK(conn == nullptr);
         CHECK(elapsed < 6000u); // the 5s connect budget, plus scheduling slack
@@ -125,10 +125,10 @@ int main() {
     Tls_close(nullptr);
 
     // A handle with no session behind it is refused, not dereferenced.
-    TlsConn forged = { .backend = (int) TLS_BACKEND_APPLE, .opaque = nullptr };
+    TlsConn forged = { .backend = (i32) TLS_BACKEND_APPLE, .opaque = nullptr };
     CHECK(!Tls_send(&forged, "x", 1u));
     CHECK(!Tls_recv(&forged, buffer, sizeof(buffer), &got));
-    TlsConn mislabelled = { .backend = (int) TLS_BACKEND_CURL, .opaque = (any) &forged };
+    TlsConn mislabelled = { .backend = (i32) TLS_BACKEND_CURL, .opaque = (any) &forged };
     CHECK(!Tls_send(&mislabelled, "x", 1u)); // wrong backend tag is refused
 
     printf("%d checks, %d failed\n", g_checks, g_failures);

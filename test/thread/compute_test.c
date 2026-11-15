@@ -19,7 +19,7 @@
 #include "thread/compute.h"
 #include "thread/thread.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -32,7 +32,7 @@ static int g_failures = 0;
 // Sleeps for the requested millisecond interval during bounded polling loops.
 // Waits briefly for asynchronous compute-pool progress in lifecycle scenarios.
 // Delays briefly between bounded polling attempts in asynchronous job assertions.
-static fn wait_ms(long ms) {
+static fn wait_ms(i64 ms) {
     struct timespec ts = { ms / 1000, (ms % 1000) * 1000000L };
     nanosleep(&ts, nullptr);
 }
@@ -94,8 +94,8 @@ static fn test_recognize() {
 // Polls an atomic completion count with a finite retry budget.
 // Waits up to the test deadline for an atomic completion count to reach target.
 // Polls an atomic counter until its target or a fixed iteration deadline.
-static bool wait_for(atomic_int *count, int target) {
-    for (int i = 0; i < 3000; i++) {          // bounded <= ~3s
+static bool wait_for(atomic_int *count, i32 target) {
+    for (i32 i = 0; i < 3000; i++) {          // bounded <= ~3s
         if (atomic_load(count) >= target)
             return true;
         wait_ms(1);
@@ -122,14 +122,14 @@ static fn test_pool() {
 
     enum { N = 16 };
     ComputeJob jobs[N];
-    for (int i = 0; i < N; i++)
+    for (i32 i = 0; i < N; i++)
         jobs[i] = make_job();
 
     g_run_count = 0;
     g_done_count = 0;
-    int submitted = 0;
-    for (int i = 0; i < N; i++) {
-        for (int tries = 0; tries < 1000; tries++) {
+    i32 submitted = 0;
+    for (i32 i = 0; i < N; i++) {
+        for (i32 tries = 0; tries < 1000; tries++) {
             if (ComputeThread_submit(&jobs[i])) {
                 submitted++;
                 break;
@@ -165,7 +165,7 @@ static fn test_pool() {
 // Runs job validation and compute-pool lifecycle tests.
 // Runs compute-job recognition and pool lifecycle/progress scenarios.
 // Runs ComputeJob validation and ComputeThread pool lifecycle scenarios.
-int main() {
+i32 main() {
     test_recognize();
     test_pool();
 

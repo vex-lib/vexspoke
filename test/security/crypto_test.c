@@ -17,7 +17,7 @@
 #include "vex.h"
 #include "security/crypto.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -36,7 +36,7 @@ static fn expect_hex(const_any data, bytes len, const char *want) {
         printf("  sha256 got %s\n", got);
 }
 
-// Checks empty, short, and multi-block SHA-256 results against known digests.
+// Checks empty, i16, and multi-block SHA-256 results against known digests.
 static fn test_sha256_vectors() {
     expect_hex("", 0,
                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
@@ -54,7 +54,7 @@ static fn test_sha256_million_a() {
     memset(block, 'a', sizeof(block));
     CryptoSha256 ctx;
     Crypto_sha256Init(&ctx);
-    for (int i = 0; i < 1000; i++)
+    for (i32 i = 0; i < 1000; i++)
         Crypto_sha256Update(&ctx, block, sizeof(block));
     char hex[CRYPTO_SHA256_HEX_SIZE];
     u8 digest[CRYPTO_SHA256_DIGEST_SIZE];
@@ -67,7 +67,7 @@ static fn test_sha256_million_a() {
 // Compares one-shot hashing with varied streaming chunk sizes and zero-length update.
 static fn test_streaming_equivalence() {
     u8 buf[205];
-    for (int i = 0; i < 205; i++)
+    for (i32 i = 0; i < 205; i++)
         buf[i] = (u8) (i * 7 + 1);
 
     u8 oneShot[CRYPTO_SHA256_DIGEST_SIZE];
@@ -129,7 +129,7 @@ static fn test_rng() {
     CryptoRng r1, r2;
     Crypto_rngInit(&r1, 12345);
     Crypto_rngInit(&r2, 12345);
-    for (int i = 0; i < 16; i++)
+    for (i32 i = 0; i < 16; i++)
         CHECK(Crypto_rngNextU64(&r1) == Crypto_rngNextU64(&r2));
 
     CryptoRng r3;
@@ -143,7 +143,7 @@ static fn test_rng() {
     Crypto_rngBytes(&rb, Bytes, sizeof(Bytes));
     CryptoRng rw;
     Crypto_rngInit(&rw, 999);
-    for (int i = 0; i < 2; i++) {
+    for (i32 i = 0; i < 2; i++) {
         u64 w = Crypto_rngNextU64(&rw);
         u8 wb[8];
         memcpy(wb, &w, 8);
@@ -227,7 +227,7 @@ static fn test_null_safety() {
 }
 
 // Runs hash vectors, streaming, equality, PRNG, conversion, and null-safety checks.
-int main() {
+i32 main() {
     test_sha256_vectors();
     test_sha256_million_a();
     test_streaming_equivalence();

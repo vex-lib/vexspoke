@@ -198,7 +198,7 @@ fn Struct_toString(const Struct *self, char *dest, bytes cap, bool *outTruncated
         snprintf(dest, cap, "nullptr");
         return;
     }
-    int written = snprintf(dest, cap, "Struct(%s, fields=%u)",
+    i32 written = snprintf(dest, cap, "Struct(%s, fields=%u)",
                            (*self).name[0] == '\0' ? "?" : (*self).name, (*self).count);
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
@@ -215,9 +215,9 @@ fn Struct_toStringStruct(const Struct *self, char *dest, bytes cap, bool *outTru
         snprintf(dest, cap, "nullptr");
         return;
     }
-    int written = snprintf(dest, cap, "Struct { name=\"%s\", count=%u, size=%u, fields=0x%llx }",
+    i32 written = snprintf(dest, cap, "Struct { name=\"%s\", count=%u, size=%u, fields=0x%llx }",
                            (*self).name, (*self).count, (*self).size,
-                           (unsigned long long) (pointer) (*self).fields);
+                           (u64) (pointer) (*self).fields);
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;

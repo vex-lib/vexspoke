@@ -32,7 +32,7 @@ typedef struct Dispatch {
     bytes batchCap;
     atomic_bool draining;
     atomic_size_t pendingCount;       // pending only, excludes active batch
-    _Atomic unsigned long drainedCount;
+    _Atomic u64 drainedCount;
 } Dispatch;
 
 Dispatch *Dispatch_0();
@@ -54,6 +54,6 @@ bool Dispatch_drain(Dispatch *self);
 
 // Atomic telemetry snapshots; not lifetime or shutdown synchronization.
 bytes Dispatch_pending(const Dispatch *self);
-unsigned long Dispatch_getDrainedCount(const Dispatch *self);
+u64 Dispatch_getDrainedCount(const Dispatch *self);
 
 #endif

@@ -47,7 +47,7 @@
  * STRUCT FIELDS (Mirroring net/tls.h):
  * ----------------------------------------------------------------------------
  *   TlsConn {
- *     int backend;   // TLS_BACKEND_APPLE for every connection made here
+ *     i32 backend;   // TLS_BACKEND_APPLE for every connection made here
  *     any opaque;  // __bridge_retained VexTlsSession (released by Tls_close)
  *   }
  *
@@ -119,7 +119,7 @@ static TlsBackendKind s_lastBackend = TLS_BACKEND_NONE;
 
 /** Convert a millisecond budget into a dispatch deadline. */
 static dispatch_time_t vexDeadline(u32 milliseconds) {
-    return dispatch_time(DISPATCH_TIME_NOW, (int64_t) milliseconds * NSEC_PER_MSEC);
+    return dispatch_time(DISPATCH_TIME_NOW, (i64) milliseconds * NSEC_PER_MSEC);
 }
 
 /**
@@ -243,7 +243,7 @@ static bool vexAwaitRead(VexTlsSession *session, u32 budgetMs) {
 /** Borrow the session a TlsConn carries, or null when the handle is unusable. */
 static inline VexTlsSession *vexSession(const TlsConn *conn) {
     if (conn == nullptr || (*conn).opaque == nullptr ||
-        (*conn).backend != (int) TLS_BACKEND_APPLE)
+        (*conn).backend != (i32) TLS_BACKEND_APPLE)
         return nullptr;
     return (__bridge VexTlsSession*) (*conn).opaque;
 }
@@ -255,7 +255,7 @@ static inline VexTlsSession *vexSession(const TlsConn *conn) {
  * framework performs certificate verification against the system trust anchors;
  * an untrusted peer fails here and yields no connection.
  */
-bool Tls_connect(const char *host, int port, TlsConn **connOut) {
+bool Tls_connect(const char *host, i32 port, TlsConn **connOut) {
     if (connOut == nullptr) {
         THROW("Tls_connect: null output");
         return false;
@@ -310,7 +310,7 @@ bool Tls_connect(const char *host, int port, TlsConn **connOut) {
             THROW("Tls_connect: connection record allocation failed");
             return false;
         }
-        (*conn).backend = (int) TLS_BACKEND_APPLE;
+        (*conn).backend = (i32) TLS_BACKEND_APPLE;
         (*conn).opaque = (__bridge_retained any) session; // released by Tls_close
         s_lastBackend = TLS_BACKEND_APPLE;
         *connOut = conn;
@@ -402,7 +402,7 @@ fn Tls_close(TlsConn *conn) {
         }
     }
     (*conn).opaque = nullptr;
-    (*conn).backend = (int) TLS_BACKEND_NONE;
+    (*conn).backend = (i32) TLS_BACKEND_NONE;
     free(conn);
 }
 

@@ -8,7 +8,7 @@
 
 #include "objects/passive.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -31,8 +31,8 @@ static fn storeSet(u64 value, any userdata) {
 }
 
 // Checks hooked and cached Passive access, including absent hooks and nulls.
-int main() {
-    int token = 1;
+i32 main() {
+    i32 token = 1;
     Passive *p = Passive_3(storeGet, storeSet, &token);
     CHECK(p != nullptr);
 

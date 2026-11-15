@@ -30,8 +30,8 @@
 #define WS_TEST_MESSAGE_CAP 4096u
 #define WS_TEST_BUFFER 8192u
 
-static int g_failures = 0;
-static int g_checks = 0;
+static i32 g_failures = 0;
+static i32 g_checks = 0;
 
 #define CHECK(condition)                                                        \
     do {                                                                        \
@@ -62,7 +62,7 @@ typedef enum Scenario {
 
 // --- Byte-level peer helpers (deliberately independent of the library) ---
 
-static bool peerWrite(int fd, const_any data, bytes length) {
+static bool peerWrite(i32 fd, const_any data, bytes length) {
     const u8 *p = (const u8*) data;
     bytes sent = 0u;
     while (sent < length) {
@@ -75,7 +75,7 @@ static bool peerWrite(int fd, const_any data, bytes length) {
 }
 
 /** Server-side frame: never masked, which is what the RFC demands. */
-static bool peerFrame(int fd, bool fin, u8 opcode,
+static bool peerFrame(i32 fd, bool fin, u8 opcode,
                       const u8 *payload, bytes length) {
     u8 header[10];
     bytes used = 0u;
@@ -89,7 +89,7 @@ static bool peerFrame(int fd, bool fin, u8 opcode,
     } else {
         header[used++] = 127u;
         u64 value = (u64) length;
-        for (int shift = 56; shift >= 0; shift -= 8)
+        for (i32 shift = 56; shift >= 0; shift -= 8)
             header[used++] = (u8) ((value >> shift) & 0xFFu);
     }
     return peerWrite(fd, header, used) &&
@@ -97,7 +97,7 @@ static bool peerFrame(int fd, bool fin, u8 opcode,
 }
 
 /** Hostile frame: a server must not mask, so this is a protocol error. */
-static bool peerMaskedFrame(int fd, bool fin, u8 opcode,
+static bool peerMaskedFrame(i32 fd, bool fin, u8 opcode,
                             const u8 *payload, bytes length) {
     u8 mask[4] = { 0xA5u, 0x5Au, 0x0Fu, 0xF0u };
     u8 buffer[64];
@@ -112,7 +112,7 @@ static bool peerMaskedFrame(int fd, bool fin, u8 opcode,
 }
 
 /** Read until the request's blank line, capturing it for shape assertions. */
-static bytes peerReadRequest(int fd, char *dest, bytes cap) {
+static bytes peerReadRequest(i32 fd, char *dest, bytes cap) {
     bytes used = 0u;
     while (used + 1u < cap) {
         ssize_t n = recv(fd, dest + used, cap - 1u - used, 0);
@@ -155,10 +155,10 @@ static bool peerAcceptHash(const char *request, char *out, bytes cap) {
     return Url_base64(hash, CRYPTO_SHA1_DIGEST_SIZE, out, cap) > 0;
 }
 
-static bool peerRespond(int fd, int status, const char *accept, bool upgrade,
+static bool peerRespond(i32 fd, i32 status, const char *accept, bool upgrade,
                         bool connection) {
     char response[512];
-    int written;
+    i32 written;
     if (status == 101) {
         written = snprintf(response, sizeof(response),
             "HTTP/1.1 101 Switching Protocols\r\n"
@@ -179,11 +179,11 @@ static bool peerRespond(int fd, int status, const char *accept, bool upgrade,
 
 // --- The forked peer: bind, accept, play one scenario, report request shape ---
 
-static int peerRun(Scenario scenario, int readyWriteFd) {
-    int listener = socket(AF_INET, SOCK_STREAM, 0);
+static i32 peerRun(Scenario scenario, i32 readyWriteFd) {
+    i32 listener = socket(AF_INET, SOCK_STREAM, 0);
     if (listener < 0)
         return 90;
-    int reuse = 1;
+    i32 reuse = 1;
     setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
     struct sockaddr_in address;
     memset(&address, 0, sizeof(address));
@@ -197,14 +197,14 @@ static int peerRun(Scenario scenario, int readyWriteFd) {
         return 92;
     if (listen(listener, 1) != 0)
         return 93;
-    int port = ntohs(address.sin_port);
+    i32 port = ntohs(address.sin_port);
     if (write(readyWriteFd, &port, sizeof(port)) != (ssize_t) sizeof(port))
         return 94;
     close(readyWriteFd);
 
     struct timeval timeout = { .tv_sec = 5, .tv_usec = 0 };
     setsockopt(listener, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
-    int peer = accept(listener, nullptr, nullptr);
+    i32 peer = accept(listener, nullptr, nullptr);
     if (peer < 0)
         return 95;
     setsockopt(peer, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
@@ -354,11 +354,11 @@ static int peerRun(Scenario scenario, int readyWriteFd) {
 
 typedef struct PeerContext {
     pid_t pid;
-    int readFd;
+    i32 readFd;
 } PeerContext;
 
 static bool peerStart(PeerContext *context, Scenario scenario, char *url, bytes urlCap) {
-    int fds[2];
+    i32 fds[2];
     if (pipe(fds) != 0)
         return false;
     (*context).readFd = fds[0];
@@ -370,7 +370,7 @@ static bool peerStart(PeerContext *context, Scenario scenario, char *url, bytes 
     close(fds[1]);
     if ((*context).pid < 0)
         return false;
-    int port = 0;
+    i32 port = 0;
     ssize_t got = read(fds[0], &port, sizeof(port));
     if (got != (ssize_t) sizeof(port))
         return false;
@@ -379,9 +379,9 @@ static bool peerStart(PeerContext *context, Scenario scenario, char *url, bytes 
 }
 
 /** Reap the peer and return its exit status, or -1 when it did not exit. */
-static int peerFinish(PeerContext *context) {
+static i32 peerFinish(PeerContext *context) {
     close((*context).readFd);
-    int status = 0;
+    i32 status = 0;
     if (waitpid((*context).pid, &status, 0) != (*context).pid)
         return -1;
     return WIFEXITED(status) ? WEXITSTATUS(status) : -1;
@@ -530,8 +530,8 @@ static fn testHandshakeRefusals() {
 }
 
 /** Bind an ephemeral port, then release it so nothing is listening there. */
-static int closedPort() {
-    int fd = socket(AF_INET, SOCK_STREAM, 0);
+static i32 closedPort() {
+    i32 fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd < 0)
         return -1;
     struct sockaddr_in address;
@@ -548,7 +548,7 @@ static int closedPort() {
         close(fd);
         return -1;
     }
-    int port = ntohs(address.sin_port);
+    i32 port = ntohs(address.sin_port);
     close(fd);
     return port;
 }
@@ -571,7 +571,7 @@ static fn testUrlRefusals() {
     // wss:// is a supported scheme now: it takes the TLS path, so an
     // unreachable peer fails there rather than being rejected as a URL. That
     // the error names TLS is the observable proof the routing happened.
-    int closed = closedPort();
+    i32 closed = closedPort();
     CHECK(closed > 0);
     if (closed > 0) {
         char secure[128];
@@ -626,7 +626,7 @@ static fn testHostileFrames() {
         if (message.kind != WS_MESSAGE_ERROR ||
             strstr(message.error, cases[i].expect) == nullptr)
             printf("  case %s: kind=%d error=\"%s\"\n", cases[i].label,
-                   (int) message.kind, message.error);
+                   (i32) message.kind, message.error);
         CHECK(message.kind == WS_MESSAGE_ERROR);
         CHECK(strstr(message.error, cases[i].expect) != nullptr); // the right guard
         CHECK(WebSocket_state(&client) == WEBSOCKET_FAILED);
@@ -672,7 +672,7 @@ static fn testOutboundRefusals() {
     CHECK(peerFinish(&peer) == 0);
 }
 
-int main() {
+i32 main() {
     printf("=== WebSocket owner ===\n");
     signal(SIGPIPE, SIG_IGN);
     testTextExchange();

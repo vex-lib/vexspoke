@@ -55,12 +55,12 @@ bool CharSequence_isEmpty(CharSequence self)
     return self.length == 0;
 }
 
-int CharSequence_compare(CharSequence left, CharSequence right)
+i32 CharSequence_compare(CharSequence left, CharSequence right)
 {
     bytes common = left.length < right.length ? left.length : right.length;
     if (common > 0)
     {
-        int order = memcmp(left.data, right.data, common);
+        i32 order = memcmp(left.data, right.data, common);
         if (order != 0)
             return order;
     }

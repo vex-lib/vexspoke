@@ -8,7 +8,7 @@
 #include "search/spotlight.h"
 #include "math/strict_math.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(name, cond) do { \
     if (cond) { printf("[search_calc_test] PASS %s\n", name); } \
@@ -16,7 +16,7 @@ static int g_failures = 0;
 } while (0)
 
 // Checks calculator parsing, search modes/ranking, and expression detection.
-int main() {
+i32 main() {
     printf("=== Running String Calc & Search Subsystem Test Suite ===\n");
 
     // 1. String Math Expression Calculator (Exact user expression!)

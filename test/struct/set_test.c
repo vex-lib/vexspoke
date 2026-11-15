@@ -7,7 +7,7 @@
 #include "struct/list.h"
 #include "oop/vexspoke_type.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -18,7 +18,7 @@ static int g_failures = 0;
     } while (0)
 
 // Exercises set membership, duplicate handling, insertion, and removal.
-int main() {
+i32 main() {
     Set *s = Set_1(ID_INT);
     CHECK(s != nullptr);
     CHECK(Set_isEmpty(s));

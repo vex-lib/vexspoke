@@ -113,7 +113,7 @@ bool BvhAabb_intersect_ray(const BvhRay *ray, const BvhAabb *box, f32 *t_near_ou
     f32 t_min = (*ray).t_min;
     f32 t_max = (*ray).t_max;
 
-    for (int i = 0; i < 3; i++) {
+    for (i32 i = 0; i < 3; i++) {
         f32 inv_d = ((*ray).direction[i] != 0.0f) ? (1.0f / (*ray).direction[i]) : 1e30f;
         f32 t0 = ((*box).min_point[i] - (*ray).origin[i]) * inv_d;
         f32 t1 = ((*box).max_point[i] - (*ray).origin[i]) * inv_d;
@@ -223,7 +223,7 @@ static i32 bvh_build_recursive(
     extent[1] = centroid_bounds.max_point[1] - centroid_bounds.min_point[1];
     extent[2] = centroid_bounds.max_point[2] - centroid_bounds.min_point[2];
 
-    int axis = 0;
+    i32 axis = 0;
     if (extent[1] > extent[0]) {
         axis = 1;
     }
@@ -308,7 +308,7 @@ bool BvhTree_intersect_ray(const BvhTree *tree, const BvhRay *ray, BvhRayHit *hi
     (*hit_out).normal[2] = 1.0f;
 
     i32 stack[64];
-    int stack_ptr = 0;
+    i32 stack_ptr = 0;
     stack[stack_ptr++] = 0;
 
     while (stack_ptr > 0) {

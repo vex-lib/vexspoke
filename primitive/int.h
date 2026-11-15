@@ -4,7 +4,7 @@
 #include "vex.h"
 #include "nio/nio.h"
 
-// primitive/int.h — Int primitive (Legacy: primitive/Int.java).
+// primitive/i32.h — Int primitive (Legacy: primitive/Int.java).
 // Delegates to Bit32 width pool (4B stride).
 
 extern BitPool g_intPool;

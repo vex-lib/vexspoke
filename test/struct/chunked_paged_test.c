@@ -22,8 +22,8 @@
  * ============================================================================
  */
 
-static int g_fail = 0;
-static int g_checks = 0;
+static i32 g_fail = 0;
+static i32 g_checks = 0;
 
 #define CHECK(cond)                                                       \
     do {                                                                  \
@@ -262,7 +262,7 @@ static fn testChain() {
 }
 
 // Runs the paged-chunk sentinel, geometry, growth, and chain callback checks.
-int main() {
+i32 main() {
     printf("=== ChunkedList Paged (radix) Test Suite ===\n\n");
 
     testSentinels();

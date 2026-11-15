@@ -155,7 +155,7 @@ bool string_equalsCString(const u8 *ptr, const char *value) {
     return memcmp(ptr, value, len) == 0;
 }
 
-int String_compare(const u8 *a, const u8 *b) {
+i32 String_compare(const u8 *a, const u8 *b) {
     if (!a && !b)
         return 0;
     if (!a)

@@ -6,7 +6,7 @@
 #include "primitive/short.h"
 #include "oop/vexspoke_type.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -17,7 +17,7 @@ static int g_failures = 0;
     } while (0)
 
 // Exercises Short signed boundaries, constructors, CAS, arrays, metadata, and null safety.
-int main() {
+i32 main() {
     CHECK(Short_init());
 
     any p = Short_alloc();

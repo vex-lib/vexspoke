@@ -189,7 +189,7 @@ fn VexWsSource_toString(const VexWsSource *self, char *dest, bytes cap,
         Str_printf(&out, "VexWsSource { url=%s, open=%s, last=%d, closeCode=%u }",
                    (*self).configured ? (*self).url : "",
                    WebSocket_isOpen(&(*self).socket) ? "true" : "false",
-                   (int) (*self).last.kind, (unsigned) (*self).last.closeCode);
+                   (i32) (*self).last.kind, (u32) (*self).last.closeCode);
     }
     if (outTruncated != nullptr)
         *outTruncated = Str_isTruncated(&out);
@@ -208,9 +208,9 @@ fn VexWsSource_toStringStruct(const VexWsSource *self, char *dest, bytes cap,
             WebSocket_isOpen(&(*self).socket) ? "OPEN" : "not-open",
             (*self).configured ? (*self).url : "",
             (*self).configured ? "true" : "false", (*self).config.timeoutMs,
-            (unsigned long long) (*self).config.maxMessageBytes,
-            (int) (*self).last.kind, (unsigned long long) (*self).last.length,
-            (unsigned) (*self).last.closeCode);
+            (u64) (*self).config.maxMessageBytes,
+            (i32) (*self).last.kind, (u64) (*self).last.length,
+            (u32) (*self).last.closeCode);
     }
     if (outTruncated != nullptr)
         *outTruncated = Str_isTruncated(&out);

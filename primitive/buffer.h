@@ -46,7 +46,7 @@ bool Buffer_append(Buffer *self, const u8 *data, bytes n);
 // Set length explicitly (clamped to capacity, never grows).
 bool Buffer_setLength(Buffer *self, bytes n);
 
-// Ensure capacity, growing if short. False on refusal.
+// Ensure capacity, growing if i16. False on refusal.
 bool Buffer_reserve(Buffer *self, bytes capacity);
 
 #endif

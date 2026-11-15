@@ -139,7 +139,7 @@ i32 TreeSitTree_add_node(
 static bool walk_preorder_rec(
     const TreeSitTree *tree,
     i32 node_idx,
-    int depth,
+    i32 depth,
     TreeSitVisitorFn visitor,
     any user_data
 ) {
@@ -171,7 +171,7 @@ bool TreeSitTree_walk_preorder(const TreeSitTree *tree, TreeSitVisitorFn visitor
 static bool walk_postorder_rec(
     const TreeSitTree *tree,
     i32 node_idx,
-    int depth,
+    i32 depth,
     TreeSitVisitorFn visitor,
     any user_data
 ) {

@@ -13,7 +13,7 @@
 #include "c23/equals.h"
 #include "nio/mem.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -24,9 +24,9 @@ static int g_failures = 0;
     } while (0)
 
 // Checks identity, typed block contents, and the registry comparison guard.
-int main() {
-    int a = 1;
-    int b = 2;
+i32 main() {
+    i32 a = 1;
+    i32 b = 2;
 
     // Identity holds even for foreign pointers; distinct foreigns never match.
     CHECK(isEqual(nullptr, nullptr));

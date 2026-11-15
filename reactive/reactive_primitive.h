@@ -12,7 +12,7 @@
 // Single Class Per File Law is waived BY INTENT here: one file pair is clearer
 // than ten identical ones. Per the Conflict Triage Law.")
 //
-// Reactive(int)/Reactive(f32)/... resolve here (via the lowercase bridge in
+// Reactive(i32)/Reactive(f32)/... resolve here (via the lowercase bridge in
 // generic.h). Each class is identical but for its value type and packing:
 // integer cast, f32/d64 bit-cast, the if64 pair, or a pointer word.
 

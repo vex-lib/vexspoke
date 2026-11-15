@@ -12,7 +12,7 @@
 static bytes fromHex(const char *hex, u8 *out, bytes cap) {
     bytes n = 0;
     for (const char *p = hex; p[0] != '\0' && p[1] != '\0'; p += 2) {
-        unsigned byte = 0;
+        u32 byte = 0;
         assert(sscanf(p, "%2x", &byte) == 1);
         assert(n < cap);
         out[n++] = (u8) byte;
@@ -26,9 +26,9 @@ static fn toHex(const u8 *data, bytes len, char *out) {
     out[len * 2u] = '\0';
 }
 
-int main() {
+i32 main() {
     u8 key[CHACHA20_KEY_SIZE];
-    for (unsigned i = 0; i < CHACHA20_KEY_SIZE; ++i)
+    for (u32 i = 0; i < CHACHA20_KEY_SIZE; ++i)
         key[i] = (u8) i;
 
     // RFC 8439 section 2.3.2: the block function, counter 1.

@@ -267,7 +267,7 @@ fn Field_toString(const Field *self, char *dest, bytes cap, bool *outTruncated) 
         return;
     }
     const Variable *variable = &(*self).variable;
-    int written = snprintf(dest, cap, "Field(%s)", (*variable).name[0] == '\0' ? "?" : (*variable).name);
+    i32 written = snprintf(dest, cap, "Field(%s)", (*variable).name[0] == '\0' ? "?" : (*variable).name);
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
@@ -287,10 +287,10 @@ fn Field_toStringStruct(const Field *self, char *dest, bytes cap, bool *outTrunc
     char inner[96];
     bool innerTruncated = false;
     Variable_toString(variable, inner, sizeof(inner), &innerTruncated);
-    int written = snprintf(dest, cap,
+    i32 written = snprintf(dest, cap,
                            "Field { variable=%s, set=0x%llx, typeId=0x%llx, offset=%u, size=%u, flags=0x%x }",
-                           inner, (unsigned long long) (pointer) (*self).set,
-                           (unsigned long long) (*self).typeId, (*self).offset,
+                           inner, (u64) (pointer) (*self).set,
+                           (u64) (*self).typeId, (*self).offset,
                            (*self).size, (*self).flags);
     if (written < 0 || (bytes) written >= cap || innerTruncated) {
         if (outTruncated)

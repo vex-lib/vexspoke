@@ -108,12 +108,12 @@ CircleArray *CircleArray_3(i32 radius, u32 elementClass, bytes stride) {
     (*self).diameter = diameter;
 
     // Calculate active count: number of valid cells where Pythagorean inequality holds
-    int64_t rSq = (int64_t) radius * (int64_t) radius;
+    i64 rSq = (i64) radius * (i64) radius;
     u32 active = 0;
     for (i32 gy = 0; gy < diameter; gy++) {
-        int64_t dy = (int64_t) gy - (int64_t) radius;
+        i64 dy = (i64) gy - (i64) radius;
         for (i32 gx = 0; gx < diameter; gx++) {
-            int64_t dx = (int64_t) gx - (int64_t) radius;
+            i64 dx = (i64) gx - (i64) radius;
             if (dx * dx + dy * dy <= rSq) {
                 active++;
             }
@@ -160,16 +160,16 @@ bytes CircleArray_validCellCount(const CircleArray *self) {
     return (bytes) (*coll).activeCount;
 }
 
-int64_t CircleArray_distanceSquaredOffset(i32 dx, i32 dy) {
-    int64_t x = (int64_t) dx;
-    int64_t y = (int64_t) dy;
+i64 CircleArray_distanceSquaredOffset(i32 dx, i32 dy) {
+    i64 x = (i64) dx;
+    i64 y = (i64) dy;
     return x * x + y * y;
 }
 
-int64_t CircleArray_distanceSquaredGrid(const CircleArray *self, i32 gridX, i32 gridY) {
+i64 CircleArray_distanceSquaredGrid(const CircleArray *self, i32 gridX, i32 gridY) {
     if (self == nullptr) return -1;
-    int64_t dx = (int64_t) gridX - (int64_t) (*self).radius;
-    int64_t dy = (int64_t) gridY - (int64_t) (*self).radius;
+    i64 dx = (i64) gridX - (i64) (*self).radius;
+    i64 dy = (i64) gridY - (i64) (*self).radius;
     return dx * dx + dy * dy;
 }
 
@@ -179,8 +179,8 @@ bool CircleArray_containsOffset(const CircleArray *self, i32 dx, i32 dy) {
     if (dx < -r || dx > r || dy < -r || dy > r) {
         return false;
     }
-    int64_t distSq = CircleArray_distanceSquaredOffset(dx, dy);
-    int64_t rSq = (int64_t) r * (int64_t) r;
+    i64 distSq = CircleArray_distanceSquaredOffset(dx, dy);
+    i64 rSq = (i64) r * (i64) r;
     return distSq <= rSq;
 }
 
@@ -190,8 +190,8 @@ bool CircleArray_containsGrid(const CircleArray *self, i32 gridX, i32 gridY) {
     if (gridX < 0 || gridX >= d || gridY < 0 || gridY >= d) {
         return false;
     }
-    int64_t distSq = CircleArray_distanceSquaredGrid(self, gridX, gridY);
-    int64_t rSq = (int64_t) (*self).radius * (int64_t) (*self).radius;
+    i64 distSq = CircleArray_distanceSquaredGrid(self, gridX, gridY);
+    i64 rSq = (i64) (*self).radius * (i64) (*self).radius;
     return distSq <= rSq;
 }
 
@@ -255,15 +255,15 @@ fn CircleArray_forEach(const CircleArray *self, CircleArrayCellFn callback, any 
     if (self == nullptr || callback == nullptr) return;
     i32 r = (*self).radius;
     i32 d = (*self).diameter;
-    int64_t rSq = (int64_t) r * (int64_t) r;
+    i64 rSq = (i64) r * (i64) r;
     const Collection *coll = &(*self).collection;
     bytes stride = (bytes) (*coll).stride;
     for (i32 gy = 0; gy < d; gy++) {
         i32 dy = gy - r;
-        int64_t dySq = (int64_t) dy * (int64_t) dy;
+        i64 dySq = (i64) dy * (i64) dy;
         for (i32 gx = 0; gx < d; gx++) {
             i32 dx = gx - r;
-            if ((int64_t) dx * (int64_t) dx + dySq <= rSq) {
+            if ((i64) dx * (i64) dx + dySq <= rSq) {
                 bytes index = (bytes) gy * (bytes) d + (bytes) gx;
                 const u8 *element = (*coll).data + (index * stride);
                 callback(gx, gy, dx, dy, element, userData);

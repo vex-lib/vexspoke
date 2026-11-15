@@ -68,7 +68,7 @@ static i32 g_failures = 0;
         List_free(List(T))(list);                                          \
     } while (0);
 
-int main() {
+i32 main() {
     // --- u32: construction, metadata, round trip --------------------------
     List(u32) *numbers = List(u32)(23);
     CHECK(numbers != nullptr);

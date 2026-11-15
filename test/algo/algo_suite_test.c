@@ -16,31 +16,31 @@
 
 static fn test_radix_sort() {
     u32 a32[256];
-    for (int i = 0; i < 256; i++) {
+    for (i32 i = 0; i < 256; i++) {
         a32[i] = (u32) ((255 - i) * 179424673u + 37u);
     }
     assert(Sort_radixSortUint32(a32, 256u));
-    for (int i = 0; i < 255; i++) {
+    for (i32 i = 0; i < 255; i++) {
         assert(a32[i] <= a32[i + 1]);
     }
 
     u64 a64[256];
-    for (int i = 0; i < 256; i++) {
+    for (i32 i = 0; i < 256; i++) {
         a64[i] = ((u64) (255 - i) << 32) | (u64) ((i * 31337) ^ 0xDEADBEEFULL);
     }
     assert(Sort_radixSortUint64(a64, 256u));
-    for (int i = 0; i < 255; i++) {
+    for (i32 i = 0; i < 255; i++) {
         assert(a64[i] <= a64[i + 1]);
     }
 
     u64 keys[64];
     any values[64];
-    for (int i = 0; i < 64; i++) {
+    for (i32 i = 0; i < 64; i++) {
         keys[i] = (u64) (63 - i);
         values[i] = (any) (pointer) (i * 10);
     }
     assert(Sort_radixSortPairsUint64(keys, values, 64u));
-    for (int i = 0; i < 63; i++) {
+    for (i32 i = 0; i < 63; i++) {
         assert(keys[i] <= keys[i + 1]);
         assert((pointer) values[i] == (pointer) ((63 - keys[i]) * 10));
     }
@@ -92,7 +92,7 @@ static fn test_geometry_constructors() {
 
 static fn test_kd_tree() {
     KdPoint pts[10];
-    for (int i = 0; i < 10; i++) {
+    for (i32 i = 0; i < 10; i++) {
         pts[i].coord[0] = (f32) i;
         pts[i].coord[1] = (f32) (i * 2);
         pts[i].coord[2] = (f32) (i * 3);
@@ -158,11 +158,11 @@ static fn test_bvh() {
     BvhTree_destroy(&tree);
 }
 
-static bool tree_sit_counter(const TreeSitTree *tree, i32 node_idx, int depth, any user_data) {
+static bool tree_sit_counter(const TreeSitTree *tree, i32 node_idx, i32 depth, any user_data) {
     (discard) tree;
     (discard) node_idx;
     (discard) depth;
-    int *c = (int*) user_data;
+    i32 *c = (i32*) user_data;
     (*c)++;
     return true;
 }
@@ -186,11 +186,11 @@ static fn test_tree_sit() {
     i32 f2 = TreeSitTree_add_node(root, 2, "func2", f2_span, &tree);
     assert(f2 == 3);
 
-    int count_pre = 0;
+    i32 count_pre = 0;
     TreeSitTree_walk_preorder(&tree, tree_sit_counter, &count_pre);
     assert(count_pre == 4);
 
-    int count_post = 0;
+    i32 count_post = 0;
     TreeSitTree_walk_postorder(&tree, tree_sit_counter, &count_post);
     assert(count_post == 4);
 
@@ -202,7 +202,7 @@ static fn test_tree_sit() {
     TreeSitTree_destroy(&tree);
 }
 
-int main() {
+i32 main() {
     printf("[Algo Suite Test] Starting test suite...\n");
     assert(Memory_init(0u));
     test_radix_sort();

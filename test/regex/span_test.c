@@ -8,7 +8,7 @@
 
 #include "regex/span.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -56,7 +56,7 @@ static fn testSet() {
     CHECK(RegexSpan_length(inverted) == 0);
 }
 
-int main() {
+i32 main() {
     testUnset();
     testSet();
 

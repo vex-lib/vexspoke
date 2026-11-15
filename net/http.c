@@ -60,7 +60,7 @@
  *     const char *scheme; // "http" default, "https" requires TLS backend
  *     const char *method; // "GET", "POST", ... default "GET"
  *     const char *host; // required
- *     int port; // 0 => 80
+ *     i32 port; // 0 => 80
  *     const char *path; // default "/"
  *     const HttpHeader *headers; // header array (headerCount entries)
  *     u32 headerCount; // header array length
@@ -70,7 +70,7 @@
  *   }
  *   HttpResponse {
  *     bool ok; // transport-level success; status may still be 4xx
- *     int status; // HTTP status code
+ *     i32 status; // HTTP status code
  *     char contentType[128]; // response MIME type
  *     char *body; // caller-owned receive buffer
  *     bytes bodyCap; // receive buffer capacity
@@ -83,7 +83,7 @@
  *     bytes bodyLen; // request body length
  *   }
  *   HttpServer {
- *     int listenFd; // listen socket fd
+ *     i32 listenFd; // listen socket fd
  *     pthread_t thread; // background thread handle
  *     volatile bool running; // run-state flag
  *     HttpHandler handler; // per-connection request handler
@@ -109,7 +109,7 @@
 // buffer is safe.
 static char s_serverBody[SERVER_BODY_CAP];
 
-static fn applyTimeout(int fd, u32 ms) {
+static fn applyTimeout(i32 fd, u32 ms) {
     struct timeval tv = { .tv_sec = ms / 1000, .tv_usec = (suseconds_t)((ms % 1000) * 1000) };
     setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
     setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
@@ -117,7 +117,7 @@ static fn applyTimeout(int fd, u32 ms) {
 
 // --- Client ---
 
-static bool writeAll(int fd, const char *buf, bytes len) {
+static bool writeAll(i32 fd, const char *buf, bytes len) {
     bytes sent = 0;
     while (sent < len) {
         ssize_t n = send(fd, buf + sent, len - sent, 0);
@@ -128,7 +128,7 @@ static bool writeAll(int fd, const char *buf, bytes len) {
 }
 
 // Read one CRLF-terminated line (without CRLF) from fd.
-static bool readLine(int fd, char *out, bytes cap, bytes *lenOut) {
+static bool readLine(i32 fd, char *out, bytes cap, bytes *lenOut) {
     bytes n = 0;
     while (n + 1 < cap) {
         char c;
@@ -145,7 +145,7 @@ static bool readLine(int fd, char *out, bytes cap, bytes *lenOut) {
     return false;
 }
 
-static bool recvSome(int fd, char *dst, bytes cap, bytes *gotOut) {
+static bool recvSome(i32 fd, char *dst, bytes cap, bytes *gotOut) {
     ssize_t r = recv(fd, dst, cap, 0);
     if (r <= 0) return false;
     *gotOut = (bytes)r;
@@ -192,7 +192,7 @@ bool Http_perform(const HttpRequest *req, HttpResponse *resp) {
         if (hasCRLF((*req).headers[i].name) || hasCRLF((*req).headers[i].value))
             return false;
     }
-    int port = (*req).port > 0 ? (*req).port : Url_defaultPort(scheme);
+    i32 port = (*req).port > 0 ? (*req).port : Url_defaultPort(scheme);
     u32 timeoutMs = (*req).timeoutMs ? (*req).timeoutMs : RECV_TIMEOUT_DEFAULT_MS;
 
     // --- Resolve ---
@@ -202,7 +202,7 @@ bool Http_perform(const HttpRequest *req, HttpResponse *resp) {
     struct addrinfo *res = nullptr;
     if (getaddrinfo((*req).host, portStr, &hints, &res) != 0 || !res) return false;
 
-    int fd = socket((*res).ai_family, (*res).ai_socktype, (*res).ai_protocol);
+    i32 fd = socket((*res).ai_family, (*res).ai_socktype, (*res).ai_protocol);
     if (fd < 0) {
         freeaddrinfo(res);
         return false;
@@ -218,7 +218,7 @@ bool Http_perform(const HttpRequest *req, HttpResponse *resp) {
 
     // --- Send request head ---
     char head[HEADER_BLOCK_CAP];
-    int h = snprintf(head, sizeof(head),
+    i32 h = snprintf(head, sizeof(head),
                      "%s %s HTTP/1.1\r\n"
                      "Host: %s\r\n"
                      "Connection: close\r\n"
@@ -230,7 +230,7 @@ bool Http_perform(const HttpRequest *req, HttpResponse *resp) {
     }
 
     for (u32 i = 0; i < (*req).headerCount && i < HTTP_MAX_HEADERS; i++) {
-        int k = snprintf(head + h, sizeof(head) - (bytes)h, "%s: %s\r\n",
+        i32 k = snprintf(head + h, sizeof(head) - (bytes)h, "%s: %s\r\n",
                          (*req).headers[i].name, (*req).headers[i].value);
         if (k < 0 || (bytes)k >= sizeof(head) - (bytes)h) {
             close(fd);
@@ -305,7 +305,7 @@ bool Http_perform(const HttpRequest *req, HttpResponse *resp) {
     return ok;
 }
 
-fn Http_respond(int clientFd, int status, const char *contentType,
+fn Http_respond(i32 clientFd, i32 status, const char *contentType,
                   const char *body, bytes bodyLen) {
     const char *reason =
         status == 200 ? "OK" :
@@ -316,7 +316,7 @@ fn Http_respond(int clientFd, int status, const char *contentType,
         status == 500 ? "Internal Server Error" : "Unknown";
 
     char head[1024];
-    int h = snprintf(head, sizeof(head),
+    i32 h = snprintf(head, sizeof(head),
                      "HTTP/1.1 %d %s\r\n"
                      "Content-Type: %s\r\n"
                      "Content-Length: %zu\r\n"
@@ -333,14 +333,14 @@ fn Http_respond(int clientFd, int status, const char *contentType,
 static any acceptLoop(any arg) {
     HttpServer *server = arg;
     while ((*server).running) {
-        // Poll with a short budget instead of blocking in accept forever:
+        // Poll with a i16 budget instead of blocking in accept forever:
         // stopping must stay cooperative, since closing the listener does
         // not reliably wake a parked accept on every platform.
         struct pollfd pfd = { .fd = (*server).listenFd, .events = POLLIN };
         if (poll(&pfd, 1, 100) <= 0)
             continue;
 
-        int clientFd = accept((*server).listenFd, nullptr, nullptr);
+        i32 clientFd = accept((*server).listenFd, nullptr, nullptr);
         if (clientFd < 0) continue;
 
         applyTimeout(clientFd, RECV_TIMEOUT_DEFAULT_MS);
@@ -389,16 +389,16 @@ static any acceptLoop(any arg) {
     return nullptr;
 }
 
-bool HttpServer_start(HttpServer *server, int port, HttpHandler handler,
-                      any userdata, int *portOut) {
+bool HttpServer_start(HttpServer *server, i32 port, HttpHandler handler,
+                      any userdata, i32 *portOut) {
     memset(server, 0, sizeof(*server));
     (*server).handler = handler;
     (*server).userdata = userdata;
 
-    int fd = socket(AF_INET, SOCK_STREAM, 0);
+    i32 fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd < 0) return false;
 
-    int reuse = 1;
+    i32 reuse = 1;
     setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
 
     struct sockaddr_in addr = { .sin_family = AF_INET,

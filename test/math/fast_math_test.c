@@ -19,7 +19,7 @@
 
 #include "math/fast_math.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -65,24 +65,24 @@ static fn test_inv() {
 static fn test_trig() {
     CHECK(fabsf(FastMath_sin(0.0f)) < 1e-6f);
     CHECK(fabsf(FastMath_cos(0.0f) - 1.0f) < 0.01f);
-    for (int i = -10; i <= 10; i++) {
+    for (i32 i = -10; i <= 10; i++) {
         f32 x = (f32) i * 0.3f;
         CHECK(fabsf(FastMath_sin(x) - sinf(x)) <= 0.01f);
         CHECK(fabsf(FastMath_cos(x) - cosf(x)) <= 0.01f);
     }
     // Odd/even symmetry.
-    for (int i = 1; i <= 5; i++) {
+    for (i32 i = 1; i <= 5; i++) {
         f32 x = (f32) i * 0.5f;
         CHECK(fabsf(FastMath_sin(-x) + FastMath_sin(x)) < 1e-5f);
         CHECK(fabsf(FastMath_cos(-x) - FastMath_cos(x)) < 1e-5f);
     }
     // 2*pi periodicity (wrap_pi handles a periodic domain).
-    for (int i = -5; i <= 5; i++) {
+    for (i32 i = -5; i <= 5; i++) {
         f32 x = (f32) i * 0.4f;
         CHECK(fabsf(FastMath_sin(x + FAST_MATH_TWO_PI * 3.0f) - FastMath_sin(x)) < 0.01f);
     }
     // tangent away from the poles.
-    for (int i = -4; i <= 4; i++) {
+    for (i32 i = -4; i <= 4; i++) {
         f32 x = (f32) i * 0.3f;
         CHECK(fabsf(FastMath_tan(x) - tanf(x)) <= 0.05f);
     }
@@ -92,7 +92,7 @@ static fn test_trig() {
 // Exercises fast arctangent behavior over the inputs covered by the test.
 // Checks atan approximation error and atan2 quadrant and axis behavior.
 static fn test_atan() {
-    for (int i = -20; i <= 20; i++) {
+    for (i32 i = -20; i <= 20; i++) {
         f32 x = (f32) i * 0.25f;
         CHECK(fabsf(FastMath_atan(x) - atanf(x)) <= 0.03f);  // ~0.021 worst-case
     }
@@ -149,7 +149,7 @@ static fn test_angles() {
 // Runs the approximation, domain-guard, and conversion checks.
 // Runs the fast-math approximation and utility checks.
 // Runs approximation, boundary, angle, and recorded-gap checks for FastMath.
-int main() {
+i32 main() {
     test_inv_sqrt();
     test_inv();
     test_trig();

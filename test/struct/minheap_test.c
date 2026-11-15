@@ -8,7 +8,7 @@
 
 #include "struct/minheap.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -19,7 +19,7 @@ static int g_failures = 0;
     } while (0)
 
 // Verifies minimum-heap ordering through insertion, peek, removal, and empty cases.
-int main() {
+i32 main() {
     MinHeap *h = MinHeap_1(8);
     CHECK(h != nullptr);
     CHECK(MinHeap_isEmpty(h));
@@ -43,7 +43,7 @@ int main() {
     // Volume within capacity: 2048 pushed in reverse priority, popped ascending.
     MinHeap *big = MinHeap_1(2048);
     CHECK(big != nullptr);
-    for (int i = 2047; i >= 0; i--)
+    for (i32 i = 2047; i >= 0; i--)
         CHECK(MinHeap_push(big, i, (f32) i) == 1);
     CHECK(MinHeap_size(big) == 2048);
     // A full fixed-capacity heap is a refusal, not a silent no-op: the push is
@@ -54,10 +54,10 @@ int main() {
     CHECK(MinHeap_push(big, 98, 98.0f) == 0);
     CHECK(MinHeap_exhaustionCount(big) == 2);
     CHECK(MinHeap_size(big) == 2048);   // unchanged by a refused push
-    int prev = -1;
-    int ok = 1;
-    for (int i = 0; i < 2048; i++) {
-        int item = MinHeap_popItem(big);
+    i32 prev = -1;
+    i32 ok = 1;
+    for (i32 i = 0; i < 2048; i++) {
+        i32 item = MinHeap_popItem(big);
         if (item <= prev)
             ok = 0;
         prev = item;

@@ -254,7 +254,7 @@ bytes SegmentIndex_segmentCount(const char *path) {
     }
 }
 
-int SegmentIndex_segment(const char *path, bytes index, char *out, bytes cap) {
+i32 SegmentIndex_segment(const char *path, bytes index, char *out, bytes cap) {
     if (!path || !out || cap == 0u)
         return -1;
     if (SegmentIndex_segmentCount(path) <= index)
@@ -273,7 +273,7 @@ int SegmentIndex_segment(const char *path, bytes index, char *out, bytes cap) {
                     return -1;
                 memcpy(out, start, len);
                 out[len] = '\0';
-                return (int) len;
+                return (i32) len;
             }
             seg++;
         }
@@ -499,7 +499,7 @@ fn SegmentIndex_toString(const SegmentIndex *index, char *dest, bytes cap, bool 
         snprintf(dest, cap, "nullptr");
         return;
     }
-    int written = snprintf(dest, cap, "SegmentIndex(entries=%u)", (*index).count);
+    i32 written = snprintf(dest, cap, "SegmentIndex(entries=%u)", (*index).count);
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
@@ -515,10 +515,10 @@ fn SegmentIndex_toStringStruct(const SegmentIndex *index, char *dest, bytes cap,
         snprintf(dest, cap, "nullptr");
         return;
     }
-    int written = snprintf(dest, cap, "SegmentIndex { active=%s, count=%u, entries=0x%llx, postings=0x%llx }",
+    i32 written = snprintf(dest, cap, "SegmentIndex { active=%s, count=%u, entries=0x%llx, postings=0x%llx }",
                            (*index).active ? "true" : "false", (*index).count,
-                           (unsigned long long) (pointer) (*index).entries,
-                           (unsigned long long) (pointer) (*index).postings);
+                           (u64) (pointer) (*index).entries,
+                           (u64) (pointer) (*index).postings);
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;

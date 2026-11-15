@@ -11,7 +11,7 @@
 
 #include "math/coord_frame.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -40,9 +40,9 @@ static const char *k_names[12] = {
 // Checks basis-vector mappings for the supported coordinate-frame conventions.
 // Compares each supported frame's axis permutation and signs against the oracle table.
 static fn test_basis() {
-    for (int f = 0; f < 12; f++) {
+    for (i32 f = 0; f < 12; f++) {
         CoordBasis b = CoordFrame_getBasis((CoordFrame) f);
-        for (int a = 0; a < 3; a++) {
+        for (i32 a = 0; a < 3; a++) {
             CHECK(b.axis[a] == k_axis[f][a]);
             CHECK(b.sign[a] == k_sign[f][a]);
             CHECK(CoordFrame_getAxisIndex((CoordFrame) f, a) == k_axis[f][a]);
@@ -90,7 +90,7 @@ static fn test_validity_and_names() {
     CHECK(!CoordFrame_isValid(100));
     CHECK(!CoordFrame_isValid(UINT32_MAX));
 
-    for (int f = 0; f < 12; f++)
+    for (i32 f = 0; f < 12; f++)
         CHECK(strcmp(CoordFrame_name((CoordFrame) f), k_names[f]) == 0);
     CHECK(strcmp(CoordFrame_name((CoordFrame) 12), "UNKNOWN") == 0);
     CHECK(strcmp(CoordFrame_name((CoordFrame) -1), "UNKNOWN") == 0);
@@ -99,7 +99,7 @@ static fn test_validity_and_names() {
 // Runs all coordinate-frame lookup, boundary, validity, and naming checks.
 // Runs coordinate-frame basis, default, invalid-index, validity, and naming checks.
 // Runs coordinate basis, fallback, validity, and name assertions.
-int main() {
+i32 main() {
     test_basis();
     test_default_frame();
     test_out_of_range();

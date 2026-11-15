@@ -17,7 +17,7 @@
 #include "system/display_monitor.h"
 #include "nio/mem.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -30,7 +30,7 @@ static int g_failures = 0;
 // Checks DisplayMonitor defaults, property round trips, name bounds, and null handling.
 // Exercises monitor enumeration and the metadata exposed for each monitor.
 // Verifies DisplayMonitor defaults, mutable properties, bounded names, and null handling.
-int main() {
+i32 main() {
     CHECK(Memory_init(0));
 
     DisplayMonitor *m = DisplayMonitor_0();

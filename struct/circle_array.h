@@ -29,8 +29,8 @@ bytes  CircleArray_validCellCount(const CircleArray *self);
 // Pythagorean containment tests
 bool CircleArray_containsGrid(const CircleArray *self, i32 gridX, i32 gridY);
 bool CircleArray_containsOffset(const CircleArray *self, i32 dx, i32 dy);
-int64_t CircleArray_distanceSquaredGrid(const CircleArray *self, i32 gridX, i32 gridY);
-int64_t CircleArray_distanceSquaredOffset(i32 dx, i32 dy);
+i64 CircleArray_distanceSquaredGrid(const CircleArray *self, i32 gridX, i32 gridY);
+i64 CircleArray_distanceSquaredOffset(i32 dx, i32 dy);
 
 // Cell access by grid coordinates [0, diameter - 1] (get output first, set input last)
 bool CircleArray_getGrid(any dest, const CircleArray *self, i32 gridX, i32 gridY);

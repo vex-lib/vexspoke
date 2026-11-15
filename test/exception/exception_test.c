@@ -9,7 +9,7 @@
 
 #include "exception/exception.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -19,7 +19,7 @@ static int g_failures = 0;
         }                                                                  \
     } while (0)
 
-int main() {
+i32 main() {
     Exception empty = Exception();
     CHECK(empty.type == TYPE_EXCEPTION_SINGLETON);
     CHECK(empty.message == nullptr);

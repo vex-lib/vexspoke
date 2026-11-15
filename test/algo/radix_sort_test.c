@@ -19,7 +19,7 @@
 #include "algo/sort.h"
 #include "nio/mem.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -46,13 +46,13 @@ static bool sorted_u64(const u64 *a, bytes n) {
 }
 
 /** qsort comparator used as an independent oracle for u32 sorting. */
-static int cmp_u32(const_any a, const_any b) {
+static i32 cmp_u32(const_any a, const_any b) {
     u32 x = *(const u32*) a, y = *(const u32*) b;
     return (x > y) - (x < y);
 }
 
 /** qsort comparator used as an independent oracle for u64 sorting. */
-static int cmp_u64(const_any a, const_any b) {
+static i32 cmp_u64(const_any a, const_any b) {
     u64 x = *(const u64*) a, y = *(const u64*) b;
     return (x > y) - (x < y);
 }
@@ -85,7 +85,7 @@ static fn test_trivial() {
     CHECK(!Sort_radixSortPairsUint64(nullptr, vals, 2u));
 }
 
-/** Exercises unsigned value extremes and duplicate values for radix sorting. */
+/** Exercises u32 value extremes and duplicate values for radix sorting. */
 static fn test_value_boundaries() {
     u32 a[] = { UINT32_MAX, 0, 1, 0x01000000u, 0x00FFFFFFu, 0, UINT32_MAX };
     bytes n = sizeof(a) / sizeof(a[0]);
@@ -142,7 +142,7 @@ static fn test_pairs() {
     u64 keys[]      = { 5, 1, 5, 3, 1, 5, 0, 3 };
     pointer tags[]     = { 50, 11, 51, 31, 12, 52, 70, 32 };
     any vals[8];
-    for (int i = 0; i < 8; i++)
+    for (i32 i = 0; i < 8; i++)
         vals[i] = (any) tags[i];
 
     CHECK(Sort_radixSortPairsUint64(keys, vals, 8u));
@@ -151,14 +151,14 @@ static fn test_pairs() {
     // Reconstruct the (key, tag) multiset and check stability per key.
     u64 expectKeys[] = { 0, 1, 1, 3, 3, 5, 5, 5 };
     pointer expectTags[] = { 70, 11, 12, 31, 32, 50, 51, 52 };
-    for (int i = 0; i < 8; i++) {
+    for (i32 i = 0; i < 8; i++) {
         CHECK(keys[i] == expectKeys[i]);
         CHECK((pointer) vals[i] == expectTags[i]);
     }
 }
 
 /** Runs the Sort radix owner scenarios and reports aggregate assertion status. */
-int main() {
+i32 main() {
     CHECK(Memory_init(0));
 
     test_trivial();

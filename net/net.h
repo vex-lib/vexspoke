@@ -20,17 +20,17 @@
 
 // GET text into bodyOut (NUL-terminated). Returns HTTP status or -1 on
 // transport failure.
-int64_t Net_get(const char *host, int port, const char *path,
+i64 Net_get(const char *host, i32 port, const char *path,
                 char *bodyOut, bytes cap);
 
 // GET and parse a JSON document in one shot using caller storage.
-bool Net_getJson(const char *host, int port, const char *path,
+bool Net_getJson(const char *host, i32 port, const char *path,
                  JsonDoc *doc, JsonNode *nodes, u32 nodeCap,
                  char *scratch, u32 scratchCap);
 
 // POST a pre-rendered JSON body; response lands in respBody. Returns HTTP
 // status or -1 on transport failure.
-int64_t Net_postJson(const char *host, int port, const char *path,
+i64 Net_postJson(const char *host, i32 port, const char *path,
                      const char *jsonBody, char *respBody, bytes cap);
 
 #endif

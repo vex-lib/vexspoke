@@ -71,16 +71,16 @@ static fn quicksort_int(i32 *data, bytes low, bytes high) {
 }
 
 // Exchanges two positions in an int64 buffer.
-static fn swap_long(int64_t *data, bytes i, bytes j) {
+static fn swap_long(i64 *data, bytes i, bytes j) {
     if (i == j) return;
-    int64_t temp = data[i];
+    i64 temp = data[i];
     data[i] = data[j];
     data[j] = temp;
 }
 
-// Partitions the inclusive long range around its final element as pivot.
-static bytes partition_long(int64_t *data, bytes low, bytes high) {
-    int64_t pivot = data[high];
+// Partitions the inclusive i64 range around its final element as pivot.
+static bytes partition_long(i64 *data, bytes low, bytes high) {
+    i64 pivot = data[high];
     bytes i = low;
     for (bytes j = low; j < high; j++) {
         if (data[j] <= pivot) {
@@ -93,7 +93,7 @@ static bytes partition_long(int64_t *data, bytes low, bytes high) {
 }
 
 // Recursively sorts an inclusive int64 range in place.
-static fn quicksort_long(int64_t *data, bytes low, bytes high) {
+static fn quicksort_long(i64 *data, bytes low, bytes high) {
     if (low >= high) return;
     bytes pi = partition_long(data, low, high);
     if (pi > low) quicksort_long(data, low, pi - 1);
@@ -107,13 +107,13 @@ fn Arrays_sortInt(i32 *data, bytes length) {
 }
 
 // Sorts the supplied int64 values in ascending order in place.
-fn Arrays_sortLong(int64_t *data, bytes length) {
+fn Arrays_sortLong(i64 *data, bytes length) {
     if (!data || length <= 1) return;
     quicksort_long(data, 0, length - 1);
 }
 
 // Searches an ascending int32 array; returns its index or -(insertion point + 1).
-intptr_t Arrays_binarySearchInt(const i32 *data, bytes length, i32 key) {
+pointer Arrays_binarySearchInt(const i32 *data, bytes length, i32 key) {
     if (!data) return -1;
     bytes low = 0;
     bytes high = length;
@@ -125,27 +125,27 @@ intptr_t Arrays_binarySearchInt(const i32 *data, bytes length, i32 key) {
         else if (mid_val > key)
             high = mid;
         else
-            return (intptr_t)mid;
+            return (pointer)mid;
     }
-    return -(intptr_t)(low + 1);
+    return -(pointer)(low + 1);
 }
 
 // Searches an ascending int64 array; returns its index or -(insertion point + 1).
-intptr_t Arrays_binarySearchLong(const int64_t *data, bytes length, int64_t key) {
+pointer Arrays_binarySearchLong(const i64 *data, bytes length, i64 key) {
     if (!data) return -1;
     bytes low = 0;
     bytes high = length;
     while (low < high) {
         bytes mid = low + (high - low) / 2;
-        int64_t mid_val = data[mid];
+        i64 mid_val = data[mid];
         if (mid_val < key)
             low = mid + 1;
         else if (mid_val > key)
             high = mid;
         else
-            return (intptr_t)mid;
+            return (pointer)mid;
     }
-    return -(intptr_t)(low + 1);
+    return -(pointer)(low + 1);
 }
 
 // Fills the byte span with the repeated value.

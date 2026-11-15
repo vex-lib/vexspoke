@@ -7,7 +7,7 @@
 #include "struct/array.h"
 #include "oop/vexspoke_type.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -18,7 +18,7 @@ static int g_failures = 0;
     } while (0)
 
 // Checks map insertion, lookup, replacement, missing keys, and cleanup.
-int main() {
+i32 main() {
     Map *m = Map_2(ID_INT, ID_INT);
     CHECK(m != nullptr);
     CHECK(Map_isEmpty(m));

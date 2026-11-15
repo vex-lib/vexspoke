@@ -14,7 +14,7 @@
 #include "math/strict_math.h"
 #include "math/fast_math.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -99,7 +99,7 @@ static fn test_fast_dispatch() {
 // Runs constant and strict/fast dispatch parity checks.
 // Runs math constant and strict/fast generic-dispatch checks.
 // Runs constant-alias and strict/fast facade dispatch checks.
-int main() {
+i32 main() {
     test_constants();
     test_strict_dispatch();
     test_fast_dispatch();

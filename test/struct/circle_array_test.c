@@ -20,7 +20,7 @@
 #include "struct/circle_array.h"
 #include "oop/vexspoke_type.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -41,7 +41,7 @@ static fn test_construction() {
     CHECK(CircleArray_validCellCount(r0) == 1);         // the center cell
     CircleArray_free(r0);
 
-    const int expected[] = { 1, 5, 13, 29, 49 };
+    const i32 expected[] = { 1, 5, 13, 29, 49 };
     for (i32 r = 0; r <= 4; r++) {
         CircleArray *a = CircleArray(r, ID_INT);
         CHECK(a != nullptr);
@@ -94,16 +94,16 @@ static fn test_access_round_trip() {
     CHECK(a != nullptr);
 
     // Offset write / grid read must agree.
-    int v = 1234;
+    i32 v = 1234;
     CHECK(CircleArray_setOffset(a, 0, 0, &v));
-    int got = 0;
+    i32 got = 0;
     CHECK(CircleArray_getGrid(&got, a, 2, 2));          // center grid == radius
     CHECK(got == 1234);
 
-    CHECK(CircleArray_setOffset(a, 2, 0, &(int){ 7 }));
+    CHECK(CircleArray_setOffset(a, 2, 0, &(i32){ 7 }));
     CHECK(CircleArray_getOffset(&got, a, 2, 0));
     CHECK(got == 7);
-    CHECK(CircleArray_setGrid(a, 2, 1, &(int){ 9 }));
+    CHECK(CircleArray_setGrid(a, 2, 1, &(i32){ 9 }));
     CHECK(CircleArray_getOffset(&got, a, 0, -1));
     CHECK(got == 9);
 
@@ -112,8 +112,8 @@ static fn test_access_round_trip() {
     CHECK(got == 0);
 
     // Out-of-disk and out-of-bounds writes are refused and leave neighbors.
-    CHECK(!CircleArray_setOffset(a, 2, 2, &(int){ 99 }));
-    CHECK(!CircleArray_setGrid(a, 5, 5, &(int){ 99 }));
+    CHECK(!CircleArray_setOffset(a, 2, 2, &(i32){ 99 }));
+    CHECK(!CircleArray_setGrid(a, 5, 5, &(i32){ 99 }));
     CHECK(!CircleArray_getOffset(&got, a, 2, 2));
     CHECK(!CircleArray_getGrid(&got, a, 5, 5));
     CHECK(CircleArray_getOffset(&got, a, 0, 0));
@@ -139,7 +139,7 @@ typedef struct WalkStats {
     bytes badDistance;
     bytes nullElement;
     bytes mismatchedOffset;
-    int64_t checksum;
+    i64 checksum;
 } WalkStats;
 
 // Accumulates callback count, coordinate consistency, and payload checksum.
@@ -149,14 +149,14 @@ static fn walkCell(i32 gridX, i32 gridY, i32 dx, i32 dy,
     (*s).count++;
     if (element == nullptr)
         (*s).nullElement++;
-    int64_t dist = (int64_t) dx * dx + (int64_t) dy * dy;
+    i64 dist = (i64) dx * dx + (i64) dy * dy;
     if (dist > 9)                                       // radius 3
         (*s).badDistance++;
     if (gridX != dx + 3 || gridY != dy + 3)
         (*s).mismatchedOffset++;
     if (element != nullptr) {
-        int v = 0;
-        for (bytes i = 0; i < sizeof(int); i++)
+        i32 v = 0;
+        for (bytes i = 0; i < sizeof(i32); i++)
             ((u8*) &v)[i] = ((const u8*) element)[i];
         (*s).checksum += v;
     }
@@ -169,11 +169,11 @@ static fn test_for_each() {
 
     // Fill every valid cell with its linear (1 + dx + dy) to make the walk sum
     // deterministic and to prove the callback sees live data.
-    int fill = 1;
+    i32 fill = 1;
     for (i32 gy = 0; gy < CircleArray_diameter(a); gy++) {
         for (i32 gx = 0; gx < CircleArray_diameter(a); gx++) {
             if (CircleArray_containsGrid(a, gx, gy)) {
-                int v = fill;
+                i32 v = fill;
                 CHECK(CircleArray_setGrid(a, gx, gy, &v));
                 fill++;
             }
@@ -187,7 +187,7 @@ static fn test_for_each() {
     CHECK(s.nullElement == 0);
     CHECK(s.mismatchedOffset == 0);
     // Sum of 1..29.
-    CHECK(s.checksum == (int64_t) 29 * 30 / 2);
+    CHECK(s.checksum == (i64) 29 * 30 / 2);
 
     CircleArray_forEach(a, nullptr, &s);                // safe
     CircleArray_forEach(nullptr, walkCell, &s);         // safe
@@ -195,7 +195,7 @@ static fn test_for_each() {
 }
 
 // Runs circle-array construction, geometry, access, iteration, and teardown checks.
-int main() {
+i32 main() {
     test_construction();
     test_geometry();
     test_access_round_trip();

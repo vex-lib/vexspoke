@@ -6,7 +6,7 @@
 #include "struct/queue.h"
 #include "oop/vexspoke_type.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -17,7 +17,7 @@ static int g_failures = 0;
     } while (0)
 
 // Verifies FIFO insertion/removal, empty behavior, bounds, and safe cleanup.
-int main() {
+i32 main() {
     Queue *q = Queue_1(ID_INT);
     CHECK(q != nullptr);
     CHECK(Queue_isEmpty(q));

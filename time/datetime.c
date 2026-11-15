@@ -33,7 +33,7 @@
  * STRUCT FIELDS (Mirroring time/datetime.h):
  * ----------------------------------------------------------------------------
  *   DateTime {
- *     int64_t epochMillis; // epoch millis anchor
+ *     i64 epochMillis; // epoch millis anchor
  *     i32 year; // calendar component
  *     i32 month; // 1-12
  *     i32 day; // 1-31
@@ -65,31 +65,31 @@
 
 
 // Stores epoch milliseconds and derives the corresponding UTC calendar fields.
-fn setEpochMillis(DateTime *dt, int64_t epochMillis) {
+fn setEpochMillis(DateTime *dt, i64 epochMillis) {
     (*dt).epochMillis = epochMillis;
 
-    int64_t totalSeconds = epochMillis / 1000;
+    i64 totalSeconds = epochMillis / 1000;
     i32 millisecond = (i32)(epochMillis % 1000);
     if (millisecond < 0) {
         millisecond += 1000;
         totalSeconds--;
     }
 
-    int64_t totalMinutes = totalSeconds / 60;
+    i64 totalMinutes = totalSeconds / 60;
     i32 second = (i32)(totalSeconds % 60);
     if (second < 0) {
         second += 60;
         totalMinutes--;
     }
 
-    int64_t totalHours = totalMinutes / 60;
+    i64 totalHours = totalMinutes / 60;
     i32 minute = (i32)(totalMinutes % 60);
     if (minute < 0) {
         minute += 60;
         totalHours--;
     }
 
-    int64_t totalDays = totalHours / 24;
+    i64 totalDays = totalHours / 24;
     i32 hour = (i32)(totalHours % 24);
     if (hour < 0) {
         hour += 24;
@@ -103,8 +103,8 @@ fn setEpochMillis(DateTime *dt, int64_t epochMillis) {
     dayOfWeek += 1;
 
     // Howard Hinnant's civil-from-days algorithm.
-    int64_t z = totalDays + 719468;
-    int64_t era = (z >= 0 ? z : z - 146096) / 146097;
+    i64 z = totalDays + 719468;
+    i64 era = (z >= 0 ? z : z - 146096) / 146097;
     i32 doe = (i32)(z - era * 146097);
     i32 yoe = (doe - doe / 1460 + doe / 36524 - doe / 146096) / 365;
     i32 y = yoe + (i32)(era * 400);
@@ -128,11 +128,11 @@ fn setEpochMillis(DateTime *dt, int64_t epochMillis) {
 fn DateTime_set(DateTime *dt) {
     struct timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts);
-    setEpochMillis(dt, (int64_t)ts.tv_sec * 1000 + ts.tv_nsec / 1000000);
+    setEpochMillis(dt, (i64)ts.tv_sec * 1000 + ts.tv_nsec / 1000000);
 }
 
 // Returns the stored Unix epoch timestamp in milliseconds.
-int64_t DateTime_epochMillis(const DateTime *dt) {
+i64 DateTime_epochMillis(const DateTime *dt) {
     return (*dt).epochMillis;
 }
 

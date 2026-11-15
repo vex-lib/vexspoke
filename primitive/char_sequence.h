@@ -8,7 +8,7 @@
 // The view is the safe way to look at text that is NOT NUL-terminated: a JSON
 // string, a slice of a mapped file, a token inside a larger buffer. It
 // allocates nothing, copies nothing, and owns nothing — it is valid exactly as
-// long as the bytes it points at.
+// i64 as the bytes it points at.
 //
 // This class owns the libc comparison and search calls. Callers compare views;
 // the raw calls live in one file, the way malloc lives only in re/nio/mem.c.
@@ -39,7 +39,7 @@ CharSequence CharSequence_block(const u8 *block);
 bytes CharSequence_length(CharSequence self);
 bool CharSequence_isEmpty(CharSequence self);
 // Lexicographic: negative, zero, positive. Length breaks a shared prefix.
-int CharSequence_compare(CharSequence left, CharSequence right);
+i32 CharSequence_compare(CharSequence left, CharSequence right);
 bool CharSequence_equals(CharSequence left, CharSequence right);
 bool CharSequence_startsWith(CharSequence self, CharSequence prefix);
 bool CharSequence_endsWith(CharSequence self, CharSequence suffix);

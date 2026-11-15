@@ -38,7 +38,7 @@
 ;;DRAFT
 ;;INTENTION("libcurl https backend, fail closed until wired")
 
-bool Tls_connect(const char *host, int port, TlsConn **connOut) {
+bool Tls_connect(const char *host, i32 port, TlsConn **connOut) {
     if (!host || !connOut)
         return false;
     if (port <= 0)

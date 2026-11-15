@@ -23,7 +23,7 @@ typedef struct HttpRequest {
     const char *scheme;   // "http" default, "https" requires TLS backend
     const char *method;   // "GET", "POST", ... default "GET"
     const char *host;     // required
-    int port;             // 0 => 80
+    i32 port;             // 0 => 80
     const char *path;     // default "/"
     const HttpHeader *headers;
     u32 headerCount;
@@ -32,7 +32,7 @@ typedef struct HttpRequest {
     u32 timeoutMs;   // connect+read budget, default 5000
 } HttpRequest;
 
-static inline HttpRequest HttpRequest_3(const char *host, int port, const char *path) {
+static inline HttpRequest HttpRequest_3(const char *host, i32 port, const char *path) {
     return (HttpRequest) { .scheme = "http", .method = "GET", .host = host,
         .port = port, .path = path, .timeoutMs = 5000u };
 }
@@ -56,7 +56,7 @@ static inline fn HttpRequest_setTimeout(HttpRequest *request, u32 timeoutMillise
 
 typedef struct HttpResponse {
     bool ok;              // transport-level success; status may still be 4xx
-    int status;
+    i32 status;
     char contentType[128];
     char *body;           // caller-owned receive buffer
     bytes bodyCap;
@@ -83,10 +83,10 @@ typedef struct HttpExchange {
     bytes bodyLen;
 } HttpExchange;
 
-typedef fn (*HttpHandler)(const HttpExchange *exchange, int clientFd, any userdata);
+typedef fn (*HttpHandler)(const HttpExchange *exchange, i32 clientFd, any userdata);
 
 typedef struct HttpServer {
-    int listenFd;
+    i32 listenFd;
     pthread_t thread;
     volatile bool running;
     HttpHandler handler;
@@ -95,14 +95,14 @@ typedef struct HttpServer {
 
 // Bind + listen + spawn the accept loop on its own thread. Returns false on
 // socket failure; portOut receives the bound port (use 0 to pick ephemeral).
-bool HttpServer_start(HttpServer *server, int port, HttpHandler handler,
-                      any userdata, int *portOut);
+bool HttpServer_start(HttpServer *server, i32 port, HttpHandler handler,
+                      any userdata, i32 *portOut);
 
 // Stop accepting and close the listener. In-flight handler finishes.
 fn HttpServer_stop(HttpServer *server);
 
 // Handler-side responder: writes a full response on the open connection.
-fn Http_respond(int clientFd, int status, const char *contentType,
+fn Http_respond(i32 clientFd, i32 status, const char *contentType,
                   const char *body, bytes bodyLen);
 
 #endif

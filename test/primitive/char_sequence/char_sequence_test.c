@@ -3,8 +3,8 @@
 
 #include <stdio.h>
 
-static int failures = 0;
-static int checks = 0;
+static i32 failures = 0;
+static i32 checks = 0;
 
 static fn check(bool condition, const char *label)
 {
@@ -16,7 +16,7 @@ static fn check(bool condition, const char *label)
     }
 }
 
-int main()
+i32 main()
 {
     CharSequence alpha = CharSequence_cstr("alpha");
     CharSequence alphaCopy = CharSequence_cstr("alpha");

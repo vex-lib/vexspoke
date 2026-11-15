@@ -23,7 +23,7 @@
  * ============================================================================
  */
 
-static int sFailures = 0;
+static i32 sFailures = 0;
 
 #define CHECK(cond)                                                    \
     do {                                                               \
@@ -36,7 +36,7 @@ static int sFailures = 0;
 // Verifies capture-tool registry rows, process/driver classification, and liveness probes.
 // Checks CaptureTool discovery, metadata, and safe handling of missing inputs.
 // Verifies capture-tool registry metadata and process/driver liveness probe behavior.
-int main(int argc, const char **argv) {
+i32 main(i32 argc, const char **argv) {
     CaptureTool *tools = CaptureTool_shared();
     CHECK(tools != nullptr);
     const u32 total = CaptureTool_count(tools);

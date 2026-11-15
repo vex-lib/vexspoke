@@ -4,7 +4,7 @@
 #include "security/crypto.h"
 #include "security/touchid.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define TEST_ASSERT(expr, msg) do { \
     if (!(expr)) { \
@@ -134,7 +134,7 @@ static fn test_touchid_security() {
 }
 
 // Runs crypto vectors, equality/hash/random/hex checks, and the TouchID token case.
-int main() {
+i32 main() {
     printf("=== Running Security & Cryptography Test Suite ===\n");
 
     test_sha256_nist_vectors();

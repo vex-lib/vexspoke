@@ -99,7 +99,7 @@ Queue *Queue_3(u32 elementClass, bytes capacity, bytes count) {
     return queue;
 }
 
-static int ensureCapacity(Collection *c) {
+static i32 ensureCapacity(Collection *c) {
     if ((*c).activeCount < (*c).capacity)
         return 1;
     bytes newCap = (*c).capacity * 2;

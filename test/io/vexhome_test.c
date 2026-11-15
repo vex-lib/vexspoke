@@ -9,7 +9,7 @@
 #include "io/io.h"
 #include "re/io/file/file.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 #define CHECK(cond) do{ if(!(cond)){ printf("FAIL %s:%d %s\n",__FILE__,__LINE__,#cond); g_failures++; } }while(0)
 
 /* Creates a per-process temporary root and points VEX_HOME at it for the test. */
@@ -49,7 +49,7 @@ static fn testVexHomeCache() {
     File *f = File_open(index_path, FILE_MODE_READ);
     CHECK(f != nullptr);
     char buf[512];
-    int64_t n = File_read(f, buf, sizeof(buf) - 1);
+    i64 n = File_read(f, buf, sizeof(buf) - 1);
     CHECK(n > 0);
     buf[n] = '\0';
     File_close(f);
@@ -62,8 +62,8 @@ static fn testVexHomeCache() {
     f = File_open(index_path, FILE_MODE_WRITE | FILE_MODE_TRUNCATE);
     CHECK(f != nullptr);
     const char *edited = "# edited by test\n[cache]\nsubsystem = testsub\ncreated = 2024-01-01\nversion = 99\n";
-    int64_t w = File_write(f, edited, (int64_t)strlen(edited));
-    CHECK(w == (int64_t)strlen(edited));
+    i64 w = File_write(f, edited, (i64)strlen(edited));
+    CHECK(w == (i64)strlen(edited));
     File_close(f);
 
     ok = VexHome_cacheEnsure("testsub");
@@ -160,7 +160,7 @@ static fn testVexHomePathsPrefix() {
 }
 
 /* Runs the VexHome cache and path-layout owner cases and reports aggregate failure status. */
-int main() {
+i32 main() {
     testVexHomeCache();
     testVexHomePathsPrefix();
     if (g_failures == 0)

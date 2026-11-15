@@ -15,7 +15,7 @@
 #include "time/calendar.h"
 #include "time/datetime.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -28,7 +28,7 @@ static int g_failures = 0;
 // Converts epoch milliseconds and checks the expected calendar fields.
 // Converts epoch milliseconds and asserts the expected date and optional weekday.
 // Checks a timestamp's calendar fields and optionally its ISO weekday.
-static fn expect_date(int64_t ms, i32 y, i32 mo, i32 d, i32 dow) {
+static fn expect_date(i64 ms, i32 y, i32 mo, i32 d, i32 dow) {
     DateTime dt;
     setEpochMillis(&dt, ms);
     CHECK(DateTime_year(&dt) == y);
@@ -157,7 +157,7 @@ static fn test_add_years() {
 // Runs calendar conversion, boundary, and date-arithmetic cases.
 // Runs calendar leap-year, month, weekday, and date-arithmetic checks.
 // Runs the stateless Gregorian calendar arithmetic cases.
-int main() {
+i32 main() {
     test_leap_year();
     test_days_in_month();
     test_day_of_week();

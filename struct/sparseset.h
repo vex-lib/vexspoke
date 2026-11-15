@@ -6,7 +6,7 @@
 
 // struct/sparseset.h — the SparseSet class, ported from struct/SparseSet.java.
 //
-// ECS sparse set: maps sparse entity ids (int) to a tightly packed dense index.
+// ECS sparse set: maps sparse entity ids (i32) to a tightly packed dense index.
 // Optionally carries a contiguous component data block (stride Bytes per entry)
 // so each add returns the data pointer to write into.
 

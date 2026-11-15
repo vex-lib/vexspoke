@@ -15,7 +15,7 @@
 #include "regex/program.h"
 #include "regex/vm.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -166,7 +166,7 @@ static fn testBoundedProgress() {
     // (a+)+b.sh cannot match a run of bare a's; a backtracking engine explodes.
     CHECK(!search("(a+)+b.sh", hostile, false, plain(), &whole));
 
-    // A long subject with a real match stays linear.
+    // A i64 subject with a real match stays linear.
     char longSubject[4097];
     for (bytes i = 0; i < 4000; i++)
         longSubject[i] = 'a';
@@ -191,7 +191,7 @@ static fn testLifecycle() {
 
     RegexVm vm = RegexVm(&program, groupCount);
     CHECK(vm.best != nullptr);
-    for (int i = 0; i < 4; i++) {
+    for (i32 i = 0; i < 4; i++) {
         CHECK(RegexVm_run(&vm, classes, "zab", 3, false, plain()));
         CHECK(RegexVm_span(&vm, 0).start == 1);
     }
@@ -228,7 +228,7 @@ static fn testFullAdmission() {
     }
 }
 
-int main() {
+i32 main() {
     testFullAdmission();
     testSearch();
     testOptions();

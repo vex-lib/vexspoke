@@ -8,7 +8,7 @@
 // exception/try_value.h — the scalar value-or-error return.
 //
 // TryValue is a by-value result: { value, code }. It exists because a getter
-// whose domain is full — int, uint64, bool, any scalar — has no spare codepoint
+// whose domain is full — i32, uint64, bool, any scalar — has no spare codepoint
 // left for a sentinel; a Try is the only way to distinguish "value is 0" from
 // "index out of bounds" without an out-parameter. It returns in registers, never
 // allocates, and is copied freely up the call chain (the Vertical Integration

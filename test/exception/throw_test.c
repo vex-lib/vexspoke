@@ -8,7 +8,7 @@
 #include <unistd.h>
 
 
-static int failures = 0;
+static i32 failures = 0;
 
 #define CHECK(condition) do { \
     if (!(condition)) { \
@@ -24,11 +24,11 @@ static bool getChecked(bool valid) {
     return false;
 }
 
-int main() {
+i32 main() {
     FILE *capture = tmpfile();
     if (capture == nullptr)
         return 1;
-    int original = dup(fileno(stderr));
+    i32 original = dup(fileno(stderr));
     if (original < 0 || dup2(fileno(capture), fileno(stderr)) < 0) {
         if (original >= 0)
             close(original);

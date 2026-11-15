@@ -51,10 +51,10 @@ fn Mouse_detachWindowAll(u32 windowId);
 
 // Producers: Thread 0 only. windowId tags the receiving window.
 // tapWindowNanos gates click settlement (see the header comment above).
-fn Mouse_pushButtonEvent(u32 windowId, int button, int action, u64 tapWindowNanos);
+fn Mouse_pushButtonEvent(u32 windowId, i32 button, i32 action, u64 tapWindowNanos);
 fn Mouse_pushMoveEvent(u32 windowId, d64 x, d64 y);
 fn Mouse_pushMoveDeltaEvent(u32 windowId, d64 dx, d64 dy);
-fn Mouse_pushDragEvent(u32 windowId, int button, d64 x, d64 y);
+fn Mouse_pushDragEvent(u32 windowId, i32 button, d64 x, d64 y);
 fn Mouse_pushScrollEvent(u32 windowId, d64 dx, d64 dy);
 fn Mouse_pushZoomEvent(u32 windowId, d64 magnification);
 
@@ -62,13 +62,13 @@ fn Mouse_pushZoomEvent(u32 windowId, d64 magnification);
 fn Mouse_dispatchEvents();
 
 // --- State queries ---
-bool     Mouse_isDown(int button);
-u64 Mouse_pressTime(int button);
-u64 Mouse_lastReleaseTime(int button);
-u64 Mouse_lastHoldDurationNanos(int button);
-u64 Mouse_currentHoldDurationNanos(int button);
-int      Mouse_taps(int button);
-fn     Mouse_resetTaps(int button);
+bool     Mouse_isDown(i32 button);
+u64 Mouse_pressTime(i32 button);
+u64 Mouse_lastReleaseTime(i32 button);
+u64 Mouse_lastHoldDurationNanos(i32 button);
+u64 Mouse_currentHoldDurationNanos(i32 button);
+i32      Mouse_taps(i32 button);
+fn     Mouse_resetTaps(i32 button);
 
 // --- Multi-tap gesture timeline (windowed settlement, mirrors KeyTapPhase) ---
 typedef enum MouseTapPhase {
@@ -80,11 +80,11 @@ typedef enum MouseTapPhase {
 } MouseTapPhase;
 
 // Settled-or-windowed click readout for a button.
-MouseTapPhase Mouse_tapPhase(int button);
+MouseTapPhase Mouse_tapPhase(i32 button);
 
 // One-shot LONG_PRESS latch (mirrors Key_isLongPressFired).
-bool Mouse_isLongPressFired(int button);
-fn Mouse_setLongPressFired(int button, bool fired);
+bool Mouse_isLongPressFired(i32 button);
+fn Mouse_setLongPressFired(i32 button, bool fired);
 
 // Last dispatched cursor position in content coordinates (top-left origin).
 // Written on dispatch of move/drag events — legacy left these dead; here they
@@ -93,12 +93,12 @@ d64 Mouse_x();
 d64 Mouse_y();
 
 // --- Packed mouseEvent helpers ---
-int  Mouse_button(int mouseEvent);
-bool Mouse_hasShift(int mouseEvent);
-bool Mouse_hasControl(int mouseEvent);
-bool Mouse_hasOption(int mouseEvent);
-bool Mouse_hasCommand(int mouseEvent);
+i32  Mouse_button(i32 mouseEvent);
+bool Mouse_hasShift(i32 mouseEvent);
+bool Mouse_hasControl(i32 mouseEvent);
+bool Mouse_hasOption(i32 mouseEvent);
+bool Mouse_hasCommand(i32 mouseEvent);
 
-const char *Mouse_name(int button);
+const char *Mouse_name(i32 button);
 
 #endif

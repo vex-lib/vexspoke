@@ -72,7 +72,7 @@ static Collection *asCollection(Map *map) {
     return (Collection*) map;
 }
 
-static int isReferenceClass(u32 classId) {
+static i32 isReferenceClass(u32 classId) {
     return classId == ID_STRING || classId >= ID_LIST;
 }
 
@@ -89,7 +89,7 @@ static u64 computeHash(u32 keyClass, u64 key) {
     return Hash_murmur3Mix64(key);
 }
 
-static int keysEqual(u32 keyClass, u64 k1, u64 k2) {
+static i32 keysEqual(u32 keyClass, u64 k1, u64 k2) {
     if (k1 == k2) return 1;
     if (k1 == 0 || k2 == 0) return 0;
     if (isReferenceClass(keyClass) && k1 >= 4096u && k2 >= 4096u) {

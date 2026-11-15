@@ -73,11 +73,11 @@ bool Browser_openUrl(const Browser *self, const char *url) {
     };
 
     pid_t childPid = 0;
-    int spawnStatus = posix_spawnp(&childPid, program, nullptr, nullptr, arguments, environ);
+    i32 spawnStatus = posix_spawnp(&childPid, program, nullptr, nullptr, arguments, environ);
     if (spawnStatus != 0)
         return false;
 
-    int waitStatus = 0;
+    i32 waitStatus = 0;
     if (waitpid(childPid, &waitStatus, 0) < 0)
         return false;
 

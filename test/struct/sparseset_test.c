@@ -8,7 +8,7 @@
 
 #include "struct/sparseset.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -19,7 +19,7 @@ static int g_failures = 0;
     } while (0)
 
 // Checks sparse-set membership and index/value behavior across insertions and removals.
-int main() {
+i32 main() {
     SparseSet *s = SparseSet_3(1024, 2048, 4);
     CHECK(s != nullptr);
     CHECK(SparseSet_count(s) == 0);

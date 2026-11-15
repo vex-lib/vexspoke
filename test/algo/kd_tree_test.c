@@ -19,7 +19,7 @@
 #include "algo/kd_tree.h"
 #include "nio/mem.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -185,7 +185,7 @@ static fn test_radius_boundary_and_duplicates() {
     KdTree_free(t);
 }
 
-int main() {
+i32 main() {
     CHECK(Memory_init(0));
 
     test_build_and_null();

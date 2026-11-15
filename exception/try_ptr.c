@@ -115,7 +115,7 @@ fn TryPtr_toString(const TryPtr *self, char *dest, bytes cap, bool *outTruncated
         snprintf(dest, cap, "nullptr");
         return;
     }
-    int written;
+    i32 written;
     if ((*self).code == TRY_OK) {
         written = snprintf(dest, cap, "TryPtr(value=%p, code=TRY_OK)", (*self).value);
     } else {
@@ -139,7 +139,7 @@ fn TryPtr_toStringStruct(const TryPtr *self, char *dest, bytes cap, bool *outTru
         snprintf(dest, cap, "nullptr");
         return;
     }
-    int written = snprintf(dest, cap, "TryPtr { value=%p, code=%s }",
+    i32 written = snprintf(dest, cap, "TryPtr { value=%p, code=%s }",
                            (*self).value,
                            TryCode_name((*self).code));
     if (written < 0 || (bytes) written >= cap) {

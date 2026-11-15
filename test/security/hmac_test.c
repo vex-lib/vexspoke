@@ -12,7 +12,7 @@ static fn expectHex(const u8 *d, bytes n, const char *want) {
     assert(strcmp(h, want) == 0);
 }
 
-int main() {
+i32 main() {
     u8 key20[20], out32[32], out20[20];
     memset(key20, 0x0b, sizeof key20);
     const char *data = "Hi There";

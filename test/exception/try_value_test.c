@@ -18,7 +18,7 @@
 
 #include "exception/try.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -133,7 +133,7 @@ static fn testValueStrings() {
 // --- TryPtr: the pointer-shaped sibling ---
 /** Exercises pointer-result success, failure, and null-pointee behavior. */
 static fn testPtr() {
-    int payload = 1234;
+    i32 payload = 1234;
     char buf[128];
     bool trunc = false;
 
@@ -190,7 +190,7 @@ static fn testCodeTaxonomy() {
 }
 
 /** Runs the TryValue and TryPtr owner cases and reports aggregate assertion status. */
-int main() {
+i32 main() {
     testValueConstructors();
     testValueSetters();
     testValueBoundaries();

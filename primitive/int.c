@@ -9,7 +9,7 @@
  * ============================================================================
  * DEFINITION: Int
  * ============================================================================
- * Int primitive (Legacy: primitive/Int.java): 32-bit int payloads backed by a
+ * Int primitive (Legacy: primitive/Int.java): 32-bit i32 payloads backed by a
  * fixed 1024-slot BitPool for singletons and the memory arena for arrays.
  * Provides alloc/free, get/set, compare-and-set, type/length introspection,
  * and alloc-with-value convenience. Lives at R2 as a leaf primitive behavior.
@@ -19,11 +19,11 @@
 ;;OVERVIEW
 /**
  * ============================================================================
- * MODULE: Int (primitive/int.c)
+ * MODULE: Int (primitive/i32.c)
  * ============================================================================
  * Int primitive (Legacy: primitive/Int.java).
  *
- * STRUCT FIELDS: none — procedural (operates on BitPool/memory blocks of int payloads)
+ * STRUCT FIELDS: none — procedural (operates on BitPool/memory blocks of i32 payloads)
  *
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------

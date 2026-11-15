@@ -30,8 +30,8 @@
  * ============================================================================
  */
 
-static int g_fail = 0;
-static int g_checks = 0;
+static i32 g_fail = 0;
+static i32 g_checks = 0;
 
 #define CHECK(cond)                                                       \
     do {                                                                  \
@@ -317,7 +317,7 @@ static fn testStringsAndNull() {
 }
 
 // Runs layout, identity, name, field, struct, class, and projection contract cases.
-int main() {
+i32 main() {
     printf("=== Reflection (hierarchy) Test Suite ===\n\n");
 
     testLayouts();

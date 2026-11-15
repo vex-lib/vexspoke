@@ -11,7 +11,7 @@
 #include "struct/list.h"
 #include "oop/vexspoke_type.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -22,7 +22,7 @@ static int g_failures = 0;
     } while (0)
 
 // Verifies counting, the single-diagnostic epoch, reset and null-safety.
-int main() {
+i32 main() {
     u64 count = 0;
     bool reported = false;
 

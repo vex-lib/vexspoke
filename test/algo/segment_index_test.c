@@ -27,8 +27,8 @@
  * ============================================================================
  */
 
-static int g_fail = 0;
-static int g_checks = 0;
+static i32 g_fail = 0;
+static i32 g_checks = 0;
 
 #define CHECK(cond)                                                       \
     do {                                                                  \
@@ -232,7 +232,7 @@ static fn testBridge() {
 }
 
 /** Runs the SegmentIndex owner scenarios and reports aggregate assertion status. */
-int main() {
+i32 main() {
     printf("=== SegmentIndex (dotted-name search) Test Suite ===\n\n");
 
     testSplitter();

@@ -5,7 +5,7 @@
 
 #include "security/otpauth.h"
 
-int main() {
+i32 main() {
     char uri[512];
     bool cut = true;
     // A 5-byte secret is "fooba", whose base32 form is the RFC 4648 vector MZXW6YTB,

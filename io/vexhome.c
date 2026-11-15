@@ -222,8 +222,8 @@ bool VexHome_cacheEnsure(const char *subsystem) {
              "version = 1\n",
              sub, date_buf);
 
-    int64_t written = File_write(f, content, (int64_t)strlen(content));
-    bool ok = (written == (int64_t)strlen(content));
+    i64 written = File_write(f, content, (i64)strlen(content));
+    bool ok = (written == (i64)strlen(content));
     File_close(f);
     return ok;
 }

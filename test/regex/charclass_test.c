@@ -9,7 +9,7 @@
 
 #include "regex/charclass.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -148,7 +148,7 @@ static fn testNegate() {
     CHECK(!RegexCharClass_test(&cls, (u8) 'b'));
 }
 
-int main() {
+i32 main() {
     testBytes();
     testRanges();
     testPredefined();

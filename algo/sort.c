@@ -43,22 +43,22 @@
  * ============================================================================
  */
 
-static unsigned char *elementAt(any values, bytes index, bytes elementSize) {
-    return (unsigned char*) values + index * elementSize;
+static u8 *elementAt(any values, bytes index, bytes elementSize) {
+    return (u8*) values + index * elementSize;
 }
 
-static const unsigned char *constElementAt(const_any values, bytes index,
+static const u8 *constElementAt(const_any values, bytes index,
                                             bytes elementSize) {
-    return (const unsigned char*) values + index * elementSize;
+    return (const u8*) values + index * elementSize;
 }
 
 static fn swapElements(any left, any right, bytes elementSize) {
     if (left == right)
         return;
-    unsigned char *a = left;
-    unsigned char *b = right;
+    u8 *a = left;
+    u8 *b = right;
     for (bytes i = 0u; i < elementSize; ++i) {
-        unsigned char byte = a[i];
+        u8 byte = a[i];
         a[i] = b[i];
         b[i] = byte;
     }
@@ -153,7 +153,7 @@ static fn heapSortRange(any values, bytes begin, bytes end,
     bytes count = end - begin;
     if (count < 2u)
         return;
-    unsigned char *range = elementAt(values, begin, elementSize);
+    u8 *range = elementAt(values, begin, elementSize);
     for (bytes parent = count / 2u; parent > 0u; --parent)
         siftDown(range, parent - 1u, count, elementSize, compare);
     for (bytes remaining = count; remaining > 1u; --remaining) {
@@ -328,11 +328,11 @@ static bool radixSortUnsigned(any values, bytes count, bytes keySize) {
 
     any source = values;
     any destination = temporary;
-    unsigned passes = (unsigned) keySize;
-    for (unsigned pass = 0u; pass < passes; ++pass) {
+    u32 passes = (u32) keySize;
+    for (u32 pass = 0u; pass < passes; ++pass) {
         bytes bucketCounts[256] = {0};
         bytes bucketOffsets[256] = {0};
-        unsigned shift = pass * 8u;
+        u32 shift = pass * 8u;
         for (bytes i = 0u; i < count; ++i) {
             u8 bucket = (u8) ((unsignedKeyAt(source, i, keySize) >> shift) & 0xFFu);
             ++bucketCounts[bucket];
@@ -390,10 +390,10 @@ bool Sort_radixSortPairsUint64(u64 *keys, any *values, bytes count) {
     u64 *destinationKeys = temporaryKeys;
     any *sourceValues = values;
     any *destinationValues = temporaryValues;
-    for (unsigned pass = 0u; pass < 8u; ++pass) {
+    for (u32 pass = 0u; pass < 8u; ++pass) {
         bytes bucketCounts[256] = {0};
         bytes bucketOffsets[256] = {0};
-        unsigned shift = pass * 8u;
+        u32 shift = pass * 8u;
         for (bytes i = 0u; i < count; ++i) {
             u8 bucket = (u8) ((sourceKeys[i] >> shift) & 0xFFu);
             ++bucketCounts[bucket];

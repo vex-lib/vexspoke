@@ -124,7 +124,7 @@ static OctreeNode *OctreeNode_2(OctreeAABB bounds, u32 capacity) {
     (*node).itemCount = 0;
     (*node).itemCapacity = capacity;
     (*node).isLeaf = true;
-    for (int i = 0; i < 8; i++) {
+    for (i32 i = 0; i < 8; i++) {
         (*node).children[i] = nullptr;
     }
     (*node).items = (OctreeItem*) Memory_alloc(TYPE_BYTE_ARRAY, (bytes) capacity * sizeof(OctreeItem));
@@ -140,7 +140,7 @@ static fn OctreeNode_free(OctreeNode *node) {
         return;
     }
     if (!(*node).isLeaf) {
-        for (int i = 0; i < 8; i++) {
+        for (i32 i = 0; i < 8; i++) {
             if ((*node).children[i] != nullptr) {
                 OctreeNode_free((*node).children[i]);
                 (*node).children[i] = nullptr;
@@ -178,7 +178,7 @@ static fn OctreeNode_subdivide(OctreeNode *node, u32 childCapacity) {
     // 7: +++
     subBounds[7] = (OctreeAABB) { midX, midY, midZ, bounds.maxX, bounds.maxY, bounds.maxZ };
 
-    for (int i = 0; i < 8; i++) {
+    for (i32 i = 0; i < 8; i++) {
         (*node).children[i] = OctreeNode_2(subBounds[i], childCapacity);
     }
     (*node).isLeaf = false;
@@ -222,7 +222,7 @@ static bool OctreeNode_insert(Octree *owner, OctreeNode *node, OctreeItem item, 
         // Re-insert existing items into children
         for (u32 i = 0; i < (*node).itemCount; i++) {
             OctreeItem existing = (*node).items[i];
-            for (int c = 0; c < 8; c++) {
+            for (i32 c = 0; c < 8; c++) {
                 if (OctreeNode_insert(owner, (*node).children[c], existing, depth + 1, maxDepth, maxItems)) {
                     break;
                 }
@@ -232,7 +232,7 @@ static bool OctreeNode_insert(Octree *owner, OctreeNode *node, OctreeItem item, 
     }
 
     // Insert new item into matching child
-    for (int c = 0; c < 8; c++) {
+    for (i32 c = 0; c < 8; c++) {
         if (OctreeNode_insert(owner, (*node).children[c], item, depth + 1, maxDepth, maxItems)) {
             return true;
         }
@@ -309,7 +309,7 @@ static bytes OctreeNode_queryRange(const OctreeNode *node, OctreeAABB range, u64
         return count;
     }
 
-    for (int i = 0; i < 8 && count < maxCount; i++) {
+    for (i32 i = 0; i < 8 && count < maxCount; i++) {
         count = OctreeNode_queryRange((*node).children[i], range, outPayloads, maxCount, count);
     }
     return count;
@@ -343,7 +343,7 @@ static bytes OctreeNode_querySphere(const OctreeNode *node, OctreePoint center, 
         return count;
     }
 
-    for (int i = 0; i < 8 && count < maxCount; i++) {
+    for (i32 i = 0; i < 8 && count < maxCount; i++) {
         count = OctreeNode_querySphere((*node).children[i], center, radius, outPayloads, maxCount, count);
     }
     return count;

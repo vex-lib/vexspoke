@@ -45,7 +45,7 @@
 
 // Returns c unchanged or lowercased for case-insensitive matching.
 static inline char normalize_char(char c, bool caseSensitive) {
-    return caseSensitive ? c : (char) tolower((unsigned char) c);
+    return caseSensitive ? c : (char) tolower((u8) c);
 }
 
 // Matches a NUL-terminated string against SQL-style '%' and '_' wildcards.
@@ -81,11 +81,11 @@ static bool match_like(const char *t, const char *p, bool caseSensitive) {
 
 // Returns whether a character separates words for exact-word matching.
 static bool is_word_boundary(char c) {
-    return !isalnum((unsigned char) c) && c != '_';
+    return !isalnum((u8) c) && c != '_';
 }
 
 // Finds the first substring match, optionally requiring word boundaries; returns -1 when absent.
-static int find_substring(const char *text, const char *pattern, bool caseSensitive, bool exactWord) {
+static i32 find_substring(const char *text, const char *pattern, bool caseSensitive, bool exactWord) {
     if (!text || !pattern) return -1;
     bytes tlen = strlen(text);
     bytes plen = strlen(pattern);
@@ -108,7 +108,7 @@ static int find_substring(const char *text, const char *pattern, bool caseSensit
                     continue;
                 }
             }
-            return (int) i;
+            return (i32) i;
         }
     }
     return -1;
@@ -131,7 +131,7 @@ bool Search_match(const char *text, const char *pattern, u32 flags) {
 }
 
 // Returns the first matching byte offset, or -1 when inputs or match are absent.
-int Search_findFirst(const char *text, const char *pattern, u32 flags) {
+i32 Search_findFirst(const char *text, const char *pattern, u32 flags) {
     if (!text || !pattern) return -1;
     bool caseSensitive = (flags & FIND_CASE_SENSITIVE) != 0;
     bool exactWord = (flags & FIND_EXACT_WORD) != 0;

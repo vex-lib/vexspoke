@@ -149,7 +149,7 @@ u64 MinHeap_exhaustionCount(const MinHeap *heap) {
     return heap ? Struct_exhaustionCount(&(*heap).exhaustionCount) : 0;
 }
 
-int MinHeap_push(MinHeap *heap, i32 item, f32 priority) {
+i32 MinHeap_push(MinHeap *heap, i32 item, f32 priority) {
     if (!heap) return 0;
     if ((*heap).size >= (*heap).capacity) {
         // A full fixed-capacity heap is a refusal, not a silent no-op.

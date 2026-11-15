@@ -101,11 +101,11 @@ fn f64_set(any ptr, d64 value) {
 bool f64_compareAndSet(any ptr, d64 expected, d64 value) {
     if (!ptr)
         return false;
-    int64_t expBits;
-    int64_t valBits;
+    i64 expBits;
+    i64 valBits;
     memcpy(&expBits, &expected, sizeof(expBits));
     memcpy(&valBits, &value, sizeof(valBits));
-    return __atomic_compare_exchange_n((int64_t*) ptr, &expBits, valBits, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
+    return __atomic_compare_exchange_n((i64*) ptr, &expBits, valBits, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
 u64 f64_type(any ptr) {

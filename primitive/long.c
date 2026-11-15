@@ -21,11 +21,11 @@
 ;;OVERVIEW
 /**
  * ============================================================================
- * MODULE: Long (primitive/long.c)
+ * MODULE: Long (primitive/i64.c)
  * ============================================================================
  * Long primitive (Legacy: primitive/Long.java).
  *
- * STRUCT FIELDS: none — procedural (operates on BitPool/memory blocks of long payloads)
+ * STRUCT FIELDS: none — procedural (operates on BitPool/memory blocks of i64 payloads)
  *
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------
@@ -70,10 +70,10 @@ any Long_allocArray(bytes count) {
     if (count == 0)
         return nullptr;
     // Use memory arena for arrays — BitPool is fixed 1024 slots, not for large contiguous
-    bytes Bytes = count * sizeof(int64_t);
-    // For compound types, elem_size 8 already accounts for stride, but sizeof(int64_t) is placeholder
+    bytes Bytes = count * sizeof(i64);
+    // For compound types, elem_size 8 already accounts for stride, but sizeof(i64) is placeholder
     // Use elem_size for true stride where c_type is int64 placeholder
-    if (count > 1 && 8 != sizeof(int64_t))
+    if (count > 1 && 8 != sizeof(i64))
         Bytes = count * 8;
     return Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_LONG), Bytes);
 }
@@ -85,23 +85,23 @@ fn Long_free(any ptr) {
     else Memory_free(ptr);
 }
 
-int64_t Long_get(any ptr) {
+i64 Long_get(any ptr) {
     if (!ptr)
-        return (int64_t) 0;
-    return *(int64_t*) ptr;
+        return (i64) 0;
+    return *(i64*) ptr;
 }
 
-fn Long_set(any ptr, int64_t value) {
+fn Long_set(any ptr, i64 value) {
     if (!ptr)
         return;
-    *(int64_t*) ptr = value;
+    *(i64*) ptr = value;
 }
 
-bool Long_compareAndSet(any ptr, int64_t expected, int64_t value) {
+bool Long_compareAndSet(any ptr, i64 expected, i64 value) {
     if (!ptr)
         return false;
     // fallback to simple CAS via __atomic_compare_exchange
-    return __atomic_compare_exchange_n((int64_t*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
+    return __atomic_compare_exchange_n((i64*) ptr, &expected, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
 }
 
 u64 Long_type(any ptr) {
@@ -118,7 +118,7 @@ bytes Long_length(any ptr) {
     return Memory_length(ptr);
 }
 
-any Long_allocWithValue(int64_t value) {
+any Long_allocWithValue(i64 value) {
     any ptr = Long_alloc();
     if (ptr) Long_set(ptr, value);
     return ptr;

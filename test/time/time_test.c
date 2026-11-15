@@ -13,7 +13,7 @@
 #include "time/datetime.h"
 #include "time/nanotime.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -26,7 +26,7 @@ static int g_failures = 0;
 // Exercises time-unit constants and conversion helpers using known values.
 // Integrates UTC date conversion, calendar arithmetic, virtual clock, and timer checks.
 // Integrates known UTC dates with calendar arithmetic, Clock, and NanoTimer.
-int main() {
+i32 main() {
     // --- Known instants, verified against UTC ---
     DateTime dt;
 

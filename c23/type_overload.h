@@ -12,13 +12,13 @@
 //   add(a, b.sh, &dest);     // dest form  — result written through the pointer,
 //                         //             dest LAST (PREFERENCES.md rule 9)
 //
-// Cells: scalars {int, long, f32, d64} route to the promotion family C
-// itself would pick (int+int stays int, anything+long stays long, +f32 =>
+// Cells: scalars {i32, i64, f32, d64} route to the promotion family C
+// itself would pick (i32+i32 stays i32, anything+i64 stays i64, +f32 =>
 // f32, +d64 => d64); vec2f/vec3f/vec4f pair with themselves (elementwise) and
 // with any scalar (broadcast, both orders — s-v and s/v included); mul
 // additionally carries mat4f*mat4f and mat4f*vec4f. Anything else hits
 // ov_type_error: a loud compile error, never a silent wrong answer. The dest
-// form dictates the destination family the same way (&int* for int+int, &f32*
+// form dictates the destination family the same way (&i32* for i32+i32, &f32*
 // for anything+f32, ...).
 //
 // Implementation note: every _Generic arm is a bare FUNCTION DESIGNATOR —
@@ -104,12 +104,12 @@ static inline fn ov_m4_d_transform(mat4f m, vec4f v, vec4f *d) {
 // C promotion would produce. Dest writers dictate the matching destination.
 
 #define OV_SCALAR_FNS(op, OP)                                                     \
-    static inline int ov_f_##op##_ii(int a, int b) { return a OP b; }             \
-    static inline long ov_f_##op##_ll(long a, long b) { return a OP b; }          \
+    static inline i32 ov_f_##op##_ii(i32 a, i32 b) { return a OP b; }             \
+    static inline i64 ov_f_##op##_ll(i64 a, i64 b) { return a OP b; }          \
     static inline f32 ov_f_##op##_ff(f32 a, f32 b) { return a OP b; }       \
     static inline d64 ov_f_##op##_dd(d64 a, d64 b) { return a OP b; }    \
-    static inline fn ov_w_##op##_ii(int a, int b, int *d) { (*d) = a OP b; }    \
-    static inline fn ov_w_##op##_ll(long a, long b, long *d) { (*d) = a OP b; } \
+    static inline fn ov_w_##op##_ii(i32 a, i32 b, i32 *d) { (*d) = a OP b; }    \
+    static inline fn ov_w_##op##_ll(i64 a, i64 b, i64 *d) { (*d) = a OP b; } \
     static inline fn ov_w_##op##_ff(f32 a, f32 b, f32 *d) { (*d) = a OP b; } \
     static inline fn ov_w_##op##_dd(d64 a, d64 b, d64 *d) { (*d) = a OP b; }
 
@@ -160,13 +160,13 @@ static inline fn ov_v4_sv_d_mul(f32 s, vec4f v, vec4f *d) { (*d) = ov_v4_sv_mul(
 static inline fn ov_v4_sv_d_div(f32 s, vec4f v, vec4f *d) { (*d) = ov_v4_sv_div(s, v); }
 
 // --- rows: scalar LHS (value + dest) ------------------------------------------
-// Family routing per LHS row: int keeps int/long math exact, long absorbs int,
-// f32 absorbs int/long, d64 absorbs everything.
+// Family routing per LHS row: i32 keeps i32/i64 math exact, i64 absorbs i32,
+// f32 absorbs i32/i64, d64 absorbs everything.
 
 #define OV_VROW_INT(op, a, b)                    \
-    int: _Generic((b),                     \
-        int: ov_f_##op##_ii,               \
-        long: ov_f_##op##_ll,              \
+    i32: _Generic((b),                     \
+        i32: ov_f_##op##_ii,               \
+        i64: ov_f_##op##_ll,              \
         f32: ov_f_##op##_ff,             \
         d64: ov_f_##op##_dd,            \
         vec2f: ov_v2_sv_##op,               \
@@ -175,9 +175,9 @@ static inline fn ov_v4_sv_d_div(f32 s, vec4f v, vec4f *d) { (*d) = ov_v4_sv_div(
         default: ov_type_error)
 
 #define OV_VROW_LONG(op, a, b)                   \
-    long: _Generic((b),                    \
-        int: ov_f_##op##_ll,               \
-        long: ov_f_##op##_ll,              \
+    i64: _Generic((b),                    \
+        i32: ov_f_##op##_ll,               \
+        i64: ov_f_##op##_ll,              \
         f32: ov_f_##op##_ff,             \
         d64: ov_f_##op##_dd,            \
         vec2f: ov_v2_sv_##op,               \
@@ -187,8 +187,8 @@ static inline fn ov_v4_sv_d_div(f32 s, vec4f v, vec4f *d) { (*d) = ov_v4_sv_div(
 
 #define OV_VROW_FLOAT(op, a, b)                  \
     f32: _Generic((b),                   \
-        int: ov_f_##op##_ff,               \
-        long: ov_f_##op##_ff,              \
+        i32: ov_f_##op##_ff,               \
+        i64: ov_f_##op##_ff,              \
         f32: ov_f_##op##_ff,             \
         d64: ov_f_##op##_dd,            \
         vec2f: ov_v2_sv_##op,               \
@@ -198,8 +198,8 @@ static inline fn ov_v4_sv_d_div(f32 s, vec4f v, vec4f *d) { (*d) = ov_v4_sv_div(
 
 #define OV_VROW_f64(op, a, b)                 \
     d64: _Generic((b),                  \
-        int: ov_f_##op##_dd,               \
-        long: ov_f_##op##_dd,              \
+        i32: ov_f_##op##_dd,               \
+        i64: ov_f_##op##_dd,              \
         f32: ov_f_##op##_dd,             \
         d64: ov_f_##op##_dd,            \
         vec2f: ov_v2_sv_##op,               \
@@ -208,9 +208,9 @@ static inline fn ov_v4_sv_d_div(f32 s, vec4f v, vec4f *d) { (*d) = ov_v4_sv_div(
         default: ov_type_error)
 
 #define OV_DROW_INT(op, a, b, d)                    \
-    int: _Generic((b),                     \
-        int: ov_w_##op##_ii,               \
-        long: ov_w_##op##_ll,              \
+    i32: _Generic((b),                     \
+        i32: ov_w_##op##_ii,               \
+        i64: ov_w_##op##_ll,              \
         f32: ov_w_##op##_ff,             \
         d64: ov_w_##op##_dd,            \
         vec2f: ov_v2_sv_d_##op,             \
@@ -219,9 +219,9 @@ static inline fn ov_v4_sv_d_div(f32 s, vec4f v, vec4f *d) { (*d) = ov_v4_sv_div(
         default: ov_type_error)
 
 #define OV_DROW_LONG(op, a, b, d)                   \
-    long: _Generic((b),                    \
-        int: ov_w_##op##_ll,               \
-        long: ov_w_##op##_ll,              \
+    i64: _Generic((b),                    \
+        i32: ov_w_##op##_ll,               \
+        i64: ov_w_##op##_ll,              \
         f32: ov_w_##op##_ff,             \
         d64: ov_w_##op##_dd,            \
         vec2f: ov_v2_sv_d_##op,             \
@@ -231,8 +231,8 @@ static inline fn ov_v4_sv_d_div(f32 s, vec4f v, vec4f *d) { (*d) = ov_v4_sv_div(
 
 #define OV_DROW_FLOAT(op, a, b, d)                  \
     f32: _Generic((b),                   \
-        int: ov_w_##op##_ff,               \
-        long: ov_w_##op##_ff,              \
+        i32: ov_w_##op##_ff,               \
+        i64: ov_w_##op##_ff,              \
         f32: ov_w_##op##_ff,             \
         d64: ov_w_##op##_dd,            \
         vec2f: ov_v2_sv_d_##op,             \
@@ -242,8 +242,8 @@ static inline fn ov_v4_sv_d_div(f32 s, vec4f v, vec4f *d) { (*d) = ov_v4_sv_div(
 
 #define OV_DROW_f64(op, a, b, d)                 \
     d64: _Generic((b),                  \
-        int: ov_w_##op##_dd,               \
-        long: ov_w_##op##_dd,              \
+        i32: ov_w_##op##_dd,               \
+        i64: ov_w_##op##_dd,              \
         f32: ov_w_##op##_dd,             \
         d64: ov_w_##op##_dd,            \
         vec2f: ov_v2_sv_d_##op,             \
@@ -256,8 +256,8 @@ static inline fn ov_v4_sv_d_div(f32 s, vec4f v, vec4f *d) { (*d) = ov_v4_sv_div(
 #define OV_VVEC_ROW(n, op, a, b)                             \
     vec##n##f: _Generic((b),                              \
         vec##n##f: ov_v##n##_##op,                        \
-        int: ov_v##n##_vs_##op,                        \
-        long: ov_v##n##_vs_##op,                       \
+        i32: ov_v##n##_vs_##op,                        \
+        i64: ov_v##n##_vs_##op,                       \
         f32: ov_v##n##_vs_##op,                      \
         d64: ov_v##n##_vs_##op,                     \
         default: ov_type_error)
@@ -265,8 +265,8 @@ static inline fn ov_v4_sv_d_div(f32 s, vec4f v, vec4f *d) { (*d) = ov_v4_sv_div(
 #define OV_DVEC_ROW(n, op, a, b, d)                             \
     vec##n##f: _Generic((b),                              \
         vec##n##f: ov_v##n##_d_##op,                      \
-        int: ov_v##n##_vs_d_##op,                      \
-        long: ov_v##n##_vs_d_##op,                     \
+        i32: ov_v##n##_vs_d_##op,                      \
+        i64: ov_v##n##_vs_d_##op,                     \
         f32: ov_v##n##_vs_d_##op,                    \
         d64: ov_v##n##_vs_d_##op,                   \
         default: ov_type_error)

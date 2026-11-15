@@ -21,7 +21,7 @@
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -65,7 +65,7 @@ static fn test_allocate() {
 
     u8 *u = string_allocateUninitialized(4);
     CHECK(u != nullptr && string_length(u) == 4);
-    for (int i = 0; i < 4; i++)
+    for (i32 i = 0; i < 4; i++)
         CHECK(u[i] == 0);
     CHECK(u[4] == '\0');
 
@@ -142,7 +142,7 @@ static fn test_substrings() {
 
     u8 *sub = String_substring(s, 6, 5);
     CHECK(string_equalsCString(sub, "world"));
-    // Over-long len clamps to the end.
+    // Over-i64 len clamps to the end.
     u8 *clamped = String_substring(s, 6, 999);
     CHECK(string_equalsCString(clamped, "world"));
     // Start at/after length -> empty.
@@ -226,7 +226,7 @@ static fn test_append() {
 }
 
 // Initializes the memory substrate, runs each string contract case, and returns aggregate failures.
-int main() {
+i32 main() {
     CHECK(Memory_init(0));
     test_allocate();
     test_null_introspection();

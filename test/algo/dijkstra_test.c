@@ -20,7 +20,7 @@
 #include "algo/dijkstra.h"
 #include "nio/mem.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -131,7 +131,7 @@ static fn test_edge_growth() {
     Dijkstra_free(g);
 }
 
-/** Verifies exact path and distance on a long directed chain, including reverse unreachability. */
+/** Verifies exact path and distance on a i64 directed chain, including reverse unreachability. */
 static fn test_chain() {
     enum { N = 128 };
     DijkstraGraph *g = Dijkstra(N);
@@ -154,7 +154,7 @@ static fn test_chain() {
 }
 
 /** Runs the Dijkstra owner scenarios and returns failure if any assertion was violated. */
-int main() {
+i32 main() {
     CHECK(Memory_init(0));
 
     test_construction();

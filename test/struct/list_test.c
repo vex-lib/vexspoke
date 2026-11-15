@@ -15,7 +15,7 @@
 #include "struct/list.h"
 #include "oop/vexspoke_type.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -44,7 +44,7 @@ static any adder(any userData) {
 }
 
 // Verifies list insertion, indexed access, removal, growth, and empty-state behavior.
-int main() {
+i32 main() {
     // Construction + introspection.
     List *list = List_2(ID_INT, 4); // grows to the 1024 default
     CHECK(list != nullptr);
@@ -108,12 +108,12 @@ int main() {
     pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
     pthread_t tids[THREADS];
     AddArg args[THREADS];
-    for (int t = 0; t < THREADS; t++) {
+    for (i32 t = 0; t < THREADS; t++) {
         args[t] = (AddArg){ .list = big, .lock = &lock,
                             .base = (u32) t * PER_THREAD, .count = PER_THREAD };
         CHECK(pthread_create(&tids[t], nullptr, adder, &args[t]) == 0);
     }
-    for (int t = 0; t < THREADS; t++)
+    for (i32 t = 0; t < THREADS; t++)
         CHECK(pthread_join(tids[t], nullptr) == 0);
     pthread_mutex_destroy(&lock);
 

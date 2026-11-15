@@ -6,7 +6,7 @@
 #include "primitive/bool.h"
 #include "oop/vexspoke_type.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -17,7 +17,7 @@ static int g_failures = 0;
     } while (0)
 
 // Exercises Bool initialization, scalar/array allocation, CAS, metadata, and null safety.
-int main() {
+i32 main() {
     CHECK(Bool_init());
 
     any p = Bool_alloc();

@@ -14,7 +14,7 @@
 
 #include "system/hardware_info.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -27,7 +27,7 @@ static int g_failures = 0;
 // Checks hardware discovery defaults, property round trips, and null-string preservation.
 // Verifies hardware-information queries return platform data or safe defaults.
 // Exercises lazy host discovery and HardwareInfo property round trips.
-int main() {
+i32 main() {
     // Force the one-time lazy bootstrap.
     const char *os = HardwareInfo_getOperatingSystem();
     const char *arch = HardwareInfo_getSystemArchitecture();

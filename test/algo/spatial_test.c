@@ -5,7 +5,7 @@
 
 #include "algo/spatial.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(condition)                                                     \
     do {                                                                     \
@@ -15,16 +15,16 @@ static int g_failures = 0;
         }                                                                    \
     } while (0)
 
-static unsigned countBits(u64 value) {
-    unsigned count = 0u;
+static u32 countBits(u64 value) {
+    u32 count = 0u;
     while (value != 0u) {
-        count += (unsigned) (value & 1u);
+        count += (u32) (value & 1u);
         value >>= 1u;
     }
     return count;
 }
 
-int main() {
+i32 main() {
     CHECK(Spatial_morton3D(0u, 0u, 0u) == 0u);
     u64 xBit = Spatial_morton3D(1u, 0u, 0u);
     u64 yBit = Spatial_morton3D(0u, 1u, 0u);

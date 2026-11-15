@@ -30,7 +30,7 @@ typedef struct Exception {
     ExceptionCategory category;
     const char *site;           // e.g. "GraphicsLoop::setGraphicsLoop"
     const char *file;           // __FILE__
-    int line;                   // __LINE__
+    i32 line;                   // __LINE__
     char *message;              // Dynamically allocated diagnostic message (0..N, no hardcoded capacity)
     char *details;              // Dynamically allocated variable / context dump (0..N, no hardcoded capacity)
 } Exception;
@@ -39,13 +39,13 @@ typedef struct Exception {
 // formatted forms own their message until Exception_free.
 Exception Exception_0();
 Exception Exception_5(ExceptionCategory category, const char *site,
-                      const char *file, int line, const char *fmt, ...);
+                      const char *file, i32 line, const char *fmt, ...);
 Exception Exception_6(ExceptionCategory category, const char *site,
-                      const char *file, int line, const char *fmt, ...);
+                      const char *file, i32 line, const char *fmt, ...);
 Exception Exception_7(ExceptionCategory category, const char *site,
-                      const char *file, int line, const char *fmt, ...);
+                      const char *file, i32 line, const char *fmt, ...);
 Exception Exception_8(ExceptionCategory category, const char *site,
-                      const char *file, int line, const char *fmt, ...);
+                      const char *file, i32 line, const char *fmt, ...);
 #define Exception(...) CONSTRUCTOR_DISPATCH(Exception, __VA_ARGS__)
 
 // Append or set context/variable details

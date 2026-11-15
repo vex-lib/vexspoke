@@ -83,7 +83,7 @@ typedef struct WebSocketConfig {
 } WebSocketConfig;
 
 typedef struct WebSocket {
-    int fd;                        // connected socket, -1 once released
+    i32 fd;                        // connected socket, -1 once released
     TlsConn *tls;                  // TLS session for wss://, null for ws://
     WebSocketState state;
     u32 timeoutMs;            // transport budget for one read/write burst

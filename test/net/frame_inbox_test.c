@@ -8,7 +8,7 @@
 #include <assert.h>
 #include <string.h>
 
-int main() {
+i32 main() {
     FrameInbox *a = FrameInbox();
     FrameInbox *b = FrameInbox(UINT64_MAX);
     assert(a && b);

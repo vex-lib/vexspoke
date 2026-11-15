@@ -16,7 +16,7 @@
 #include "system/process_probe.h"
 #include "io/file/file.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -29,7 +29,7 @@ static int g_failures = 0;
 // Tests singleton process/driver probes against the current process and a scratch directory.
 // Exercises process-probe matching and verifies the reported detection result.
 // Tests process-name lookup and case-insensitive driver-directory prefix scanning.
-int main() {
+i32 main() {
     ProcessProbe *p = ProcessProbe_shared();
     CHECK(p != nullptr);
     CHECK(ProcessProbe_shared() == p);                 // singleton

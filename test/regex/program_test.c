@@ -12,7 +12,7 @@
 
 #include "regex/program.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -204,7 +204,7 @@ static fn testGroupAndRepeat() {
     CHECK(RegexProgram_build(&program, &nodes, repeat));
     // SAVE0, CHAR, CHAR, SPLIT, CHAR, SAVE1, MATCH
     CHECK(RegexProgram_count(&program) == 7);
-    int chars = 0;
+    i32 chars = 0;
     for (u32 i = 0; i < RegexProgram_count(&program); i++) {
         const RegexInst *inst = RegexProgram_at(&program, i);
         if ((*inst).op == REGEX_OP_CHAR)
@@ -274,7 +274,7 @@ static fn testRefusal() {
     RegexNodeList_free(&nodes);
 }
 
-int main() {
+i32 main() {
     testFrame();
     testConcat();
     testAlternation();

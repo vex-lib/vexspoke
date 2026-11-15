@@ -210,7 +210,7 @@ static fn test_hardware_event() {
 }
 
 // Runs headless owner checks for piano, turntable, gesture, gamepad, and events.
-int main() {
+i32 main() {
     printf("[Hardware Input Test] Starting test suite...\n");
 
     test_piano_keys();

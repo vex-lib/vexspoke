@@ -17,7 +17,7 @@
 
 #include "search/spotlight.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -128,7 +128,7 @@ static fn test_calculate() {
 }
 
 // Runs ranking tiers, candidate boundaries, capacity behavior, and calculation checks.
-int main() {
+i32 main() {
     test_exact_and_prefix();
     test_tiers();
     test_case_and_boundaries();

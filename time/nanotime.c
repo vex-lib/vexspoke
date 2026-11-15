@@ -63,7 +63,7 @@
 
 // little conflicted.. would need this to be localthread variable to ensure thread safety
 static u64 s_startNanos = 0;
-static int s_started = 0;
+static i32 s_started = 0;
 
 static u64 nanoTime() {
     struct timespec ts;

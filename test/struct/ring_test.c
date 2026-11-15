@@ -19,7 +19,7 @@
 
 #include "struct/ring.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -39,30 +39,30 @@ static fn test_init_and_bounds() {
     r = RingBuffer(0u, 4u);
     CHECK(r.slots == nullptr); // zero element size refused
 
-    r = RingBuffer(sizeof(int), 3); CHECK(r.slots != nullptr);
+    r = RingBuffer(sizeof(i32), 3); CHECK(r.slots != nullptr);
     CHECK(r.capacity == 4);
     CHECK(r.mask == 3);
-    CHECK(r.elem_size == sizeof(int));
+    CHECK(r.elem_size == sizeof(i32));
     RingBuffer_shutdown(&r);
 
-    r = RingBuffer(sizeof(int), 5); CHECK(r.slots != nullptr);
+    r = RingBuffer(sizeof(i32), 5); CHECK(r.slots != nullptr);
     CHECK(r.capacity == 8);
     CHECK(r.mask == 7);
 
     // Exact powers of two do not grow.
     RingBuffer_shutdown(&r);
-    r = RingBuffer(sizeof(int), 2); CHECK(r.slots != nullptr);
+    r = RingBuffer(sizeof(i32), 2); CHECK(r.slots != nullptr);
     CHECK(r.capacity == 2);
     RingBuffer_shutdown(&r);
 
     // Requesting zero rounds up to the minimum ring of one slot.
-    r = RingBuffer(sizeof(int), 0); CHECK(r.slots != nullptr);
+    r = RingBuffer(sizeof(i32), 0); CHECK(r.slots != nullptr);
     CHECK(r.capacity == 1);
     CHECK(r.mask == 0);
-    int one = 7;
+    i32 one = 7;
     CHECK(RingBuffer_push(&r, &one));
     CHECK(!RingBuffer_push(&r, &one));          // capacity 1 is full
-    int out = 0;
+    i32 out = 0;
     CHECK(RingBuffer_pop(&r, &out));
     CHECK(out == 7);
     CHECK(!RingBuffer_pop(&r, &out));           // empty
@@ -70,41 +70,41 @@ static fn test_init_and_bounds() {
 
     // d64 shutdown is safe; re-init after shutdown is safe.
     RingBuffer_shutdown(&r);
-    r = RingBuffer(sizeof(int), 4); CHECK(r.slots != nullptr);
+    r = RingBuffer(sizeof(i32), 4); CHECK(r.slots != nullptr);
     RingBuffer_shutdown(&r);
 }
 
 /** Verifies FIFO order, full-capacity refusal, and slot reuse after popping. */
 static fn test_fifo_and_full() {
     RingBuffer r;
-    r = RingBuffer(sizeof(int), 4); CHECK(r.slots != nullptr);
+    r = RingBuffer(sizeof(i32), 4); CHECK(r.slots != nullptr);
 
-    int out = -1;
+    i32 out = -1;
     CHECK(!RingBuffer_pop(&r, &out));           // empty pop refused
     CHECK(!RingBuffer_push(&r, nullptr));       // nullptr item refused
     CHECK(!RingBuffer_pop(&r, nullptr));        // nullptr out refused
 
-    for (int i = 0; i < 4; i++) {
-        int v = 100 + i;
+    for (i32 i = 0; i < 4; i++) {
+        i32 v = 100 + i;
         CHECK(RingBuffer_push(&r, &v));
     }
-    CHECK(!RingBuffer_push(&r, &(int){ 999 })); // exactly full -> refused
+    CHECK(!RingBuffer_push(&r, &(i32){ 999 })); // exactly full -> refused
 
     // Strict FIFO.
-    for (int i = 0; i < 4; i++) {
+    for (i32 i = 0; i < 4; i++) {
         CHECK(RingBuffer_pop(&r, &out));
         CHECK(out == 100 + i);
     }
     CHECK(!RingBuffer_pop(&r, &out));           // drained
 
     // Refill to full, free one slot, and prove exactly one more fits.
-    for (int i = 0; i < 4; i++)
-        CHECK(RingBuffer_push(&r, &(int){ 200 + i }));
-    CHECK(!RingBuffer_push(&r, &(int){ 999 }));
+    for (i32 i = 0; i < 4; i++)
+        CHECK(RingBuffer_push(&r, &(i32){ 200 + i }));
+    CHECK(!RingBuffer_push(&r, &(i32){ 999 }));
     CHECK(RingBuffer_pop(&r, &out));
     CHECK(out == 200);
-    CHECK(RingBuffer_push(&r, &(int){ 300 }));
-    CHECK(!RingBuffer_push(&r, &(int){ 301 }));
+    CHECK(RingBuffer_push(&r, &(i32){ 300 }));
+    CHECK(!RingBuffer_push(&r, &(i32){ 301 }));
     CHECK(RingBuffer_pop(&r, &out));
     CHECK(out == 201);
     RingBuffer_shutdown(&r);
@@ -113,22 +113,22 @@ static fn test_fifo_and_full() {
 /** Exercises repeated index wraparound while preserving element order. */
 static fn test_wraparound() {
     RingBuffer r;
-    r = RingBuffer(sizeof(int), 4); CHECK(r.slots != nullptr);
+    r = RingBuffer(sizeof(i32), 4); CHECK(r.slots != nullptr);
 
     // Push 2 / pop 2 repeatedly: the masked slot index wraps many times.
-    int expect = 0;
-    for (int round = 0; round < 1000; round++) {
-        for (int i = 0; i < 2; i++) {
-            int v = expect++;
+    i32 expect = 0;
+    for (i32 round = 0; round < 1000; round++) {
+        for (i32 i = 0; i < 2; i++) {
+            i32 v = expect++;
             CHECK(RingBuffer_push(&r, &v));
         }
-        for (int i = 0; i < 2; i++) {
-            int out = -1;
+        for (i32 i = 0; i < 2; i++) {
+            i32 out = -1;
             CHECK(RingBuffer_pop(&r, &out));
             CHECK(out == round * 2 + i);
         }
     }
-    int out;
+    i32 out;
     CHECK(!RingBuffer_pop(&r, &out));
     RingBuffer_shutdown(&r);
 }
@@ -144,12 +144,12 @@ typedef struct Big {
 static fn test_wide_elements() {
     RingBuffer r;
     r = RingBuffer(sizeof(Big), 2); CHECK(r.slots != nullptr);
-    for (int i = 0; i < 2; i++) {
+    for (i32 i = 0; i < 2; i++) {
         Big b = { .a = (u64) i * 11, .b = (u64) i * 22, .tag = "abc" };
         CHECK(RingBuffer_push(&r, &b));
     }
     CHECK(!RingBuffer_push(&r, &(Big){ .a = 99 }));
-    for (int i = 0; i < 2; i++) {
+    for (i32 i = 0; i < 2; i++) {
         Big b = { 0 };
         CHECK(RingBuffer_pop(&r, &b));
         CHECK(b.a == (u64) i * 11);
@@ -174,11 +174,11 @@ static atomic_int g_start;
 
 /** Publishes the producer's assigned values into the shared ring until complete. */
 static any ring_producer(any arg) {
-    int id = (int) (intptr_t) arg;
+    i32 id = (i32) (pointer) arg;
     while (!atomic_load_explicit(&g_start, memory_order_acquire))
         sched_yield();
-    for (int j = 0; j < RING_PER_PRODUCER; j++) {
-        int v = id * RING_PER_PRODUCER + j;
+    for (i32 j = 0; j < RING_PER_PRODUCER; j++) {
+        i32 v = id * RING_PER_PRODUCER + j;
         while (!RingBuffer_push(&g_ring, &v))
             sched_yield();
     }
@@ -191,7 +191,7 @@ static any ring_consumer(any arg) {
     while (!atomic_load_explicit(&g_start, memory_order_acquire))
         sched_yield();
     while (atomic_load_explicit(&g_consumed, memory_order_acquire) < RING_TOTAL) {
-        int v;
+        i32 v;
         if (!RingBuffer_pop(&g_ring, &v)) {
             sched_yield();
             continue;
@@ -209,8 +209,8 @@ static any ring_consumer(any arg) {
 
 /** Checks concurrent producers and consumers deliver every submitted value exactly once. */
 static fn test_mpmc_exactly_once() {
-    g_ring = RingBuffer(sizeof(int), 64u); CHECK(g_ring.slots != nullptr);
-    for (int i = 0; i < RING_TOTAL; i++)
+    g_ring = RingBuffer(sizeof(i32), 64u); CHECK(g_ring.slots != nullptr);
+    for (i32 i = 0; i < RING_TOTAL; i++)
         atomic_store(&g_seen[i], 0);
     atomic_store(&g_consumed, 0);
     atomic_store(&g_bad, 0);
@@ -219,30 +219,30 @@ static fn test_mpmc_exactly_once() {
 
     pthread_t producers[RING_PRODUCERS];
     pthread_t consumers[RING_CONSUMERS];
-    for (int i = 0; i < RING_PRODUCERS; i++)
-        CHECK(pthread_create(&producers[i], nullptr, ring_producer, (any) (intptr_t) i) == 0);
-    for (int i = 0; i < RING_CONSUMERS; i++)
+    for (i32 i = 0; i < RING_PRODUCERS; i++)
+        CHECK(pthread_create(&producers[i], nullptr, ring_producer, (any) (pointer) i) == 0);
+    for (i32 i = 0; i < RING_CONSUMERS; i++)
         CHECK(pthread_create(&consumers[i], nullptr, ring_consumer, nullptr) == 0);
 
     atomic_store_explicit(&g_start, 1, memory_order_release);
-    for (int i = 0; i < RING_PRODUCERS; i++)
+    for (i32 i = 0; i < RING_PRODUCERS; i++)
         CHECK(pthread_join(producers[i], nullptr) == 0);
-    for (int i = 0; i < RING_CONSUMERS; i++)
+    for (i32 i = 0; i < RING_CONSUMERS; i++)
         CHECK(pthread_join(consumers[i], nullptr) == 0);
 
     CHECK(atomic_load(&g_consumed) == RING_TOTAL);
     CHECK(atomic_load(&g_bad) == 0);
     CHECK(atomic_load(&g_dup) == 0);
-    int missing = 0;
-    for (int i = 0; i < RING_TOTAL; i++)
+    i32 missing = 0;
+    for (i32 i = 0; i < RING_TOTAL; i++)
         if (atomic_load(&g_seen[i]) == 0)
             missing++;
     CHECK(missing == 0);
 
     // The ring is fully drained and reusable afterwards.
-    int out;
+    i32 out;
     CHECK(!RingBuffer_pop(&g_ring, &out));
-    int v = 5;
+    i32 v = 5;
     CHECK(RingBuffer_push(&g_ring, &v));
     CHECK(RingBuffer_pop(&g_ring, &out));
     CHECK(out == 5);
@@ -250,7 +250,7 @@ static fn test_mpmc_exactly_once() {
 }
 
 /** Runs the RingBuffer owner scenarios and reports aggregate assertion status. */
-int main() {
+i32 main() {
     test_init_and_bounds();
     test_fifo_and_full();
     test_wraparound();

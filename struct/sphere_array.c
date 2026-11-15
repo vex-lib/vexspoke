@@ -107,17 +107,17 @@ SphereArray *SphereArray_3(i32 radius, u32 elementClass, bytes stride) {
     (*self).diameter = diameter;
 
     // Precalculate active count of voxels satisfying dx^2 + dy^2 + dz^2 <= r^2
-    int64_t rSq = (int64_t) radius * (int64_t) radius;
+    i64 rSq = (i64) radius * (i64) radius;
     u32 active = 0;
     for (i32 gz = 0; gz < diameter; gz++) {
-        int64_t dz = (int64_t) gz - (int64_t) radius;
-        int64_t dzSq = dz * dz;
+        i64 dz = (i64) gz - (i64) radius;
+        i64 dzSq = dz * dz;
         for (i32 gy = 0; gy < diameter; gy++) {
-            int64_t dy = (int64_t) gy - (int64_t) radius;
-            int64_t dyzSq = dzSq + dy * dy;
+            i64 dy = (i64) gy - (i64) radius;
+            i64 dyzSq = dzSq + dy * dy;
             if (dyzSq > rSq) continue;
             for (i32 gx = 0; gx < diameter; gx++) {
-                int64_t dx = (int64_t) gx - (int64_t) radius;
+                i64 dx = (i64) gx - (i64) radius;
                 if (dyzSq + dx * dx <= rSq) {
                     active++;
                 }
@@ -165,18 +165,18 @@ bytes SphereArray_validVoxelCount(const SphereArray *self) {
     return (bytes) (*coll).activeCount;
 }
 
-int64_t SphereArray_distanceSquaredOffset(i32 dx, i32 dy, i32 dz) {
-    int64_t x = (int64_t) dx;
-    int64_t y = (int64_t) dy;
-    int64_t z = (int64_t) dz;
+i64 SphereArray_distanceSquaredOffset(i32 dx, i32 dy, i32 dz) {
+    i64 x = (i64) dx;
+    i64 y = (i64) dy;
+    i64 z = (i64) dz;
     return x * x + y * y + z * z;
 }
 
-int64_t SphereArray_distanceSquaredGrid(const SphereArray *self, i32 gx, i32 gy, i32 gz) {
+i64 SphereArray_distanceSquaredGrid(const SphereArray *self, i32 gx, i32 gy, i32 gz) {
     if (self == nullptr) return -1;
-    int64_t dx = (int64_t) gx - (int64_t) (*self).radius;
-    int64_t dy = (int64_t) gy - (int64_t) (*self).radius;
-    int64_t dz = (int64_t) gz - (int64_t) (*self).radius;
+    i64 dx = (i64) gx - (i64) (*self).radius;
+    i64 dy = (i64) gy - (i64) (*self).radius;
+    i64 dz = (i64) gz - (i64) (*self).radius;
     return dx * dx + dy * dy + dz * dz;
 }
 
@@ -186,8 +186,8 @@ bool SphereArray_containsOffset(const SphereArray *self, i32 dx, i32 dy, i32 dz)
     if (dx < -r || dx > r || dy < -r || dy > r || dz < -r || dz > r) {
         return false;
     }
-    int64_t distSq = SphereArray_distanceSquaredOffset(dx, dy, dz);
-    int64_t rSq = (int64_t) r * (int64_t) r;
+    i64 distSq = SphereArray_distanceSquaredOffset(dx, dy, dz);
+    i64 rSq = (i64) r * (i64) r;
     return distSq <= rSq;
 }
 
@@ -197,8 +197,8 @@ bool SphereArray_containsGrid(const SphereArray *self, i32 gx, i32 gy, i32 gz) {
     if (gx < 0 || gx >= d || gy < 0 || gy >= d || gz < 0 || gz >= d) {
         return false;
     }
-    int64_t distSq = SphereArray_distanceSquaredGrid(self, gx, gy, gz);
-    int64_t rSq = (int64_t) (*self).radius * (int64_t) (*self).radius;
+    i64 distSq = SphereArray_distanceSquaredGrid(self, gx, gy, gz);
+    i64 rSq = (i64) (*self).radius * (i64) (*self).radius;
     return distSq <= rSq;
 }
 
@@ -270,19 +270,19 @@ fn SphereArray_forEach(const SphereArray *self, SphereArrayVoxelFn callback, any
     if (self == nullptr || callback == nullptr) return;
     i32 r = (*self).radius;
     i32 d = (*self).diameter;
-    int64_t rSq = (int64_t) r * (int64_t) r;
+    i64 rSq = (i64) r * (i64) r;
     const Collection *coll = &(*self).collection;
     bytes stride = (bytes) (*coll).stride;
     for (i32 gz = 0; gz < d; gz++) {
         i32 dz = gz - r;
-        int64_t dzSq = (int64_t) dz * (int64_t) dz;
+        i64 dzSq = (i64) dz * (i64) dz;
         for (i32 gy = 0; gy < d; gy++) {
             i32 dy = gy - r;
-            int64_t dyzSq = dzSq + ((int64_t) dy * (int64_t) dy);
+            i64 dyzSq = dzSq + ((i64) dy * (i64) dy);
             if (dyzSq > rSq) continue;
             for (i32 gx = 0; gx < d; gx++) {
                 i32 dx = gx - r;
-                if (dyzSq + ((int64_t) dx * (int64_t) dx) <= rSq) {
+                if (dyzSq + ((i64) dx * (i64) dx) <= rSq) {
                     bytes idx = SphereArray_index(gx, gy, gz, d);
                     const u8 *voxel = (*coll).data + (idx * stride);
                     callback(gx, gy, gz, dx, dy, dz, voxel, userData);

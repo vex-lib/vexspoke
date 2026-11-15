@@ -7,7 +7,7 @@
 // reactive/generic.h — the reactive generics surface.
 //
 // Reactive(T) is the ONE spelling of a typed reactive. It pastes the type name
-// straight onto `Reactive`, so Reactive(int) -> ReactiveInt, Reactive(Buffer) ->
+// straight onto `Reactive`, so Reactive(i32) -> ReactiveInt, Reactive(Buffer) ->
 // ReactiveBuffer, Reactive(Vec4) -> ReactiveVec4 — the concrete, single-class-per-
 // file class name, with no translation table.
 //
@@ -37,9 +37,9 @@
 #define Reactive(T)         VEX_CAT(Reactive, T)
 #define ReactiveProbable(T) VEX_CAT(ReactiveProbable, T)
 
-// Lowercase bridge: `##` pastes the literal token, so Reactive(int) would mangle
+// Lowercase bridge: `##` pastes the literal token, so Reactive(i32) would mangle
 // to `Reactiveint` (not `ReactiveInt`). C cannot uppercase a token, so the C
-// scalar spellings get an alias onto the camelCase class — then BOTH Reactive(int)
+// scalar spellings get an alias onto the camelCase class — then BOTH Reactive(i32)
 // (the C type) and Reactive(Int) (the class token) land on ReactiveInt. Objects
 // (Reactive(Buffer), Reactive(Vec4)) need no bridge: the token already matches.
 #define Reactiveint     ReactiveInt

@@ -18,7 +18,7 @@
 
 #include "math/strict_math.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -50,7 +50,7 @@ static fn test_trig() {
     CHECK(isnan(StrictMath_acos(-2.0f)));
 
     // Consistency with libm (the strict contract).
-    for (int i = -10; i <= 10; i++) {
+    for (i32 i = -10; i <= 10; i++) {
         f32 x = (f32) i * 0.3f;
         CHECK(StrictMath_sin(x) == sinf(x));
         CHECK(StrictMath_cos(x) == cosf(x));
@@ -145,7 +145,7 @@ static fn test_f64_twins() {
 // Runs the strict f32 and d64 math contract checks.
 // Runs strict-math trigonometric, root, rounding, angle, and d64-precision checks.
 // Runs the strict f32 and d64 math contract cases.
-int main() {
+i32 main() {
     test_trig();
     test_roots_and_powers();
     test_rounding();

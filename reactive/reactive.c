@@ -286,7 +286,7 @@ const char *Reactive_valueOf(Reactive *self, char *out, bytes cap) {
     if ((*self).valueOf != nullptr)
         (*self).valueOf(word, out, cap);
     else
-        snprintf(out, cap, "%llu", (unsigned long long) word);
+        snprintf(out, cap, "%llu", (u64) word);
     return out;
 }
 

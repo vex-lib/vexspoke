@@ -6,7 +6,7 @@
 #include "struct/stack.h"
 #include "oop/vexspoke_type.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -17,7 +17,7 @@ static int g_failures = 0;
     } while (0)
 
 // Verifies LIFO push/pop behavior, empty defaults, and stack cleanup.
-int main() {
+i32 main() {
     Stack *s = Stack_1(ID_INT);
     CHECK(Stack_exhaustionCount(s) == 0);   // fresh: no refused grows yet
     CHECK(s != nullptr);

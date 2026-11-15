@@ -35,7 +35,7 @@ typedef struct Reactive Reactive;
 typedef fn (*ReactiveDeliverFn)(Reactive *self);
 
 // The value stringifier: formats the raw word as text FOR ITS TYPE. Bound by each
-// typed reactive (int -> "%d", f32 -> "%g", string -> the Bytes, …) so a
+// typed reactive (i32 -> "%d", f32 -> "%g", string -> the Bytes, …) so a
 // type-erased consumer (a Label's [] slot) can render any reactive as text — a
 // valueOf() in the reactive section.
 typedef fn (*ReactiveValueFn)(pointer word, char *out, bytes cap);

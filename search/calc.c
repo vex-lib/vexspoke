@@ -58,7 +58,7 @@ typedef struct CalcParser {
 
 // Advances the parser cursor past ASCII whitespace.
 static fn skip_whitespace(CalcParser *cp) {
-    while (*(*cp).p != '\0' && isspace((unsigned char)*(*cp).p)) {
+    while (*(*cp).p != '\0' && isspace((u8)*(*cp).p)) {
         (*cp).p++;
     }
 }
@@ -97,7 +97,7 @@ static d64 parse_primary(CalcParser *cp) {
     }
 
     // Number literal
-    if (isdigit((unsigned char)*(*cp).p) || *(*cp).p == '.') {
+    if (isdigit((u8)*(*cp).p) || *(*cp).p == '.') {
         char *endptr = nullptr;
         d64 val = strtod((*cp).p, &endptr);
         if (endptr == (*cp).p) {
@@ -109,11 +109,11 @@ static d64 parse_primary(CalcParser *cp) {
     }
 
     // Identifier: constant or function
-    if (isalpha((unsigned char)*(*cp).p) || *(*cp).p == '_') {
+    if (isalpha((u8)*(*cp).p) || *(*cp).p == '_') {
         char name[32];
         bytes n = 0;
-        while ((isalnum((unsigned char)*(*cp).p) || *(*cp).p == '_') && n < sizeof(name) - 1) {
-            name[n++] = (char) tolower((unsigned char)*(*cp).p);
+        while ((isalnum((u8)*(*cp).p) || *(*cp).p == '_') && n < sizeof(name) - 1) {
+            name[n++] = (char) tolower((u8)*(*cp).p);
             (*cp).p++;
         }
         name[n] = '\0';

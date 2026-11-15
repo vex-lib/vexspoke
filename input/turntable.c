@@ -62,7 +62,7 @@ TurntableState TurntableState_1(u8 deckIndex) {
     state.pitchFader = 0.0f;
     state.playheadSeconds = 0.0f;
     state.cuePositionSeconds = 0.0f;
-    for (int i = 0; i < 8; i++) {
+    for (i32 i = 0; i < 8; i++) {
         state.hotCues[i] = -1.0f;
     }
     return state;
@@ -90,7 +90,7 @@ fn TurntableState_processEvent(TurntableState *state, TurntableEvent event) {
     }
 
     if (event.hotCueIndex >= 1 && event.hotCueIndex <= 8) {
-        int idx = (int) event.hotCueIndex - 1;
+        i32 idx = (i32) event.hotCueIndex - 1;
         if ((*state).hotCues[idx] < 0.0f) {
             // Unset: save current position
             (*state).hotCues[idx] = (*state).playheadSeconds;

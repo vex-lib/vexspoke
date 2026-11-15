@@ -20,11 +20,11 @@
 ;;OVERVIEW
 /**
  * ============================================================================
- * MODULE: Short (primitive/short.c)
+ * MODULE: Short (primitive/i16.c)
  * ============================================================================
  * Short primitive (Legacy: primitive/Short.java).
  *
- * STRUCT FIELDS: none — procedural (operates on BitPool/memory blocks of short payloads)
+ * STRUCT FIELDS: none — procedural (operates on BitPool/memory blocks of i16 payloads)
  *
  * FUNCTION REGISTRY:
  * ----------------------------------------------------------------------------

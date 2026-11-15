@@ -18,7 +18,7 @@
 
 #include "algo/bvh.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -196,7 +196,7 @@ static fn test_degenerate() {
 }
 
 /** Runs the BVH owner scenarios and reports aggregate assertion status. */
-int main() {
+i32 main() {
     test_aabb();
     test_ray_aabb();
     test_tree_lifecycle();

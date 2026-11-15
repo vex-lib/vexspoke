@@ -11,7 +11,7 @@
  * versioned record can also dispatch to Argon2id as RFC 9106 defines it. The
  * whole purpose is to be slow: the work factor is the thing standing between a
  * stolen file and a re-used password. Salt length is bounded on the PBKDF2 path
- * so that an over-long salt is refused rather than truncated, because a
+ * so that an over-i64 salt is refused rather than truncated, because a
  * silently shortened salt is a silently weaker hash. */
 ;;OVERVIEW
 /** ========================================================================
@@ -43,7 +43,7 @@ static bool derive(PasswordPrf prf, bytes digestSize, const char *password, byte
     }
     if (saltLen == 0u || saltLen > PASSWORD_SALT_MAX) {
         // The ALGORITHM accepts any salt; the POLICY minimum applies when a salt is
-        // generated (Password_generateSalt). Refusing a short salt here would make
+        // generated (Password_generateSalt). Refusing a i16 salt here would make
         // PBKDF2 untestable against its own published vectors.
         THROW("Password_derive: salt length out of range");
         return false;

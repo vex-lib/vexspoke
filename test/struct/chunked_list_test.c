@@ -18,8 +18,8 @@
 // dest-last truncation contract of packInto (the Truncation-Never-Silent
 // clause).
 
-static int g_fail = 0;
-static int g_checks = 0;
+static i32 g_fail = 0;
+static i32 g_checks = 0;
 
 #define CHECK(cond)                                                       \
     do {                                                                  \
@@ -377,7 +377,7 @@ static any concReader(any arg) {
 }
 
 // Orders pointer values for deterministic comparison of concurrent writer results.
-static int cmpPtr(const_any a, const_any b) {
+static i32 cmpPtr(const_any a, const_any b) {
     u8 * const *pa = (u8 * const *) a;
     u8 * const *pb = (u8 * const *) b;
     if (*pa < *pb)
@@ -402,21 +402,21 @@ static fn testConcurrentWriters() {
 
     pthread_t writers[CONC_WRITERS];
     pthread_t readers[CONC_READERS];
-    for (int i = 0; i < CONC_READERS; i++)
+    for (i32 i = 0; i < CONC_READERS; i++)
         pthread_create(&readers[i], nullptr, concReader, nullptr);
-    for (int i = 0; i < CONC_WRITERS; i++)
+    for (i32 i = 0; i < CONC_WRITERS; i++)
         pthread_create(&writers[i], nullptr, concWriter, nullptr);
 
-    int writerFail = 0;
-    for (int i = 0; i < CONC_WRITERS; i++) {
+    i32 writerFail = 0;
+    for (i32 i = 0; i < CONC_WRITERS; i++) {
         any ret = nullptr;
         pthread_join(writers[i], &ret);
         if (ret != nullptr)
             writerFail = 1;
     }
     atomic_store(&g_concDone, true);
-    int readerFail = 0;
-    for (int i = 0; i < CONC_READERS; i++) {
+    i32 readerFail = 0;
+    for (i32 i = 0; i < CONC_READERS; i++) {
         any ret = nullptr;
         pthread_join(readers[i], &ret);
         if (ret != nullptr)
@@ -426,7 +426,7 @@ static fn testConcurrentWriters() {
     CHECK(readerFail == 0);
 
     // Exactly-once claim: stamps must be exactly 1..TOTAL — no gaps, no dups.
-    // (A duplicate claim would surface as a repeated stamp plus a short size.)
+    // (A duplicate claim would surface as a repeated stamp plus a i16 size.)
     CHECK(ChunkedList_size(list) == (u32) CONC_TOTAL);
     u8 *seen = (u8*) calloc((bytes) CONC_TOTAL + 1u, 1u);
     u8 **ptrs = (u8**) malloc((bytes) CONC_TOTAL * sizeof(u8*));
@@ -468,7 +468,7 @@ static fn testConcurrentWriters() {
 }
 
 // Runs the chunked-list geometry, stability, rejection, and concurrency cases.
-int main() {
+i32 main() {
     printf("=== ChunkedList Test Suite ===\n\n");
 
     testDefaults();

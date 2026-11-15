@@ -9,7 +9,7 @@
 
 #include "objects/choice.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -21,7 +21,7 @@ static int g_failures = 0;
 
 static u64 g_lastObject = 0;
 static any g_lastUserdata = (any) 0;
-static int g_fired = 0;
+static i32 g_fired = 0;
 
 // Captures the object and caller context delivered by Choice_trigger.
 static fn cb(u64 objectPtr, any userdata) {
@@ -31,7 +31,7 @@ static fn cb(u64 objectPtr, any userdata) {
 }
 
 // Checks Choice indexing, callback dispatch, invalid indices, and null safety.
-int main() {
+i32 main() {
     u64 objects[3] = { 100, 200, 300 };
     ChoiceCallback callbacks[3] = { cb, cb, cb };
 
@@ -43,7 +43,7 @@ int main() {
     CHECK(Choice_getObject(c, 3) == 0);   // out of range
     CHECK(Choice_getObject(c, SIZE_MAX) == 0);
 
-    int token = 7;
+    i32 token = 7;
     Choice_trigger(c, 1, &token);
     CHECK(g_fired == 1);
     CHECK(g_lastObject == 200);

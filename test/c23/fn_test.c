@@ -5,7 +5,7 @@
 
 #include "c23/fn.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -16,28 +16,28 @@ static int g_failures = 0;
     } while (0)
 
 static any addStep(any context, any input) {
-    int *step = context;
-    int *value = input;
+    i32 *step = context;
+    i32 *value = input;
     *value += *step;
     return value;
 }
 
 static any subtractStep(any context, any input) {
-    int *step = context;
-    int *value = input;
+    i32 *step = context;
+    i32 *value = input;
     *value -= *step;
     return value;
 }
 
-int main() {
+i32 main() {
     Function empty = Function();
     CHECK(Function_getCall(&empty) == nullptr);
     CHECK(Function_getContext(&empty) == nullptr);
     CHECK(Function_run(&empty, nullptr) == nullptr);
 
-    int add = 1;
-    int subtract = 2;
-    int value = 10;
+    i32 add = 1;
+    i32 subtract = 2;
+    i32 value = 10;
     Function addOne = Function(addStep);
     CHECK(Function_getCall(&addOne) == addStep);
     CHECK(Function_setContext(&addOne, &add));

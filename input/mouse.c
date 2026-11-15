@@ -75,8 +75,8 @@
  *   WinRow {
  *     u32 windowId;         // opaque OS window tag (0 never attached)
  *     const MouseHandler **items;  // arena-allocated listener segment, doubling
- *     int count;                 // live listener count
- *     int cap;                   // allocated segment capacity
+ *     i32 count;                 // live listener count
+ *     i32 cap;                   // allocated segment capacity
  *   }
  *   (growSegment / growRows / rowFor: static behavior, zero struct fields)
  *
@@ -165,26 +165,26 @@ static bool s_ready = false;
 typedef struct WinRow {
     u32 windowId;
     const MouseHandler **items;  // arena-allocated segment, doubling
-    int count;
-    int cap;
+    i32 count;
+    i32 cap;
 } WinRow;
 
 static const MouseHandler **s_listeners = nullptr;  // global listener segment
-static int s_listenerCount = 0;
-static int s_listenerCap = 0;
+static i32 s_listenerCount = 0;
+static i32 s_listenerCap = 0;
 
 static WinRow *s_rows = nullptr;  // growable window-row table
-static int s_rowCount = 0;
-static int s_rowCap = 0;
+static i32 s_rowCount = 0;
+static i32 s_rowCap = 0;
 
 // Grow a handler segment to at least `needed` slots. On OOM the segment is
 // left untouched and the registration is silently dropped (legacy parity).
 // Row structs move when the row TABLE grows, so their ITEM segments are
 // separate arena blocks: item pointers survive, row pointers do not — always
 // re-derive rows through rowFor() after any attach/detach.
-static bool growSegment(const MouseHandler ***items, int *cap, int needed) {
+static bool growSegment(const MouseHandler ***items, i32 *cap, i32 needed) {
     if (needed <= *cap) return true;
-    int newCap = (*cap == 0) ? 16 : *cap * 2;
+    i32 newCap = (*cap == 0) ? 16 : *cap * 2;
     while (newCap < needed) newCap *= 2;
     const MouseHandler **nb = (const MouseHandler**) Memory_alloc(
         TYPE_INT_POINTER, (bytes) newCap * sizeof(MouseHandler*));
@@ -197,9 +197,9 @@ static bool growSegment(const MouseHandler ***items, int *cap, int needed) {
 }
 
 // Grow the window-row table to at least `needed` rows (doubling, cold 8).
-static bool growRows(int needed) {
+static bool growRows(i32 needed) {
     if (needed <= s_rowCap) return true;
-    int newCap = (s_rowCap == 0) ? 8 : s_rowCap * 2;
+    i32 newCap = (s_rowCap == 0) ? 8 : s_rowCap * 2;
     while (newCap < needed) newCap *= 2;
     WinRow *nb = (WinRow*) Memory_alloc(TYPE_INT_POINTER,
         (bytes) newCap * sizeof(WinRow));
@@ -213,7 +213,7 @@ static bool growRows(int needed) {
 
 // Find the row for an opaque OS window id, or NULL when not attached.
 static WinRow *rowFor(u32 windowId) {
-    for (int i = 0; i < s_rowCount; i++)
+    for (i32 i = 0; i < s_rowCount; i++)
         if (s_rows[i].windowId == windowId)
             return &s_rows[i];
     return nullptr;
@@ -241,7 +241,7 @@ fn Mouse_addListener(const MouseHandler *listener) {
 }
 
 bool Mouse_removeListener(const MouseHandler *listener) {
-    for (int i = 0; i < s_listenerCount; i++) {
+    for (i32 i = 0; i < s_listenerCount; i++) {
         if (s_listeners[i] == listener) {
             s_listeners[i] = s_listeners[--s_listenerCount];
             return true;
@@ -269,7 +269,7 @@ bool Mouse_detachWindow(u32 windowId, const MouseHandler *listener) {
     if (listener == nullptr || windowId == 0) return false;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return false;
-    for (int i = 0; i < (*row).count; i++) {
+    for (i32 i = 0; i < (*row).count; i++) {
         if ((*row).items[i] == listener) {
             (*row).count--;
             (*row).items[i] = (*row).items[(*row).count];
@@ -286,8 +286,8 @@ fn Mouse_detachWindowAll(u32 windowId) {
         (*row).count = 0;
 }
 
-static int modifierMask() {
-    int mods = 0;
+static i32 modifierMask() {
+    i32 mods = 0;
     if (Key_isDown(KEY_LEFT_SHIFT) || Key_isDown(KEY_RIGHT_SHIFT)) mods |= 1;
     if (Key_isDown(KEY_LEFT_CONTROL) || Key_isDown(KEY_RIGHT_CONTROL)) mods |= 2;
     if (Key_isDown(KEY_LEFT_ALT) || Key_isDown(KEY_RIGHT_ALT)) mods |= 4;
@@ -299,7 +299,7 @@ static u64 epochMicros() {
     return (NanoTime_elapsedNanos() / 1000ULL) & 0x3FFFFFFFFFFFULL;
 }
 
-fn Mouse_pushButtonEvent(u32 windowId, int button, int action, u64 tapWindowNanos) {
+fn Mouse_pushButtonEvent(u32 windowId, i32 button, i32 action, u64 tapWindowNanos) {
     if (button < 0 || button >= BUTTON_COUNT) return;
     if (!s_ready) Mouse_init();
     if (!s_ready) return;
@@ -375,7 +375,7 @@ fn Mouse_pushMoveDeltaEvent(u32 windowId, d64 dx, d64 dy) {
     RingBuffer_push(&s_queue, &ev);
 }
 
-fn Mouse_pushDragEvent(u32 windowId, int button, d64 x, d64 y) {
+fn Mouse_pushDragEvent(u32 windowId, i32 button, d64 x, d64 y) {
     if (!s_ready) Mouse_init();
     if (!s_ready) return;
     InputEvent ev = { .packed = packCoords(((u64)button << 8) | 7ULL, x, y), .windowId = windowId, .pad = 0 };
@@ -417,12 +417,12 @@ fn Mouse_pushZoomEvent(u32 windowId, d64 magnification) {
 
 // Deliver one motion-class event (move/delta/zoom/scroll/drag) to one
 // window's scoped list.
-static fn deliverMotion(u32 windowId, int action8, int button,
+static fn deliverMotion(u32 windowId, i32 action8, i32 button,
                           d64 a, d64 b) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return;
-    for (int i = 0; i < (*row).count; i++) {
+    for (i32 i = 0; i < (*row).count; i++) {
         const MouseHandler *l = (*row).items[i];
         any self = (*l).self;
         if (action8 == 5 && (*l).onMouseMove)
@@ -441,7 +441,7 @@ static fn deliverZoom(u32 windowId, d64 magnification) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return;
-    for (int i = 0; i < (*row).count; i++) {
+    for (i32 i = 0; i < (*row).count; i++) {
         const MouseHandler *l = (*row).items[i];
         if ((*l).onMouseZoom)
             (*l).onMouseZoom((*l).self, magnification);
@@ -449,11 +449,11 @@ static fn deliverZoom(u32 windowId, d64 magnification) {
 }
 
 // Deliver one button-class event to one window's scoped list.
-static fn deliverButton(u32 windowId, int action, int mouseEvent, u64 exactNanos) {
+static fn deliverButton(u32 windowId, i32 action, i32 mouseEvent, u64 exactNanos) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return;
-    for (int i = 0; i < (*row).count; i++) {
+    for (i32 i = 0; i < (*row).count; i++) {
         const MouseHandler *l = (*row).items[i];
         any self = (*l).self;
         if (action == KEY_ACTION_DOWN && (*l).onMouseDown)
@@ -471,19 +471,19 @@ fn Mouse_dispatchEvents() {
     InputEvent ev;
     while (RingBuffer_pop(&s_queue, &ev)) {
         u64 packed = ev.packed;
-        int action8 = (int)(packed & 0xFF);
-        int marker = (int)((packed >> 8) & 0xFF);
+        i32 action8 = (i32)(packed & 0xFF);
+        i32 marker = (i32)((packed >> 8) & 0xFF);
 
         // --- Motion class: marker Bytes 254/255 ---
         if (marker == 255) {
             if (action8 == 5) { // move
                 s_posX = coordA(packed);
                 s_posY = coordB(packed);
-                for (int i = 0; i < s_listenerCount; i++)
+                for (i32 i = 0; i < s_listenerCount; i++)
                     if ((*s_listeners[i]).onMouseMove)
                         (*s_listeners[i]).onMouseMove((*s_listeners[i]).self, s_posX, s_posY);
                 if (ev.windowId == FOCUS_BROADCAST) {
-                    for (int r = 0; r < s_rowCount; r++)
+                    for (i32 r = 0; r < s_rowCount; r++)
                         deliverMotion(s_rows[r].windowId, 5, 0, s_posX, s_posY);
                 } else {
                     deliverMotion(ev.windowId, 5, 0, s_posX, s_posY);
@@ -491,11 +491,11 @@ fn Mouse_dispatchEvents() {
             } else if (action8 == 9) { // locked-cursor delta
                 d64 dx = coordA(packed);
                 d64 dy = coordB(packed);
-                for (int i = 0; i < s_listenerCount; i++)
+                for (i32 i = 0; i < s_listenerCount; i++)
                     if ((*s_listeners[i]).onMouseMoveDelta)
                         (*s_listeners[i]).onMouseMoveDelta((*s_listeners[i]).self, dx, dy);
                 if (ev.windowId == FOCUS_BROADCAST) {
-                    for (int r = 0; r < s_rowCount; r++)
+                    for (i32 r = 0; r < s_rowCount; r++)
                         deliverMotion(s_rows[r].windowId, 9, 0, dx, dy);
                 } else {
                     deliverMotion(ev.windowId, 9, 0, dx, dy);
@@ -505,11 +505,11 @@ fn Mouse_dispatchEvents() {
                 f32 f;
                 memcpy(&f, &bits, sizeof(f));
                 d64 mag = (d64)f;
-                for (int i = 0; i < s_listenerCount; i++)
+                for (i32 i = 0; i < s_listenerCount; i++)
                     if ((*s_listeners[i]).onMouseZoom)
                         (*s_listeners[i]).onMouseZoom((*s_listeners[i]).self, mag);
                 if (ev.windowId == FOCUS_BROADCAST) {
-                    for (int r = 0; r < s_rowCount; r++)
+                    for (i32 r = 0; r < s_rowCount; r++)
                         deliverZoom(s_rows[r].windowId, mag);
                 } else {
                     deliverZoom(ev.windowId, mag);
@@ -520,11 +520,11 @@ fn Mouse_dispatchEvents() {
         if (marker == 254 && action8 == 6) { // scroll
             d64 dx = coordA(packed) / 100.0;
             d64 dy = coordB(packed) / 100.0;
-            for (int i = 0; i < s_listenerCount; i++)
+            for (i32 i = 0; i < s_listenerCount; i++)
                 if ((*s_listeners[i]).onMouseScroll)
                     (*s_listeners[i]).onMouseScroll((*s_listeners[i]).self, dx, dy);
             if (ev.windowId == FOCUS_BROADCAST) {
-                for (int r = 0; r < s_rowCount; r++)
+                for (i32 r = 0; r < s_rowCount; r++)
                     deliverMotion(s_rows[r].windowId, 6, 0, dx, dy);
             } else {
                 deliverMotion(ev.windowId, 6, 0, dx, dy);
@@ -536,12 +536,12 @@ fn Mouse_dispatchEvents() {
         if (action8 == 7) {
             s_posX = coordA(packed);
             s_posY = coordB(packed);
-            int button = marker;
-            for (int i = 0; i < s_listenerCount; i++)
+            i32 button = marker;
+            for (i32 i = 0; i < s_listenerCount; i++)
                 if ((*s_listeners[i]).onMouseDrag)
                     (*s_listeners[i]).onMouseDrag((*s_listeners[i]).self, button, s_posX, s_posY);
             if (ev.windowId == FOCUS_BROADCAST) {
-                for (int r = 0; r < s_rowCount; r++)
+                for (i32 r = 0; r < s_rowCount; r++)
                     deliverMotion(s_rows[r].windowId, 7, button, s_posX, s_posY);
             } else {
                 deliverMotion(ev.windowId, 7, button, s_posX, s_posY);
@@ -550,20 +550,20 @@ fn Mouse_dispatchEvents() {
         }
 
         // --- Button class: timestamped, modifier-tagged ---
-        int action = (int)(packed & 0x3);
-        int button = (int)((packed >> 2) & 0xFFF);
-        int modifiers = (int)((packed >> 14) & 0xF);
+        i32 action = (i32)(packed & 0x3);
+        i32 button = (i32)((packed >> 2) & 0xFFF);
+        i32 modifiers = (i32)((packed >> 14) & 0xF);
         u64 exactNanos = NanoTime_startNanos()
                             + (((packed >> 18) & 0x3FFFFFFFFFFFULL) * 1000ULL);
 
-        int mappedMods = 0;
+        i32 mappedMods = 0;
         if ((modifiers & 1) != 0) mappedMods |= KEY_MOD_SHIFT;
         if ((modifiers & 2) != 0) mappedMods |= KEY_MOD_CONTROL;
         if ((modifiers & 4) != 0) mappedMods |= KEY_MOD_OPTION;
         if ((modifiers & 8) != 0) mappedMods |= KEY_MOD_COMMAND;
-        int mouseEvent = button | mappedMods;
+        i32 mouseEvent = button | mappedMods;
 
-        for (int i = 0; i < s_listenerCount; i++) {
+        for (i32 i = 0; i < s_listenerCount; i++) {
             any self = (*s_listeners[i]).self;
             if (action == KEY_ACTION_DOWN && (*s_listeners[i]).onMouseDown)
                 (*s_listeners[i]).onMouseDown(self, mouseEvent, exactNanos);
@@ -573,7 +573,7 @@ fn Mouse_dispatchEvents() {
                 (*s_listeners[i]).onMouseRepeat(self, mouseEvent, exactNanos);
         }
         if (ev.windowId == FOCUS_BROADCAST) {
-            for (int r = 0; r < s_rowCount; r++)
+            for (i32 r = 0; r < s_rowCount; r++)
                 deliverButton(s_rows[r].windowId, action, mouseEvent, exactNanos);
         } else {
             deliverButton(ev.windowId, action, mouseEvent, exactNanos);
@@ -581,42 +581,42 @@ fn Mouse_dispatchEvents() {
     }
 }
 
-bool Mouse_isDown(int button) {
+bool Mouse_isDown(i32 button) {
     if (button < 0 || button >= BUTTON_COUNT) return false;
     return s_slots[button].pressTime != 0;
 }
 
-u64 Mouse_pressTime(int button) {
+u64 Mouse_pressTime(i32 button) {
     if (button < 0 || button >= BUTTON_COUNT) return 0;
     return s_slots[button].pressTime;
 }
 
-u64 Mouse_lastReleaseTime(int button) {
+u64 Mouse_lastReleaseTime(i32 button) {
     if (button < 0 || button >= BUTTON_COUNT) return 0;
     return s_slots[button].lastReleaseTime;
 }
 
-u64 Mouse_lastHoldDurationNanos(int button) {
+u64 Mouse_lastHoldDurationNanos(i32 button) {
     if (button < 0 || button >= BUTTON_COUNT) return 0;
     return s_slots[button].lastHoldDuration;
 }
 
-u64 Mouse_currentHoldDurationNanos(int button) {
+u64 Mouse_currentHoldDurationNanos(i32 button) {
     u64 p = Mouse_pressTime(button);
     return p == 0 ? 0 : NanoTime_now() - p;
 }
 
-int Mouse_taps(int button) {
+i32 Mouse_taps(i32 button) {
     if (button < 0 || button >= BUTTON_COUNT) return 0;
     return s_slots[button].taps;
 }
 
-fn Mouse_resetTaps(int button) {
+fn Mouse_resetTaps(i32 button) {
     if (button < 0 || button >= BUTTON_COUNT) return;
     s_slots[button].taps = 0;
 }
 
-MouseTapPhase Mouse_tapPhase(int button) {
+MouseTapPhase Mouse_tapPhase(i32 button) {
     if (button < 0 || button >= BUTTON_COUNT) return MOUSE_TAP_NONE;
     const ButtonSlot *slot = &s_slots[button];
     if ((*slot).taps == 0)
@@ -630,12 +630,12 @@ MouseTapPhase Mouse_tapPhase(int button) {
     return MOUSE_TAP_SINGLE;
 }
 
-bool Mouse_isLongPressFired(int button) {
+bool Mouse_isLongPressFired(i32 button) {
     if (button < 0 || button >= BUTTON_COUNT) return false;
     return s_slots[button].longPressFired != 0;
 }
 
-fn Mouse_setLongPressFired(int button, bool fired) {
+fn Mouse_setLongPressFired(i32 button, bool fired) {
     if (button < 0 || button >= BUTTON_COUNT) return;
     s_slots[button].longPressFired = (u8)(fired ? 1 : 0);
 }
@@ -648,27 +648,27 @@ d64 Mouse_y() {
     return s_posY;
 }
 
-int Mouse_button(int mouseEvent) {
+i32 Mouse_button(i32 mouseEvent) {
     return mouseEvent & 0xFFFF;
 }
 
-bool Mouse_hasShift(int mouseEvent) {
+bool Mouse_hasShift(i32 mouseEvent) {
     return (mouseEvent & KEY_MOD_SHIFT) != 0;
 }
 
-bool Mouse_hasControl(int mouseEvent) {
+bool Mouse_hasControl(i32 mouseEvent) {
     return (mouseEvent & KEY_MOD_CONTROL) != 0;
 }
 
-bool Mouse_hasOption(int mouseEvent) {
+bool Mouse_hasOption(i32 mouseEvent) {
     return (mouseEvent & KEY_MOD_OPTION) != 0;
 }
 
-bool Mouse_hasCommand(int mouseEvent) {
+bool Mouse_hasCommand(i32 mouseEvent) {
     return (mouseEvent & KEY_MOD_COMMAND) != 0;
 }
 
-const char *Mouse_name(int button) {
+const char *Mouse_name(i32 button) {
     switch (button) {
         case MOUSE_LEFT: return "Left";
         case MOUSE_RIGHT: return "Right";

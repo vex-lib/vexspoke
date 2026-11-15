@@ -21,7 +21,7 @@
 #include "exception/try_value.h"
 #include "oop/vexspoke_type.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -32,7 +32,7 @@ static int g_failures = 0;
     } while (0)
 
 // Tests Array introspection, round trips, hostile indices, observable rejection, and null safety.
-int main() {
+i32 main() {
     Array *a = Array_2(ID_INT, 8);
     CHECK(a != nullptr);
     if (!a)
@@ -58,7 +58,7 @@ int main() {
     // Hostile indices: safe defaults, never a dereference.
     CHECK(Array_get(a, 8) == 0);          // == count
     CHECK(Array_get(a, 999) == 0);
-    CHECK(Array_get(a, SIZE_MAX) == 0);   // a negative int wraps here
+    CHECK(Array_get(a, SIZE_MAX) == 0);   // a negative i32 wraps here
     CHECK(Array_get(a, (bytes) -1) == 0);
     CHECK(Array_slot(a, 8) == nullptr);
     CHECK(Array_slot(a, SIZE_MAX) == nullptr);

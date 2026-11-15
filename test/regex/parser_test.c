@@ -13,7 +13,7 @@
 
 #include "regex/parser.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -171,9 +171,9 @@ static fn testCeilings() {
 
     char deep[512];
     bytes d = 0;
-    for (int i = 0; i < 200; i++) deep[d++] = '(';
+    for (i32 i = 0; i < 200; i++) deep[d++] = '(';
     deep[d++] = 'a';
-    for (int i = 0; i < 200; i++) deep[d++] = ')';
+    for (i32 i = 0; i < 200; i++) deep[d++] = ')';
     deep[d] = '\0';
     parser = RegexParser(deep, d, false);
     CHECK(RegexParser_parse(&parser) == REGEX_NODE_NONE);
@@ -191,7 +191,7 @@ static fn testCeilings() {
     // A near-ceiling class run still parses.
     static char classes[12001];
     bytes c = 0;
-    for (int i = 0; i < 4000; i++) {
+    for (i32 i = 0; i < 4000; i++) {
         classes[c++] = '[';
         classes[c++] = 'a';
         classes[c++] = ']';
@@ -209,7 +209,7 @@ static fn testCeilings() {
 // Checks init/free are reusable and null-safe across cycles.
 static fn testLifecycle() {
     RegexParser parser;
-    for (int i = 0; i < 3; i++) {
+    for (i32 i = 0; i < 3; i++) {
         CHECK(parse("abc", false, &parser) != REGEX_NODE_NONE);
         RegexParser_free(&parser);
         CHECK((*RegexParser_nodes(&parser)).count == 0);
@@ -218,7 +218,7 @@ static fn testLifecycle() {
     RegexParser_free(&parser);
 }
 
-int main() {
+i32 main() {
     testShapes();
     testClasses();
     testRejections();

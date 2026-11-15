@@ -15,7 +15,7 @@
 #include "system/display_monitor.h"
 #include "nio/mem.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -28,7 +28,7 @@ static int g_failures = 0;
 // Tests display registry overrides, monitor bounds, primary selection, and scalar properties.
 // Checks display resolution, scale, refresh, and capability queries.
 // Checks monitor registry access and DisplayInfo scalar/pointer round trips.
-int main() {
+i32 main() {
     CHECK(Memory_init(0));
 
     // Force bootstrap before overriding anything.

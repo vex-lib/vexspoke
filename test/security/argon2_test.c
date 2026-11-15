@@ -16,7 +16,7 @@ static fn toHex(const u8 *data, bytes len, char *out) {
     out[len * 2u] = '\0';
 }
 
-int main() {
+i32 main() {
     // RFC 9106 Section 5.3: Argon2id, p=4, T=32, m=32, t=3, v=0x13.
     u8 password[32], salt[16], secret[8], associated[12];
     memset(password, 0x01, sizeof password);
@@ -60,7 +60,7 @@ int main() {
     assert(Argon2id_derive(&params, password, sizeof password, salt, sizeof salt,
                            nullptr, 0u, nullptr, 0u, again, sizeof again));
 
-    // Refusals: bad tag length, short salt, tiny memory, null password.
+    // Refusals: bad tag length, i16 salt, tiny memory, null password.
     Argon2Params bad = params;
     bad.tagBytes = 3u;
     assert(!Argon2id_derive(&bad, password, sizeof password, salt, sizeof salt,

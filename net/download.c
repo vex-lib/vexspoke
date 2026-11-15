@@ -72,7 +72,7 @@ bool Download_to_file(const char *url, const char *output_file, const DownloadOp
     snprintf(timeout_str, sizeof(timeout_str), "%u", local_opts.timeout_seconds);
 
     const char *argv[16];
-    int argc = 0;
+    i32 argc = 0;
     argv[argc++] = "curl";
     argv[argc++] = "-f"; // Fail fast on HTTP errors (>=400)
     if (local_opts.silent) {
@@ -93,12 +93,12 @@ bool Download_to_file(const char *url, const char *output_file, const DownloadOp
     argv[argc] = nullptr;
 
     pid_t pid = 0;
-    int status = posix_spawnp(&pid, "curl", nullptr, nullptr, (char* const*) argv, environ);
+    i32 status = posix_spawnp(&pid, "curl", nullptr, nullptr, (char* const*) argv, environ);
     if (status != 0) {
         return false;
     }
 
-    int wait_status = 0;
+    i32 wait_status = 0;
     if (waitpid(pid, &wait_status, 0) < 0) {
         return false;
     }
@@ -121,7 +121,7 @@ bool Download_to_memory(const char *url, const DownloadOptions *opts, DownloadRe
     (*response_out).size = 0;
 
     char temp_path[] = "/tmp/vex_dl_XXXXXX";
-    int fd = mkstemp(temp_path);
+    i32 fd = mkstemp(temp_path);
     if (fd < 0) {
         return false;
     }
@@ -140,7 +140,7 @@ bool Download_to_memory(const char *url, const DownloadOptions *opts, DownloadRe
     }
 
     fseek(f, 0, SEEK_END);
-    long sz = ftell(f);
+    i64 sz = ftell(f);
     fseek(f, 0, SEEK_SET);
 
     if (sz < 0) {

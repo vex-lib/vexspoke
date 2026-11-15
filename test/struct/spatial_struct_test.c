@@ -9,7 +9,7 @@
 #include "struct/sphere_array.h"
 #include "struct/octree.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define TEST_ASSERT(expr, msg) do { \
     if (!(expr)) { \
@@ -176,7 +176,7 @@ static fn test_octree() {
 
 // Runs the circle-array, sphere-array, and octree spatial-structure cases.
 // Initializes memory and runs the three spatial-structure behavior suites.
-int main() {
+i32 main() {
     printf("=== Running Spatial Data Structures Test Suite ===\n");
     Memory_init(32 * 1024 * 1024);
 

@@ -183,7 +183,7 @@ fn Key_detachWindowAll(u32 windowId);
 // without touching tap counts. A modifier-state change between presses breaks
 // the tap sequence (different modifiers => fresh sequence). windowId tags
 // which window the OS delivered the event to.
-fn Key_pushEvent(u32 windowId, int keyCode, int action, u64 tapWindowNanos);
+fn Key_pushEvent(u32 windowId, i32 keyCode, i32 action, u64 tapWindowNanos);
 
 // Producer: text input, fired alongside down events that carry a character.
 fn Key_pushCharEvent(u32 windowId, u32 c);
@@ -194,15 +194,15 @@ fn Key_pushCharEvent(u32 windowId, u32 c);
 fn Key_dispatchEvents();
 
 // --- State queries (lock-free reads of the state table) ---
-bool     Key_isDown(int keyCode);
-u64 Key_pressTime(int keyCode);
-u64 Key_lastReleaseTime(int keyCode);
-u64 Key_lastHoldDurationNanos(int keyCode);
-u64 Key_currentHoldDurationNanos(int keyCode);
-u64 Key_holdDurationNanos(int keyCode); // current if held, else last
-u64 Key_durationSinceReleaseNanos(int keyCode);
-int      Key_taps(int keyCode);
-fn     Key_resetTaps(int keyCode);
+bool     Key_isDown(i32 keyCode);
+u64 Key_pressTime(i32 keyCode);
+u64 Key_lastReleaseTime(i32 keyCode);
+u64 Key_lastHoldDurationNanos(i32 keyCode);
+u64 Key_currentHoldDurationNanos(i32 keyCode);
+u64 Key_holdDurationNanos(i32 keyCode); // current if held, else last
+u64 Key_durationSinceReleaseNanos(i32 keyCode);
+i32      Key_taps(i32 keyCode);
+fn     Key_resetTaps(i32 keyCode);
 
 // --- Multi-tap gesture timeline (windowed settlement) ---
 // The per-key tap counter is a windowed sequence: it is PENDING from the most
@@ -218,21 +218,21 @@ typedef enum KeyTapPhase {
 } KeyTapPhase;
 
 // Settled-or-windowed gesture readout for a key (none / pending / 1 / 2 / 3+).
-KeyTapPhase Key_tapPhase(int keyCode);
+KeyTapPhase Key_tapPhase(i32 keyCode);
 
-// One-shot LONG_PRESS latch: set when a long-press gesture fired for this
+// One-shot LONG_PRESS latch: set when a i64-press gesture fired for this
 // press, cleared on release. Guards against re-firing while still held.
-bool Key_isLongPressFired(int keyCode);
-fn Key_setLongPressFired(int keyCode, bool fired);
+bool Key_isLongPressFired(i32 keyCode);
+fn Key_setLongPressFired(i32 keyCode, bool fired);
 
 // --- Packed keyEvent helpers ---
-int  Key_code(int keyEvent);
-bool Key_hasShift(int keyEvent);
-bool Key_hasControl(int keyEvent);
-bool Key_hasOption(int keyEvent);
-bool Key_hasCommand(int keyEvent);
+i32  Key_code(i32 keyEvent);
+bool Key_hasShift(i32 keyEvent);
+bool Key_hasControl(i32 keyEvent);
+bool Key_hasOption(i32 keyEvent);
+bool Key_hasCommand(i32 keyEvent);
 
 // O(1) name lookup ("Space", "Left Shift", ...). "" for unknown codes.
-const char *Key_name(int keyCode);
+const char *Key_name(i32 keyCode);
 
 #endif

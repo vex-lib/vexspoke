@@ -55,8 +55,8 @@
  *   - Point_negate(src, dest)
  *   - Point_min(a, b.sh, dest)
  *   - Point_max(a, b.sh, dest)
- *   - Point_distanceSquared(a, b.sh)      : int64_t
- *   - Point_manhattanDistance(a, b.sh)    : int64_t
+ *   - Point_distanceSquared(a, b.sh)      : i64
+ *   - Point_manhattanDistance(a, b.sh)    : i64
  *   - Point_distance(a, b.sh)             : d64
  *   - Point_equals(a, b.sh)               : bool
  * ============================================================================
@@ -139,24 +139,24 @@ fn Point_max(const Point *a, const Point *b, Point *dest) {
     (*dest).y = ((*a).y > (*b).y) ? (*a).y : (*b).y;
 }
 
-int64_t Point_distanceSquared(const Point *a, const Point *b) {
+i64 Point_distanceSquared(const Point *a, const Point *b) {
     if (!a || !b) return 0;
-    int64_t dx = (int64_t) (*a).x - (int64_t) (*b).x;
-    int64_t dy = (int64_t) (*a).y - (int64_t) (*b).y;
+    i64 dx = (i64) (*a).x - (i64) (*b).x;
+    i64 dy = (i64) (*a).y - (i64) (*b).y;
     return dx * dx + dy * dy;
 }
 
-int64_t Point_manhattanDistance(const Point *a, const Point *b) {
+i64 Point_manhattanDistance(const Point *a, const Point *b) {
     if (!a || !b) return 0;
-    int64_t dx = (int64_t) (*a).x - (int64_t) (*b).x;
-    int64_t dy = (int64_t) (*a).y - (int64_t) (*b).y;
+    i64 dx = (i64) (*a).x - (i64) (*b).x;
+    i64 dy = (i64) (*a).y - (i64) (*b).y;
     if (dx < 0) dx = -dx;
     if (dy < 0) dy = -dy;
     return dx + dy;
 }
 
 d64 Point_distance(const Point *a, const Point *b) {
-    int64_t sq = Point_distanceSquared(a, b);
+    i64 sq = Point_distanceSquared(a, b);
     if (sq == 0) return 0.0;
     return StrictMath_sqrtD((d64) sq);
 }

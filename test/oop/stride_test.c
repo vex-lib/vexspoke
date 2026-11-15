@@ -21,7 +21,7 @@ static i32 g_failures = 0;
     } while (0)
 
 // Checks class-to-byte-width mappings and full type-id class masking.
-int main() {
+i32 main() {
     // Scalar widths.
     CHECK(Stride_get(ID_BYTE) == 1);
     CHECK(Stride_get(ID_SHORT) == 2);

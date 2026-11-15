@@ -32,7 +32,7 @@
 
 // Value-stored elements: the scalar floor, the float shapes, and the two
 // segment slot records. The scalar aliases map to the legacy numeric ids;
-// `pointer` is the uintptr_t spelling of an untyped address.
+// `pointer` is the pointer spelling of an untyped address.
 #define VEX_LIST_VALUES(X) \
     X(u8,             ID_BYTE)             \
     X(u16,            ID_SHORT)            \

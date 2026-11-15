@@ -170,7 +170,7 @@ fn Variable_toString(const Variable *self, char *dest, bytes cap, bool *outTrunc
         snprintf(dest, cap, "nullptr");
         return;
     }
-    int written = snprintf(dest, cap, "Variable(%s)", (*self).name[0] == '\0' ? "?" : (*self).name);
+    i32 written = snprintf(dest, cap, "Variable(%s)", (*self).name[0] == '\0' ? "?" : (*self).name);
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
@@ -186,10 +186,10 @@ fn Variable_toStringStruct(const Variable *self, char *dest, bytes cap, bool *ou
         snprintf(dest, cap, "nullptr");
         return;
     }
-    int written = snprintf(dest, cap, "Variable { name=\"%s\", read=0x%llx, target=0x%llx }",
+    i32 written = snprintf(dest, cap, "Variable { name=\"%s\", read=0x%llx, target=0x%llx }",
                            (*self).name,
-                           (unsigned long long) (pointer) (*self).read,
-                           (unsigned long long) (pointer) (*self).target);
+                           (u64) (pointer) (*self).read,
+                           (u64) (pointer) (*self).target);
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;

@@ -27,7 +27,7 @@
         }                                                                    \
     } while(0)
 
-static int g_setA, g_setB, g_changedA, g_changedB;
+static i32 g_setA, g_setB, g_changedA, g_changedB;
 static Reactive *g_self;
 static ReactiveChangedFn g_changedFnA;
 
@@ -58,8 +58,8 @@ static any setterLoop(any arg) {
 }
 
 // Proves observer fan-out/removal, owner-affine coalesced drain, thread-safe writes, and null handling.
-int main() {
-    int failures = 0;
+i32 main() {
+    i32 failures = 0;
 
     Reactive *r = Reactive_1(0);
     g_self = r;

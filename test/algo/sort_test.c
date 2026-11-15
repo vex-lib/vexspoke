@@ -7,7 +7,7 @@
 
 #include "algo/sort.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(condition)                                                     \
     do {                                                                     \
@@ -17,13 +17,13 @@ static int g_failures = 0;
         }                                                                    \
     } while (0)
 
-static int compareUint64(const_any left, const_any right) {
+static i32 compareUint64(const_any left, const_any right) {
     u64 a = *(const u64*) left;
     u64 b = *(const u64*) right;
     return (a > b) - (a < b);
 }
 
-static int compareInt32(const_any left, const_any right) {
+static i32 compareInt32(const_any left, const_any right) {
     i32 a = *(const i32*) left;
     i32 b = *(const i32*) right;
     return (a > b) - (a < b);
@@ -34,7 +34,7 @@ typedef struct StableItem {
     u32 sequence;
 } StableItem;
 
-static int compareStableItem(const_any left, const_any right) {
+static i32 compareStableItem(const_any left, const_any right) {
     const StableItem *a = left;
     const StableItem *b = right;
     return ((*a).key > (*b).key) - ((*a).key < (*b).key);
@@ -163,7 +163,7 @@ static fn testInvalidRangesAndPartition() {
     CHECK(Sort_partitionInt32(keys, 0u, 0) == 0u);
 }
 
-int main() {
+i32 main() {
     testComparisonSorts();
     testStableSorts();
     testMergeBoundaries();

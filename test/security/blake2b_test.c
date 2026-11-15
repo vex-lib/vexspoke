@@ -22,7 +22,7 @@ static fn checkDigest(const u8 *data, bytes len, const char *hex) {
     assert(strcmp(got, hex) == 0);
 }
 
-int main() {
+i32 main() {
     u8 out[BLAKE2B_DIGEST_MAX];
 
     // RFC 7693 Appendix A: BLAKE2b-512("abc").
@@ -41,7 +41,7 @@ int main() {
 
     // Official BLAKE2 KAT: keyed empty, key = 00 01 .. 3f, digest 64.
     u8 key[BLAKE2B_KEY_MAX];
-    for (unsigned i = 0; i < BLAKE2B_KEY_MAX; ++i)
+    for (u32 i = 0; i < BLAKE2B_KEY_MAX; ++i)
         key[i] = (u8) i;
     static const char *keyedEmpty =
         "10ebb67700b1868efb4417987acf4690ae9d972fb7a590c2f02871799aaa4786"
@@ -72,7 +72,7 @@ int main() {
     assert(Blake2b_digest("abc", 3u, 64u, chunked, sizeof chunked));
     assert(memcmp(out, chunked, 32u) != 0);
 
-    // Bounds: short destination and bad lengths reject.
+    // Bounds: i16 destination and bad lengths reject.
     assert(!Blake2b_digest("abc", 3u, 64u, out, 32u));
     assert(!Blake2b_digest("abc", 3u, 0u, out, sizeof out));
     assert(!Blake2b_digest("abc", 3u, 65u, out, sizeof out));

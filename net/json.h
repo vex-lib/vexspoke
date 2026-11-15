@@ -99,9 +99,9 @@ JsonStringView Json_getString(const JsonDoc *doc, JsonRef ref);
 // --- Writer ---
 // Appends a JSON rendering of value into _out (NUL-terminated). Strings are
 // escaped. Returns Bytes written (excluding NUL) or -1 when _out ran _out.
-int64_t Json_writeNumber(char *out, bytes cap, d64 v);
-int64_t Json_writeString(char *out, bytes cap, const char *s);
-int64_t Json_writeBool(char *out, bytes cap, bool v);
+i64 Json_writeNumber(char *out, bytes cap, d64 v);
+i64 Json_writeString(char *out, bytes cap, const char *s);
+i64 Json_writeBool(char *out, bytes cap, bool v);
 
 // Streaming builder (~ JSON.stringify): appends into caller storage,
 // bounded, zero-alloc. Any overflow flips ok once and later calls no-op.
@@ -110,7 +110,7 @@ typedef struct JsonWriter {
     bytes cap;
     bytes used;
     bool ok;
-    int depth;
+    i32 depth;
     bool needComma[JSON_MAX_DEPTH];
 } JsonWriter;
 

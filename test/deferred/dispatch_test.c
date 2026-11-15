@@ -21,9 +21,9 @@
 
 typedef struct Job {
     Dispatch *queue;
-    int id;
-    int *next;
-    int deliveries;
+    i32 id;
+    i32 *next;
+    i32 deliveries;
     atomic_bool done;
     pthread_t consumer;
 } Job;
@@ -51,7 +51,7 @@ static fn repost(any context) {
 static any producer(any context) {
     Job *jobs = (Job*) context;
     const struct timespec pause = {0, 100000L};
-    for (int i = 0; i < 250; i++) {
+    for (i32 i = 0; i < 250; i++) {
         Job *job = &jobs[i];
         while (!Dispatch_post((*job).queue, record, job))
             nanosleep(&pause, nullptr); // test-only retry; process watchdog bounds it
@@ -62,7 +62,7 @@ static any producer(any context) {
 }
 
 // Exercises dispatch ordering, deferral, reuse, lock contention, and producers.
-int main() {
+i32 main() {
     alarm(20); // A broken queue fails rather than hanging CI or an unbounded join.
     REQUIRE(!Dispatch_post(nullptr, record, nullptr));
     REQUIRE(!Dispatch_drain(nullptr));
@@ -72,9 +72,9 @@ int main() {
     REQUIRE(queue);
     REQUIRE(!Dispatch_post(queue, nullptr, nullptr));
     REQUIRE(Dispatch_drain(queue));
-    int next = 0;
+    i32 next = 0;
     Job jobs[40] = {0};
-    for (int i = 0; i < 40; i++) {
+    for (i32 i = 0; i < 40; i++) {
         Job *job = &jobs[i];
         (*job).id = i;
         (*job).next = &next;
@@ -97,7 +97,7 @@ int main() {
     DispatchItem *a = (*queue).items;
     DispatchItem *b = (*queue).batch;
     REQUIRE(a && b);
-    for (int i = 0; i < 10; i++) {
+    for (i32 i = 0; i < 10; i++) {
         next = 0;
         deferred.deliveries = 0;
         REQUIRE(Dispatch_post(queue, record, &deferred));
@@ -117,10 +117,10 @@ int main() {
     REQUIRE(queue);
     Job concurrent[4][250] = {0};
     pthread_t threads[4];
-    int cursors[4] = {0};
-    for (int t = 0; t < 4; t++) {
+    i32 cursors[4] = {0};
+    for (i32 t = 0; t < 4; t++) {
         Job *row = concurrent[t];
-        for (int i = 0; i < 250; i++) {
+        for (i32 i = 0; i < 250; i++) {
             Job *job = &row[i];
             (*job).queue = queue;
             (*job).id = i;
@@ -133,7 +133,7 @@ int main() {
     for (;;) {
         (discard) Dispatch_drain(queue);
         bool done = true;
-        for (int t = 0; t < 4; t++) {
+        for (i32 t = 0; t < 4; t++) {
             Job *first = concurrent[t];
             if (!atomic_load_explicit(&(*first).done, memory_order_acquire))
                 done = false;
@@ -141,7 +141,7 @@ int main() {
         if (done && Dispatch_pending(queue) == 0)
             break;
     }
-    for (int t = 0; t < 4; t++) {
+    for (i32 t = 0; t < 4; t++) {
         REQUIRE(pthread_join(threads[t], nullptr) == 0);
         REQUIRE(cursors[t] == 250);
     }

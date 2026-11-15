@@ -27,7 +27,7 @@
  * ============================================================================
  */
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(name, cond) do { \
     if (cond) { printf("[header_veto_test] PASS %s\n", name); } \
@@ -35,7 +35,7 @@ static int g_failures = 0;
 } while (0)
 
 // Exercises memory-header integrity vetoes, invalidation, size classes, and reuse.
-int main() {
+i32 main() {
     printf("=== Running Header Veto Test Suite ===\n");
     MemoryArena *arena = MemoryArena_create(64u << 20);
     CHECK("arena created", arena != nullptr);
@@ -91,16 +91,16 @@ int main() {
     bytes sizes[] = { 8, 64, 300, 2000, 9000, 100000 };
     any blocks[6] = {0};
     bool allOk = true;
-    for (int i = 0; i < 6; i++) {
+    for (i32 i = 0; i < 6; i++) {
         blocks[i] = MemoryArena_alloc(arena, TYPE_BYTE_ARRAY, sizes[i]);
         if (!blocks[i] || Memory_length(blocks[i]) != sizes[i])
             allOk = false;
     }
     CHECK("all classes alloc", allOk);
-    for (int i = 0; i < 6; i++)
+    for (i32 i = 0; i < 6; i++)
         MemoryArena_free(arena, blocks[i]);
     bool allDead = true;
-    for (int i = 0; i < 6; i++) {
+    for (i32 i = 0; i < 6; i++) {
         if (Memory_length(blocks[i]) != 0)
             allDead = false;
     }

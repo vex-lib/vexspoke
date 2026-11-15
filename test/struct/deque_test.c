@@ -6,7 +6,7 @@
 #include "struct/deque.h"
 #include "oop/vexspoke_type.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -17,7 +17,7 @@ static int g_failures = 0;
     } while (0)
 
 // Exercises deque construction, both-end operations, large growth, hostile indices, null safety, and cleanup.
-int main() {
+i32 main() {
     Deque *d = Deque_1(ID_INT);
     CHECK(d != nullptr);
     CHECK(Deque_isEmpty(d));

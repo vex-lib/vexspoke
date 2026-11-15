@@ -51,8 +51,8 @@ fn Point_min(const Point *a, const Point *b, Point *dest);
 fn Point_max(const Point *a, const Point *b, Point *dest);
 
 // Metrics (null-safe: 0 / false on null)
-int64_t Point_distanceSquared(const Point *a, const Point *b);
-int64_t Point_manhattanDistance(const Point *a, const Point *b);
+i64 Point_distanceSquared(const Point *a, const Point *b);
+i64 Point_manhattanDistance(const Point *a, const Point *b);
 d64 Point_distance(const Point *a, const Point *b);
 bool Point_equals(const Point *a, const Point *b);
 

@@ -13,7 +13,7 @@
 static bytes fromHex(const char *hex, u8 *out, bytes cap) {
     bytes n = 0;
     for (const char *p = hex; p[0] != '\0' && p[1] != '\0'; p += 2) {
-        unsigned byte = 0;
+        u32 byte = 0;
         assert(sscanf(p, "%2x", &byte) == 1);
         assert(n < cap);
         out[n++] = (u8) byte;
@@ -27,7 +27,7 @@ static fn toHex(const u8 *data, bytes len, char *out) {
     out[len * 2u] = '\0';
 }
 
-int main() {
+i32 main() {
     // RFC 8439 section 2.8.2.
     static const char *plain =
         "Ladies and Gentlemen of the class of '99: If I could offer you only "

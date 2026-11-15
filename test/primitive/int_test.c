@@ -1,6 +1,6 @@
 // vexspoke/test/primitive/int_test.c — the Int class _test.
 //
-// Proves primitive/int.c: BitPool-backed 32-bit payloads — init, alloc/allocArray,
+// Proves primitive/i32.c: BitPool-backed 32-bit payloads — init, alloc/allocArray,
 // set/get across the int32 boundaries, compare-and-set, type/length identity
 // (pool vs arena routing), the constructor macros, and null-safety.
 
@@ -10,7 +10,7 @@
 #include "primitive/int.h"
 #include "oop/vexspoke_type.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -21,7 +21,7 @@ static int g_failures = 0;
     } while (0)
 
 // Exercises Int boundaries, allocation forms, CAS, arrays, metadata, and null safety.
-int main() {
+i32 main() {
     CHECK(Int_init());
 
     any p = Int_alloc();

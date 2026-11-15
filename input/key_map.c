@@ -13,7 +13,7 @@
  * ============================================================================
  * DEFINITION: KeyMap
  * ============================================================================
- * Input binding registry: maps composable int64_t combo IDs to function
+ * Input binding registry: maps composable i64 combo IDs to function
  * pointers. A combo packs gesture kind, modifier nibbles, and a key/mouse
  * code into 14 hex digits, so bindings are exact-match lookups over a flat
  * arena-backed array that f64s on growth. Pure behavior — zero UI, zero
@@ -31,7 +31,7 @@
  * ============================================================================
  * CLASS: KeyMap (input/key_map.c)
  * ============================================================================
- * Input binding registry: maps composable int64_t combo IDs to function
+ * Input binding registry: maps composable i64 combo IDs to function
  * pointers. Pure behavior — zero UI, zero GPU, zero steady-state allocation.
  *
  * Combo encoding (14 hex digits):
@@ -96,7 +96,7 @@
 // LONG_PRESS fires once per hold (one-shot latch in the driver slot, cleared
 // on release). Its hit also consumes the tap count, so releasing the same
 // press never ALSO fires a TAP. Threshold is per-map longPressNanos
-// (KEYMAP_LONG_PRESS_NANOS by default; 0 disables long-press).
+// (KEYMAP_LONG_PRESS_NANOS by default; 0 disables i64-press).
 //
 // Mouse buttons occupy codes 0..7 (MOUSE_LEFT..MOUSE_BUTTON_8); keyboard
 // codes start at 32 (KEY_SPACE), so code < 32 always means a mouse button.
@@ -108,9 +108,9 @@
 
 // ── Helpers ───────────────────────────────────────────────
 
-static int64_t modifierState()
+static i64 modifierState()
 {
-    int64_t mods = 0;
+    i64 mods = 0;
     if (Key_isDown(KEY_LEFT_SHIFT) || Key_isDown(KEY_RIGHT_SHIFT))
         mods |= KMOD_SHIFT;
     if (Key_isDown(KEY_LEFT_SUPER) || Key_isDown(KEY_RIGHT_SUPER))
@@ -125,7 +125,7 @@ static int64_t modifierState()
 }
 
 // Gesture type from tap count (reads vexspoke's multi-tap state).
-static int64_t gestureFromTaps(int taps)
+static i64 gestureFromTaps(i32 taps)
 {
     if (taps >= 3)
         return KMODE_TRIPLE_TAP;
@@ -135,7 +135,7 @@ static int64_t gestureFromTaps(int taps)
 }
 
 // Gesture type from mouse button tap count.
-static int64_t mouseGestureFromTaps(int taps)
+static i64 mouseGestureFromTaps(i32 taps)
 {
     if (taps >= 3)
         return KMODE_TRIPLE_TAP;
@@ -145,7 +145,7 @@ static int64_t mouseGestureFromTaps(int taps)
 }
 
 // Gesture type from hold duration (nanoseconds).
-static int64_t gestureFromHoldDuration(u64 holdNanos, u64 longPressThresholdNanos)
+static i64 gestureFromHoldDuration(u64 holdNanos, u64 longPressThresholdNanos)
 {
     if (longPressThresholdNanos > 0 && holdNanos >= longPressThresholdNanos)
         return KMODE_LONG_PRESS;
@@ -161,15 +161,15 @@ static int64_t gestureFromHoldDuration(u64 holdNanos, u64 longPressThresholdNano
 // longPressNanos and refuses while the one-shot latch is set (a given press
 // fires at most once). DRAG/SCROLL/ZOOM are event-stream gestures: they never
 // match under per-frame polling (;;DRAFT — event-driven resolver comes later).
-static bool gestureMatches(const KeyMap *map, int64_t combo)
+static bool gestureMatches(const KeyMap *map, i64 combo)
 {
     bool multiTap = (map == nullptr) || (*map).multiTapEnabled;
     u64 longPressNanos = (map == nullptr) ? KEYMAP_LONG_PRESS_NANOS : (*map).longPressNanos;
-    int64_t code = (combo & KEY_CODE_MASK);
-    int64_t kmode = (combo & KMODE_MASK);
+    i64 code = (combo & KEY_CODE_MASK);
+    i64 kmode = (combo & KMODE_MASK);
 
     if (code < KMAP_MOUSE_ID_MAX) {
-        int button = (int) code;
+        i32 button = (i32) code;
         if (kmode == KMODE_LONG_PRESS) {
             if (longPressNanos == 0)
                 return false;
@@ -194,7 +194,7 @@ static bool gestureMatches(const KeyMap *map, int64_t combo)
         return false;
     }
 
-    int key = (int) code;
+    i32 key = (i32) code;
     if (kmode == KMODE_LONG_PRESS) {
         if (longPressNanos == 0)
             return false;
@@ -223,17 +223,17 @@ static bool gestureMatches(const KeyMap *map, int64_t combo)
 // A LONG_PRESS hit also latches the driver slot: while the same press is
 // still held nothing re-fires, and the tap count is gone so the release of
 // the same press never fires a TAP either.
-static fn consumeGesture(int64_t combo)
+static fn consumeGesture(i64 combo)
 {
-    int64_t code = (combo & KEY_CODE_MASK);
-    int64_t kmode = (combo & KMODE_MASK);
+    i64 code = (combo & KEY_CODE_MASK);
+    i64 kmode = (combo & KMODE_MASK);
     if (code < KMAP_MOUSE_ID_MAX) {
-        int button = (int) code;
+        i32 button = (i32) code;
         if (kmode == KMODE_LONG_PRESS)
             Mouse_setLongPressFired(button, true);
         Mouse_resetTaps(button);
     } else {
-        int key = (int) code;
+        i32 key = (i32) code;
         if (kmode == KMODE_LONG_PRESS)
             Key_setLongPressFired(key, true);
         Key_resetTaps(key);
@@ -287,53 +287,53 @@ fn KeyMap_destroy(KeyMap *map)
     (*map).bindings = nullptr;
 }
 
-int64_t KeyMap_buildCombo(int64_t keyCode, int64_t gestureType)
+i64 KeyMap_buildCombo(i64 keyCode, i64 gestureType)
 {
     return gestureType | keyCode | modifierState();
 }
 
-int64_t KeyMap_buildComboForKey(int key, int64_t gestureType)
+i64 KeyMap_buildComboForKey(i32 key, i64 gestureType)
 {
-    int64_t taps = Key_taps(key);
-    int64_t gesture = gestureType;
+    i64 taps = Key_taps(key);
+    i64 gesture = gestureType;
     if (gesture == KMODE_TAP && taps > 1)
-        gesture = gestureFromTaps((int) taps);
-    return gesture | (int64_t) key | modifierState();
+        gesture = gestureFromTaps((i32) taps);
+    return gesture | (i64) key | modifierState();
 }
 
-int64_t KeyMap_buildComboForMouse(int button, int64_t gestureType)
+i64 KeyMap_buildComboForMouse(i32 button, i64 gestureType)
 {
-    int taps = Mouse_taps(button);
-    int64_t gesture = gestureType;
+    i32 taps = Mouse_taps(button);
+    i64 gesture = gestureType;
     if (gesture == KMODE_TAP && taps > 1)
         gesture = mouseGestureFromTaps(taps);
     // Mouse buttons use their enum index (MOUSE_LEFT=0, etc.)
     // as the low bits of the key code.
-    return gesture | (int64_t) button | modifierState();
+    return gesture | (i64) button | modifierState();
 }
 
-int64_t KeyMap_buildComboForHold(int key, u64 longPressThresholdNanos)
+i64 KeyMap_buildComboForHold(i32 key, u64 longPressThresholdNanos)
 {
     u64 hold = Key_currentHoldDurationNanos(key);
-    int64_t gesture = gestureFromHoldDuration(hold, longPressThresholdNanos);
-    return gesture | (int64_t) key | modifierState();
+    i64 gesture = gestureFromHoldDuration(hold, longPressThresholdNanos);
+    return gesture | (i64) key | modifierState();
 }
 
-bool KeyMap_resolve(const KeyMap *map, int64_t *outCombo)
+bool KeyMap_resolve(const KeyMap *map, i64 *outCombo)
 {
     if (map == nullptr)
         return false;
 
-    int64_t liveMods = modifierState() & KMOD_ALL_MASK;
+    i64 liveMods = modifierState() & KMOD_ALL_MASK;
     const KeyBinding *best = nullptr;
-    int64_t bestKm = -1;
+    i64 bestKm = -1;
 
     for (u32 i = 0; i < (*map).count; i++) {
         const KeyBinding *b = &(*map).bindings[i];
         if ((*b).fn == nullptr)
             continue;
 
-        int64_t bm = (*b).combo & KMODE_MASK;
+        i64 bm = (*b).combo & KMODE_MASK;
         if (best != nullptr && bm <= bestKm)
             continue; // strictly-less specific, or earlier equal already chosen
 
@@ -383,7 +383,7 @@ bool KeyMap_resolve(const KeyMap *map, int64_t *outCombo)
 // SETTERS
 // ═══════════════════════════════════════════════════════════
 
-bool KeyMap_bind(KeyMap *map, int64_t combo, KeyBindingFn fn, any userdata)
+bool KeyMap_bind(KeyMap *map, i64 combo, KeyBindingFn fn, any userdata)
 {
     if (map == nullptr || fn == nullptr)
         return false;
@@ -420,7 +420,7 @@ bool KeyMap_bind(KeyMap *map, int64_t combo, KeyBindingFn fn, any userdata)
     return true;
 }
 
-bool KeyMap_unbind(KeyMap *map, int64_t combo, KeyBindingFn fn)
+bool KeyMap_unbind(KeyMap *map, i64 combo, KeyBindingFn fn)
 {
     if (map == nullptr || fn == nullptr)
         return false;
@@ -457,7 +457,7 @@ fn KeyMap_setLongPressNanos(KeyMap *map, u64 nanos)
 // GETTERS
 // ═══════════════════════════════════════════════════════════
 
-const KeyBinding *KeyMap_match(const KeyMap *map, int64_t liveCombo)
+const KeyBinding *KeyMap_match(const KeyMap *map, i64 liveCombo)
 {
     if (map == nullptr)
         return nullptr;

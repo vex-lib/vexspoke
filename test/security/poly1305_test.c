@@ -11,7 +11,7 @@
 static bytes fromHex(const char *hex, u8 *out, bytes cap) {
     bytes n = 0;
     for (const char *p = hex; p[0] != '\0' && p[1] != '\0'; p += 2) {
-        unsigned byte = 0;
+        u32 byte = 0;
         assert(sscanf(p, "%2x", &byte) == 1);
         assert(n < cap);
         out[n++] = (u8) byte;
@@ -25,7 +25,7 @@ static fn toHex(const u8 *data, bytes len, char *out) {
     out[len * 2u] = '\0';
 }
 
-int main() {
+i32 main() {
     // RFC 8439 section 2.5.2.
     u8 key[POLY1305_KEY_SIZE];
     assert(fromHex("85d6be7857556d337f4452fe42d506a80103808afb0db2fd4abff6af4149f51b",

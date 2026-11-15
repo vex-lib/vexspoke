@@ -22,9 +22,9 @@
 
 typedef struct KeyHandler {
     any self; // the implementing object, handed back to every callback
-    fn (*onKeyDown)(any self, int keyEvent, u64 exactNanos);
-    fn (*onKeyUp)(any self, int keyEvent, u64 exactNanos);
-    fn (*onKeyRepeat)(any self, int keyEvent, u64 exactNanos);
+    fn (*onKeyDown)(any self, i32 keyEvent, u64 exactNanos);
+    fn (*onKeyUp)(any self, i32 keyEvent, u64 exactNanos);
+    fn (*onKeyRepeat)(any self, i32 keyEvent, u64 exactNanos);
     fn (*onCharTyped)(any self, u32 character); // default no-op in legacy
 } KeyHandler;
 

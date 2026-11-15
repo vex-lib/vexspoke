@@ -20,7 +20,7 @@
 
 #include "struct/octree.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -132,10 +132,10 @@ static fn test_bulk() {
 
     OctreePoint pts[OCT_POINTS];
     u64 seen[OCT_POINTS + 1] = { 0 };
-    int k = 0;
-    for (int i = 0; i < 10; i++)
-        for (int j = 0; j < 10; j++)
-            for (int l = 0; l < 5; l++) {
+    i32 k = 0;
+    for (i32 i = 0; i < 10; i++)
+        for (i32 j = 0; j < 10; j++)
+            for (i32 l = 0; l < 5; l++) {
                 OctreePoint p = OctreePoint((f32) i * 10.0f + 0.5f,
                                             (f32) j * 10.0f + 0.5f,
                                             (f32) l * 20.0f + 0.5f);
@@ -154,14 +154,14 @@ static fn test_bulk() {
         CHECK(out[i] >= 1 && out[i] <= OCT_POINTS);
         seen[out[i]]++;
     }
-    for (int i = 1; i <= OCT_POINTS; i++)
+    for (i32 i = 1; i <= OCT_POINTS; i++)
         CHECK(seen[i] == 1);
 
     // A sub-box query returns exactly the points inside it.
     OctreeAABB sub = OctreeAABB(20.5f, 30.5f, 40.5f, 30.5f, 40.5f, 60.5f);
     n = Octree_queryRange(t, sub, out, OCT_POINTS);
     bytes expected = 0;
-    for (int i = 0; i < OCT_POINTS; i++)
+    for (i32 i = 0; i < OCT_POINTS; i++)
         if (OctreeAABB_containsPoint(sub, pts[i]))
             expected++;
     CHECK(n == expected);
@@ -171,7 +171,7 @@ static fn test_bulk() {
     f32 rad = 12.0f;
     n = Octree_querySphere(t, c, rad, out, OCT_POINTS);
     bytes brute = 0;
-    for (int i = 0; i < OCT_POINTS; i++) {
+    for (i32 i = 0; i < OCT_POINTS; i++) {
         f32 dx = pts[i].x - c.x, dy = pts[i].y - c.y, dz = pts[i].z - c.z;
         if (dx * dx + dy * dy + dz * dz <= rad * rad)
             brute++;
@@ -189,7 +189,7 @@ static fn test_bulk() {
 }
 
 /** Runs the Octree owner scenarios and reports aggregate assertion status. */
-int main() {
+i32 main() {
     test_aabb_helpers();
     test_null_safety();
     test_bounds_and_queries();

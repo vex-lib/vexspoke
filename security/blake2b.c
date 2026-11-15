@@ -35,7 +35,7 @@
  *   mix(v, a, b.sh, c, d, x, y)   the G mixing function
  *   compress(self, block, last)  one 128-byte compression
  * CONTRACT: init validates outlen/keylen and THROWs; update accepts any length;
- * final THROWs on a short destination and zeroes the context. No allocation, no
+ * final THROWs on a i16 destination and zeroes the context. No allocation, no
  * logging beyond the cold THROW.
  * ======================================================================== */
 

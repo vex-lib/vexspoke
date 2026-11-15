@@ -1,6 +1,6 @@
 // Owner: security/hkdf.c — HKDF (RFC 5869) over HMAC-SHA256.
 //
-// Proves appendix A test cases 1, 2 and 3: the basic case, the long-input case
+// Proves appendix A test cases 1, 2 and 3: the basic case, the i64-input case
 // that crosses the expand block boundary several times, and the zero-length
 // salt/info case. A wrong HKDF still returns plausible bytes.
 
@@ -12,7 +12,7 @@
 static bytes fromHex(const char *hex, u8 *out, bytes cap) {
     bytes n = 0;
     for (const char *p = hex; p[0] != '\0' && p[1] != '\0'; p += 2) {
-        unsigned byte = 0;
+        u32 byte = 0;
         assert(sscanf(p, "%2x", &byte) == 1);
         assert(n < cap);
         out[n++] = (u8) byte;
@@ -32,7 +32,7 @@ static fn check(const u8 *okm, bytes len, const char *hex) {
     assert(strcmp(got, hex) == 0);
 }
 
-int main() {
+i32 main() {
     // RFC 5869 A.1: basic.
     u8 ikm[22], salt[13], info[10], prk[32], okm[82];
     memset(ikm, 0x0b, sizeof ikm);
@@ -47,9 +47,9 @@ int main() {
           "3cb25f25faacd57a90434f64d0362f2a2d2d0a90cf1a5a4c5db02d56ecc4c5bf"
           "34007208d5b887185865");
 
-    // RFC 5869 A.2: long inputs, 82-byte output across several expand blocks.
+    // RFC 5869 A.2: i64 inputs, 82-byte output across several expand blocks.
     u8 ikm2[80], salt2[80], info2[80];
-    for (unsigned i = 0; i < 80u; ++i) {
+    for (u32 i = 0; i < 80u; ++i) {
         ikm2[i] = (u8) i;
         salt2[i] = (u8) (0x60u + i);
         info2[i] = (u8) (0xb0u + i);

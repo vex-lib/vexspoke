@@ -125,7 +125,7 @@ static u8 *slotAt(ProbableObjects *po, bytes index) {
     return (*po).slots + index * SLOT_SIZE;
 }
 
-int ProbableObjects_add(ProbableObjects *po, pointer object, u32 weight) {
+i32 ProbableObjects_add(ProbableObjects *po, pointer object, u32 weight) {
     if (!po) return 0;
     if ((*po).count >= (*po).capacity) {
         THROW("probable objects pool is full");
@@ -148,7 +148,7 @@ int ProbableObjects_add(ProbableObjects *po, pointer object, u32 weight) {
     return 1;
 }
 
-int ProbableObjects_addProbable(ProbableObjects *po, const Probable *probable) {
+i32 ProbableObjects_addProbable(ProbableObjects *po, const Probable *probable) {
     if (!probable) return 0;
     return ProbableObjects_add(po, (*probable).object, (*probable).weight);
 }

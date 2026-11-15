@@ -157,7 +157,7 @@ static fn textPrintf(RegexText *text, const char *fmt, ...) {
     char buffer[256];
     va_list args;
     va_start(args, fmt);
-    int n = vsnprintf(buffer, sizeof(buffer), fmt, args);
+    i32 n = vsnprintf(buffer, sizeof(buffer), fmt, args);
     va_end(args);
     if (n < 0)
         return;

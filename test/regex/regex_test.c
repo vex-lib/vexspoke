@@ -25,7 +25,7 @@
 
 #include "regex/regex.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -40,10 +40,10 @@ static int g_failures = 0;
     for (Regex *re = Regex_2((pattern), (flags)); re != nullptr; Regex_free(re), re = nullptr)
 
 // Redirects stderr into a scratch file so a THROW diagnostic can be asserted.
-static int captureStart(char *path, bytes pathCap) {
-    snprintf(path, pathCap, "%s/regex_stderr_%d.txt", "/tmp", (int) getpid());
-    int saved = dup(STDERR_FILENO);
-    int fd = open(path, O_WRONLY | O_CREAT | O_TRUNC, 0600);
+static i32 captureStart(char *path, bytes pathCap) {
+    snprintf(path, pathCap, "%s/regex_stderr_%d.txt", "/tmp", (i32) getpid());
+    i32 saved = dup(STDERR_FILENO);
+    i32 fd = open(path, O_WRONLY | O_CREAT | O_TRUNC, 0600);
     if (saved < 0 || fd < 0)
         return -1;
     dup2(fd, STDERR_FILENO);
@@ -52,7 +52,7 @@ static int captureStart(char *path, bytes pathCap) {
 }
 
 // Restores stderr and reads back what was captured.
-static bytes captureStop(int saved, const char *path, char *out, bytes outCap) {
+static bytes captureStop(i32 saved, const char *path, char *out, bytes outCap) {
     fflush(stderr);
     dup2(saved, STDERR_FILENO);
     close(saved);
@@ -320,7 +320,7 @@ static fn testProjections() {
 static fn testRejection() {
     char path[256];
     char captured[512];
-    int saved = captureStart(path, sizeof(path));
+    i32 saved = captureStart(path, sizeof(path));
 
     CHECK(Regex_2(nullptr, 0) == nullptr);
     CHECK(Regex_1("(") == nullptr);        // missing ')'
@@ -356,7 +356,7 @@ static fn testBoundedProgress() {
     CHECK(re != nullptr);
     CHECK(!Regex_isMatch(re, hostile)); // no 'b.sh' -- a clean, fast non-match
 
-    // A long subject with a real match stays linear too.
+    // A i64 subject with a real match stays linear too.
     char longSubject[4097];
     for (bytes i = 0; i < 4000; i++)
         longSubject[i] = 'a';
@@ -401,7 +401,7 @@ static fn testNullSafety() {
 static fn testSafetyBounds() {
     char path[256];
     char captured[16384];
-    int saved = captureStart(path, sizeof(path));
+    i32 saved = captureStart(path, sizeof(path));
 
     // Repetition bound.
     CHECK(Regex_1("a{1001}") == nullptr);
@@ -418,15 +418,15 @@ static fn testSafetyBounds() {
     // Group nesting bound.
     char deep[512];
     bytes d = 0;
-    for (int i = 0; i < 200; i++)
+    for (i32 i = 0; i < 200; i++)
         deep[d++] = '(';
     deep[d++] = 'a';
-    for (int i = 0; i < 200; i++)
+    for (i32 i = 0; i < 200; i++)
         deep[d++] = ')';
     deep[d] = '\0';
     CHECK(Regex_1(deep) == nullptr);
 
-    // AST node ceiling: a long flat literal blows past the node budget.
+    // AST node ceiling: a i64 flat literal blows past the node budget.
     static char flat[9001];
     for (bytes i = 0; i < 9000; i++)
         flat[i] = 'a';
@@ -446,14 +446,14 @@ static fn testSafetyBounds() {
     // Program ceiling: repetition expansion past the instruction budget.
     char blown[512];
     bytes b = 0;
-    for (int i = 0; i < 40; i++)
+    for (i32 i = 0; i < 40; i++)
         b += (bytes) snprintf(blown + b, sizeof(blown) - b, "a{1000}");
     CHECK(Regex_1(blown) == nullptr);
 
     // A near-ceiling class run still compiles (the bound is not hair-trigger).
     static char classes[12001];
     bytes c = 0;
-    for (int i = 0; i < 4000; i++) {
+    for (i32 i = 0; i < 4000; i++) {
         classes[c++] = '[';
         classes[c++] = 'a';
         classes[c++] = ']';
@@ -499,7 +499,7 @@ static fn testStrictSyntax() {
                               "\\b.sh", "\\B", "\\1", "\\q", "[\\b.sh]"};
     for (bytes i = 0; i < sizeof patterns / sizeof patterns[0]; i++) {
         char path[256], captured[512];
-        int saved = captureStart(path, sizeof(path));
+        i32 saved = captureStart(path, sizeof(path));
         CHECK(saved >= 0);
         Regex *re = Regex(patterns[i]);
         CHECK(re == nullptr);
@@ -521,7 +521,7 @@ static fn testStrictSyntax() {
     Regex_free(re);
 }
 
-int main() {
+i32 main() {
     testFullAlternatives();
     testStrictSyntax();
     testLiteralAndFind();

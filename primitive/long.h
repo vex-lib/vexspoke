@@ -4,7 +4,7 @@
 #include "vex.h"
 #include "nio/nio.h"
 
-// primitive/long.h — Long primitive (Legacy: primitive/Long.java).
+// primitive/i64.h — Long primitive (Legacy: primitive/Long.java).
 // Delegates to Bit64 width pool (8B stride).
 
 extern BitPool g_longPool;
@@ -14,15 +14,15 @@ fn Long_shutdown();
 any Long_alloc();
 any Long_allocArray(bytes count);
 fn Long_free(any ptr);
-int64_t Long_get(any ptr);
-fn Long_set(any ptr, int64_t value);
-bool Long_compareAndSet(any ptr, int64_t expected, int64_t value);
+i64 Long_get(any ptr);
+fn Long_set(any ptr, i64 value);
+bool Long_compareAndSet(any ptr, i64 expected, i64 value);
 u64 Long_type(any ptr);
 bytes Long_length(any ptr);
 
 
 // Ergonomic constructors — Long() and Long(value)
-any Long_allocWithValue(int64_t value);
+any Long_allocWithValue(i64 value);
 #define Long_0(...) Long_alloc()
 #define Long_1(value) Long_allocWithValue(value)
 #define Long(...) CONSTRUCTOR_DISPATCH(Long, __VA_ARGS__)

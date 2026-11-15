@@ -386,7 +386,7 @@ static u32 parseAtom(RegexParser *parser) {
 
 // Parses "{m}", "{m,}" or "{m,n}". 1 = quantifier consumed, 0 = a literal
 // '{', -1 = a malformed quantifier (already recorded).
-static int parseBraces(RegexParser *parser, u32 *outMin, u32 *outMax, bool *outHasMax) {
+static i32 parseBraces(RegexParser *parser, u32 *outMin, u32 *outMax, bool *outHasMax) {
     bytes i = (*parser).pos + 1u;
     if (i >= (*parser).length || !isAsciiDigit((*parser).pattern[i]))
         return 0;
@@ -454,7 +454,7 @@ static u32 parseRepeat(RegexParser *parser) {
             wrapKind = REGEX_NODE_QUEST;
             (*parser).pos++;
         } else if (c == '{') {
-            int braces = parseBraces(parser, &min, &max, &hasMax);
+            i32 braces = parseBraces(parser, &min, &max, &hasMax);
             if (braces < 0)
                 return REGEX_NODE_NONE;
             if (braces == 0)

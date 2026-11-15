@@ -37,7 +37,7 @@
  *   Loop {
  *     TickFn tick; // called once per fixed step (never nullptr)
  *     any userdata; // opaque context handed to tick
- *     int64_t frame_ms; // fixed timestep in milliseconds (>0)
+ *     i64 frame_ms; // fixed timestep in milliseconds (>0)
  *     _Atomic bool running; // Loop_stop flips this to end the loop
  *   }
  *
@@ -50,10 +50,10 @@
  */
 
 
-static int64_t nowMs() {
+static i64 nowMs() {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
-    return (int64_t) ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+    return (i64) ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
 }
 
 // Runs fixed-step ticks until stopped, limiting catch-up to four steps per pass.
@@ -64,17 +64,17 @@ fn Loop_run(Loop *loop) {
         return;
 
     atomic_store_explicit(&(*loop).running, true, memory_order_release);
-    int64_t accumulator = 0;
-    int64_t prev = nowMs();
+    i64 accumulator = 0;
+    i64 prev = nowMs();
 
     while (atomic_load_explicit(&(*loop).running, memory_order_acquire)) {
-        int64_t now = nowMs();
+        i64 now = nowMs();
         accumulator += now - prev;
         prev = now;
 
         // Clamp catch-up: at most 4 steps per frame, then drop backlog.
         // Prevents spiral-of-death after a stall and bounds frame time.
-        int steps = 0;
+        i32 steps = 0;
         while (accumulator >= (*loop).frame_ms && steps < 4) {
             (*loop).tick((*loop).userdata);
             accumulator -= (*loop).frame_ms;

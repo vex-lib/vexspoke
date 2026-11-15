@@ -18,7 +18,7 @@
 
 #include "time/clock.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -29,9 +29,9 @@ static int g_failures = 0;
     } while (0)
 
 // Sleeps briefly so the clock can accrue measurable real-time elapsed duration.
-// Waits for a short interval used by bounded real-time clock observations.
+// Waits for a i16 interval used by bounded real-time clock observations.
 // Sleeps for a bounded interval while checking elapsed virtual time.
-static fn wait_ms(long ms) {
+static fn wait_ms(i64 ms) {
     struct timespec ts = { ms / 1000, (ms % 1000) * 1000000L };
     nanosleep(&ts, nullptr);
 }
@@ -41,7 +41,7 @@ static fn wait_ms(long ms) {
 // Ticks the clock until virtual time reaches the target or the bounded poll expires.
 // Ticks until virtual time reaches a target or the finite polling budget expires.
 static bool accrue_at_least(Clock *c, u64 target) {
-    for (int i = 0; i < 2000; i++) {          // bounded: <= ~2s
+    for (i32 i = 0; i < 2000; i++) {          // bounded: <= ~2s
         Clock_tick(c);
         if (Clock_virtualTimeMillis(c) >= target)
             return true;
@@ -97,7 +97,7 @@ static fn test_pause_freezes_virtual() {
 
     Clock_setPaused(&c, true);
     wait_ms(5);
-    for (int i = 0; i < 5; i++) {
+    for (i32 i = 0; i < 5; i++) {
         Clock_tick(&c);
         wait_ms(2);
     }
@@ -116,7 +116,7 @@ static fn test_pause_freezes_virtual() {
 static fn test_zero_scale() {
     Clock c = Clock();
     Clock_setTimeScale(&c, 0.0);
-    for (int i = 0; i < 10; i++) {
+    for (i32 i = 0; i < 10; i++) {
         Clock_tick(&c);
         wait_ms(1);
     }
@@ -137,7 +137,7 @@ static fn test_reset() {
 // Runs clock construction, settings, accrual, pause, scale, and reset checks.
 // Runs clock construction, configuration, accrual, pause, scale, and reset tests.
 // Runs clock initialization, configuration, accrual, pause, scale, and reset checks.
-int main() {
+i32 main() {
     test_create();
     test_settings();
     test_accrual();

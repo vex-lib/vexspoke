@@ -77,13 +77,13 @@ fn SystemDiscovery_bootstrap() {
             HardwareInfo_setRamAvailable(memsize);
         }
 
-        int cpuThreads = 0;
+        i32 cpuThreads = 0;
         len = sizeof(cpuThreads);
         if (sysctlbyname("hw.logicalcpu", &cpuThreads, &len, nullptr, 0) == 0) {
             HardwareInfo_setCpuThreadCount(cpuThreads);
         }
 
-        int cpuCores = 0;
+        i32 cpuCores = 0;
         len = sizeof(cpuCores);
         if (sysctlbyname("hw.physicalcpu", &cpuCores, &len, nullptr, 0) == 0) {
             HardwareInfo_setCpuCoreCount(cpuCores);
@@ -240,7 +240,7 @@ fn SystemDiscovery_bootstrap() {
                 if (CGDisplayIsBuiltin(dId)) {
                     snprintf(nameBuf, sizeof(nameBuf), "Built-in Retina Display");
                 } else {
-                    snprintf(nameBuf, sizeof(nameBuf), "External Display %u", (unsigned int)dId);
+                    snprintf(nameBuf, sizeof(nameBuf), "External Display %u", (u32)dId);
                 }
                 DisplayMonitor_setName(m, nameBuf);
 

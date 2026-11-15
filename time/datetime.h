@@ -10,7 +10,7 @@
 // localtime, allocation-free. dayOfWeek is ISO-8601: 1=Monday .. 7=Sunday.
 
 typedef struct DateTime {
-    int64_t epochMillis;
+    i64 epochMillis;
     i32 year;
     i32 month;      // 1-12
     i32 day;        // 1-31
@@ -28,9 +28,9 @@ static inline DateTime DateTime_0() { return (DateTime) {0}; }
 fn DateTime_set(DateTime *dt);
 
 // Recompute every calendar field from epochMillis (Hinnant's algorithm).
-fn setEpochMillis(DateTime *dt, int64_t epochMillis);
+fn setEpochMillis(DateTime *dt, i64 epochMillis);
 
-int64_t DateTime_epochMillis(const DateTime *dt);
+i64 DateTime_epochMillis(const DateTime *dt);
 i32 DateTime_year(const DateTime *dt);
 i32 DateTime_month(const DateTime *dt);
 i32 DateTime_day(const DateTime *dt);

@@ -86,11 +86,11 @@ i32 Calendar_dayOfWeek(i32 year, i32 month, i32 day) {
 
 // Advances the date-time by the requested number of 24-hour days.
 fn Calendar_addDays(DateTime *dt, i32 days) {
-    setEpochMillis(dt, DateTime_epochMillis(dt) + (int64_t)days * 86400000LL);
+    setEpochMillis(dt, DateTime_epochMillis(dt) + (i64)days * 86400000LL);
 }
 
 // Inverse of Hinnant's algorithm: calendar fields => UTC epoch millis.
-static int64_t toEpochMillis(i32 year, i32 month, i32 day,
+static i64 toEpochMillis(i32 year, i32 month, i32 day,
                              i32 hour, i32 minute, i32 second,
                              i32 millisecond) {
     i32 y = year - (month <= 2 ? 1 : 0);
@@ -99,9 +99,9 @@ static int64_t toEpochMillis(i32 year, i32 month, i32 day,
     i32 yoe = y - era * 400;
     i32 doy = (153 * m + 2) / 5 + day - 1;
     i32 doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
-    int64_t totalDays = (int64_t)era * 146097 + doe - 719468;
+    i64 totalDays = (i64)era * 146097 + doe - 719468;
 
-    int64_t totalSecs = totalDays * 86400LL + hour * 3600LL + minute * 60LL + second;
+    i64 totalSecs = totalDays * 86400LL + hour * 3600LL + minute * 60LL + second;
     return totalSecs * 1000 + millisecond;
 }
 

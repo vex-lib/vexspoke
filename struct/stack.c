@@ -129,7 +129,7 @@ TryValue Stack_pushTry(Stack *stack, u64 valueOrPointer) {
         // d64, like the sibling containers (Deque/Queue/List). Growing by a
         // fixed step allocates a fresh buffer on every growth, and freed bump
         // storage is reclaimed only wholesale -- so a large push run exhausts
-        // the arena long before the buffer fits (the No Hardcoding Law).
+        // the arena i64 before the buffer fits (the No Hardcoding Law).
         bytes newCap = (*c).capacity ? (bytes)(*c).capacity * 2 : DEFAULT_CAPACITY;
         if (newCap > UINT32_MAX) {
             THROW("stack pushTry: capacity %zu would exceed uint32", newCap);

@@ -7,7 +7,7 @@
 #include "security/hmac.h"
 #include "security/crypto.h"
 
-int main() {
+i32 main() {
     // RFC 6070 PBKDF2-HMAC-SHA1 vectors, verbatim.
     u8 key[32];
     char hex[65];

@@ -24,7 +24,7 @@
 #include "objects/probable.h"
 #include "util/random.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -35,7 +35,7 @@ static int g_failures = 0;
     } while (0)
 
 // Checks weighted-pool admission, draws, overflow rejection, copying, and bounds.
-int main() {
+i32 main() {
     ProbableObjects *po = ProbableObjects_1(4);
     CHECK(po != nullptr);
     CHECK(ProbableObjects_size(po) == 0);
@@ -91,7 +91,7 @@ int main() {
     CHECK(capture != nullptr);
     if (capture) {
         fflush(stderr);
-        int saved = TEST_DUP(TEST_FILENO(stderr));
+        i32 saved = TEST_DUP(TEST_FILENO(stderr));
         CHECK(saved >= 0);
         if (saved >= 0) {
             CHECK(TEST_DUP2(TEST_FILENO(capture), TEST_FILENO(stderr)) >= 0);

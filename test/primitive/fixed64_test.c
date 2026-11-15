@@ -6,7 +6,7 @@
 #include "primitive/fixed64.h"
 #include "oop/vexspoke_type.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -17,7 +17,7 @@ static int g_failures = 0;
     } while (0)
 
 // Exercises Fixed64 boundary values, constructors, CAS, arrays, and null safety.
-int main() {
+i32 main() {
     CHECK(Fixed64_init());
 
     any p = Fixed64_alloc();
@@ -26,7 +26,7 @@ int main() {
     CHECK(Fixed64_type(p) == ID_FIXED64);
     CHECK(Fixed64_length(p) == 8);
 
-    const int64_t values[] = { 0, 1, -1, 4294967296LL, 4294967295LL, INT64_MIN };
+    const i64 values[] = { 0, 1, -1, 4294967296LL, 4294967295LL, INT64_MIN };
     for (bytes i = 0; i < sizeof values / sizeof values[0]; i++) {
         Fixed64_set(p, values[i]);
         CHECK(Fixed64_get(p) == values[i]);

@@ -66,8 +66,8 @@
  *   WinRow {
  *     u32 windowId;         // opaque OS window tag (0 never attached)
  *     const TouchHandler **items; // arena-allocated listener segment, doubling
- *     int count;                 // live listener count
- *     int cap;                   // allocated segment capacity
+ *     i32 count;                 // live listener count
+ *     i32 cap;                   // allocated segment capacity
  *   }
  *   (growSegment / growRows / rowFor: static behavior, zero struct fields)
  *
@@ -144,26 +144,26 @@ static bool s_ready = false;
 typedef struct WinRow {
     u32 windowId;
     const TouchHandler **items;  // arena-allocated segment, doubling
-    int count;
-    int cap;
+    i32 count;
+    i32 cap;
 } WinRow;
 
 static const TouchHandler **s_listeners = nullptr;  // global listener segment
-static int s_listenerCount = 0;
-static int s_listenerCap = 0;
+static i32 s_listenerCount = 0;
+static i32 s_listenerCap = 0;
 
 static WinRow *s_rows = nullptr;  // growable window-row table
-static int s_rowCount = 0;
-static int s_rowCap = 0;
+static i32 s_rowCount = 0;
+static i32 s_rowCap = 0;
 
 // Grow a handler segment to at least `needed` slots. On OOM the segment is
 // left untouched and the registration is silently dropped (legacy parity).
 // Row structs move when the row TABLE grows, so their ITEM segments are
 // separate arena blocks: item pointers survive, row pointers do not — always
 // re-derive rows through rowFor() after any attach/detach.
-static bool growSegment(const TouchHandler ***items, int *cap, int needed) {
+static bool growSegment(const TouchHandler ***items, i32 *cap, i32 needed) {
     if (needed <= *cap) return true;
-    int newCap = (*cap == 0) ? 16 : *cap * 2;
+    i32 newCap = (*cap == 0) ? 16 : *cap * 2;
     while (newCap < needed) newCap *= 2;
     const TouchHandler **nb = (const TouchHandler**) Memory_alloc(
         TYPE_INT_POINTER, (bytes) newCap * sizeof(TouchHandler*));
@@ -176,9 +176,9 @@ static bool growSegment(const TouchHandler ***items, int *cap, int needed) {
 }
 
 // Grow the window-row table to at least `needed` rows (doubling, cold 8).
-static bool growRows(int needed) {
+static bool growRows(i32 needed) {
     if (needed <= s_rowCap) return true;
-    int newCap = (s_rowCap == 0) ? 8 : s_rowCap * 2;
+    i32 newCap = (s_rowCap == 0) ? 8 : s_rowCap * 2;
     while (newCap < needed) newCap *= 2;
     WinRow *nb = (WinRow*) Memory_alloc(TYPE_INT_POINTER,
         (bytes) newCap * sizeof(WinRow));
@@ -192,7 +192,7 @@ static bool growRows(int needed) {
 
 // Find the row for an opaque OS window id, or NULL when not attached.
 static WinRow *rowFor(u32 windowId) {
-    for (int i = 0; i < s_rowCount; i++)
+    for (i32 i = 0; i < s_rowCount; i++)
         if (s_rows[i].windowId == windowId)
             return &s_rows[i];
     return nullptr;
@@ -221,7 +221,7 @@ fn Touch_addListener(const TouchHandler *listener) {
 }
 
 bool Touch_removeListener(const TouchHandler *listener) {
-    for (int i = 0; i < s_listenerCount; i++) {
+    for (i32 i = 0; i < s_listenerCount; i++) {
         if (s_listeners[i] == listener) {
             s_listeners[i] = s_listeners[--s_listenerCount];
             return true;
@@ -249,7 +249,7 @@ bool Touch_detachWindow(u32 windowId, const TouchHandler *listener) {
     if (listener == nullptr || windowId == 0) return false;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return false;
-    for (int i = 0; i < (*row).count; i++) {
+    for (i32 i = 0; i < (*row).count; i++) {
         if ((*row).items[i] == listener) {
             (*row).count--;
             (*row).items[i] = (*row).items[(*row).count];
@@ -266,7 +266,7 @@ fn Touch_detachWindowAll(u32 windowId) {
         (*row).count = 0;
 }
 
-fn Touch_pushTouchEvent(u32 windowId, int touchId, int action, d64 x, d64 y,
+fn Touch_pushTouchEvent(u32 windowId, i32 touchId, i32 action, d64 x, d64 y,
                           d64 pressure, u64 holdThresholdNanos) {
     if (touchId < 0 || touchId >= TOUCH_MAX) return;
     if (!s_ready) Touch_init();
@@ -306,12 +306,12 @@ fn Touch_pushTouchEvent(u32 windowId, int touchId, int action, d64 x, d64 y,
 }
 
 // Deliver one touch event to one window's scoped list.
-static fn deliverTouch(u32 windowId, int action, int touchId,
+static fn deliverTouch(u32 windowId, i32 action, i32 touchId,
                          d64 x, d64 y, d64 pressure, u64 exactNanos) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return;
-    for (int i = 0; i < (*row).count; i++) {
+    for (i32 i = 0; i < (*row).count; i++) {
         const TouchHandler *l = (*row).items[i];
         any self = (*l).self;
         if (action == TOUCH_DOWN && (*l).onTouchDown)
@@ -333,15 +333,15 @@ fn Touch_dispatchEvents() {
         u64 packed = ev.packed;
         u64 micros = (packed >> 18) & 0x3FFFFFFFFFFFULL;
         u64 exactNanos = NanoTime_startNanos() + (micros * 1000ULL);
-        int touchId = (int)((packed >> 6) & 0xFFF);
-        int action = (int)(packed & 0x3F);
+        i32 touchId = (i32)((packed >> 6) & 0xFFF);
+        i32 action = (i32)(packed & 0x3F);
 
         const TouchPos *pos = &s_pos[touchId];
         d64 x = (*pos).x;
         d64 y = (*pos).y;
         d64 pressure = (*pos).pressure;
 
-        for (int i = 0; i < s_listenerCount; i++) {
+        for (i32 i = 0; i < s_listenerCount; i++) {
             any self = (*s_listeners[i]).self;
             if (action == TOUCH_DOWN && (*s_listeners[i]).onTouchDown)
                 (*s_listeners[i]).onTouchDown(self, touchId, x, y, pressure, exactNanos);
@@ -353,7 +353,7 @@ fn Touch_dispatchEvents() {
                 (*s_listeners[i]).onTouchCancel(self, touchId, exactNanos);
         }
         if (ev.windowId == FOCUS_BROADCAST) {
-            for (int r = 0; r < s_rowCount; r++)
+            for (i32 r = 0; r < s_rowCount; r++)
                 deliverTouch(s_rows[r].windowId, action, touchId, x, y, pressure, exactNanos);
         } else {
             deliverTouch(ev.windowId, action, touchId, x, y, pressure, exactNanos);
@@ -361,42 +361,42 @@ fn Touch_dispatchEvents() {
     }
 }
 
-bool Touch_isDown(int touchId) {
+bool Touch_isDown(i32 touchId) {
     if (touchId < 0 || touchId >= TOUCH_MAX) return false;
     return s_slots[touchId].pressTime != 0;
 }
 
-u64 Touch_pressTime(int touchId) {
+u64 Touch_pressTime(i32 touchId) {
     if (touchId < 0 || touchId >= TOUCH_MAX) return 0;
     return s_slots[touchId].pressTime;
 }
 
-u64 Touch_lastHoldDuration(int touchId) {
+u64 Touch_lastHoldDuration(i32 touchId) {
     if (touchId < 0 || touchId >= TOUCH_MAX) return 0;
     return s_slots[touchId].lastHoldDuration;
 }
 
-int Touch_taps(int touchId) {
+i32 Touch_taps(i32 touchId) {
     if (touchId < 0 || touchId >= TOUCH_MAX) return 0;
     return s_slots[touchId].taps;
 }
 
-int Touch_lastAction(int touchId) {
+i32 Touch_lastAction(i32 touchId) {
     if (touchId < 0 || touchId >= TOUCH_MAX) return TOUCH_CANCEL;
     return s_slots[touchId].action;
 }
 
-d64 Touch_x(int touchId) {
+d64 Touch_x(i32 touchId) {
     if (touchId < 0 || touchId >= TOUCH_MAX) return 0.0;
     return s_pos[touchId].x;
 }
 
-d64 Touch_y(int touchId) {
+d64 Touch_y(i32 touchId) {
     if (touchId < 0 || touchId >= TOUCH_MAX) return 0.0;
     return s_pos[touchId].y;
 }
 
-d64 Touch_pressure(int touchId) {
+d64 Touch_pressure(i32 touchId) {
     if (touchId < 0 || touchId >= TOUCH_MAX) return 0.0;
     return s_pos[touchId].pressure;
 }

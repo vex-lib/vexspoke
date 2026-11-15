@@ -35,7 +35,7 @@
  * STRUCT FIELDS (local to this file):
  * ----------------------------------------------------------------------------
  *   Thread {
- *     _Atomic int state;         // 0 = STOPPED, 1 = RUNNING
+ *     _Atomic i32 state;         // 0 = STOPPED, 1 = RUNNING
  *     u64 typeId;           // block-header type (TYPE_THREAD_*)
  *     pthread_t platform;        // native platform thread handle
  *     bool platformStarted;      // platform thread spawned flag
@@ -72,7 +72,7 @@
 // thread/thread.c — the worker engine (Legacy: thread/*Thread.java).
 
 typedef struct Thread {
-    _Atomic int state;        // 0 = STOPPED, 1 = RUNNING
+    _Atomic i32 state;        // 0 = STOPPED, 1 = RUNNING
     u64 typeId;          // block header type (TYPE_THREAD_*)
     pthread_t platform;
     bool platformStarted;
@@ -120,7 +120,7 @@ Thread *Thread_5(u64 typeId, Thread_Job job, bytes queueCapacity,
 bool Thread_run(Thread *self) {
     if (!self)
         return false;
-    int expected = 0;
+    i32 expected = 0;
     if (!atomic_compare_exchange_strong(&(*self).state, &expected, 1))
         return true; // already running
     if ((*self).platformStarted) {

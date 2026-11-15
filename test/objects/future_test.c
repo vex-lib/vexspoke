@@ -8,7 +8,7 @@
 
 #include "objects/future.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -19,7 +19,7 @@ static int g_failures = 0;
     } while (0)
 
 // Checks Future's single-assignment transition and preserved value on rejection.
-int main() {
+i32 main() {
     Future *f = Future_0();
     CHECK(f != nullptr);
     CHECK(!Future_isGiven(f));

@@ -6,7 +6,7 @@
 
 // struct/minheap.h — the MinHeap class, ported from struct/MinHeap.java.
 //
-// Priority queue over (int item, f32 priority) pairs. 1-based indexing for
+// Priority queue over (i32 item, f32 priority) pairs. 1-based indexing for
 // cheap heap math; index 0 is unused. Pops the lowest-priority item first.
 
 typedef struct MinHeap {
@@ -33,7 +33,7 @@ bool MinHeap_isEmpty(MinHeap *heap);
 u64 MinHeap_exhaustionCount(const MinHeap *heap);
 
 // Push (item, priority). Returns 0 if the heap is full.
-int MinHeap_push(MinHeap *heap, i32 item, f32 priority);
+i32 MinHeap_push(MinHeap *heap, i32 item, f32 priority);
 
 // Pop and return the lowest-priority item. Returns 0 if empty.
 i32 MinHeap_popItem(MinHeap *heap);

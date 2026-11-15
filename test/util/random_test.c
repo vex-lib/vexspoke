@@ -15,7 +15,7 @@
 #include "util/random.h"
 #include "objects/probable.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -32,7 +32,7 @@ static bool sameStream(u64 seed, RandomEngine engine) {
     Random *a = Random_2(seed, engine);
     Random *b = Random_2(seed, engine);
     bool ok = (a != nullptr) && (b != nullptr);
-    for (int i = 0; i < 32 && ok; i++)
+    for (i32 i = 0; i < 32 && ok; i++)
         if (Random_nextLong(a) != Random_nextLong(b))
             ok = false;
     if (a) Random_free(a);
@@ -43,7 +43,7 @@ static bool sameStream(u64 seed, RandomEngine engine) {
 // Tests seeded engine selection, reproducibility, ranges, weighted sampling, and null safety.
 // Verifies seeded random engines are reproducible and exercise their range contracts.
 // Verifies seed selection, reproducible streams, bounded draws, and weighted sampling.
-int main() {
+i32 main() {
     // The zero-argument chooser creates an independently owned casual stream.
     Random *defaultStream = Random();
     CHECK(defaultStream != nullptr);
@@ -55,7 +55,7 @@ int main() {
     Random *q = Random(1234u);
     CHECK(p && q);
     CHECK(Random_engine(p) == Random_engine(q));
-    for (int i = 0; i < 32; i++)
+    for (i32 i = 0; i < 32; i++)
         CHECK(Random_nextLong(p) == Random_nextLong(q));
     Random_free(p);
     Random_free(q);
@@ -96,7 +96,7 @@ int main() {
     RandomEngine engines[] = { RANDOM_ENGINE_MURMUR, RANDOM_ENGINE_XORSHIFT, RANDOM_ENGINE_PCG };
     for (bytes e = 0; e < sizeof engines / sizeof engines[0]; e++) {
         Random *r = Random_2(42u, engines[e]);
-        for (int i = 0; i < 32; i++) {
+        for (i32 i = 0; i < 32; i++) {
             f32 f = Random_nextFloat(r);
             CHECK(f >= 0.0f && f < 1.0f);
             d64 d = Random_nextf64(r);

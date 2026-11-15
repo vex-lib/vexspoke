@@ -18,7 +18,7 @@
 #include "time/nanotime.h"
 #include "time/clock.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -31,7 +31,7 @@ static int g_failures = 0;
 // Delays briefly for tests that observe monotonic time or timer elapsed values.
 // Waits briefly to create measurable intervals for monotonic timer assertions.
 // Sleeps for a bounded interval to make monotonic-clock progress observable.
-static fn wait_ms(long ms) {
+static fn wait_ms(i64 ms) {
     struct timespec ts = { ms / 1000, (ms % 1000) * 1000000L };
     nanosleep(&ts, nullptr);
 }
@@ -161,7 +161,7 @@ static fn test_tick_null_clock() {
 // Runs monotonic-time and timer reset, tick, pause, scale, and null-clock cases.
 // Runs monotonic epoch and NanoTimer reset/tick/clock integration cases.
 // Runs epoch, reset, ticking, pause, scaling, and null-clock timer cases.
-int main() {
+i32 main() {
     test_epoch();
     test_timer_reset();
     test_timer_tick();

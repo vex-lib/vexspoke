@@ -18,7 +18,7 @@
 #include "struct/sphere_array.h"
 #include "oop/vexspoke_type.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -39,7 +39,7 @@ static fn test_construction() {
     CHECK(SphereArray_validVoxelCount(r0) == 1);
     SphereArray_free(r0);
 
-    const int expected[] = { 1, 7, 33 };
+    const i32 expected[] = { 1, 7, 33 };
     for (i32 r = 0; r <= 2; r++) {
         SphereArray *a = SphereArray(r, ID_INT);
         CHECK(a != nullptr);
@@ -90,16 +90,16 @@ static fn test_access_round_trip() {
     SphereArray *a = SphereArray(2, ID_INT);
     CHECK(a != nullptr);
 
-    int v = 4321;
+    i32 v = 4321;
     CHECK(SphereArray_setOffset(a, 0, 0, 0, &v));
-    int got = 0;
+    i32 got = 0;
     CHECK(SphereArray_getGrid(&got, a, 2, 2, 2));
     CHECK(got == 4321);
 
-    CHECK(SphereArray_setOffset(a, 2, 0, 0, &(int){ 11 }));
+    CHECK(SphereArray_setOffset(a, 2, 0, 0, &(i32){ 11 }));
     CHECK(SphereArray_getOffset(&got, a, 2, 0, 0));
     CHECK(got == 11);
-    CHECK(SphereArray_setGrid(a, 2, 1, 2, &(int){ 22 }));
+    CHECK(SphereArray_setGrid(a, 2, 1, 2, &(i32){ 22 }));
     CHECK(SphereArray_getOffset(&got, a, 0, -1, 0));
     CHECK(got == 22);
 
@@ -107,9 +107,9 @@ static fn test_access_round_trip() {
     CHECK(got == 4321);                                  // untouched
 
     // Refusals.
-    CHECK(!SphereArray_setOffset(a, 2, 2, 0, &(int){ 99 }));
+    CHECK(!SphereArray_setOffset(a, 2, 2, 0, &(i32){ 99 }));
     CHECK(!SphereArray_getOffset(&got, a, 2, 2, 0));
-    CHECK(!SphereArray_setGrid(a, 9, 9, 9, &(int){ 99 }));
+    CHECK(!SphereArray_setGrid(a, 9, 9, 9, &(i32){ 99 }));
     CHECK(!SphereArray_getGrid(&got, a, 9, 9, 9));
     CHECK(!SphereArray_setOffset(a, 0, 0, 0, nullptr));
     CHECK(!SphereArray_getOffset(nullptr, a, 0, 0, 0));
@@ -131,7 +131,7 @@ typedef struct WalkStats {
     bytes badDistance;
     bytes nullVoxel;
     bytes mismatchedOffset;
-    int64_t checksum;
+    i64 checksum;
 } WalkStats;
 
 // Accumulates traversal count, coordinate checks, and the visited payload checksum.
@@ -142,14 +142,14 @@ static fn walkVoxel(i32 gx, i32 gy, i32 gz,
     (*s).count++;
     if (voxel == nullptr)
         (*s).nullVoxel++;
-    int64_t dist = (int64_t) dx * dx + (int64_t) dy * dy + (int64_t) dz * dz;
+    i64 dist = (i64) dx * dx + (i64) dy * dy + (i64) dz * dz;
     if (dist > 4)                                        // radius 2
         (*s).badDistance++;
     if (gx != dx + 2 || gy != dy + 2 || gz != dz + 2)
         (*s).mismatchedOffset++;
     if (voxel != nullptr) {
-        int v = 0;
-        for (bytes i = 0; i < sizeof(int); i++)
+        i32 v = 0;
+        for (bytes i = 0; i < sizeof(i32); i++)
             ((u8*) &v)[i] = ((const u8*) voxel)[i];
         (*s).checksum += v;
     }
@@ -160,12 +160,12 @@ static fn test_for_each() {
     SphereArray *a = SphereArray(2, ID_INT);
     CHECK(a != nullptr);
 
-    int fill = 1;
+    i32 fill = 1;
     for (i32 gz = 0; gz < SphereArray_diameter(a); gz++)
         for (i32 gy = 0; gy < SphereArray_diameter(a); gy++)
             for (i32 gx = 0; gx < SphereArray_diameter(a); gx++)
                 if (SphereArray_containsGrid(a, gx, gy, gz)) {
-                    int v = fill;
+                    i32 v = fill;
                     CHECK(SphereArray_setGrid(a, gx, gy, gz, &v));
                     fill++;
                 }
@@ -176,7 +176,7 @@ static fn test_for_each() {
     CHECK(s.badDistance == 0);
     CHECK(s.nullVoxel == 0);
     CHECK(s.mismatchedOffset == 0);
-    CHECK(s.checksum == (int64_t) 33 * 34 / 2);          // sum 1..33
+    CHECK(s.checksum == (i64) 33 * 34 / 2);          // sum 1..33
 
     SphereArray_forEach(a, nullptr, &s);
     SphereArray_forEach(nullptr, walkVoxel, &s);
@@ -184,7 +184,7 @@ static fn test_for_each() {
 }
 
 // Runs sphere-array construction, geometry, access, iteration, and teardown checks.
-int main() {
+i32 main() {
     test_construction();
     test_geometry();
     test_access_round_trip();

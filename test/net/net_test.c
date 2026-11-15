@@ -13,7 +13,7 @@
 #include "net/download.h"
 #include "spoke/bespoke.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -27,7 +27,7 @@ static const char CANNED_JSON[] =
     "{\"name\":\"anti\",\"n\":42,\"pi\":3.5,\"quote\":\"a\\\"b.sh\\nline\","
     "\"tags\":[\"x\",\"y\"],\"nested\":{\"ok\":true}}";
 
-static fn handler(const HttpExchange *ex, int fd, any ud) {
+static fn handler(const HttpExchange *ex, i32 fd, any ud) {
     (discard) ud;
     if (strcmp((*ex).path, "/hello") == 0 && strcmp((*ex).method, "GET") == 0) {
         Http_respond(fd, 200, "text/plain", "hello from anti", 15);
@@ -40,7 +40,7 @@ static fn handler(const HttpExchange *ex, int fd, any ud) {
     }
 }
 
-int main(int argc, char **argv) {
+i32 main(i32 argc, char **argv) {
     DownloadOptions downloadOptions = DownloadOptions();
     CHECK(downloadOptions.timeout_seconds == 30u);
     CHECK(downloadOptions.follow_redirects);
@@ -78,13 +78,13 @@ int main(int argc, char **argv) {
 
     // --- Server up ---
     HttpServer server;
-    int port = 0;
+    i32 port = 0;
     CHECK(HttpServer_start(&server, 0, handler, nullptr, &port));
     CHECK(port > 0);
 
     // --- Client text round-trip ---
     buf[0] = '\0';
-    int64_t status = Net_get("127.0.0.1", port, "/hello", buf, sizeof(buf));
+    i64 status = Net_get("127.0.0.1", port, "/hello", buf, sizeof(buf));
     if (status == -1) {
         printf("net_test: loopback connect blocked by sandbox environment, skipping live socket round-trips\n");
     } else {

@@ -11,7 +11,7 @@
 
 #include "oop/vexspoke_type.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -27,7 +27,7 @@ static u64 projByte(u64 byte) {
 }
 
 // Checks type bit fields, predicates, parent registration, and project isolation.
-int main() {
+i32 main() {
     // --- Bit field isolation: make then read each field back exactly.
     u64 id = Type_make(PROJ_VEXSPOKE, FORM_SINGLETON, ID_INT);
     CHECK(id == TYPE_INT_SINGLETON);
@@ -127,7 +127,7 @@ int main() {
     CHECK(Type_isA(projByte(0x23) | 1, projByte(0x23) | 1));
     CHECK(!Type_isA(projByte(0x23) | 1, projByte(0x23) | 2));          // 2 is a root, not a child
 
-    // --- A long legal chain resolves end to end (walk bounded by the table,
+    // --- A i64 legal chain resolves end to end (walk bounded by the table,
     // never capped below it).
     static u32 longChain[300];
     longChain[0] = 0u;

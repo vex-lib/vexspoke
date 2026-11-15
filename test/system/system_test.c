@@ -9,7 +9,7 @@
 // Runs system discovery and prints the host, graphics, and display snapshots.
 // Runs system discovery and reports hardware, graphics, and connected-display information.
 // Runs the host discovery probe and prints hardware, graphics, and display snapshots.
-int main() {
+i32 main() {
     printf("=== Vex System Discovery Probe ===\n\n");
 
     // Force discovery or query lazily
@@ -45,7 +45,7 @@ int main() {
 
     // 3. Display Subsystem (Points vs Physical Pixels vs Native Panel Grid)
     printf("[Display Subsystem]\n");
-    int count = DisplayInfo_getMonitorCount();
+    i32 count = DisplayInfo_getMonitorCount();
     printf("  Connected Monitors : %d\n", count);
     printf("  Primary Resolution :\n");
     printf("    Logical Points   : %d x %d pt\n",
@@ -80,7 +80,7 @@ int main() {
     printf("\n=== System Discovery Complete ===\n");
 
     // Environment surface self-check: the ONE env handler on System.
-    int failures = 0;
+    i32 failures = 0;
     setenv("VEX_SYSTEM_ENV_TEST", "value-42", 1);
     if (!System_getEnvironment("/debug/session", "/manifest/export")) failures++;
     if (System_getEnvValue("VEX_SYSTEM_ENV_TEST") == nullptr) failures++;

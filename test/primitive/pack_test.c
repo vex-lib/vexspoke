@@ -1,7 +1,7 @@
 // vexspoke/test/primitive/pack_test.c — the Pack class _test.
 //
 // pack.h is stateless inline bit-packing (pack.h ships the helpers; pack.c
-// carries no state). Proves byte/short/int pack+unpack round trips, including
+// carries no state). Proves byte/i16/i32 pack+unpack round trips, including
 // the sign-carrying negative cases.
 
 #include "vex.h"
@@ -9,7 +9,7 @@
 
 #include "primitive/pack.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -19,9 +19,9 @@ static int g_failures = 0;
         }                                                                  \
     } while (0)
 
-// Verifies signed and boundary round trips for byte, short, and int packing helpers.
-int main() {
-    // Byte pair -> short.
+// Verifies signed and boundary round trips for byte, i16, and i32 packing helpers.
+i32 main() {
+    // Byte pair -> i16.
     CHECK(Pack_packByte(1, 2) == 0x0102);
     CHECK(Pack_unpackByte1(Pack_packByte(1, 2)) == 1);
     CHECK(Pack_unpackByte2(Pack_packByte(1, 2)) == 2);
@@ -29,14 +29,14 @@ int main() {
     CHECK(Pack_unpackByte2(Pack_packByte(-1, -2)) == -2);
     CHECK(Pack_unpackByte2(Pack_packByte(0x7F, 0x80)) == (i8) 0x80);
 
-    // Short pair -> int.
+    // Short pair -> i32.
     CHECK(Pack_packShort(1, 2) == 0x00010002);
     CHECK(Pack_unpackShort1(Pack_packShort(3, 4)) == 3);
     CHECK(Pack_unpackShort2(Pack_packShort(3, 4)) == 4);
     CHECK(Pack_unpackShort1(Pack_packShort(-5, -6)) == -5);
     CHECK(Pack_unpackShort2(Pack_packShort(-5, -6)) == -6);
 
-    // Int pair -> long.
+    // Int pair -> i64.
     CHECK(Pack_unpackInt1(Pack_packInt(5, 6)) == 5);
     CHECK(Pack_unpackInt2(Pack_packInt(5, 6)) == 6);
     CHECK(Pack_unpackInt1(Pack_packInt(-7, -8)) == -7);

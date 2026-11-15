@@ -29,7 +29,7 @@
  * STRUCT FIELDS (local to this file):
  * ----------------------------------------------------------------------------
  *   RoleSlot {
- *     int role;                  // DRAW_ROLE_* tag served by this slot
+ *     i32 role;                  // DRAW_ROLE_* tag served by this slot
  *     Thread *worker;            // backing worker thread handle
  *   }
  *
@@ -53,14 +53,14 @@
 #define DRAW_ROLE_SLOTS 8
 
 typedef struct RoleSlot {
-    int role;
+    i32 role;
     Thread *worker;
 } RoleSlot;
 
 static RoleSlot s_roles[DRAW_ROLE_SLOTS];
 
-static Thread *roleWorker(int role) {
-    for (int i = 0; i < DRAW_ROLE_SLOTS; i++) {
+static Thread *roleWorker(i32 role) {
+    for (i32 i = 0; i < DRAW_ROLE_SLOTS; i++) {
         if (s_roles[i].worker && s_roles[i].role == role)
             return s_roles[i].worker;
     }
@@ -75,8 +75,8 @@ static fn draw_job(Thread *self, any task) {
     // TODO(draw): route by slot role into the renderer once it lands.
 }
 
-Thread *DrawThread_invokeRole(int role) {
-    for (int i = 0; i < DRAW_ROLE_SLOTS; i++) {
+Thread *DrawThread_invokeRole(i32 role) {
+    for (i32 i = 0; i < DRAW_ROLE_SLOTS; i++) {
         if (!s_roles[i].worker) {
             bool core = role == DRAW_ROLE_CORE;
             Thread *w = Thread(TYPE_THREAD_DRAW_SINGLETON, draw_job,
@@ -91,18 +91,18 @@ Thread *DrawThread_invokeRole(int role) {
     return nullptr;
 }
 
-bool DrawThread_submitTo(int role, any task) {
+bool DrawThread_submitTo(i32 role, any task) {
     Thread *w = roleWorker(role);
     return w && Thread_submit(w, task);
 }
 
 fn DrawThread_stopAll() {
-    for (int i = 0; i < DRAW_ROLE_SLOTS; i++)
+    for (i32 i = 0; i < DRAW_ROLE_SLOTS; i++)
         Thread_stop(s_roles[i].worker);
 }
 
 fn DrawThread_freeAll() {
-    for (int i = 0; i < DRAW_ROLE_SLOTS; i++) {
+    for (i32 i = 0; i < DRAW_ROLE_SLOTS; i++) {
         Thread_free(s_roles[i].worker);
         s_roles[i].worker = nullptr;
         s_roles[i].role = 0;

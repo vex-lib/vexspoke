@@ -11,7 +11,7 @@
 #include "input/mouse.h"
 #include "nio/mem.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -22,18 +22,18 @@ static int g_failures = 0;
     } while (0)
 
 // ── Test callbacks ────────────────────────────────────────
-static int g_fires = 0;
-static int64_t g_firedCombo = 0;
+static i32 g_fires = 0;
+static i64 g_firedCombo = 0;
 
 // Records the most recent combo delivered by a KeyMap binding.
-static fn onFire(any userdata, int64_t combo) {
+static fn onFire(any userdata, i64 combo) {
     (discard) userdata;
     g_fires++;
     g_firedCombo = combo;
 }
 
 // Adds a distinct callback marker to verify replacement and dispatch routing.
-static fn onFire2(any userdata, int64_t combo) {
+static fn onFire2(any userdata, i64 combo) {
     (discard) userdata;
     (discard) combo;
     g_fires += 10;
@@ -77,7 +77,7 @@ static fn test_bind_and_match() {
     KeyMap *map = KeyMap(arena);
 
     // Bind Cmd+A
-    int64_t cmdA = KMOD_CMD | KEY_A;
+    i64 cmdA = KMOD_CMD | KEY_A;
     CHECK(KeyMap_bind(map, cmdA, onFire, nullptr));
     CHECK(KeyMap_count(map) == 1);
     CHECK(!KeyMap_isEmpty(map));
@@ -93,7 +93,7 @@ static fn test_bind_and_match() {
     CHECK(KeyMap_match(map, KMOD_CMD | KEY_B) == nullptr);
 
     // Bind a second combo
-    int64_t f64Left = KMODE_f64_TAP | MOUSE_LEFT;
+    i64 f64Left = KMODE_f64_TAP | MOUSE_LEFT;
     CHECK(KeyMap_bind(map, f64Left, onFire2, nullptr));
     CHECK(KeyMap_count(map) == 2);
 
@@ -115,7 +115,7 @@ static fn test_bind_replaces() {
     MemoryArena *arena = MemoryArena_create(64u << 20);
     KeyMap *map = KeyMap(arena);
 
-    int64_t combo = KMOD_CMD | KEY_S;
+    i64 combo = KMOD_CMD | KEY_S;
     CHECK(KeyMap_bind(map, combo, onFire, nullptr));
     CHECK(KeyMap_count(map) == 1);
 
@@ -136,8 +136,8 @@ static fn test_unbind() {
     MemoryArena *arena = MemoryArena_create(64u << 20);
     KeyMap *map = KeyMap(arena);
 
-    int64_t cmdA = KMOD_CMD | KEY_A;
-    int64_t cmdB = KMOD_CMD | KEY_B;
+    i64 cmdA = KMOD_CMD | KEY_A;
+    i64 cmdB = KMOD_CMD | KEY_B;
     CHECK(KeyMap_bind(map, cmdA, onFire, nullptr));
     CHECK(KeyMap_bind(map, cmdB, onFire2, nullptr));
     CHECK(KeyMap_count(map) == 2);
@@ -166,15 +166,15 @@ static fn test_growth() {
     KeyMap *map = KeyMap(arena);
 
     // Bind more than KEYMAP_INITIAL_CAPACITY (16) entries
-    for (int i = 0; i < 24; i++) {
-        int64_t combo = (int64_t)(KEY_A + i);
+    for (i32 i = 0; i < 24; i++) {
+        i64 combo = (i64)(KEY_A + i);
         CHECK(KeyMap_bind(map, combo, onFire, nullptr));
     }
     CHECK(KeyMap_count(map) == 24);
 
     // All should be findable
-    for (int i = 0; i < 24; i++) {
-        int64_t combo = (int64_t)(KEY_A + i);
+    for (i32 i = 0; i < 24; i++) {
+        i64 combo = (i64)(KEY_A + i);
         const KeyBinding *hit = KeyMap_match(map, combo);
         CHECK(hit != nullptr);
         CHECK((*hit).combo == combo);
@@ -188,15 +188,15 @@ static fn test_growth() {
 static fn test_combo_constants() {
     // Verify the combo bit layout is correct via compile-time constants
     // Cmd+A: modifier nibble at bit 36, key code A=0x41
-    int64_t cmdA = KMOD_CMD | KEY_A;
+    i64 cmdA = KMOD_CMD | KEY_A;
     CHECK(cmdA == ((1LL << 36) | 0x41));
 
     // d64-click left mouse: gesture nibble at bit 52, MOUSE_LEFT=0
-    int64_t dblLeft = KMODE_f64_TAP | MOUSE_LEFT;
+    i64 dblLeft = KMODE_f64_TAP | MOUSE_LEFT;
     CHECK(dblLeft == (1LL << 52));
 
     // Cmd+Shift+F4: bits 36, 32, and key F4=293 (0x125)
-    int64_t cmdShiftF4 = KMOD_CMD | KMOD_SHIFT | KEY_F4;
+    i64 cmdShiftF4 = KMOD_CMD | KMOD_SHIFT | KEY_F4;
     CHECK(cmdShiftF4 == ((1LL << 36) | (1LL << 32) | 293));
 
     // Mask constants cover the right bit ranges
@@ -210,7 +210,7 @@ static fn test_build_combo() {
     // No modifiers held → combo should be just gestureType | keyCode.
     Key_init();
 
-    int64_t combo = KeyMap_buildCombo(KEY_A, KMODE_TAP);
+    i64 combo = KeyMap_buildCombo(KEY_A, KMODE_TAP);
     CHECK(combo == KEY_A);  // no modifiers → pure key code
 
     // With Cmd held
@@ -245,12 +245,12 @@ static fn test_build_combo() {
 static fn test_build_combo_with_hold() {
     Key_init();
 
-    // Press A and check hold duration builds long-press gesture
+    // Press A and check hold duration builds i64-press gesture
     Key_pushEvent(0, KEY_A, KEY_ACTION_DOWN, 250000000ULL);
     Key_dispatchEvents();
 
-    // With 0 threshold, any hold is long-press
-    int64_t combo = KeyMap_buildComboForHold(KEY_A, 0);
+    // With 0 threshold, any hold is i64-press
+    i64 combo = KeyMap_buildComboForHold(KEY_A, 0);
     // holdNanos > 0 and threshold == 0 means gestureFromHoldDuration returns TAP (threshold > 0 guard)
     // Actually: threshold 0 → condition `longPressThresholdNanos > 0` is false → returns TAP
     CHECK((combo & KMODE_MASK) == KMODE_TAP);
@@ -269,11 +269,11 @@ static fn test_build_combo_with_hold() {
 
 // ── Resolution (KeyMap_resolve) ────────────────────────────
 
-static int g_fireCount = 0;
-static int64_t g_fireCombo = -1;
+static i32 g_fireCount = 0;
+static i64 g_fireCombo = -1;
 
 // Records callback count and resolved combo for gesture-resolution cases.
-static fn onResolveFire(any userdata, int64_t combo) {
+static fn onResolveFire(any userdata, i64 combo) {
     g_fireCount++;
     g_fireCombo = combo;
     (discard) userdata;
@@ -286,14 +286,14 @@ static fn onResolveFire(any userdata, int64_t combo) {
 #define SETTLE_SLEEP_US 40000    // 40 ms > window, so settlement always lands
 
 // Sends one synthetic key press/release using the requested tap window.
-static fn tapKeyWin(int key, u64 winNanos) {
+static fn tapKeyWin(i32 key, u64 winNanos) {
     Key_pushEvent(0, key, KEY_ACTION_DOWN, winNanos);
     Key_dispatchEvents();
     Key_pushEvent(0, key, KEY_ACTION_UP, winNanos);
     Key_dispatchEvents();
 }
 
-// Waits beyond the configured short tap window so pending taps settle.
+// Waits beyond the configured i16 tap window so pending taps settle.
 static fn settle() {
     usleep(SETTLE_SLEEP_US);
 }
@@ -313,7 +313,7 @@ static fn test_resolve_tap() {
     MemoryArena *arena = MemoryArena_create(64u << 20);
     KeyMap *map = KeyMap(arena);
 
-    int64_t cmdA = KMOD_CMD | KEY_A;
+    i64 cmdA = KMOD_CMD | KEY_A;
     CHECK(KeyMap_bind(map, cmdA, onResolveFire, nullptr));
 
     g_fireCount = 0;
@@ -321,7 +321,7 @@ static fn test_resolve_tap() {
     tapKeyWin(KEY_A, TAP_WIN_NS);
 
     // Window still open: tap is PENDING — nothing may fire yet.
-    int64_t combo = -1;
+    i64 combo = -1;
     CHECK(Key_tapPhase(KEY_A) == KEY_TAP_PENDING);
     CHECK(!KeyMap_resolve(map, &combo));
     CHECK(g_fireCount == 0);
@@ -360,7 +360,7 @@ static fn test_resolve_specificity() {
     tapKeyWin(KEY_A, TAP_WIN_NS);
 
     // Window still open: two taps offered, nothing settled.
-    int64_t combo = -1;
+    i64 combo = -1;
     CHECK(Key_tapPhase(KEY_A) == KEY_TAP_PENDING);
     CHECK(!KeyMap_resolve(map, &combo));
     CHECK(g_fireCount == 0);
@@ -387,8 +387,8 @@ static fn test_resolve_modifier_exact() {
     MemoryArena *arena = MemoryArena_create(64u << 20);
     KeyMap *map = KeyMap(arena);
 
-    int64_t plainA = KEY_A | KMODE_TAP;
-    int64_t cmdA = KMOD_CMD | KEY_A | KMODE_TAP;
+    i64 plainA = KEY_A | KMODE_TAP;
+    i64 cmdA = KMOD_CMD | KEY_A | KMODE_TAP;
     CHECK(KeyMap_bind(map, plainA, onResolveFire, nullptr));
     CHECK(KeyMap_bind(map, cmdA, onResolveFire, nullptr));
 
@@ -396,7 +396,7 @@ static fn test_resolve_modifier_exact() {
     g_fireCount = 0;
     holdSuper(true);
     tapKeyWin(KEY_A, TAP_WIN_NS);
-    int64_t combo = -1;
+    i64 combo = -1;
     settle();
     CHECK(KeyMap_resolve(map, &combo));
     CHECK(g_fireCount == 1);
@@ -424,7 +424,7 @@ static fn test_resolve_mouse() {
     MemoryArena *arena = MemoryArena_create(64u << 20);
     KeyMap *map = KeyMap(arena);
 
-    int64_t dblRight = MOUSE_RIGHT | KMODE_f64_TAP;
+    i64 dblRight = MOUSE_RIGHT | KMODE_f64_TAP;
     CHECK(KeyMap_bind(map, dblRight, onResolveFire, nullptr));
 
     Mouse_pushButtonEvent(0, MOUSE_RIGHT, KEY_ACTION_DOWN, TAP_WIN_NS);
@@ -437,7 +437,7 @@ static fn test_resolve_mouse() {
     Mouse_dispatchEvents();
 
     g_fireCount = 0;
-    int64_t combo = -1;
+    i64 combo = -1;
     CHECK(Mouse_tapPhase(MOUSE_RIGHT) == MOUSE_TAP_PENDING);
     CHECK(!KeyMap_resolve(map, &combo)); // clicks still offered
     CHECK(g_fireCount == 0);
@@ -456,7 +456,7 @@ static fn test_resolve_mouse() {
     Mouse_shutdown();
 }
 
-// Checks a long press fires after its threshold and remains latched until release.
+// Checks a i64 press fires after its threshold and remains latched until release.
 static fn test_resolve_long_press() {
     // Hold A past KEYMAP_LONG_PRESS_NANOS: the LONG_PRESS binding fires.
     // Uses a real 450 ms hold — single deliberate sleep in the suite.
@@ -464,7 +464,7 @@ static fn test_resolve_long_press() {
     MemoryArena *arena = MemoryArena_create(64u << 20);
     KeyMap *map = KeyMap(arena);
 
-    int64_t holdA = KEY_A | KMODE_LONG_PRESS;
+    i64 holdA = KEY_A | KMODE_LONG_PRESS;
     CHECK(KeyMap_bind(map, holdA, onResolveFire, nullptr));
 
     Key_pushEvent(0, KEY_A, KEY_ACTION_DOWN, 250000000ULL);
@@ -472,7 +472,7 @@ static fn test_resolve_long_press() {
 
     // Too early: the hold clock is below the threshold, no fire.
     g_fireCount = 0;
-    int64_t combo = -1;
+    i64 combo = -1;
     CHECK(!KeyMap_resolve(map, &combo));
     CHECK(g_fireCount == 0);
 
@@ -495,7 +495,7 @@ static fn test_resolve_long_press() {
     Key_shutdown();
 }
 
-// Checks a long-press hit consumes the press so release cannot also fire tap.
+// Checks a i64-press hit consumes the press so release cannot also fire tap.
 static fn test_long_press_single_fire() {
     // ONE press → at most ONE fire: a LONG_PRESS hit consumes the tap count
     // as well, so releasing the same press never ALSO fires a TAP.
@@ -510,7 +510,7 @@ static fn test_long_press_single_fire() {
     Key_dispatchEvents();
 
     g_fireCount = 0;
-    int64_t combo = -1;
+    i64 combo = -1;
     usleep(450 * 1000); // past KEYMAP_LONG_PRESS_NANOS (400ms) — 50ms margin
     CHECK(KeyMap_resolve(map, &combo));
     CHECK(g_fireCount == 1);
@@ -522,7 +522,7 @@ static fn test_long_press_single_fire() {
 
     Key_pushEvent(0, KEY_A, KEY_ACTION_UP, 0);
     Key_dispatchEvents();
-    // Release of the same press: the taps were consumed by the long-press hit
+    // Release of the same press: the taps were consumed by the i64-press hit
     // — no TAP fires on release.
     CHECK(!KeyMap_resolve(map, &combo));
     CHECK(g_fireCount == 1);
@@ -551,7 +551,7 @@ static fn test_multi_tap_disabled() {
     // Single tap: resolved on the very next resolve call, no window wait.
     g_fireCount = 0;
     tapKeyWin(KEY_A, TAP_WIN_NS);
-    int64_t combo = -1;
+    i64 combo = -1;
     CHECK(KeyMap_resolve(map, &combo));
     CHECK(g_fireCount == 1);
     CHECK((combo & KMODE_MASK) == KMODE_TAP);
@@ -607,7 +607,7 @@ static fn test_tap_phase() {
     Key_resetTaps(KEY_A);
 
     // Three taps settle as TRIPLE.
-    for (int i = 0; i < 3; i++) {
+    for (i32 i = 0; i < 3; i++) {
         Key_pushEvent(0, KEY_A, KEY_ACTION_DOWN, TAP_WIN_NS);
         Key_dispatchEvents();
         Key_pushEvent(0, KEY_A, KEY_ACTION_UP, TAP_WIN_NS);
@@ -631,7 +631,7 @@ static fn test_modifier_breaks_sequence() {
     MemoryArena *arena = MemoryArena_create(64u << 20);
     KeyMap *map = KeyMap(arena);
 
-    int64_t cmdQ = KMOD_CMD | KMODE_TAP | KEY_Q;
+    i64 cmdQ = KMOD_CMD | KMODE_TAP | KEY_Q;
     CHECK(KeyMap_bind(map, cmdQ, onResolveFire, nullptr));
 
     g_fireCount = 0;
@@ -639,7 +639,7 @@ static fn test_modifier_breaks_sequence() {
     holdSuper(true);               // modifier state changes between presses
     tapKeyWin(KEY_Q, TAP_WIN_NS);  // Cmd+Q — fresh sequence, never a d64
 
-    int64_t combo = -1;
+    i64 combo = -1;
     CHECK(!KeyMap_resolve(map, &combo)); // pending
     settle();
     CHECK(KeyMap_resolve(map, &combo));
@@ -652,7 +652,7 @@ static fn test_modifier_breaks_sequence() {
 }
 
 // Runs KeyMap lifecycle, binding, combo construction, and gesture-resolution cases.
-int main() {
+i32 main() {
     test_create_destroy();
     test_null_safety();
     test_bind_and_match();

@@ -45,7 +45,7 @@ typedef struct TreeSitTree {
     i32 root;
 } TreeSitTree;
 
-typedef bool (*TreeSitVisitorFn)(const TreeSitTree *tree, i32 node_idx, int depth, any user_data);
+typedef bool (*TreeSitVisitorFn)(const TreeSitTree *tree, i32 node_idx, i32 depth, any user_data);
 
 TreeSitTree TreeSitTree_0();
 TreeSitTree TreeSitTree_1(u32 initial_capacity);

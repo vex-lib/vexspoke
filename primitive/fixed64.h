@@ -14,15 +14,15 @@ fn Fixed64_shutdown();
 any Fixed64_alloc();
 any Fixed64_allocArray(bytes count);
 fn Fixed64_free(any ptr);
-int64_t Fixed64_get(any ptr);
-fn Fixed64_set(any ptr, int64_t value);
-bool Fixed64_compareAndSet(any ptr, int64_t expected, int64_t value);
+i64 Fixed64_get(any ptr);
+fn Fixed64_set(any ptr, i64 value);
+bool Fixed64_compareAndSet(any ptr, i64 expected, i64 value);
 u64 Fixed64_type(any ptr);
 bytes Fixed64_length(any ptr);
 
 
 // Ergonomic constructors — Fixed64() and Fixed64(value)
-any Fixed64_allocWithValue(int64_t value);
+any Fixed64_allocWithValue(i64 value);
 #define Fixed64_0(...) Fixed64_alloc()
 #define Fixed64_1(value) Fixed64_allocWithValue(value)
 #define Fixed64(...) CONSTRUCTOR_DISPATCH(Fixed64, __VA_ARGS__)

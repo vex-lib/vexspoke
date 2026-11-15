@@ -33,7 +33,7 @@ static inline fn DownloadOptions_setUserAgent(DownloadOptions *options, const ch
 }
 
 typedef struct DownloadResponse {
-    int exit_code;
+    i32 exit_code;
     u32 http_status;
     char *data;
     bytes size;

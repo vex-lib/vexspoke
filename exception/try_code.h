@@ -28,7 +28,7 @@ typedef enum TryCode {
 // code is a value.
 bool TryCode_isOk(TryCode code);
 
-// The short symbolic name, e.g. "TRY_BOUNDS". Never nullptr.
+// The i16 symbolic name, e.g. "TRY_BOUNDS". Never nullptr.
 const char *TryCode_name(TryCode code);
 
 // The human sentence, e.g. "index outside the active range". Never nullptr.

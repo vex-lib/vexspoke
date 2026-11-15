@@ -25,7 +25,7 @@
  * ============================================================================
  */
 
-static int sFailures = 0;
+static i32 sFailures = 0;
 
 #define CHECK(cond)                                                    \
     do {                                                               \
@@ -38,7 +38,7 @@ static int sFailures = 0;
 // Checks the application registry, PATH/bundle probes, liveness, and null guards.
 // Checks AppDetect command-line discovery against the supplied test arguments.
 // Checks AppDetect registry access, host probes, and null-safe public entry points.
-int main(int argc, const char **argv) {
+i32 main(i32 argc, const char **argv) {
     AppDetect *detect = AppDetect_shared();
     CHECK(detect != nullptr);
     printf("AppDetect_count = %u\n", AppDetect_count(detect));

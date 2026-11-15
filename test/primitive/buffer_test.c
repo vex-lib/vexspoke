@@ -15,7 +15,7 @@
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond) do { \
     if (!(cond)) { \
@@ -24,7 +24,7 @@ static int g_failures = 0;
     } \
 } while (0)
 
-int main() {
+i32 main() {
     Buffer *e = Buffer();
     CHECK(e != nullptr);
     CHECK(Buffer_length(e) == 0);

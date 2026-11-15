@@ -76,7 +76,7 @@ bool string_equalsCString(const u8 *ptr, const char *value);
 #define String_equals string_equalsCString
 
 // Compare — strcmp style, negatives/zero/positives
-int String_compare(const u8 *a, const u8 *b);
+i32 String_compare(const u8 *a, const u8 *b);
 #define String_compare String_compare
 
 // Search — contains / indexOf / instring(index, haystack, needle)

@@ -6,7 +6,7 @@
 #include "primitive/fixed32.h"
 #include "oop/vexspoke_type.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -17,7 +17,7 @@ static int g_failures = 0;
     } while (0)
 
 // Exercises Fixed32 boundary values, constructors, CAS, arrays, and null safety.
-int main() {
+i32 main() {
     CHECK(Fixed32_init());
 
     any p = Fixed32_alloc();

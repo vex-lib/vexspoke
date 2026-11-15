@@ -10,7 +10,7 @@
 
 #include "exception/try_ptr.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -20,9 +20,9 @@ static int g_failures = 0;
         }                                                                  \
     } while (0)
 
-int main() {
-    int payload = 7;
-    int other = 8;
+i32 main() {
+    i32 payload = 7;
+    i32 other = 8;
 
     // Constructors + the CONTRACT.
     TryPtr ok = TryPtr_ok(&payload);

@@ -20,7 +20,7 @@
 
 #include "algo/tree_sit.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -32,13 +32,13 @@ static int g_failures = 0;
 
 typedef struct Trace {
     i32 ids[64];
-    int     depths[64];
+    i32     depths[64];
     bytes  count;
-    int     stop_after;
+    i32     stop_after;
 } Trace;
 
 /** Records visited node indices and depths into the test's bounded observation buffer. */
-static bool record(const TreeSitTree *tree, i32 node_idx, int depth, any user_data) {
+static bool record(const TreeSitTree *tree, i32 node_idx, i32 depth, any user_data) {
     (discard) tree;
     Trace *t = (Trace*) user_data;
     if ((*t).count < 64) {
@@ -46,7 +46,7 @@ static bool record(const TreeSitTree *tree, i32 node_idx, int depth, any user_da
         (*t).depths[(*t).count] = depth;
     }
     (*t).count++;
-    if ((*t).stop_after > 0 && (int) (*t).count >= (*t).stop_after)
+    if ((*t).stop_after > 0 && (i32) (*t).count >= (*t).stop_after)
         return false;
     return true;
 }
@@ -86,7 +86,7 @@ static fn test_lifecycle() {
 
     // Grow past the initial capacity.
     t = TreeSitTree(16u); CHECK(t.nodes != nullptr);
-    for (int i = 0; i < 100; i++)
+    for (i32 i = 0; i < 100; i++)
         CHECK(TreeSitTree_add_node(i == 0 ? -1 : (i - 1), 7, "n", span(0, 1), &t) == i);
     CHECK(t.node_count == 100);
     CHECK(t.node_capacity >= 100);
@@ -211,7 +211,7 @@ static fn test_find_and_count() {
 }
 
 /** Runs the TreeSit owner scenarios and reports aggregate assertion status. */
-int main() {
+i32 main() {
     test_lifecycle();
     test_linking();
     test_walks();

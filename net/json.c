@@ -159,14 +159,14 @@ static bool parseStringBody(Parser *ps, u32 *offOut, u32 *lenOut, bool *scratchF
                 case 't': c = '\t'; (*ps).p++; break;
                 case 'u': {
                     // \uXXXX => UTF-8 (BMP only)
-                    unsigned int cp = 0;
-                    for (int i = 0; i < 4; i++) {
+                    u32 cp = 0;
+                    for (i32 i = 0; i < 4; i++) {
                         (*ps).p++;
                         char h = *(*ps).p;
                         cp <<= 4;
-                        if (h >= '0' && h <= '9') cp |= (unsigned)(h - '0');
-                        else if (h >= 'a' && h <= 'f') cp |= (unsigned)(h - 'a' + 10);
-                        else if (h >= 'A' && h <= 'F') cp |= (unsigned)(h - 'A' + 10);
+                        if (h >= '0' && h <= '9') cp |= (u32)(h - '0');
+                        else if (h >= 'a' && h <= 'f') cp |= (u32)(h - 'a' + 10);
+                        else if (h >= 'A' && h <= 'F') cp |= (u32)(h - 'A' + 10);
                         else return fail(d);
                     }
                     (*ps).p++; // past the last hex digit
@@ -206,9 +206,9 @@ static bool parseStringBody(Parser *ps, u32 *offOut, u32 *lenOut, bool *scratchF
 
 // --- Values ---
 
-static bool parseValue(Parser *ps, JsonRef *out, int depth);
+static bool parseValue(Parser *ps, JsonRef *out, i32 depth);
 
-static bool parseObject(Parser *ps, JsonRef *out, int depth) {
+static bool parseObject(Parser *ps, JsonRef *out, i32 depth) {
     JsonDoc *d = (*ps).doc;
     JsonRef obj = allocNode(ps);
     if (obj < 0) return fail(d);
@@ -251,7 +251,7 @@ static bool parseObject(Parser *ps, JsonRef *out, int depth) {
     return true;
 }
 
-static bool parseArray(Parser *ps, JsonRef *out, int depth) {
+static bool parseArray(Parser *ps, JsonRef *out, i32 depth) {
     JsonDoc *d = (*ps).doc;
     JsonRef arr = allocNode(ps);
     if (arr < 0) return fail(d);
@@ -280,7 +280,7 @@ static bool parseArray(Parser *ps, JsonRef *out, int depth) {
     return true;
 }
 
-static bool parseValue(Parser *ps, JsonRef *out, int depth) {
+static bool parseValue(Parser *ps, JsonRef *out, i32 depth) {
     JsonDoc *d = (*ps).doc;
     if (depth > JSON_MAX_DEPTH) return fail(d);
     skipWs(ps);
@@ -444,14 +444,14 @@ const char *Json_key(const JsonDoc *doc, JsonRef ref, u32 *lengthOut) {
 
 // --- Writer ---
 
-int64_t Json_writeNumber(char *out, bytes cap, d64 v) {
-    long long asInt = (long long)v;
+i64 Json_writeNumber(char *out, bytes cap, d64 v) {
+    i64 asInt = (i64)v;
     if ((d64)asInt == v)
-        return (int64_t)snprintf(out, cap, "%lld", asInt);
-    return (int64_t)snprintf(out, cap, "%.17g", v);
+        return (i64)snprintf(out, cap, "%lld", asInt);
+    return (i64)snprintf(out, cap, "%.17g", v);
 }
 
-int64_t Json_writeString(char *out, bytes cap, const char *s) {
+i64 Json_writeString(char *out, bytes cap, const char *s) {
     bytes used = 0;
     if (cap < 2) return -1;
     out[used++] = '"';
@@ -481,11 +481,11 @@ int64_t Json_writeString(char *out, bytes cap, const char *s) {
     if (used + 2 >= cap) return -1;
     out[used++] = '"';
     out[used] = '\0';
-    return (int64_t)used;
+    return (i64)used;
 }
 
-int64_t Json_writeBool(char *out, bytes cap, bool v) {
-    return (int64_t)snprintf(out, cap, "%s", v ? "true" : "false");
+i64 Json_writeBool(char *out, bytes cap, bool v) {
+    return (i64)snprintf(out, cap, "%s", v ? "true" : "false");
 }
 
 // --- JS-flex helpers (defaults + paths, still zero-alloc) ---
@@ -640,7 +640,7 @@ JsonWriter JsonWriter_2(char *out, bytes cap) {
     result.cap = cap;
     result.used = 0u;
     result.ok = (out != nullptr && cap > 0u);
-    for (int i = 0; i < JSON_MAX_DEPTH; i++)
+    for (i32 i = 0; i < JSON_MAX_DEPTH; i++)
         result.needComma[i] = false;
     if (result.ok)
         out[0] = '\0';
@@ -666,7 +666,7 @@ static bool writerValueOpen(JsonWriter *w) {
         return true;
     if ((*w).depth < 0 || (*w).depth > JSON_MAX_DEPTH)
         return writerFail(w);
-    int parent = (*w).depth - 1;
+    i32 parent = (*w).depth - 1;
     if ((*w).needComma[parent]) {
         if (!writerPut(w, ','))
             return false;
@@ -678,7 +678,7 @@ static bool writerValueOpen(JsonWriter *w) {
 static bool writerValueClose(JsonWriter *w) {
     if ((*w).depth == 0)
         return (*w).ok;
-    int parent = (*w).depth - 1;
+    i32 parent = (*w).depth - 1;
     (*w).needComma[parent] = true;
     return (*w).ok;
 }
@@ -734,7 +734,7 @@ bool Json_addKey(JsonWriter *w, const char *k) {
         return false;
     if ((*w).depth <= 0)
         return writerFail(w);
-    int idx = (*w).depth - 1;
+    i32 idx = (*w).depth - 1;
     if ((*w).needComma[idx]) {
         if (!writerPut(w, ','))
             return false;
@@ -765,8 +765,8 @@ bool Json_numberVal(JsonWriter *w, d64 v) {
     if (!w || !writerValueOpen(w))
         return false;
     char tmp[32];
-    long long asInt = (long long)v;
-    int n = 0;
+    i64 asInt = (i64)v;
+    i32 n = 0;
     if ((d64)asInt == v)
         n = snprintf(tmp, sizeof(tmp), "%lld", asInt);
     else

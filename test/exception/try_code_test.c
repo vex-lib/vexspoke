@@ -9,7 +9,7 @@
 
 #include "exception/try_code.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -24,7 +24,7 @@ static const TryCode ALL[] = {
     TRY_NOT_FOUND, TRY_IO, TRY_FORMAT, TRY_UNSUPPORTED, TRY_NO_MEMORY
 };
 
-int main() {
+i32 main() {
     bytes n = sizeof ALL / sizeof ALL[0];
     for (bytes i = 0; i < n; i++) {
         TryCode c = ALL[i];

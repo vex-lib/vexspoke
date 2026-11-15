@@ -8,7 +8,7 @@
 
 static fn hex(const u8 *d, bytes n, char *out) { Crypto_toHex(d, n, out); }
 
-int main() {
+i32 main() {
     // FIPS 180-4 / RFC 3174 vectors.
     u8 d[CRYPTO_SHA1_DIGEST_SIZE];
     char h[CRYPTO_SHA1_DIGEST_SIZE * 2 + 1];

@@ -120,7 +120,7 @@ static u64 pcg64Step(Random *r) {
     __uint128_t old = state;
     state = old * PCG64_MULT + PCG64_INC;
     u64 xored = (u64)((old >> 64) ^ old);
-    unsigned rot = (unsigned)(old >> 122);
+    u32 rot = (u32)(old >> 122);
     (*r).seed = (u64)(state >> 64);
     (*r).inc = (u64) state;
     return (xored >> rot) | (xored << ((64u - rot) & 63u));
@@ -154,7 +154,7 @@ static fn initState(Random *r, u64 seed, RandomEngine engine) {
 }
 
 Random *Random_2(u64 seed, RandomEngine engine) {
-    if ((int) engine < 0 || engine >= RANDOM_ENGINE_COUNT)
+    if ((i32) engine < 0 || engine >= RANDOM_ENGINE_COUNT)
         engine = RANDOM_ENGINE_MURMUR;
     Random *r = (Random*) Memory_alloc(TYPE_RANDOM, sizeof(Random));
     if (!r)
@@ -212,7 +212,7 @@ f32 Random_nextNDCFloat(Random *r) {
 }
 
 char Random_nextChar(Random *r) {
-    int64_t v = (int64_t)Random_nextLong(r);
+    i64 v = (i64)Random_nextLong(r);
     return (char)(32 + (llabs(v) % 95));
 }
 

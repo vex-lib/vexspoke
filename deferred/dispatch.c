@@ -18,7 +18,7 @@
  * CLASS: Dispatch — L2 Behavior, MPSC mailbox with one consumer.
  * FIELDS: SpinLock lock; DispatchItem *items; bytes count, cap;
  * DispatchItem *batch; bytes batchCap; atomic_bool draining;
- * atomic_size_t pendingCount; _Atomic unsigned long drainedCount.
+ * atomic_size_t pendingCount; _Atomic u64 drainedCount.
  * SLOT: DispatchItem { DispatchFn fn; any context; } (behaviorless).
  * CONSTRUCTOR: Dispatch() / Dispatch_0().
  * CORE: Dispatch_drain, Dispatch_free. SETTER: Dispatch_post.
@@ -120,6 +120,6 @@ bytes Dispatch_pending(const Dispatch *self) {
     return self ? atomic_load_explicit(&(*self).pendingCount, memory_order_relaxed) : 0;
 }
 
-unsigned long Dispatch_getDrainedCount(const Dispatch *self) {
+u64 Dispatch_getDrainedCount(const Dispatch *self) {
     return self ? atomic_load_explicit(&(*self).drainedCount, memory_order_relaxed) : 0;
 }

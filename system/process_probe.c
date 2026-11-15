@@ -66,7 +66,7 @@ enum { kPidScanCap = 4096 }; // bounded stack scan; see PRIVATE HELPERS note
 
 static bool processMatches(pid_t pid, const char *wanted) {
     char path[PROC_PIDPATHINFO_MAXSIZE];
-    int len = proc_pidpath(pid, path, sizeof(path));
+    i32 len = proc_pidpath(pid, path, sizeof(path));
     if (len <= 0)
         return false;
     const char *base = strrchr(path, '/');
@@ -91,16 +91,16 @@ bool ProcessProbe_isRunning(const ProcessProbe *self, const char *procName) {
     if (!self || !procName || (*procName) == '\0')
         return false;
 #if defined(VEX_PLATFORM_APPLE)
-    int maxPids = proc_listpids(PROC_ALL_PIDS, 0, nullptr, 0);
+    i32 maxPids = proc_listpids(PROC_ALL_PIDS, 0, nullptr, 0);
     if (maxPids <= 0)
         return false;
     if (maxPids > kPidScanCap)
         maxPids = kPidScanCap;
     pid_t pids[kPidScanCap];
-    int got = proc_listpids(PROC_ALL_PIDS, 0, pids, (int)sizeof(pids));
+    i32 got = proc_listpids(PROC_ALL_PIDS, 0, pids, (i32)sizeof(pids));
     if (got <= 0)
         return false;
-    for (int i = 0; i < got && i < maxPids; i++) {
+    for (i32 i = 0; i < got && i < maxPids; i++) {
         if (pids[i] > 0 && processMatches(pids[i], procName))
             return true;
     }

@@ -67,7 +67,7 @@
  * STRUCT FIELDS (Mirroring net/websocket.h):
  * ----------------------------------------------------------------------------
  *   WebSocket {
- *     int fd;                        // connected socket, -1 once released
+ *     i32 fd;                        // connected socket, -1 once released
  *     WebSocketState state;          // CLOSED/OPEN/CLOSING/FAILED
  *     u32 timeoutMs;            // transport budget for one read/write burst
  *     bytes maxMessageBytes;        // reassembly cap
@@ -89,15 +89,15 @@
  *   WsTarget {
  *     char host[256];  // authority host (userinfo stripped)
  *     char path[2048]; // request target, "/" when absent
- *     int port;        // 80 when the authority omits it
+ *     i32 port;        // 80 when the authority omits it
  *   }
  *
  * PRIVATE HELPERS (file-local, pure logic):
  *   wsNowMs()                          // monotonic milliseconds (static)
  *   wsSetTimeout(fd, ms)               // SO_RCVTIMEO/SO_SNDTIMEO (static)
  *   wsConnect(target, ms)              // bounded non-blocking connect (static)
- *   wsSendAll(fd, bytes, length)       // short-write-safe (static)
- *   wsReadExact(self, dst, length)     // short-read-safe, timeout-bounded (static)
+ *   wsSendAll(fd, bytes, length)       // i16-write-safe (static)
+ *   wsReadExact(self, dst, length)     // i16-read-safe, timeout-bounded (static)
  *   wsFindHeaderEnd(bytes, length)     // "\r\n\r\n" end index (static)
  *   wsHeaderValue(block, name, out, cap) // case-insensitive header fetch (static)
  *   wsParseUrl(url, out)               // ws:// authority/path split (static)
@@ -134,7 +134,7 @@
 typedef struct WsTarget {
     char host[WS_HOST_BYTES]; // authority host (userinfo stripped)
     char path[WS_PATH_BYTES]; // request target, "/" when absent
-    int port;                 // 80 for ws://, 443 for wss://, when omitted
+    i32 port;                 // 80 for ws://, 443 for wss://, when omitted
     bool secure;              // true for wss://, decided by the scheme alone
 } WsTarget;
 
@@ -148,7 +148,7 @@ static u64 wsNowMs() {
 }
 
 /** Bound both directions of one socket by the same transport budget. */
-static fn wsSetTimeout(int fd, u32 timeoutMs) {
+static fn wsSetTimeout(i32 fd, u32 timeoutMs) {
     struct timeval tv;
     tv.tv_sec = (time_t) (timeoutMs / 1000u);
     tv.tv_usec = (suseconds_t) ((timeoutMs % 1000u) * 1000u);
@@ -160,7 +160,7 @@ static fn wsSetTimeout(int fd, u32 timeoutMs) {
  * Connect with a bounded wait: a non-blocking connect plus a poll armed with the
  * caller's budget, so an unreachable host consumes that budget and no more.
  */
-static int wsConnect(const WsTarget *target, u32 timeoutMs) {
+static i32 wsConnect(const WsTarget *target, u32 timeoutMs) {
     struct addrinfo hints;
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
@@ -172,22 +172,22 @@ static int wsConnect(const WsTarget *target, u32 timeoutMs) {
         resolved == nullptr)
         return -1;
 
-    int fd = -1;
+    i32 fd = -1;
     for (struct addrinfo *it = resolved; it != nullptr; it = (*it).ai_next) {
         fd = socket((*it).ai_family, (*it).ai_socktype, (*it).ai_protocol);
         if (fd < 0)
             continue;
-        int flags = fcntl(fd, F_GETFL, 0);
+        i32 flags = fcntl(fd, F_GETFL, 0);
         if (flags < 0 || fcntl(fd, F_SETFL, flags | O_NONBLOCK) < 0) {
             close(fd);
             fd = -1;
             continue;
         }
-        int state = connect(fd, (*it).ai_addr, (*it).ai_addrlen);
+        i32 state = connect(fd, (*it).ai_addr, (*it).ai_addrlen);
         if (state != 0 && errno == EINPROGRESS) {
             struct pollfd waiting = { .fd = fd, .events = POLLOUT };
-            if (poll(&waiting, 1, (int) timeoutMs) > 0) {
-                int socketError = 0;
+            if (poll(&waiting, 1, (i32) timeoutMs) > 0) {
+                i32 socketError = 0;
                 socklen_t errorLength = (socklen_t) sizeof(socketError);
                 if (getsockopt(fd, SOL_SOCKET, SO_ERROR, &socketError, &errorLength) == 0 &&
                     socketError == 0)
@@ -207,8 +207,8 @@ static int wsConnect(const WsTarget *target, u32 timeoutMs) {
     return fd;
 }
 
-/** Write a whole buffer, retrying short writes. */
-static bool wsSendAll(int fd, const u8 *data, bytes length) {
+/** Write a whole buffer, retrying i16 writes. */
+static bool wsSendAll(i32 fd, const u8 *data, bytes length) {
     bytes sent = 0u;
     while (sent < length) {
         ssize_t written = send(fd, data + sent, length - sent, 0);
@@ -228,7 +228,7 @@ static bool wsWrite(WebSocket *self, const u8 *data, bytes length) {
     return (*self).fd >= 0 && wsSendAll((*self).fd, data, length);
 }
 
-/** Read exactly length Bytes, retrying short reads within the transport budget. */
+/** Read exactly length Bytes, retrying i16 reads within the transport budget. */
 static bool wsReadExact(WebSocket *self, u8 *dest, bytes length) {
     bytes got = 0u;
     while (got < length) {
@@ -330,7 +330,7 @@ static bool wsParseUrl(const char *url, WsTarget *out) {
     const char *userInfo = strrchr(authority, '@');
     const char *hostPort = userInfo == nullptr ? authority : userInfo + 1;
 
-    int port = secure ? 443 : 80;
+    i32 port = secure ? 443 : 80;
     bytes hostLength = strlen(hostPort);
     if (*hostPort == '[') {
         const char *close = strchr(hostPort, ']');
@@ -341,7 +341,7 @@ static bool wsParseUrl(const char *url, WsTarget *out) {
         if (*after != '\0') {
             if (*after != ':')
                 return false;
-            int value = 0;
+            i32 value = 0;
             for (const char *digit = after + 1; *digit != '\0'; digit++) {
                 if (*digit < '0' || *digit > '9')
                     return false;
@@ -363,7 +363,7 @@ static bool wsParseUrl(const char *url, WsTarget *out) {
             const char *digits = colon + 1;
             if (*digits == '\0')
                 return false;
-            int value = 0;
+            i32 value = 0;
             for (const char *digit = digits; *digit != '\0'; digit++) {
                 if (*digit < '0' || *digit > '9')
                     return false;
@@ -489,7 +489,7 @@ static bool wsSendFrame(WebSocket *self, u8 opcode, bool fin,
     } else {
         header[headerLength++] = (u8) (0x80u | 127u);
         u64 value = (u64) length;
-        for (int shift = 56; shift >= 0; shift -= 8)
+        for (i32 shift = 56; shift >= 0; shift -= 8)
             header[headerLength++] = (u8) ((value >> shift) & 0xFFu);
     }
     u8 mask[4];
@@ -735,7 +735,7 @@ static bool wsHandshake(WebSocket *self, const WsTarget *target) {
     }
 
     char request[WS_PATH_BYTES + 512u];
-    int written = snprintf(request, sizeof(request),
+    i32 written = snprintf(request, sizeof(request),
         "GET %s HTTP/1.1\r\n"
         "Host: %s:%d\r\n"
         "Upgrade: websocket\r\n"
@@ -844,7 +844,7 @@ bool WebSocket_open(WebSocket *self, const char *url, WebSocketConfig config) {
         Tls_setBudget(tls, (*self).timeoutMs);
         (*self).tls = tls;
     } else {
-        int fd = wsConnect(&target, (*self).timeoutMs);
+        i32 fd = wsConnect(&target, (*self).timeoutMs);
         if (fd < 0) {
             THROW("WebSocket_open: connect failed");
             wsFail(self, "connect failed");
@@ -935,7 +935,7 @@ WebSocketMessage WebSocket_poll(WebSocket *self, u32 budgetMs) {
                 continue;
         } else {
             struct pollfd waiting = { .fd = (*self).fd, .events = POLLIN };
-            int ready = poll(&waiting, 1, (int) slice);
+            i32 ready = poll(&waiting, 1, (i32) slice);
             if (ready == 0)
                 continue;
             if (ready < 0) {
@@ -1089,10 +1089,10 @@ fn WebSocket_toString(const WebSocket *self, char *dest, bytes cap, bool *outTru
         Str_printf(&out,
             "WebSocket { state=%s, fd=%d, closeCode=%u, framesIn=%llu, framesOut=%llu, "
             "pongs=%llu }",
-            wsStateName((*self).state), (*self).fd, (unsigned) (*self).closeCode,
-            (unsigned long long) (*self).framesIn,
-            (unsigned long long) (*self).framesOut,
-            (unsigned long long) (*self).pongsSent);
+            wsStateName((*self).state), (*self).fd, (u32) (*self).closeCode,
+            (u64) (*self).framesIn,
+            (u64) (*self).framesOut,
+            (u64) (*self).pongsSent);
     }
     if (outTruncated != nullptr)
         *outTruncated = Str_isTruncated(&out);
@@ -1111,15 +1111,15 @@ fn WebSocket_toStringStruct(const WebSocket *self, char *dest, bytes cap,
             "closeCode=%u, closeReasonTruncated=%s, framesIn=%llu, framesOut=%llu, "
             "pongsSent=%llu }",
             (*self).fd, wsStateName((*self).state), (*self).timeoutMs,
-            (unsigned long long) (*self).maxMessageBytes,
+            (u64) (*self).maxMessageBytes,
             (*self).message == nullptr ? "nullptr" : "owned",
-            (unsigned long long) (*self).messageCap,
-            (unsigned long long) (*self).messageLength, (*self).messageOpcode,
-            (unsigned) (*self).closeCode,
+            (u64) (*self).messageCap,
+            (u64) (*self).messageLength, (*self).messageOpcode,
+            (u32) (*self).closeCode,
             (*self).closeReasonTruncated ? "true" : "false",
-            (unsigned long long) (*self).framesIn,
-            (unsigned long long) (*self).framesOut,
-            (unsigned long long) (*self).pongsSent);
+            (u64) (*self).framesIn,
+            (u64) (*self).framesOut,
+            (u64) (*self).pongsSent);
     }
     if (outTruncated != nullptr)
         *outTruncated = Str_isTruncated(&out);

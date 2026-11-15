@@ -70,8 +70,8 @@ typedef struct SegmentIndex {
 // empty segment (leading/trailing/d64 dot), or a segment over SEGMENT_NAME_MAX.
 bytes SegmentIndex_segmentCount(const char *path);
 // Copy segment `index` into out (bounded, NUL-terminated). Returns the length,
-// or -1 on a null out / short buffer / index past the end.
-int SegmentIndex_segment(const char *path, bytes index, char *out, bytes cap);
+// or -1 on a null out / i16 buffer / index past the end.
+i32 SegmentIndex_segment(const char *path, bytes index, char *out, bytes cap);
 
 // --- Constructors ---
 bool SegmentIndex_init(SegmentIndex *index);

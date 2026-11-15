@@ -15,7 +15,7 @@
  * ExceptionCategory category    stable diagnostic category
  * const char *site              borrowed operation/site label
  * const char *file              borrowed source filename
- * int line                      source line number
+ * i32 line                      source line number
  * char *message                 owned formatted primary diagnostic
  * char *details                 owned formatted context diagnostic
  * FUNCTION REGISTRY
@@ -55,7 +55,7 @@ static fn exceptionInitializeV(Exception *self,
                                  ExceptionCategory category,
                                  const char *site,
                                  const char *file,
-                                 int line,
+                                 i32 line,
                                  const char *fmt,
                                  va_list args) {
     (*self).type = TYPE_EXCEPTION_SINGLETON;
@@ -69,7 +69,7 @@ static fn exceptionInitializeV(Exception *self,
     if (fmt != nullptr) {
         va_list copy;
         va_copy(copy, args);
-        int needed = vsnprintf(nullptr, 0, fmt, copy);
+        i32 needed = vsnprintf(nullptr, 0, fmt, copy);
         va_end(copy);
 
         if (needed >= 0) {
@@ -95,7 +95,7 @@ Exception Exception_0() {
 static Exception exceptionFormatted(ExceptionCategory category,
                                      const char *site,
                                      const char *file,
-                                     int line,
+                                     i32 line,
                                      const char *fmt,
                                      va_list args) {
     Exception self = Exception_0();
@@ -104,7 +104,7 @@ static Exception exceptionFormatted(ExceptionCategory category,
 }
 
 Exception Exception_5(ExceptionCategory category, const char *site,
-                      const char *file, int line, const char *fmt, ...) {
+                      const char *file, i32 line, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
     Exception self = exceptionFormatted(category, site, file, line, fmt, args);
@@ -113,7 +113,7 @@ Exception Exception_5(ExceptionCategory category, const char *site,
 }
 
 Exception Exception_6(ExceptionCategory category, const char *site,
-                      const char *file, int line, const char *fmt, ...) {
+                      const char *file, i32 line, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
     Exception self = exceptionFormatted(category, site, file, line, fmt, args);
@@ -122,7 +122,7 @@ Exception Exception_6(ExceptionCategory category, const char *site,
 }
 
 Exception Exception_7(ExceptionCategory category, const char *site,
-                      const char *file, int line, const char *fmt, ...) {
+                      const char *file, i32 line, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
     Exception self = exceptionFormatted(category, site, file, line, fmt, args);
@@ -131,7 +131,7 @@ Exception Exception_7(ExceptionCategory category, const char *site,
 }
 
 Exception Exception_8(ExceptionCategory category, const char *site,
-                      const char *file, int line, const char *fmt, ...) {
+                      const char *file, i32 line, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
     Exception self = exceptionFormatted(category, site, file, line, fmt, args);
@@ -145,7 +145,7 @@ fn Exception_setDetailsV(Exception *self, const char *fmt, va_list args) {
 
     va_list copy;
     va_copy(copy, args);
-    int needed = vsnprintf(nullptr, 0, fmt, copy);
+    i32 needed = vsnprintf(nullptr, 0, fmt, copy);
     va_end(copy);
 
     if (needed < 0) return;

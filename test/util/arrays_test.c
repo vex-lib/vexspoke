@@ -10,7 +10,7 @@
 
 #include "util/arrays.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -33,7 +33,7 @@ static bool intSorted(const i32 *data, bytes n) {
 // Exercises in-place sorting, binary-search miss encoding, and byte utilities.
 // Exercises array utilities and checks their ordering and boundary behavior.
 // Verifies in-place sorting, binary-search insertion encoding, and byte operations.
-int main() {
+i32 main() {
     // sortInt: a scrambled buffer becomes ascending and keeps its multiset.
     i32 a[] = { 5, 3, 9, 1, 3, 7, 0, -2, 8, 3 };
     bytes n = sizeof a / sizeof a[0];
@@ -48,7 +48,7 @@ int main() {
     CHECK(1);
 
     // sortLong.
-    int64_t b[] = { 40, -5, 12, 7, -100, 7 };
+    i64 b[] = { 40, -5, 12, 7, -100, 7 };
     bytes nb = sizeof b / sizeof b[0];
     Arrays_sortLong(b, nb);
     CHECK(b[0] == -100 && b[nb - 1] == 40);
@@ -64,7 +64,7 @@ int main() {
     CHECK(Arrays_binarySearchInt(sorted, 5, 100) == -6); // insertion 5
 
     // binarySearchLong.
-    int64_t sortedL[] = { 10, 20, 30 };
+    i64 sortedL[] = { 10, 20, 30 };
     CHECK(Arrays_binarySearchLong(sortedL, 3, 10) == 0);
     CHECK(Arrays_binarySearchLong(sortedL, 3, 30) == 2);
     CHECK(Arrays_binarySearchLong(sortedL, 3, 25) == -3);

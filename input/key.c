@@ -33,7 +33,7 @@
  * ============================================================================
  * Keyboard state table plus event stream: a static 512 x 40-byte KeySlot
  * arena (zero runtime allocation) holds press/release timestamps, tap
- * settlement state, and the one-shot long-press latch, while a bounded MPMC
+ * settlement state, and the one-shot i64-press latch, while a bounded MPMC
  * ring carries packed 16-byte InputEvents from the producer (Thread 0) to
  * Key_dispatchEvents on the game thread. Listener registries — one global
  * segment plus per-window rows keyed by opaque OS window id — grow
@@ -76,8 +76,8 @@
  *   WinRow {
  *     u32 windowId;         // opaque OS window tag (0 never attached)
  *     const KeyHandler **items;  // arena-allocated listener segment, doubling
- *     int count;                 // live listener count
- *     int cap;                   // allocated segment capacity
+ *     i32 count;                 // live listener count
+ *     i32 cap;                   // allocated segment capacity
  *   }
  *   (growSegment / growRows / rowFor: static behavior, zero struct fields)
  *
@@ -162,26 +162,26 @@ static bool s_ready = false;
 typedef struct WinRow {
     u32 windowId;
     const KeyHandler **items;  // arena-allocated segment, doubling
-    int count;
-    int cap;
+    i32 count;
+    i32 cap;
 } WinRow;
 
 static const KeyHandler **s_listeners = nullptr;  // global listener segment
-static int s_listenerCount = 0;
-static int s_listenerCap = 0;
+static i32 s_listenerCount = 0;
+static i32 s_listenerCap = 0;
 
 static WinRow *s_rows = nullptr;  // growable window-row table
-static int s_rowCount = 0;
-static int s_rowCap = 0;
+static i32 s_rowCount = 0;
+static i32 s_rowCap = 0;
 
 // Grow a handler segment to at least `needed` slots. On OOM the segment is
 // left untouched and the registration is silently dropped (legacy parity).
 // Row structs move when the row TABLE grows, so their ITEM segments are
 // separate arena blocks: item pointers survive, row pointers do not — always
 // re-derive rows through rowFor() after any attach/detach.
-static bool growSegment(const KeyHandler ***items, int *cap, int needed) {
+static bool growSegment(const KeyHandler ***items, i32 *cap, i32 needed) {
     if (needed <= *cap) return true;
-    int newCap = (*cap == 0) ? 16 : *cap * 2;
+    i32 newCap = (*cap == 0) ? 16 : *cap * 2;
     while (newCap < needed) newCap *= 2;
     const KeyHandler **nb = (const KeyHandler**) Memory_alloc(
         TYPE_INT_POINTER, (bytes) newCap * sizeof(KeyHandler*));
@@ -194,9 +194,9 @@ static bool growSegment(const KeyHandler ***items, int *cap, int needed) {
 }
 
 // Grow the window-row table to at least `needed` rows (doubling, cold 8).
-static bool growRows(int needed) {
+static bool growRows(i32 needed) {
     if (needed <= s_rowCap) return true;
-    int newCap = (s_rowCap == 0) ? 8 : s_rowCap * 2;
+    i32 newCap = (s_rowCap == 0) ? 8 : s_rowCap * 2;
     while (newCap < needed) newCap *= 2;
     WinRow *nb = (WinRow*) Memory_alloc(TYPE_INT_POINTER,
         (bytes) newCap * sizeof(WinRow));
@@ -210,7 +210,7 @@ static bool growRows(int needed) {
 
 // Find the row for an opaque OS window id, or NULL when not attached.
 static WinRow *rowFor(u32 windowId) {
-    for (int i = 0; i < s_rowCount; i++)
+    for (i32 i = 0; i < s_rowCount; i++)
         if (s_rows[i].windowId == windowId)
             return &s_rows[i];
     return nullptr;
@@ -296,7 +296,7 @@ fn Key_addListener(const KeyHandler *listener) {
 // Swap-remove: order is not part of the contract, so the last slot fills the
 // hole in O(1). Returns true if the listener was found and removed.
 bool Key_removeListener(const KeyHandler *listener) {
-    for (int i = 0; i < s_listenerCount; i++) {
+    for (i32 i = 0; i < s_listenerCount; i++) {
         if (s_listeners[i] == listener) {
             s_listeners[i] = s_listeners[--s_listenerCount];
             return true;
@@ -324,7 +324,7 @@ bool Key_detachWindow(u32 windowId, const KeyHandler *listener) {
     if (listener == nullptr || windowId == 0) return false;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return false;
-    for (int i = 0; i < (*row).count; i++) {
+    for (i32 i = 0; i < (*row).count; i++) {
         if ((*row).items[i] == listener) {
             (*row).count--;
             (*row).items[i] = (*row).items[(*row).count];
@@ -342,8 +342,8 @@ fn Key_detachWindowAll(u32 windowId) {
 }
 
 // Modifier snapshot from live state, packed into the wire-format nibble.
-static int modifierMask() {
-    int mods = 0;
+static i32 modifierMask() {
+    i32 mods = 0;
     if (Key_isDown(KEY_LEFT_SHIFT) || Key_isDown(KEY_RIGHT_SHIFT)) mods |= 1;
     if (Key_isDown(KEY_LEFT_CONTROL) || Key_isDown(KEY_RIGHT_CONTROL)) mods |= 2;
     if (Key_isDown(KEY_LEFT_ALT) || Key_isDown(KEY_RIGHT_ALT)) mods |= 4;
@@ -356,7 +356,7 @@ static u64 epochMicros() {
     return (NanoTime_elapsedNanos() / 1000ULL) & 0x3FFFFFFFFFFFULL;
 }
 
-fn Key_pushEvent(u32 windowId, int keyCode, int action, u64 tapWindowNanos) {
+fn Key_pushEvent(u32 windowId, i32 keyCode, i32 action, u64 tapWindowNanos) {
     if (keyCode < 0 || keyCode >= KEY_COUNT) return;
     if (!s_ready) Key_init();
     if (!s_ready) return;
@@ -413,11 +413,11 @@ fn Key_pushCharEvent(u32 windowId, u32 c) {
 
 // Deliver one event to a scoped listener list. windowId 0 (FOCUS_BROADCAST)
 // is reserved and never attached; broadcast events fan _out to every row.
-static fn deliverToWindow(u32 windowId, int action, int keyEvent, u64 exactNanos) {
+static fn deliverToWindow(u32 windowId, i32 action, i32 keyEvent, u64 exactNanos) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return;
-    for (int i = 0; i < (*row).count; i++) {
+    for (i32 i = 0; i < (*row).count; i++) {
         const KeyHandler *l = (*row).items[i];
         any self = (*l).self;
         if (action == KEY_ACTION_DOWN && (*l).onKeyDown)
@@ -434,7 +434,7 @@ static fn deliverChar(u32 windowId, u32 c) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return;
-    for (int i = 0; i < (*row).count; i++) {
+    for (i32 i = 0; i < (*row).count; i++) {
         const KeyHandler *l = (*row).items[i];
         if ((*l).onCharTyped)
             (*l).onCharTyped((*l).self, c);
@@ -447,17 +447,17 @@ fn Key_dispatchEvents() {
     InputEvent ev;
     while (RingBuffer_pop(&s_queue, &ev)) {
         u64 packed = ev.packed;
-        int action = (int)(packed & 0x3);
+        i32 action = (i32)(packed & 0x3);
         u64 exactNanos = NanoTime_startNanos()
                             + (((packed >> 18) & 0x3FFFFFFFFFFFULL) * 1000ULL);
 
         if (action == 3) { // char event
             u32 c = (u32)((packed >> 2) & 0xFFFF);
-            for (int i = 0; i < s_listenerCount; i++)
+            for (i32 i = 0; i < s_listenerCount; i++)
                 if ((*s_listeners[i]).onCharTyped)
                     (*s_listeners[i]).onCharTyped((*s_listeners[i]).self, c);
             if (ev.windowId == FOCUS_BROADCAST) {
-                for (int r = 0; r < s_rowCount; r++)
+                for (i32 r = 0; r < s_rowCount; r++)
                     deliverChar(s_rows[r].windowId, c);
             } else {
                 deliverChar(ev.windowId, c);
@@ -465,19 +465,19 @@ fn Key_dispatchEvents() {
             continue;
         }
 
-        int keyCode = (int)((packed >> 2) & 0xFFF);
-        int modifiers = (int)((packed >> 14) & 0xF);
+        i32 keyCode = (i32)((packed >> 2) & 0xFFF);
+        i32 modifiers = (i32)((packed >> 14) & 0xF);
 
-        int mappedMods = 0;
+        i32 mappedMods = 0;
         if ((modifiers & 1) != 0) mappedMods |= KEY_MOD_SHIFT;
         if ((modifiers & 2) != 0) mappedMods |= KEY_MOD_CONTROL;
         if ((modifiers & 4) != 0) mappedMods |= KEY_MOD_OPTION;
         if ((modifiers & 8) != 0) mappedMods |= KEY_MOD_COMMAND;
-        int keyEvent = keyCode | mappedMods;
+        i32 keyEvent = keyCode | mappedMods;
 
         // Global taps hear everything; window listeners only their own
         // window (or broadcast).
-        for (int i = 0; i < s_listenerCount; i++) {
+        for (i32 i = 0; i < s_listenerCount; i++) {
             any self = (*s_listeners[i]).self;
             if (action == KEY_ACTION_DOWN && (*s_listeners[i]).onKeyDown)
                 (*s_listeners[i]).onKeyDown(self, keyEvent, exactNanos);
@@ -487,7 +487,7 @@ fn Key_dispatchEvents() {
                 (*s_listeners[i]).onKeyRepeat(self, keyEvent, exactNanos);
         }
         if (ev.windowId == FOCUS_BROADCAST) {
-            for (int r = 0; r < s_rowCount; r++)
+            for (i32 r = 0; r < s_rowCount; r++)
                 deliverToWindow(s_rows[r].windowId, action, keyEvent, exactNanos);
         } else {
             deliverToWindow(ev.windowId, action, keyEvent, exactNanos);
@@ -495,52 +495,52 @@ fn Key_dispatchEvents() {
     }
 }
 
-bool Key_isDown(int keyCode) {
+bool Key_isDown(i32 keyCode) {
     if (keyCode < 0 || keyCode >= KEY_COUNT) return false;
     return s_slots[keyCode].pressTime != 0;
 }
 
-u64 Key_pressTime(int keyCode) {
+u64 Key_pressTime(i32 keyCode) {
     if (keyCode < 0 || keyCode >= KEY_COUNT) return 0;
     return s_slots[keyCode].pressTime;
 }
 
-u64 Key_lastReleaseTime(int keyCode) {
+u64 Key_lastReleaseTime(i32 keyCode) {
     if (keyCode < 0 || keyCode >= KEY_COUNT) return 0;
     return s_slots[keyCode].lastReleaseTime;
 }
 
-u64 Key_lastHoldDurationNanos(int keyCode) {
+u64 Key_lastHoldDurationNanos(i32 keyCode) {
     if (keyCode < 0 || keyCode >= KEY_COUNT) return 0;
     return s_slots[keyCode].lastHoldDuration;
 }
 
-u64 Key_currentHoldDurationNanos(int keyCode) {
+u64 Key_currentHoldDurationNanos(i32 keyCode) {
     u64 p = Key_pressTime(keyCode);
     return p == 0 ? 0 : NanoTime_now() - p;
 }
 
-u64 Key_holdDurationNanos(int keyCode) {
+u64 Key_holdDurationNanos(i32 keyCode) {
     u64 p = Key_pressTime(keyCode);
     return p != 0 ? NanoTime_now() - p : Key_lastHoldDurationNanos(keyCode);
 }
 
-u64 Key_durationSinceReleaseNanos(int keyCode) {
+u64 Key_durationSinceReleaseNanos(i32 keyCode) {
     u64 r = Key_lastReleaseTime(keyCode);
     return r == 0 ? 0 : NanoTime_now() - r;
 }
 
-int Key_taps(int keyCode) {
+i32 Key_taps(i32 keyCode) {
     if (keyCode < 0 || keyCode >= KEY_COUNT) return 0;
     return s_slots[keyCode].taps;
 }
 
-fn Key_resetTaps(int keyCode) {
+fn Key_resetTaps(i32 keyCode) {
     if (keyCode < 0 || keyCode >= KEY_COUNT) return;
     s_slots[keyCode].taps = 0;
 }
 
-KeyTapPhase Key_tapPhase(int keyCode) {
+KeyTapPhase Key_tapPhase(i32 keyCode) {
     if (keyCode < 0 || keyCode >= KEY_COUNT) return KEY_TAP_NONE;
     const KeySlot *slot = &s_slots[keyCode];
     if ((*slot).taps == 0)
@@ -554,37 +554,37 @@ KeyTapPhase Key_tapPhase(int keyCode) {
     return KEY_TAP_SINGLE;
 }
 
-bool Key_isLongPressFired(int keyCode) {
+bool Key_isLongPressFired(i32 keyCode) {
     if (keyCode < 0 || keyCode >= KEY_COUNT) return false;
     return s_slots[keyCode].longPressFired != 0;
 }
 
-fn Key_setLongPressFired(int keyCode, bool fired) {
+fn Key_setLongPressFired(i32 keyCode, bool fired) {
     if (keyCode < 0 || keyCode >= KEY_COUNT) return;
     s_slots[keyCode].longPressFired = (u8)(fired ? 1 : 0);
 }
 
-int Key_code(int keyEvent) {
+i32 Key_code(i32 keyEvent) {
     return keyEvent & KEY_MASK_CODE;
 }
 
-bool Key_hasShift(int keyEvent) {
+bool Key_hasShift(i32 keyEvent) {
     return (keyEvent & KEY_MOD_SHIFT) != 0;
 }
 
-bool Key_hasControl(int keyEvent) {
+bool Key_hasControl(i32 keyEvent) {
     return (keyEvent & KEY_MOD_CONTROL) != 0;
 }
 
-bool Key_hasOption(int keyEvent) {
+bool Key_hasOption(i32 keyEvent) {
     return (keyEvent & KEY_MOD_OPTION) != 0;
 }
 
-bool Key_hasCommand(int keyEvent) {
+bool Key_hasCommand(i32 keyEvent) {
     return (keyEvent & KEY_MOD_COMMAND) != 0;
 }
 
-const char *Key_name(int keyCode) {
+const char *Key_name(i32 keyCode) {
     if (keyCode < 0 || keyCode >= KEY_COUNT) return "";
     const char *name = s_names[keyCode];
     return name ? name : "";

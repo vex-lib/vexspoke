@@ -2,7 +2,7 @@
 #define PRIMITIVE_PRIMITIVE_H
 
 // primitive/primitive.h — THE primitive directory header.
-// One include for the whole scalar vocabulary: bool, byte, int, long, short,
+// One include for the whole scalar vocabulary: bool, byte, i32, i64, i16,
 // char_sequence, float/f32, d64, fixed32/fixed64, brain, buffer, vex-string.
 // Sub-headers stay includable individually; this header is the door engine
 // code uses.

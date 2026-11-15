@@ -5,7 +5,7 @@
 
 // input/key_map.h — input binding registry (combo → fn pointer).
 //
-// Maps composable int64_t combo IDs to function pointers. Pure behavior
+// Maps composable i64 combo IDs to function pointers. Pure behavior
 // (R2 vexspoke) — zero UI, zero GPU. Any consumer (Frame, Application,
 // Console) can own a KeyMap.
 //
@@ -54,10 +54,10 @@
 
 // ── Types ─────────────────────────────────────────────────
 
-typedef fn (*KeyBindingFn)(any userdata, int64_t combo);
+typedef fn (*KeyBindingFn)(any userdata, i64 combo);
 
 typedef struct KeyBinding {
-    int64_t       combo;       // the encoded combo
+    i64       combo;       // the encoded combo
     KeyBindingFn  fn;          // callback
     any userdata;    // opaque context
 } KeyBinding;
@@ -89,14 +89,14 @@ fn    KeyMap_destroy(KeyMap *map);
 // Exact match: liveCombo must equal the registered combo exactly.
 // Wildcard matching (KeyMap_matchMask) deferred — see DRAFT annotation above.
 
-bool KeyMap_bind(KeyMap *map, int64_t combo, KeyBindingFn fn, any userdata);
-bool KeyMap_unbind(KeyMap *map, int64_t combo, KeyBindingFn fn);
+bool KeyMap_bind(KeyMap *map, i64 combo, KeyBindingFn fn, any userdata);
+bool KeyMap_unbind(KeyMap *map, i64 combo, KeyBindingFn fn);
 
 // ── Matching ──────────────────────────────────────────────
 // Scan bindings for an exact combo match. Returns the binding or NULL.
 // O(n) where n = binding count — fast for <64 bindings.
 
-const KeyBinding *KeyMap_match(const KeyMap *map, int64_t liveCombo);
+const KeyBinding *KeyMap_match(const KeyMap *map, i64 liveCombo);
 
 // ── Resolution (per-frame) ────────────────────────────────
 // Resolve live Key/Mouse gesture state against the binding table.
@@ -130,7 +130,7 @@ const KeyBinding *KeyMap_match(const KeyMap *map, int64_t liveCombo);
 // future event-driven resolver (;;DRAFT). Long-press uses the map's
 // longPressNanos threshold (KEYMAP_LONG_PRESS_NANOS by default; 0 disables).
 
-bool KeyMap_resolve(const KeyMap *map, int64_t *outCombo);
+bool KeyMap_resolve(const KeyMap *map, i64 *outCombo);
 
 // ── Recognition config ────────────────────────────────────
 // multiTapEnabled (default true): settle-based multi-tap recognition. Turning
@@ -140,26 +140,26 @@ bool KeyMap_isMultiTapEnabled(const KeyMap *map);
 fn KeyMap_setMultiTapEnabled(KeyMap *map, bool enabled);
 
 // Hold threshold for LONG_PRESS resolution (default KEYMAP_LONG_PRESS_NANOS;
-// 0 disables long-press bindings on this map).
+// 0 disables i64-press bindings on this map).
 u64 KeyMap_getLongPressNanos(const KeyMap *map);
 fn     KeyMap_setLongPressNanos(KeyMap *map, u64 nanos);
 
 // ── Combo builder ─────────────────────────────────────────
 // Reads current modifier state from vexspoke's Key_isDown / Key_taps,
-// assembles the full int64_t combo from a key code + gesture type.
+// assembles the full i64 combo from a key code + gesture type.
 // The caller invokes this on each input event to build the live combo,
 // then passes it to KeyMap_match.
 
-int64_t KeyMap_buildCombo(int64_t keyCode, int64_t gestureType);
+i64 KeyMap_buildCombo(i64 keyCode, i64 gestureType);
 
 // Convenience builders that fold in live tap/hold state:
 // - Key: gesture comes from Key_taps(code) when gestureType is TAP.
 // - Mouse: gesture comes from Mouse_taps(button) when gestureType is TAP.
 // - Hold: gesture is LONG_PRESS when the current hold exceeds the threshold
-//   (nanoseconds; 0 disables long-press detection).
-int64_t KeyMap_buildComboForKey(int key, int64_t gestureType);
-int64_t KeyMap_buildComboForMouse(int button, int64_t gestureType);
-int64_t KeyMap_buildComboForHold(int key, u64 longPressThresholdNanos);
+//   (nanoseconds; 0 disables i64-press detection).
+i64 KeyMap_buildComboForKey(i32 key, i64 gestureType);
+i64 KeyMap_buildComboForMouse(i32 button, i64 gestureType);
+i64 KeyMap_buildComboForHold(i32 key, u64 longPressThresholdNanos);
 
 // ── Query ─────────────────────────────────────────────────
 

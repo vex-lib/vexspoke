@@ -14,7 +14,7 @@
  * MODULE: ReactiveTypedTest (reactive_typed_test/test.c)
  * LEVEL: L3 — Module Code (headless verification harness)
  * ============================================================================
- * Headless suite for the typed reactives (bool / int / d64 / string): the
+ * Headless suite for the typed reactives (bool / i32 / d64 / string): the
  * embed-first contract, per-type set/get, bit-exact d64 round-trip, pointer
  * rebind as change, observer fan-out, batch coalescing, out-of-band raw writes,
  * and null-safety.
@@ -28,8 +28,8 @@
  * ============================================================================
  */
 
-static int g_fail = 0;
-static int g_checks = 0;
+static i32 g_fail = 0;
+static i32 g_checks = 0;
 
 #define CHECK(cond)                                                       \
     do {                                                                  \
@@ -40,8 +40,8 @@ static int g_checks = 0;
         }                                                                 \
     } while (0)
 
-static int g_changed = 0;
-static int g_sets = 0;
+static i32 g_changed = 0;
+static i32 g_sets = 0;
 static i32 g_old = 0;
 static i32 g_new = 0;
 static Vec3 *g_objectValue = nullptr;
@@ -253,7 +253,7 @@ static fn testNull() {
 }
 
 // Runs typed reactive embedding, scalar behavior, notifications, and null-safety cases.
-int main() {
+i32 main() {
     printf("=== Reactive (typed) Test Suite ===\n\n");
 
     testEmbedFirst();

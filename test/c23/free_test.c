@@ -11,7 +11,7 @@
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -21,7 +21,7 @@ static int g_failures = 0;
         }                                                                  \
     } while (0)
 
-static int g_calls = 0;
+static i32 g_calls = 0;
 // Counts destructor dispatches for the registered test type.
 static fn countingDestructor(any ptr) {
     (discard) ptr;
@@ -35,7 +35,7 @@ static fn otherDestructor(any ptr) {
 }
 
 // Verifies destructor registration, replacement, lookup, and c23_free routing.
-int main() {
+i32 main() {
     // Register / lookup.
     CHECK(Destructor_lookup(4242u) == nullptr);
     Destructor_register(4242u, countingDestructor);

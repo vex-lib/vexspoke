@@ -43,7 +43,7 @@
 #define VEX_TO_WORD(v)   ((pointer) (u32) (v))
 #define VEX_FROM_WORD(w) ((i32) (u32) (w))
 #define VEX_ZERO       ((i32) 0)
-#define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%d", (int) (v))
+#define VEX_VALUE_OF(out, cap, v) snprintf((out), (cap), "%d", (i32) (v))
 #include "reactive/reactive_probable_tmpl.inc"
 #undef VEX_NAME
 #undef VEX_T

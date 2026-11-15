@@ -4,7 +4,7 @@
 #include "vex.h"
 #include "nio/nio.h"
 
-// primitive/short.h — Short primitive (Legacy: primitive/Short.java).
+// primitive/i16.h — Short primitive (Legacy: primitive/Short.java).
 // Delegates to Bit16 width pool (2B stride).
 
 extern BitPool g_shortPool;

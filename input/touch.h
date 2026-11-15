@@ -39,20 +39,20 @@ fn Touch_detachWindowAll(u32 windowId);
 
 // Producer: Thread 0 only. touchId is the slot (0..TOUCH_MAX-1); windowId
 // tags the receiving window.
-fn Touch_pushTouchEvent(u32 windowId, int touchId, int action, d64 x, d64 y,
+fn Touch_pushTouchEvent(u32 windowId, i32 touchId, i32 action, d64 x, d64 y,
                           d64 pressure, u64 holdThresholdNanos);
 
 // Consumer: drain the ring into the listeners. Game thread, once per frame.
 fn Touch_dispatchEvents();
 
 // --- State queries ---
-bool    Touch_isDown(int touchId);
-u64 Touch_pressTime(int touchId);
-u64 Touch_lastHoldDuration(int touchId);
-int     Touch_taps(int touchId);
-int     Touch_lastAction(int touchId);
-d64  Touch_x(int touchId);
-d64  Touch_y(int touchId);
-d64  Touch_pressure(int touchId);
+bool    Touch_isDown(i32 touchId);
+u64 Touch_pressTime(i32 touchId);
+u64 Touch_lastHoldDuration(i32 touchId);
+i32     Touch_taps(i32 touchId);
+i32     Touch_lastAction(i32 touchId);
+d64  Touch_x(i32 touchId);
+d64  Touch_y(i32 touchId);
+d64  Touch_pressure(i32 touchId);
 
 #endif

@@ -5,7 +5,7 @@
 
 #include "objects/probable.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -16,7 +16,7 @@ static int g_failures = 0;
     } while (0)
 
 // Checks Probable fields, weighted draw behavior, and null-safe accessors.
-int main() {
+i32 main() {
     Probable *p = Probable_3((pointer) 0xABCD, 3, 10);
     CHECK(p != nullptr);
     CHECK(Probable_object(p) == (pointer) 0xABCD);

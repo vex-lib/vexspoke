@@ -3,7 +3,7 @@
 // Proves the URI/auth builders against published vectors and boundary caps:
 //   - default ports (https 443, everything else 80, case-insensitive);
 //   - RFC 4648 base64 with all three tail paddings, and the exact-capacity
-//     refusal (-1) when the output buffer is one byte short;
+//     refusal (-1) when the output buffer is one byte i16;
 //   - Basic auth (with a known vector and a null-credential case) and Bearer;
 //   - build joins scheme/host/path, omits the default port, keeps a non-default
 //     port, prepends a missing slash, and reports truncation as -1.
@@ -14,7 +14,7 @@
 
 #include "net/url.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -27,13 +27,13 @@ static int g_failures = 0;
 /** Checks URL-safe base64 encoding against a fixed expected output string. */
 static fn test_base64(const char *in, const char *want) {
     char out[64];
-    int64_t n = Url_base64((const u8*) in, strlen(in), out, sizeof(out));
-    CHECK(n == (int64_t) strlen(want));
+    i64 n = Url_base64((const u8*) in, strlen(in), out, sizeof(out));
+    CHECK(n == (i64) strlen(want));
     CHECK(strcmp(out, want) == 0);
-    // Exactly-needed capacity succeeds; one short fails.
+    // Exactly-needed capacity succeeds; one i16 fails.
     bytes need = 4 * ((strlen(in) + 2) / 3);
     char exact[64];
-    CHECK(Url_base64((const u8*) in, strlen(in), exact, need + 1) == (int64_t) need);
+    CHECK(Url_base64((const u8*) in, strlen(in), exact, need + 1) == (i64) need);
     CHECK(Url_base64((const u8*) in, strlen(in), exact, need) == -1);
 }
 
@@ -49,15 +49,15 @@ static fn test_defaults() {
 /** Checks credential handling and authorization formatting for URL requests. */
 static fn test_auth() {
     char out[256];
-    int64_t n = Url_basicAuth("Aladdin", "open sesame", out, sizeof(out));
-    CHECK(n == (int64_t) strlen("Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=="));
+    i64 n = Url_basicAuth("Aladdin", "open sesame", out, sizeof(out));
+    CHECK(n == (i64) strlen("Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=="));
     CHECK(strcmp(out, "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==") == 0);
 
     // nullptr credentials become empty strings: "Basic Og==".
-    CHECK(Url_basicAuth(nullptr, nullptr, out, sizeof(out)) == (int64_t) strlen("Basic Og=="));
+    CHECK(Url_basicAuth(nullptr, nullptr, out, sizeof(out)) == (i64) strlen("Basic Og=="));
     CHECK(strcmp(out, "Basic Og==") == 0);
 
-    CHECK(Url_bearerAuth("abc.def", out, sizeof(out)) == (int64_t) strlen("Bearer abc.def"));
+    CHECK(Url_bearerAuth("abc.def", out, sizeof(out)) == (i64) strlen("Bearer abc.def"));
     CHECK(strcmp(out, "Bearer abc.def") == 0);
     CHECK(Url_bearerAuth(nullptr, out, sizeof(out)) == 7);
     CHECK(strcmp(out, "Bearer ") == 0);
@@ -70,8 +70,8 @@ static fn test_auth() {
 /** Exercises URL assembly from its configured components and boundary inputs. */
 static fn test_build() {
     char out[256];
-    int64_t n = Url_build("https", "example.com", 0, "/path", out, sizeof(out));
-    CHECK(n == (int64_t) strlen("https://example.com/path"));
+    i64 n = Url_build("https", "example.com", 0, "/path", out, sizeof(out));
+    CHECK(n == (i64) strlen("https://example.com/path"));
     CHECK(strcmp(out, "https://example.com/path") == 0);
 
     // https default port 443 is omitted.
@@ -98,7 +98,7 @@ static fn test_build() {
 }
 
 /** Runs the URL owner scenarios and reports aggregate assertion status. */
-int main() {
+i32 main() {
     test_defaults();
     test_base64("", "");
     test_base64("f", "Zg==");

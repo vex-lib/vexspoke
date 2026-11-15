@@ -6,7 +6,7 @@
 #include "primitive/long.h"
 #include "oop/vexspoke_type.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -17,7 +17,7 @@ static int g_failures = 0;
     } while (0)
 
 // Exercises Long signed boundaries, constructors, CAS, arrays, metadata, and null safety.
-int main() {
+i32 main() {
     CHECK(Long_init());
 
     any p = Long_alloc();
@@ -26,7 +26,7 @@ int main() {
     CHECK(Long_type(p) == ID_LONG);
     CHECK(Long_length(p) == 8);
 
-    const int64_t values[] = { 0, 1, -1, INT64_MAX, INT64_MIN };
+    const i64 values[] = { 0, 1, -1, INT64_MAX, INT64_MIN };
     for (bytes i = 0; i < sizeof values / sizeof values[0]; i++) {
         Long_set(p, values[i]);
         CHECK(Long_get(p) == values[i]);

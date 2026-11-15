@@ -25,7 +25,7 @@
 
 
 // Demonstrates authenticate-once token verification, discard, and prompt flow.
-int main() {
+i32 main() {
     printf("=== Secure TouchID token _test ===\n");
 
     /* 1. Start auth session */

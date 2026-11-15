@@ -14,7 +14,7 @@
 
 #include "search/find.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
     do {                                                                   \
@@ -95,7 +95,7 @@ static fn test_nulls() {
 }
 
 // Runs substring, exact-word, wildcard, and null-input finder cases.
-int main() {
+i32 main() {
     test_substring();
     test_exact_word();
     test_like();

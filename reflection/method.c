@@ -170,7 +170,7 @@ fn Method_toString(const Method *self, char *dest, bytes cap, bool *outTruncated
         snprintf(dest, cap, "nullptr");
         return;
     }
-    int written = snprintf(dest, cap, "Method(%s)", (*self).name[0] == '\0' ? "?" : (*self).name);
+    i32 written = snprintf(dest, cap, "Method(%s)", (*self).name[0] == '\0' ? "?" : (*self).name);
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
@@ -186,10 +186,10 @@ fn Method_toStringStruct(const Method *self, char *dest, bytes cap, bool *outTru
         snprintf(dest, cap, "nullptr");
         return;
     }
-    int written = snprintf(dest, cap, "Method { name=\"%s\", invoke=0x%llx, target=0x%llx }",
+    i32 written = snprintf(dest, cap, "Method { name=\"%s\", invoke=0x%llx, target=0x%llx }",
                            (*self).name,
-                           (unsigned long long) (pointer) (*self).invoke,
-                           (unsigned long long) (pointer) (*self).target);
+                           (u64) (pointer) (*self).invoke,
+                           (u64) (pointer) (*self).target);
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;

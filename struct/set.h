@@ -21,12 +21,12 @@ Set *Set_2(u32 element_class, bytes capacity);
 fn Set_free(Set *set);
 
 // Add an element; returns 1 if inserted, 0 if already present.
-int Set_add(Set *set, u64 element);
+i32 Set_add(Set *set, u64 element);
 
 bool Set_contains(Set *set, u64 element);
 
 // Remove an element; returns 1 if removed, 0 if absent.
-int Set_remove(Set *set, u64 element);
+i32 Set_remove(Set *set, u64 element);
 
 // Export all elements into a List of element_class.
 List *Set_toList(Set *set);

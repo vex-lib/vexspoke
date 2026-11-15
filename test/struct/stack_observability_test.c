@@ -22,7 +22,7 @@
 #include "oop/vexspoke_type.h"
 #include "struct/stack.h"
 
-static int g_failures = 0;
+static i32 g_failures = 0;
 
 #define CHECK(name, cond) do { \
     if (cond) { printf("[stackobs] PASS %s\n", name); } \
@@ -32,7 +32,7 @@ static int g_failures = 0;
 #define ARENA_BYTES (32u * 1024u * 1024u)
 #define PUSH_LIMIT  6000000u   // exceeds the 64MB default arena's reachable capacity
 
-int main() {
+i32 main() {
     printf("=== Stack explicit-fault owner suite ===\n");
     // Must run before any other allocation so the small arena wins.
     CHECK("small arena initialized", Memory_init(ARENA_BYTES));
@@ -93,7 +93,7 @@ int main() {
     CHECK("pop then push succeeds again", TryValue_isOk(&afterPop));
 
     Stack_free(s);
-    printf("[stackobs] attempted %llu pushes before TRY_NO_MEMORY\n", (unsigned long long) attempted);
+    printf("[stackobs] attempted %llu pushes before TRY_NO_MEMORY\n", (u64) attempted);
     if (g_failures != 0) {
         printf("=== %d FAILURES ===\n", g_failures);
         return 1;
