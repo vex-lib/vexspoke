@@ -299,8 +299,16 @@ bool Argon2id_derive(const Argon2Params *params,
     u32 laneLength = segmentLength * ARGON2_SYNC_POINTS;
 
     bytes memoryBytes = (bytes) memoryBlocks * ARGON2_BLOCK_BYTES;
-    u64 *memory = (u64*) Memory_alloc(TYPE_ARGON2, memoryBytes);
+    // Work memory is call-scoped and large. It owns a private arena so a derive
+    // gives every byte back when it returns; the shared master arena's bump
+    // region never reclaims, and a second verification would not fit.
+    bytes arenaBytes = MemoryArena_capacityFor(memoryBytes);
+    MemoryArena *work = arenaBytes == 0 ? nullptr : MemoryArena_create(arenaBytes);
+    u64 *memory = work == nullptr
+        ? nullptr
+        : (u64*) MemoryArena_alloc(work, TYPE_ARGON2, memoryBytes);
     if (memory == nullptr) {
+        MemoryArena_destroy(work);
         THROW("Argon2id_derive: work memory of %zu bytes was refused", memoryBytes);
         return false;
     }
@@ -322,7 +330,7 @@ bool Argon2id_derive(const Argon2Params *params,
         u8 le[4];
         if (!Blake2b_init(&ctx, sizeof h0)) {
             secureWipe(memory, memoryBytes);
-            Memory_free(memory);
+            MemoryArena_destroy(work);
             return false;
         }
         storeLE32(le, lanes);              Blake2b_update(&ctx, le, sizeof le);
@@ -347,7 +355,7 @@ bool Argon2id_derive(const Argon2Params *params,
             Blake2b_update(&ctx, associated, associatedLen);
         if (!Blake2b_final(&ctx, h0, sizeof h0)) {
             secureWipe(memory, memoryBytes);
-            Memory_free(memory);
+            MemoryArena_destroy(work);
             return false;
         }
     }
@@ -360,7 +368,7 @@ bool Argon2id_derive(const Argon2Params *params,
         storeLE32(seed + 68u, lane);
         if (!hPrime(blockBytes, ARGON2_BLOCK_BYTES, seed, sizeof seed)) {
             secureWipe(memory, memoryBytes);
-            Memory_free(memory);
+            MemoryArena_destroy(work);
             return false;
         }
         memcpy(memory + (bytes) (lane * laneLength) * ARGON2_BLOCK_WORDS,
@@ -368,7 +376,7 @@ bool Argon2id_derive(const Argon2Params *params,
         storeLE32(seed + 64u, 1u);
         if (!hPrime(blockBytes, ARGON2_BLOCK_BYTES, seed, sizeof seed)) {
             secureWipe(memory, memoryBytes);
-            Memory_free(memory);
+            MemoryArena_destroy(work);
             return false;
         }
         memcpy(memory + (bytes) (lane * laneLength + 1u) * ARGON2_BLOCK_WORDS,
@@ -397,6 +405,6 @@ bool Argon2id_derive(const Argon2Params *params,
     secureWipe(seed, sizeof seed);
     secureWipe(h0, sizeof h0);
     secureWipe(memory, memoryBytes);
-    Memory_free(memory);
+    MemoryArena_destroy(work);
     return ok;
 }
