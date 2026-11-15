@@ -1,5 +1,6 @@
 #include "vex.h"
-#include <stdlib.h>
+#include "nio/mem.h"
+#include "oop/vexspoke_type.h"
 
 #include "security/argon2.h"
 #include "security/blake2b.h"
@@ -298,7 +299,7 @@ bool Argon2id_derive(const Argon2Params *params,
     u32 laneLength = segmentLength * ARGON2_SYNC_POINTS;
 
     bytes memoryBytes = (bytes) memoryBlocks * ARGON2_BLOCK_BYTES;
-    u64 *memory = malloc(memoryBytes);
+    u64 *memory = (u64*) Memory_alloc(TYPE_ARGON2, memoryBytes);
     if (memory == nullptr) {
         THROW("Argon2id_derive: work memory of %zu bytes was refused", memoryBytes);
         return false;
@@ -321,7 +322,7 @@ bool Argon2id_derive(const Argon2Params *params,
         u8 le[4];
         if (!Blake2b_init(&ctx, sizeof h0)) {
             secureWipe(memory, memoryBytes);
-            free(memory);
+            Memory_free(memory);
             return false;
         }
         storeLE32(le, lanes);              Blake2b_update(&ctx, le, sizeof le);
@@ -346,7 +347,7 @@ bool Argon2id_derive(const Argon2Params *params,
             Blake2b_update(&ctx, associated, associatedLen);
         if (!Blake2b_final(&ctx, h0, sizeof h0)) {
             secureWipe(memory, memoryBytes);
-            free(memory);
+            Memory_free(memory);
             return false;
         }
     }
@@ -359,7 +360,7 @@ bool Argon2id_derive(const Argon2Params *params,
         storeLE32(seed + 68u, lane);
         if (!hPrime(blockBytes, ARGON2_BLOCK_BYTES, seed, sizeof seed)) {
             secureWipe(memory, memoryBytes);
-            free(memory);
+            Memory_free(memory);
             return false;
         }
         memcpy(memory + (bytes) (lane * laneLength) * ARGON2_BLOCK_WORDS,
@@ -367,7 +368,7 @@ bool Argon2id_derive(const Argon2Params *params,
         storeLE32(seed + 64u, 1u);
         if (!hPrime(blockBytes, ARGON2_BLOCK_BYTES, seed, sizeof seed)) {
             secureWipe(memory, memoryBytes);
-            free(memory);
+            Memory_free(memory);
             return false;
         }
         memcpy(memory + (bytes) (lane * laneLength + 1u) * ARGON2_BLOCK_WORDS,
@@ -396,6 +397,6 @@ bool Argon2id_derive(const Argon2Params *params,
     secureWipe(seed, sizeof seed);
     secureWipe(h0, sizeof h0);
     secureWipe(memory, memoryBytes);
-    free(memory);
+    Memory_free(memory);
     return ok;
 }

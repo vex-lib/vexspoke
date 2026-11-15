@@ -1,5 +1,8 @@
 #include "vex.h"
-#include <stdlib.h>
+#include <stdlib.h> // arc4random_buf on Apple/BSD
+
+#include "nio/mem.h"
+#include "oop/vexspoke_type.h"
 
 #include "security/secure_random.h"
 
@@ -130,12 +133,15 @@ struct SecureRandom {
 };
 
 SecureRandom *SecureRandom_0() {
-    SecureRandom *self = (SecureRandom*) calloc(1, sizeof(SecureRandom));
+    SecureRandom *self = (SecureRandom*) Memory_alloc(TYPE_SECURE_RANDOM_SINGLETON, sizeof(SecureRandom));
+    if (self == nullptr)
+        return nullptr;
+    (*self).draws = 0u;
     return self;
 }
 
 fn SecureRandom_free(SecureRandom *self) {
-    free(self);
+    Memory_free(self);
 }
 
 bool SecureRandom_bytes(SecureRandom *self, any dest, bytes len) {

@@ -1,5 +1,6 @@
 #include "vex.h"
-#include <stdlib.h>
+#include "nio/mem.h"
+#include "oop/vexspoke_type.h"
 
 #include "security/hkdf.h"
 #include "security/hmac.h"
@@ -58,7 +59,7 @@ fn Hkdf_expand(const u8 prk[HKDF_HASH_SIZE], const u8 *info, bytes infoLen,
     bytes offset = 0u;
     u8 counter = 1u;
     bytes bufferBytes = HKDF_HASH_SIZE + infoLen + 1u;
-    u8 *buffer = (u8*) malloc(bufferBytes);
+    u8 *buffer = (u8*) Memory_alloc(TYPE_HKDF, bufferBytes);
     if (buffer == nullptr) {
         THROW("Hkdf_expand: work buffer of %zu bytes was refused", bufferBytes);
         return;
@@ -83,7 +84,7 @@ fn Hkdf_expand(const u8 prk[HKDF_HASH_SIZE], const u8 *info, bytes infoLen,
         ++counter;
     }
     memset(buffer, 0, bufferBytes);
-    free(buffer);
+    Memory_free(buffer);
     memset(t, 0, sizeof t);
 }
 
