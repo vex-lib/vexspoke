@@ -82,13 +82,13 @@ SphereArray *SphereArray_3(i32 radius, u32 elementClass, bytes stride) {
 
     SphereArray *self = (SphereArray*) Memory_alloc(TYPE_SPHERE_ARRAY, sizeof(SphereArray));
     if (self == nullptr) {
-        (fn) Struct_reportConstructionExhaustion("sphere_array", sizeof(SphereArray));
+        (discard) Struct_reportConstructionExhaustion("sphere_array", sizeof(SphereArray));
         return nullptr;
     }
 
     u8 *data = (u8*) Memory_alloc(TYPE_BYTE_ARRAY, dataBytes);
     if (data == nullptr) {
-        (fn) Struct_reportConstructionExhaustion("sphere_array", dataBytes);
+        (discard) Struct_reportConstructionExhaustion("sphere_array", dataBytes);
         Memory_free(self);
         return nullptr;
     }

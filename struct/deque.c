@@ -80,7 +80,7 @@ Deque *Deque_3(u32 elementClass, bytes capacity, bytes count) {
     bytes cap = capacity < DEFAULT_CAPACITY ? DEFAULT_CAPACITY : capacity;
     Deque *deque = (Deque*) Memory_alloc(TYPE_DEQUE, sizeof(Deque));
     if (!deque) {
-        (fn) Struct_reportConstructionExhaustion("deque", sizeof(Deque));
+        (discard) Struct_reportConstructionExhaustion("deque", sizeof(Deque));
         return nullptr;
     }
 
@@ -98,7 +98,7 @@ Deque *Deque_3(u32 elementClass, bytes capacity, bytes count) {
     u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, elementClass);
     (*c).data = (u8*) Memory_alloc(bufType, Bytes);
     if (!(*c).data) {
-        (fn) Struct_reportConstructionExhaustion("deque", Bytes);
+        (discard) Struct_reportConstructionExhaustion("deque", Bytes);
         Memory_free(deque);
         return nullptr;
     }

@@ -49,9 +49,9 @@
 static Thread *s_core = nullptr;
 
 static fn networking_job(Thread *self, any task) {
-    (fn)self;
+    (discard)self;
     if (ComputeJob_run(task)) return;   // a generic job handed to this role
-    (fn)task; // TODO(net): PollRequest_executeAll(batch) once ported.
+    (discard)task; // TODO(net): PollRequest_executeAll(batch) once ported.
 }
 
 Thread *NetworkingThread_invoke() {

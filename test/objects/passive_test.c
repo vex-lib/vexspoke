@@ -21,12 +21,12 @@ static int g_failures = 0;
 static u64 g_store = 0;
 // Supplies the external value used by the Passive getter hook.
 static u64 storeGet(any userdata) {
-    (fn) userdata;
+    (discard) userdata;
     return g_store;
 }
 // Updates the external value used by the Passive setter hook.
 static fn storeSet(u64 value, any userdata) {
-    (fn) userdata;
+    (discard) userdata;
     g_store = value;
 }
 

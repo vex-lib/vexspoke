@@ -27,15 +27,15 @@ static int64_t g_firedCombo = 0;
 
 // Records the most recent combo delivered by a KeyMap binding.
 static fn onFire(any userdata, int64_t combo) {
-    (fn) userdata;
+    (discard) userdata;
     g_fires++;
     g_firedCombo = combo;
 }
 
 // Adds a distinct callback marker to verify replacement and dispatch routing.
 static fn onFire2(any userdata, int64_t combo) {
-    (fn) userdata;
-    (fn) combo;
+    (discard) userdata;
+    (discard) combo;
     g_fires += 10;
 }
 
@@ -276,7 +276,7 @@ static int64_t g_fireCombo = -1;
 static fn onResolveFire(any userdata, int64_t combo) {
     g_fireCount++;
     g_fireCombo = combo;
-    (fn) userdata;
+    (discard) userdata;
 }
 
 // Short tap window + settle sleep: settlement is an OWNERSHIP of the pending

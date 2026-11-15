@@ -347,7 +347,7 @@ static _Atomic bool g_concDone;
 
 // Appends a fixed batch of rows and stamps each admitted row with a unique sequence.
 static any concWriter(any arg) {
-    (fn) arg;
+    (discard) arg;
     for (u32 i = 0u; i < CONC_ROWS; i++) {
         u8 *row = ChunkedList_addSlot(g_concList);
         if (!row)
@@ -360,7 +360,7 @@ static any concWriter(any arg) {
 
 // Scans all published rows until writers finish, rejecting holes or invalid stamps.
 static any concReader(any arg) {
-    (fn) arg;
+    (discard) arg;
     while (!atomic_load(&g_concDone)) {
         u32 n = ChunkedList_size(g_concList);
         for (u32 i = 0u; i < n; i++) {

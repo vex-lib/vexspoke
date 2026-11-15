@@ -104,7 +104,7 @@ MinHeap *MinHeap_1(bytes capacity) {
     bytes slots = capacity + 1;
     MinHeap *heap = (MinHeap*) Memory_alloc(TYPE_MIN_HEAP, sizeof(MinHeap));
     if (!heap) {
-        (fn) Struct_reportConstructionExhaustion("minheap", sizeof(MinHeap));
+        (discard) Struct_reportConstructionExhaustion("minheap", sizeof(MinHeap));
         return nullptr;
     }
 
@@ -153,7 +153,7 @@ int MinHeap_push(MinHeap *heap, i32 item, f32 priority) {
     if (!heap) return 0;
     if ((*heap).size >= (*heap).capacity) {
         // A full fixed-capacity heap is a refusal, not a silent no-op.
-        (fn) Struct_reportExhaustion(&(*heap).exhaustionCount, &(*heap).exhaustionReported,
+        (discard) Struct_reportExhaustion(&(*heap).exhaustionCount, &(*heap).exhaustionReported,
                                        "minheap", sizeof(i32) * 2u, (bytes) (*heap).capacity);
         return 0;
     }

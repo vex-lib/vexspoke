@@ -159,9 +159,9 @@ static fn test_bvh() {
 }
 
 static bool tree_sit_counter(const TreeSitTree *tree, i32 node_idx, int depth, any user_data) {
-    (fn) tree;
-    (fn) node_idx;
-    (fn) depth;
+    (discard) tree;
+    (discard) node_idx;
+    (discard) depth;
     int *c = (int*) user_data;
     (*c)++;
     return true;

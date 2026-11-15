@@ -180,7 +180,7 @@ static bool slotProcessRunning(const AppDetect *self, const AppSlot *slot) {
                 return true;
         }
     }
-    (fn)self;
+    (discard)self;
     return false;
 }
 
@@ -215,21 +215,21 @@ const AppSlot *AppDetect_get(const AppDetect *self, const char *name) {
 // GETTERS
 
 const char *AppDetect_getName(const AppDetect *self, const AppSlot *slot) {
-    (fn)self;
+    (discard)self;
     return slot ? (*slot).name : nullptr;
 }
 
 const char *AppDetect_getAltProcs(const AppDetect *self, const AppSlot *slot) {
-    (fn)self;
+    (discard)self;
     return slot ? (*slot).altProcs : nullptr;
 }
 
 const char *AppDetect_getDisplayName(const AppDetect *self, const AppSlot *slot) {
-    (fn)self;
+    (discard)self;
     return slot ? (*slot).displayName : nullptr;
 }
 
 const char *AppDetect_getNote(const AppDetect *self, const AppSlot *slot) {
-    (fn)self;
+    (discard)self;
     return slot ? (*slot).note : nullptr;
 }

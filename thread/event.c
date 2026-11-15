@@ -45,7 +45,7 @@
 // thread/event.c — event dispatcher worker (Legacy: EventThread.java).
 
 static fn event_job(Thread *self, any task) {
-    (fn)self;
+    (discard)self;
     if (ComputeJob_run(task)) return;   // a generic job handed to this role
     if (!task) {
         Key_dispatchEvents();

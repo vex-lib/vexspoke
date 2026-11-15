@@ -32,8 +32,8 @@ int main() {
     CHECK(Memory_init(0));
 
     // Force bootstrap before overriding anything.
-    (fn) DisplayInfo_getMonitorCount();
-    (fn) DisplayInfo_getPrimaryMonitor();
+    (discard) DisplayInfo_getMonitorCount();
+    (discard) DisplayInfo_getPrimaryMonitor();
 
     // No monitors registered past the count.
     CHECK(DisplayInfo_getMonitor(9999) == nullptr);

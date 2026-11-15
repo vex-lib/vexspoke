@@ -69,7 +69,7 @@ static i32 *allocateInts(bytes count) {
 SparseSet *SparseSet_3(bytes capacity, bytes maxEntities, bytes stride) {
     SparseSet *set = (SparseSet*) Memory_alloc(Type_make(PROJ_VEXSPOKE, FORM_SINGLETON, ID_SPARSE_SET), sizeof(SparseSet));
     if (!set) {
-        (fn) Struct_reportConstructionExhaustion("sparseset", sizeof(SparseSet));
+        (discard) Struct_reportConstructionExhaustion("sparseset", sizeof(SparseSet));
         return nullptr;
     }
 
@@ -82,14 +82,14 @@ SparseSet *SparseSet_3(bytes capacity, bytes maxEntities, bytes stride) {
 
     (*set).dense = allocateInts(capacity);
     if (!(*set).dense) {
-        (fn) Struct_reportConstructionExhaustion("sparseset", capacity * sizeof(i32));
+        (discard) Struct_reportConstructionExhaustion("sparseset", capacity * sizeof(i32));
         Memory_free(set);
         return nullptr;
     }
 
     (*set).sparse = allocateInts(maxEntities);
     if (!(*set).sparse) {
-        (fn) Struct_reportConstructionExhaustion("sparseset", maxEntities * sizeof(i32));
+        (discard) Struct_reportConstructionExhaustion("sparseset", maxEntities * sizeof(i32));
         Memory_free((*set).dense);
         Memory_free(set);
         return nullptr;
@@ -102,7 +102,7 @@ SparseSet *SparseSet_3(bytes capacity, bytes maxEntities, bytes stride) {
         u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_SPARSE_SET);
         (*set).data = (u8*) Memory_alloc(bufType, Bytes);
         if (!(*set).data) {
-            (fn) Struct_reportConstructionExhaustion("sparseset", Bytes);
+            (discard) Struct_reportConstructionExhaustion("sparseset", Bytes);
             Memory_free((*set).dense);
             Memory_free((*set).sparse);
             Memory_free(set);
@@ -163,7 +163,7 @@ u8 *SparseSet_add(SparseSet *set, i32 entityId) {
 
     if ((*set).count >= (*set).capacity) {
         // The dense capacity is full: a refusal, reported (once per epoch).
-        (fn) Struct_reportExhaustion(&(*set).exhaustionCount, &(*set).exhaustionReported,
+        (discard) Struct_reportExhaustion(&(*set).exhaustionCount, &(*set).exhaustionReported,
                                        "sparseset", (bytes) (*set).capacity, (bytes) (*set).capacity);
         return nullptr;
     }

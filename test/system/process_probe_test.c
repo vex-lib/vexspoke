@@ -14,7 +14,7 @@
 #include <unistd.h>
 
 #include "system/process_probe.h"
-#include "io/file.h"
+#include "io/file/file.h"
 
 static int g_failures = 0;
 

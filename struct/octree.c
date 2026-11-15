@@ -199,7 +199,7 @@ static bool OctreeNode_insert(Octree *owner, OctreeNode *node, OctreeItem item, 
                 OctreeItem *newItems = (OctreeItem*) Memory_alloc(TYPE_BYTE_ARRAY, (bytes) newCap * sizeof(OctreeItem));
                 if (newItems == nullptr) {
                     // A refused leaf growth is reported at the owner level.
-                    (fn) Struct_reportExhaustion(&(*owner).exhaustionCount, &(*owner).exhaustionReported,
+                    (discard) Struct_reportExhaustion(&(*owner).exhaustionCount, &(*owner).exhaustionReported,
                                                    "octree", (bytes) newCap * sizeof(OctreeItem),
                                                    (bytes) (*node).itemCapacity * sizeof(OctreeItem));
                     return false;
@@ -247,7 +247,7 @@ Octree *Octree_3(OctreeAABB bounds, u32 maxDepth, u32 maxItemsPerNode) {
 
     Octree *self = (Octree*) Memory_alloc(TYPE_OCTREE, sizeof(Octree));
     if (self == nullptr) {
-        (fn) Struct_reportConstructionExhaustion("octree", sizeof(Octree));
+        (discard) Struct_reportConstructionExhaustion("octree", sizeof(Octree));
         return nullptr;
     }
 
@@ -258,7 +258,7 @@ Octree *Octree_3(OctreeAABB bounds, u32 maxDepth, u32 maxItemsPerNode) {
     (*self).exhaustionReported = false;
     (*self).root = OctreeNode_2(bounds, maxItemsPerNode);
     if ((*self).root == nullptr) {
-        (fn) Struct_reportConstructionExhaustion("octree", sizeof(OctreeNode));
+        (discard) Struct_reportConstructionExhaustion("octree", sizeof(OctreeNode));
         Memory_free(self);
         return nullptr;
     }

@@ -109,7 +109,7 @@ static TlsBackendKind s_lastBackend = TLS_BACKEND_NONE;
 @end
 
 @implementation VexTlsSession
-- (fn)dealloc {
+- (discard)dealloc {
     if (_readBytes != nullptr)
         free(_readBytes);
 }
@@ -133,7 +133,7 @@ static bool vexWaitForReady(nw_connection_t connection, dispatch_queue_t queue,
     nw_connection_set_queue(connection, queue);
     nw_connection_set_state_changed_handler(connection, ^(nw_connection_state_t state,
                                                           nw_error_t error) {
-        (fn) error;
+        (discard) error;
         if (state == nw_connection_state_ready) {
             ready = true;
             dispatch_semaphore_signal(settled);
@@ -197,13 +197,13 @@ static fn vexArmRead(VexTlsSession *session) {
     nw_connection_receive(session.connection, 1u, VEX_TLS_READ_BYTES,
         ^(dispatch_data_t content, nw_content_context_t context, bool is_complete,
           nw_error_t error) {
-            (fn) context;
+            (discard) context;
             session.readArmed = false; // the slot is free again
             if (error == nullptr && content != nullptr) {
                 __block bytes got = 0u;
                 dispatch_data_apply(content, ^bool(dispatch_data_t region, bytes offset,
                                                    const_any buffer, bytes size) {
-                    (fn) region;
+                    (discard) region;
                     if (offset + size > VEX_TLS_READ_BYTES)
                         return false;
                     memcpy(session.readBytes + offset, buffer, size);

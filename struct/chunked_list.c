@@ -413,7 +413,7 @@ static ChunkedList *buildPaged(u32 elementClass, bytes stride, const u32 *radixI
 
     ChunkedList *self = (ChunkedList*) Memory_alloc(TYPE_CHUNKED_LIST, sizeof(ChunkedList));
     if (!self) {
-        (fn) Struct_reportConstructionExhaustion("chunked_list", sizeof(ChunkedList));
+        (discard) Struct_reportConstructionExhaustion("chunked_list", sizeof(ChunkedList));
         return nullptr;
     }
     memset(self, 0, sizeof(*self));
@@ -422,7 +422,7 @@ static ChunkedList *buildPaged(u32 elementClass, bytes stride, const u32 *radixI
     u32 *shifts = (u32*) Memory_alloc(TYPE_CHUNKED_LIST, (bytes)levels * sizeof(u32));
     u32 *masks = (u32*) Memory_alloc(TYPE_CHUNKED_LIST, (bytes)levels * sizeof(u32));
     if (!radices || !shifts || !masks) {
-        (fn) Struct_reportConstructionExhaustion("chunked_list", (bytes)levels * sizeof(u32) * 3u);
+        (discard) Struct_reportConstructionExhaustion("chunked_list", (bytes)levels * sizeof(u32) * 3u);
         Memory_free(radices);
         Memory_free(shifts);
         Memory_free(masks);

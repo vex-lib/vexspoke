@@ -68,7 +68,7 @@ static Thread *roleWorker(int role) {
 }
 
 static fn draw_job(Thread *self, any task) {
-    (fn)self;
+    (discard)self;
     if (ComputeJob_run(task)) return;   // a generic job handed to this role
     if (!task)
         return;

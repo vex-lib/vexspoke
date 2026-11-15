@@ -169,7 +169,7 @@ Map *Map_3(u32 keyClass, u32 valClass, bytes capacity) {
 
     Map *map = (Map*) Memory_alloc(TYPE_MAP, sizeof(Map));
     if (!map) {
-        (fn) Struct_reportConstructionExhaustion("map", sizeof(Map));
+        (discard) Struct_reportConstructionExhaustion("map", sizeof(Map));
         return nullptr;
     }
 
@@ -187,7 +187,7 @@ Map *Map_3(u32 keyClass, u32 valClass, bytes capacity) {
     u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_MAP);
     (*c).data = (u8*) Memory_alloc(bufType, Bytes);
     if (!(*c).data) {
-        (fn) Struct_reportConstructionExhaustion("map", Bytes);
+        (discard) Struct_reportConstructionExhaustion("map", Bytes);
         Memory_free(map);
         return nullptr;
     }

@@ -191,14 +191,14 @@ bool Keychain_isAvailable() { return false; }
 
 KeychainCode Keychain_store(const char *service, const char *account,
                             const u8 *secret, bytes len) {
-    (fn) service; (fn) account; (fn) secret; (fn) len;
+    (discard) service; (discard) account; (discard) secret; (discard) len;
     THROW("Keychain_store: no keychain backend on this host");
     return KEYCHAIN_UNSUPPORTED;
 }
 
 KeychainCode Keychain_load(const char *service, const char *account,
                            u8 *dest, bytes cap, bytes *outLen) {
-    (fn) service; (fn) account; (fn) dest; (fn) cap;
+    (discard) service; (discard) account; (discard) dest; (discard) cap;
     if (outLen != nullptr)
         *outLen = 0u;
     THROW("Keychain_load: no keychain backend on this host");
@@ -206,7 +206,7 @@ KeychainCode Keychain_load(const char *service, const char *account,
 }
 
 KeychainCode Keychain_remove(const char *service, const char *account) {
-    (fn) service; (fn) account;
+    (discard) service; (discard) account;
     THROW("Keychain_remove: no keychain backend on this host");
     return KEYCHAIN_UNSUPPORTED;
 }

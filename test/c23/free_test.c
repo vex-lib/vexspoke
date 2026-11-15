@@ -24,13 +24,13 @@ static int g_failures = 0;
 static int g_calls = 0;
 // Counts destructor dispatches for the registered test type.
 static fn countingDestructor(any ptr) {
-    (fn) ptr;
+    (discard) ptr;
     g_calls++;
 }
 
 // Distinguishes replacement of a registered destructor from its old handler.
 static fn otherDestructor(any ptr) {
-    (fn) ptr;
+    (discard) ptr;
     g_calls += 100;
 }
 

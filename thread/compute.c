@@ -53,7 +53,7 @@ static _Atomic bytes s_rr = 0;
 
 // The one body every compute worker runs: a popped task is a ComputeJob.
 static fn compute_job(Thread *self, any task) {
-    (fn) self;
+    (discard) self;
     ComputeJob_run(task);                    // ignores non-jobs (nullptr, foreign packets)
 }
 

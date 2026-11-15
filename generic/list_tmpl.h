@@ -98,7 +98,7 @@
         VEX_LIST_CLASS(T) *self = (VEX_LIST_CLASS(T)*)                       \
             Memory_alloc(TYPE_LIST, sizeof(VEX_LIST_CLASS(T)));              \
         if (!self) {                                                         \
-            (fn) Struct_reportConstructionExhaustion("List_" VEX_STR(T),   \
+            (discard) Struct_reportConstructionExhaustion("List_" VEX_STR(T),   \
                                                        sizeof(VEX_LIST_CLASS(T))); \
             return nullptr;                                                  \
         }                                                                    \

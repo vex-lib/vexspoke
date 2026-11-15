@@ -71,7 +71,7 @@ Array *Array_2(u32 elementClass, bytes length) {
     bytes stride = Stride_get(elementClass);
     Array *array = (Array*) Memory_alloc(TYPE_ARRAY, sizeof(Array));
     if (!array) {
-        (fn) Struct_reportConstructionExhaustion("array", sizeof(Array));
+        (discard) Struct_reportConstructionExhaustion("array", sizeof(Array));
         return nullptr;
     }
 
@@ -89,7 +89,7 @@ Array *Array_2(u32 elementClass, bytes length) {
     u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, elementClass);
     (*c).data = (u8*) Memory_alloc(bufType, Bytes);
     if (!(*c).data) {
-        (fn) Struct_reportConstructionExhaustion("array", Bytes);
+        (discard) Struct_reportConstructionExhaustion("array", Bytes);
         Memory_free(array);
         return nullptr;
     }

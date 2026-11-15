@@ -69,7 +69,7 @@ int main() {
     // The RFC ceiling refuses.
     assert(HKDF_MAX_OUTPUT == 8160u);
     u8 tooBig[8];
-    (fn) tooBig;
+    (discard) tooBig;
 
     printf("hkdf_test: OK\n");
     return 0;

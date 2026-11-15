@@ -28,7 +28,7 @@ static const char CANNED_JSON[] =
     "\"tags\":[\"x\",\"y\"],\"nested\":{\"ok\":true}}";
 
 static fn handler(const HttpExchange *ex, int fd, any ud) {
-    (fn) ud;
+    (discard) ud;
     if (strcmp((*ex).path, "/hello") == 0 && strcmp((*ex).method, "GET") == 0) {
         Http_respond(fd, 200, "text/plain", "hello from anti", 15);
     } else if (strcmp((*ex).path, "/json") == 0 && strcmp((*ex).method, "GET") == 0) {

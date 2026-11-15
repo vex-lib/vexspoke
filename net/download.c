@@ -177,7 +177,7 @@ bool Download_fetch_cached(
     char *cached_path_out,
     bytes path_cap
 ) {
-    (fn) url; (fn) subsystem; (fn) ttl_sec; (fn) opts;
-    (fn) cached_path_out; (fn) path_cap;
+    (discard) url; (discard) subsystem; (discard) ttl_sec; (discard) opts;
+    (discard) cached_path_out; (discard) path_cap;
     return false;
 }

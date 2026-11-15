@@ -146,7 +146,7 @@ bool TouchID_verify(TouchIDToken tok) {
 }
 
 fn TouchID_discard(TouchIDToken tok) {
-    (fn)tok;
+    (discard)tok;
     s_token_valid = false;
     s_active_token.consumed = true;
     s_active_token.magic[0] = 0;

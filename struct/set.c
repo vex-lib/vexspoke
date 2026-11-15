@@ -165,7 +165,7 @@ Set *Set_2(u32 elementClass, bytes capacity) {
 
     Set *set = (Set*) Memory_alloc(TYPE_SET, sizeof(Set));
     if (!set) {
-        (fn) Struct_reportConstructionExhaustion("set", sizeof(Set));
+        (discard) Struct_reportConstructionExhaustion("set", sizeof(Set));
         return nullptr;
     }
 
@@ -183,7 +183,7 @@ Set *Set_2(u32 elementClass, bytes capacity) {
     u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_SET);
     (*c).data = (u8*) Memory_alloc(bufType, Bytes);
     if (!(*c).data) {
-        (fn) Struct_reportConstructionExhaustion("set", Bytes);
+        (discard) Struct_reportConstructionExhaustion("set", Bytes);
         Memory_free(set);
         return nullptr;
     }

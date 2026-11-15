@@ -131,7 +131,7 @@ int main() {
         REQUIRE(pthread_create(&threads[t], nullptr, producer, row) == 0);
     }
     for (;;) {
-        (fn) Dispatch_drain(queue);
+        (discard) Dispatch_drain(queue);
         bool done = true;
         for (int t = 0; t < 4; t++) {
             Job *first = concurrent[t];

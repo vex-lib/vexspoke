@@ -634,7 +634,7 @@ static WebSocketMessage wsConsumeFrame(WebSocket *self) {
                 (*self).closeReasonTruncated = copy < textLength;
             }
             if ((*self).state == WEBSOCKET_OPEN)
-                (fn) wsSendFrame(self, WEBSOCKET_CLOSE, true, (*self).control, (bytes) length);
+                (discard) wsSendFrame(self, WEBSOCKET_CLOSE, true, (*self).control, (bytes) length);
             (*self).state = WEBSOCKET_CLOSED;
             result.kind = WS_MESSAGE_CLOSE;
             result.closeCode = code;
@@ -874,7 +874,7 @@ fn WebSocket_close(WebSocket *self) {
         return;
     if ((*self).state == WEBSOCKET_OPEN &&
         ((*self).fd >= 0 || (*self).tls != nullptr))
-        (fn) WebSocket_writeClose(self, 1000u, nullptr);
+        (discard) WebSocket_writeClose(self, 1000u, nullptr);
     if ((*self).tls != nullptr) {
         Tls_close((*self).tls);
         (*self).tls = nullptr;

@@ -44,7 +44,7 @@
 ;;INCOMPLETE // Packet drain and lifecycle are fully live.
 
 static fn ui_job(Thread *self, any task) {
-    (fn)self;
+    (discard)self;
     if (ComputeJob_run(task)) return;   // a generic job handed to this role
     if (!task)
         return; // TODO(ui): tickComponents(self) once UI components land.

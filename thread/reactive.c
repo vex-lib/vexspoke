@@ -64,7 +64,7 @@ static Map *queued() {
 // BEFORE the drain lets a callback that re-wakes the same box queue it for the
 // NEXT pass (coalesced, and never a same-stack re-entry).
 static fn reactive_job(Thread *self, any task) {
-    (fn) self;
+    (discard) self;
     if (task == nullptr)
         return;                              // no idle work: this worker only acts when nudged
     Reactive *box = (Reactive*) task;

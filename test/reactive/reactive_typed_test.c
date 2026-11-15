@@ -52,8 +52,8 @@ static fn onProbableChanged(i32 value) { g_probableValue = value; }
 
 // Records typed integer change notifications and their old/new payloads.
 static fn onChangedInt(Reactive *r, pointer o, pointer n, any ud) {
-    (fn) r;
-    (fn) ud;
+    (discard) r;
+    (discard) ud;
     g_changed++;
     g_old = (i32) (u32) o;
     g_new = (i32) (u32) n;
@@ -61,9 +61,9 @@ static fn onChangedInt(Reactive *r, pointer o, pointer n, any ud) {
 
 // Counts typed integer onSet notifications.
 static fn onSetInt(Reactive *r, pointer v, any ud) {
-    (fn) r;
-    (fn) v;
-    (fn) ud;
+    (discard) r;
+    (discard) v;
+    (discard) ud;
     g_sets++;
 }
 

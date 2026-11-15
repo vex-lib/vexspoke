@@ -47,7 +47,7 @@ int main() {
     // The zero-argument chooser creates an independently owned casual stream.
     Random *defaultStream = Random();
     CHECK(defaultStream != nullptr);
-    (fn) Random_nextLong(defaultStream);
+    (discard) Random_nextLong(defaultStream);
     Random_free(defaultStream);
 
     // Auto-selected engine: same seed -> same engine and same stream.
@@ -101,8 +101,8 @@ int main() {
             CHECK(f >= 0.0f && f < 1.0f);
             d64 d = Random_nextf64(r);
             CHECK(d >= 0.0 && d < 1.0);
-            (fn) Random_nextInt(r);
-            (fn) Random_nextChar(r);
+            (discard) Random_nextInt(r);
+            (discard) Random_nextChar(r);
             CHECK(isfinite((d64) Random_nextNDCFloat(r)));
         }
         Random_free(r);
@@ -130,7 +130,7 @@ int main() {
     // The shared system stream is live and draws.
     Random *sys = Random_system();
     CHECK(sys != nullptr);
-    (fn) Random_nextLong(sys);
+    (discard) Random_nextLong(sys);
 
     Random_free(w);
 

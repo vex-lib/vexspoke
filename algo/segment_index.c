@@ -224,7 +224,7 @@ static fn buildFn(VariableSlot *slot, any userdata) {
 }
 
 static fn freePostingsFn(VariableSlot *slot, any userdata) {
-    (fn) userdata;
+    (discard) userdata;
     pointer value = VariableSlot_getPointer(slot);
     if (value)
         ChunkedList_free((ChunkedList*) value);

@@ -106,7 +106,7 @@ bool ProcessProbe_isRunning(const ProcessProbe *self, const char *procName) {
     }
     return false;
 #else
-    (fn)procName;
+    (discard)procName;
     return false;
 #endif
 }

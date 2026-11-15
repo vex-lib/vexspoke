@@ -69,18 +69,18 @@ bool Tls_recv(TlsConn *conn, char *buf, bytes cap, bytes *gotOut) {
 // accessors exist only so a host compiles and links identically on every
 // platform and can see for itself that this backend answered nothing.
 bool Tls_readable(TlsConn *conn, u32 budgetMs) {
-    (fn) conn;
-    (fn) budgetMs;
+    (discard) conn;
+    (discard) budgetMs;
     return false;
 }
 
 fn Tls_setBudget(TlsConn *conn, u32 timeoutMs) {
-    (fn) conn;
-    (fn) timeoutMs;
+    (discard) conn;
+    (discard) timeoutMs;
 }
 
 u32 Tls_getBudget(const TlsConn *conn) {
-    (fn) conn;
+    (discard) conn;
     return 0u;
 }
 

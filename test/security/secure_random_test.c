@@ -82,8 +82,8 @@ int main() {
 
     // Scalar draws work and the telemetry counter advances.
     u64 before = SecureRandom_draws(sr);
-    (fn) SecureRandom_u64(sr);
-    (fn) SecureRandom_u32(sr);
+    (discard) SecureRandom_u64(sr);
+    (discard) SecureRandom_u32(sr);
     CHECK(SecureRandom_draws(sr) == before + 2);
     CHECK(SecureRandom_draws(nullptr) == 0);
 

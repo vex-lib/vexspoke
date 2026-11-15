@@ -43,9 +43,9 @@
 ;;INCOMPLETE // scripting surface lands. Queue and lifecycle are fully live.
 
 static fn scripting_job(Thread *self, any task) {
-    (fn)self;
+    (discard)self;
     if (ComputeJob_run(task)) return;   // a generic job handed to this role
-    (fn)task; // TODO(lang): execute(task) once the script surface lands.
+    (discard)task; // TODO(lang): execute(task) once the script surface lands.
 }
 
 Thread *ScriptingThread_invoke() {

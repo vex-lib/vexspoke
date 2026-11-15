@@ -114,7 +114,7 @@
 
 
 TouchIDToken TouchID_authenticate(const char *reason) {
-    (fn)reason; // Stub must fail closed: no biometrics off Apple platforms.
+    (discard)reason; // Stub must fail closed: no biometrics off Apple platforms.
     TouchIDToken tok = {
         .magic = { 0ULL, 0ULL },
         .consumed = true
@@ -126,11 +126,11 @@ bool TouchID_verify(TouchIDToken tok) {
 #ifdef ALLOW_INSECURE_STUB
     return !tok.consumed;
 #else
-    (fn)tok;
+    (discard)tok;
     return false;
 #endif
 }
 
 fn TouchID_discard(TouchIDToken tok) {
-    (fn)tok; // by-value token: nothing to consume here; verify already gates.
+    (discard)tok; // by-value token: nothing to consume here; verify already gates.
 }

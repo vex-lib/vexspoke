@@ -121,7 +121,7 @@ bool List_initStride(List *self, u32 elementClass, bytes stride, bytes capacity)
     u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, elementClass);
     u8 *data = (u8*) Memory_alloc(bufType, Bytes);
     if (!data) {
-        (fn) Struct_reportConstructionExhaustion("list", Bytes);
+        (discard) Struct_reportConstructionExhaustion("list", Bytes);
         return false;
     }
     memset(data, 0, Bytes);
@@ -136,7 +136,7 @@ bool List_init(List *self, u32 elementClass, bytes capacity) {
 List *List_3(u32 elementClass, bytes capacity, bytes count) {
     List *list = (List*) Memory_alloc(TYPE_LIST, sizeof(List));
     if (!list) {
-        (fn) Struct_reportConstructionExhaustion("list", sizeof(List));
+        (discard) Struct_reportConstructionExhaustion("list", sizeof(List));
         return nullptr;
     }
     if (!List_init(list, elementClass, capacity)) {

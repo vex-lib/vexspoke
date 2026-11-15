@@ -187,7 +187,7 @@ static any ring_producer(any arg) {
 
 /** Drains published values and records consumption for the bounded MPMC assertion. */
 static any ring_consumer(any arg) {
-    (fn) arg;
+    (discard) arg;
     while (!atomic_load_explicit(&g_start, memory_order_acquire))
         sched_yield();
     while (atomic_load_explicit(&g_consumed, memory_order_acquire) < RING_TOTAL) {

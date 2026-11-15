@@ -75,7 +75,7 @@ Stack *Stack_3(u32 elementClass, bytes capacity, bytes count) {
     bytes cap = capacity < DEFAULT_CAPACITY ? DEFAULT_CAPACITY : capacity;
     Stack *stack = (Stack*) Memory_alloc(TYPE_STACK, sizeof(Stack));
     if (!stack) {
-        (fn) Struct_reportConstructionExhaustion("stack", sizeof(Stack));
+        (discard) Struct_reportConstructionExhaustion("stack", sizeof(Stack));
         return nullptr;
     }
 
@@ -93,7 +93,7 @@ Stack *Stack_3(u32 elementClass, bytes capacity, bytes count) {
     u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, elementClass);
     (*c).data = (u8*) Memory_alloc(bufType, Bytes);
     if (!(*c).data) {
-        (fn) Struct_reportConstructionExhaustion("stack", Bytes);
+        (discard) Struct_reportConstructionExhaustion("stack", Bytes);
         Memory_free(stack);
         return nullptr;
     }
@@ -116,7 +116,7 @@ fn Stack_free(Stack *stack) {
 fn Stack_push(Stack *stack, u64 valueOrPointer) {
     // Family-consistent fn entry point, but not silent: a refused element is
     // reported by Stack_pushTry (THROW + a named TryCode).
-    (fn) Stack_pushTry(stack, valueOrPointer);
+    (discard) Stack_pushTry(stack, valueOrPointer);
 }
 
 TryValue Stack_pushTry(Stack *stack, u64 valueOrPointer) {
@@ -141,7 +141,7 @@ TryValue Stack_pushTry(Stack *stack, u64 valueOrPointer) {
         if (!next) {
             // Shared loud, counted refusal (the Exhaustion Loudness Law); the
             // Try carries the machine-readable reason.
-            (fn) Collection_reportExhaustion(c, Bytes);
+            (discard) Collection_reportExhaustion(c, Bytes);
             return TryValue_error(TRY_NO_MEMORY);
         }
         memcpy(next, (*c).data, (*c).activeCount * (*c).stride);

@@ -33,7 +33,7 @@ static _Atomic i32 g_counter;
 // Atomically increments the shared counter for the configured contention batch.
 // Performs the shared atomic increment workload for contention testing.
 static any hammer(any arg) {
-    (fn) arg;
+    (discard) arg;
     for (int i = 0; i < HAMMER_ITERS; i++)
         atomic_fetch_add(&g_counter, 1);
     return nullptr;
@@ -45,7 +45,7 @@ static _Atomic i32 g_seenMask[THREAD_REGISTRY_DEFAULT_SIZE]; // per-index arriva
 // Registers the calling thread, assigns its role, and marks its registry slot.
 // Registers the calling thread, assigns its role, and marks its registry slot.
 static any registerer(any arg) {
-    (fn) arg;
+    (discard) arg;
     int idx = ThreadRegistry_index();
     ThreadRegistry_setTag(idx, THREAD_ROLE_USER);
 
@@ -61,7 +61,7 @@ static int g_guardedSum = 0;
 // Adds to the shared sum while holding the test SpinLock.
 // Increments the shared sum only while holding the test SpinLock.
 static any lockWorker(any arg) {
-    (fn) arg;
+    (discard) arg;
     for (int i = 0; i < 5000; i++) {
         SpinLock_lock(&g_testLock);
         g_guardedSum++;

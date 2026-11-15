@@ -78,16 +78,16 @@
 
 #define VEX_CHANNELS_DEF(NAME, FROMW)                                       \
     static fn VEX_CAT(NAME, _setTramp)(Reactive *r, pointer v, any ud) { \
-        (fn) r; ((VEX_CAT(NAME, SetFn)) ud)(FROMW(v));                    \
+        (discard) r; ((VEX_CAT(NAME, SetFn)) ud)(FROMW(v));                    \
     }                                                                       \
     static fn VEX_CAT(NAME, _changedTramp)(Reactive *r, pointer o, pointer n, any ud) { \
-        (fn) r; (fn) o; ((VEX_CAT(NAME, ChangedFn)) ud)(FROMW(n));      \
+        (discard) r; (discard) o; ((VEX_CAT(NAME, ChangedFn)) ud)(FROMW(n));      \
     }                                                                       \
     static fn VEX_CAT(NAME, _getTramp)(Reactive *r, pointer v, any ud) { \
-        (fn) r; ((VEX_CAT(NAME, GetFn)) ud)(FROMW(v));                    \
+        (discard) r; ((VEX_CAT(NAME, GetFn)) ud)(FROMW(v));                    \
     }                                                                       \
     static fn VEX_CAT(NAME, _nullptrTramp)(Reactive *r, any ud) {       \
-        (fn) r; ((VEX_CAT(NAME, NullptrFn)) ud)();                        \
+        (discard) r; ((VEX_CAT(NAME, NullptrFn)) ud)();                        \
     }                                                                       \
     bool VEX_CAT(NAME, _addOnSet)(NAME *self, VEX_CAT(NAME, SetFn) fn) {    \
         if (self == nullptr) return false;                                  \

@@ -218,12 +218,12 @@ static fn walkPool(fn (*visit)(Thread *self, bool system), bool system) {
 }
 
 static fn visitRun(Thread *self, bool system) {
-    (fn)system;
+    (discard)system;
     Thread_run(self);
 }
 
 static fn visitStop(Thread *self, bool system) {
-    (fn)system;
+    (discard)system;
     Thread_stop(self);
 }
 
