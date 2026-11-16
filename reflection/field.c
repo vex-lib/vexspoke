@@ -4,7 +4,7 @@
 #include "reflection/field.h"
 
 #include "nio/mem.h"
-#include "oop/stride.h"
+#include "struct/stride.h"
 #include "oop/vexspoke_type.h"
 
 ;;DEFINITION
