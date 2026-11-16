@@ -113,7 +113,7 @@ fn Arrays_sortLong(i64 *data, bytes length) {
 }
 
 // Searches an ascending int32 array; returns its index or -(insertion point + 1).
-pointer Arrays_binarySearchInt(const i32 *data, bytes length, i32 key) {
+i64 Arrays_binarySearchInt(const i32 *data, bytes length, i32 key) {
     if (!data) return -1;
     bytes low = 0;
     bytes high = length;
@@ -125,13 +125,13 @@ pointer Arrays_binarySearchInt(const i32 *data, bytes length, i32 key) {
         else if (mid_val > key)
             high = mid;
         else
-            return (pointer)mid;
+            return (i64) mid;
     }
-    return -(pointer)(low + 1);
+    return -(i64) (low + 1);
 }
 
 // Searches an ascending int64 array; returns its index or -(insertion point + 1).
-pointer Arrays_binarySearchLong(const i64 *data, bytes length, i64 key) {
+i64 Arrays_binarySearchLong(const i64 *data, bytes length, i64 key) {
     if (!data) return -1;
     bytes low = 0;
     bytes high = length;
@@ -143,9 +143,9 @@ pointer Arrays_binarySearchLong(const i64 *data, bytes length, i64 key) {
         else if (mid_val > key)
             high = mid;
         else
-            return (pointer)mid;
+            return (i64) mid;
     }
-    return -(pointer)(low + 1);
+    return -(i64) (low + 1);
 }
 
 // Fills the byte span with the repeated value.
