@@ -2,19 +2,19 @@
 
 ## Constitution Link
 
-gist.md (`../../metadata/gists/preferences/gist.md`) is the compressed law list; all universal laws bind this repository. Read one on demand: `./tools/prefs law "<title>"`. Universal laws are inherited, never restated.
+gist.md (`../../../metadata/gists/preferences/gist.md`) is the compressed law list; all universal laws bind this repository. Read one on demand: `./tools/prefs law "<title>"`. Universal laws are inherited, never restated.
 
-Tier: core (R2 CPU computation, behavior, network protocols). Owns: pure format algorithms, coordinate-agnostic vectors, reactive generic engine, `net/` protocol clients/servers, higher-level io policy (`io/`, VexHome layout). Borrows: Relational Engine filesystem IO/NIO, native Memory/MemoryArena/Transient allocator, relational symbol table.
+Tier: core (CPU computation, behavior, network protocols). Owns: pure format algorithms, coordinate-agnostic vectors, reactive generic engine, `net/` protocol clients/servers, higher-level io policy (`io/`, VexHome layout). Borrows: Relational Engine filesystem IO/NIO, native Memory/MemoryArena/Transient allocator, relational symbol table.
 
 ## Exclusive Laws
 
 | Law Title | Scope | Enforcement |
-| **Coordinate-Agnostic Vector Law** | R2 Relational memory Substrate | Mandatory for `vexspoke` |
-| **Self-Describing memory Block Law** | R2 Relational memory Substrate | Mandatory for `vexspoke` |
-| **BitPool Slot Segregation Law** | R2 Relational memory Substrate | Mandatory for `vexspoke` |
-| **24-Byte Variable Slot Law** | R2 Relational memory Substrate | Mandatory for `vexspoke` |
-| **Reactive Generics Law** | R2 behavior (reactive engine + generic family) | Mandatory for `vexspoke` |
-| **Pure Format Algorithm Law** | R2 CPU computation (`net/`, `search/`) | Mandatory for `vexspoke` |
+| **Coordinate-Agnostic Vector Law** | core computation over relational memory | Mandatory for `vexspoke` |
+| **Self-Describing memory Block Law** | core contracts over relational memory | Mandatory for `vexspoke` |
+| **BitPool Slot Segregation Law** | core pool layout over relational memory | Mandatory for `vexspoke` |
+| **24-Byte Variable Slot Law** | core variable binding contract | Mandatory for `vexspoke` |
+| **Reactive Generics Law** | core behavior (reactive engine + generic family) | Mandatory for `vexspoke` |
+| **Pure Format Algorithm Law** | core CPU computation (`net/`, `search/`) | Mandatory for `vexspoke` |
 
 ### Coordinate-Agnostic Vector Law
 
@@ -65,7 +65,7 @@ Tier: core (R2 CPU computation, behavior, network protocols). Owns: pure format 
 * Decoded buffers are allocated through the engine's `Memory_*` ABI; the engine owns the storage, and the caller frees its stable pointer with `Memory_free`.
 * Unsupported or hostile input returns a named code with one cold `THROW`; a corrupted stream never yields plausible output; geometry is bounded before allocation.
 * Checksums/CRCs are validated; an inflate that does not match the declared geometry is a failure, not a padding opportunity.
-* New formats do not pull an SDK into R2; a system library for the primitive codec (zlib for DEFLATE) is the ceiling, declared at the owning target.
+* New formats do not pull an SDK into `core` (`vexspoke`); a system library for the primitive codec (zlib for DEFLATE) is the ceiling, declared at the owning target.
 
 ## Repo-Local Extensions
 
