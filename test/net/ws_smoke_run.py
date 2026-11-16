@@ -25,7 +25,7 @@ TEST = HERE / "websocket_smoke_test.c"
 SOURCES = [ENGINE / "src/nio/mem.c", CPU / "src/net/websocket.c",
            CPU / "src/net/tls_apple.m", CPU / "src/net/url.c",
            CPU / "src/security/sha1.c", CPU / "src/security/secure_random.c",
-           CPU / "src/lang/str.c", CPU / "src/atomic/spin.c"]
+           CPU / "src/lang/str.c", ENGINE / "src/atomic/spin_lock.c"]
 
 
 def main():

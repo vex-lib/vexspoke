@@ -13,8 +13,8 @@
     "icon": ""
   },
   "build": {
-    "entry": "stride_test.c",
-    "sources": ["stride_test.c", "type_test.c"],
+    "entry": "type_test.c",
+    "sources": ["type_test.c"],
     "includes": ["vexspoke", "re", "lifetime"],
     "dependencies": ["lifetime", "re", "vexspoke"],
     "defines": [],

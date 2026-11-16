@@ -29,7 +29,7 @@ SOURCES = [
     CPU / "src/security/sha1.c",
     CPU / "src/security/secure_random.c",
     CPU / "src/lang/str.c",
-    CPU / "src/atomic/spin.c",
+    ENGINE / "src/atomic/spin_lock.c",
 ]
 
 MODES = [("strict", []), ("sanitized", ["-fsanitize=address,undefined"])]

@@ -13,6 +13,7 @@
 //   - nullptr safety and hit_out initialization.
 
 #include "vex.h"
+#include <float.h>
 #include <stdio.h>
 #include <math.h>
 

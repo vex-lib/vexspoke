@@ -19,7 +19,7 @@ def main():
     if os.uname().sysname == "Darwin":
         common += ["-arch", "arm64", "-mmacosx-version-min=14.0", "-mcpu=apple-m1"]
     units = sorted((source / "regex").glob("*.c"))
-    units += [engine / "nio/mem.c", source / "atomic/spin.c"]
+    units += [engine / "nio/mem.c", engine / "atomic/spin_lock.c"]
     owners = sorted(Path(__file__).parent.glob("*_test.c"))
     with tempfile.TemporaryDirectory(prefix="regex-owner-") as scratch:
         scratch = Path(scratch)

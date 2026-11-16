@@ -26,7 +26,7 @@ i32 main() {
     CHECK(Byte_type(p) == ID_BYTE);
     CHECK(Byte_length(p) == 1);
 
-    const  values[] = { 0, 1, -1, 127, -128 };
+    const i8 values[] = { 0, 1, -1, 127, -128 };
     for (bytes i = 0; i < sizeof values / sizeof values[0]; i++) {
         Byte_set(p, values[i]);
         CHECK(Byte_get(p) == values[i]);
