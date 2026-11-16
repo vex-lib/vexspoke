@@ -10,7 +10,7 @@
 
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
-#include "util/hash.h"
+#include "re/hash/hash.h"
 
 ;;DEFINITION
 /**
