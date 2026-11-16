@@ -2,7 +2,7 @@
 #include "nio/mem.h"
 
 #include "struct/circle_array.h"
-#include "oop/stride.h"
+#include "struct/stride.h"
 #include "oop/vexspoke_type.h"
 #include "struct/exhaustion.h"
 
