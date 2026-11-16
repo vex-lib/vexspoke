@@ -8,7 +8,7 @@
 
 #include "vex.h"
 #include "util/arrays.h"
-#include "util/hash.h"
+#include "re/hash/hash.h"
 #include "util/random.h"
 
 #endif // UTIL_UTIL_H
