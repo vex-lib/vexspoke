@@ -89,6 +89,11 @@ static Map *s_workers = nullptr;
 
 static any platform_main(any arg);
 
+;;GETTER
+static u8 *RingBuffer_slots(const RingBuffer *ring) {
+    return (*ring).slots;
+}
+
 static Map *workers() {
     if (!s_workers)
         s_workers = Map(ID_LONG, ID_LONG, 16);
@@ -109,7 +114,7 @@ Thread *Thread_5(u64 typeId, Thread_Job job, bytes queueCapacity,
     (*t).tickWhenIdle = tickWhenIdle;
     (*t).core = core;
     (*t).queue = RingBuffer(THREAD_TASK_SIZE, queueCapacity);
-    if ((*t).queue.slots == nullptr) {
+    if (RingBuffer_slots(Thread_queue(t)) == nullptr) {
         Memory_free(t);
         return nullptr;
     }
