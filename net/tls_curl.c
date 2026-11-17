@@ -34,6 +34,20 @@
  */
 
 
+
+;;GETTER
+static inline i32 TlsConn_backend(const TlsConn *s) { return (*s).backend; }
+;;GETTER
+static inline i32 *TlsConn_backendMut(TlsConn *s) { return &(*s).backend; }
+;;SETTER
+static inline fn TlsConn_setBackend(TlsConn *s, i32 v) { (*s).backend = v; }
+;;GETTER
+static inline any TlsConn_opaque(const TlsConn *s) { return (*s).opaque; }
+;;GETTER
+static inline any *TlsConn_opaqueMut(TlsConn *s) { return &(*s).opaque; }
+;;SETTER
+static inline fn TlsConn_setOpaque(TlsConn *s, any v) { (*s).opaque = v; }
+
 // net/tls_curl.c — libcurl TLS backend for non-Apple platforms.
 ;;DRAFT
 ;;INTENTION("libcurl https backend, fail closed until wired")
@@ -91,6 +105,6 @@ TlsBackendKind Tls_backend() {
 fn Tls_close(TlsConn *conn) {
     if (!conn)
         return;
-    (*conn).opaque = 0;
-    (*conn).backend = 0;
+    TlsConn_setOpaque(conn, 0);
+    TlsConn_setBackend(conn, 0);
 }

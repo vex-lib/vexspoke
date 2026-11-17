@@ -129,6 +129,104 @@
  * ============================================================================
  */
 
+
+;;GETTER
+static inline u16 WebSocket_closeCode(const WebSocket *s) { return (*s).closeCode; }
+;;GETTER
+static inline u16 *WebSocket_closeCodeMut(WebSocket *s) { return &(*s).closeCode; }
+;;SETTER
+static inline fn WebSocket_setCloseCode(WebSocket *s, u16 v) { (*s).closeCode = v; }
+;;GETTER
+static inline char *WebSocket_closeReasonMut(WebSocket *s) { return (*s).closeReason; }
+;;GETTER
+static inline const char *WebSocket_closeReason(const WebSocket *s) { return (*s).closeReason; }
+;;GETTER
+static inline bool WebSocket_closeReasonTruncated(const WebSocket *s) { return (*s).closeReasonTruncated; }
+;;GETTER
+static inline bool *WebSocket_closeReasonTruncatedMut(WebSocket *s) { return &(*s).closeReasonTruncated; }
+;;SETTER
+static inline fn WebSocket_setCloseReasonTruncated(WebSocket *s, bool v) { (*s).closeReasonTruncated = v; }
+;;GETTER
+static inline u8 *WebSocket_controlMut(WebSocket *s) { return (*s).control; }
+;;GETTER
+static inline const u8 *WebSocket_control(const WebSocket *s) { return (*s).control; }
+;;GETTER
+static inline char *WebSocket_errorMut(WebSocket *s) { return (*s).error; }
+;;GETTER
+static inline const char *WebSocket_error(const WebSocket *s) { return (*s).error; }
+;;GETTER
+static inline i32 WebSocket_fd(const WebSocket *s) { return (*s).fd; }
+;;GETTER
+static inline i32 *WebSocket_fdMut(WebSocket *s) { return &(*s).fd; }
+;;SETTER
+static inline fn WebSocket_setFd(WebSocket *s, i32 v) { (*s).fd = v; }
+;;GETTER
+static inline u64 WebSocket_framesIn(const WebSocket *s) { return (*s).framesIn; }
+;;GETTER
+static inline u64 *WebSocket_framesInMut(WebSocket *s) { return &(*s).framesIn; }
+;;SETTER
+static inline fn WebSocket_setFramesIn(WebSocket *s, u64 v) { (*s).framesIn = v; }
+;;GETTER
+static inline u64 WebSocket_framesOut(const WebSocket *s) { return (*s).framesOut; }
+;;GETTER
+static inline u64 *WebSocket_framesOutMut(WebSocket *s) { return &(*s).framesOut; }
+;;SETTER
+static inline fn WebSocket_setFramesOut(WebSocket *s, u64 v) { (*s).framesOut = v; }
+;;GETTER
+static inline bytes WebSocket_maxMessageBytes(const WebSocket *s) { return (*s).maxMessageBytes; }
+;;GETTER
+static inline bytes *WebSocket_maxMessageBytesMut(WebSocket *s) { return &(*s).maxMessageBytes; }
+;;SETTER
+static inline fn WebSocket_setMaxMessageBytes(WebSocket *s, bytes v) { (*s).maxMessageBytes = v; }
+;;GETTER
+static inline u8 * WebSocket_message(const WebSocket *s) { return (*s).message; }
+;;GETTER
+static inline u8 * *WebSocket_messageMut(WebSocket *s) { return &(*s).message; }
+;;SETTER
+static inline fn WebSocket_setMessage(WebSocket *s, u8 * v) { (*s).message = v; }
+;;GETTER
+static inline bytes WebSocket_messageCap(const WebSocket *s) { return (*s).messageCap; }
+;;GETTER
+static inline bytes *WebSocket_messageCapMut(WebSocket *s) { return &(*s).messageCap; }
+;;SETTER
+static inline fn WebSocket_setMessageCap(WebSocket *s, bytes v) { (*s).messageCap = v; }
+;;GETTER
+static inline bytes WebSocket_messageLength(const WebSocket *s) { return (*s).messageLength; }
+;;GETTER
+static inline bytes *WebSocket_messageLengthMut(WebSocket *s) { return &(*s).messageLength; }
+;;SETTER
+static inline fn WebSocket_setMessageLength(WebSocket *s, bytes v) { (*s).messageLength = v; }
+;;GETTER
+static inline u32 WebSocket_messageOpcode(const WebSocket *s) { return (*s).messageOpcode; }
+;;GETTER
+static inline u32 *WebSocket_messageOpcodeMut(WebSocket *s) { return &(*s).messageOpcode; }
+;;SETTER
+static inline fn WebSocket_setMessageOpcode(WebSocket *s, u32 v) { (*s).messageOpcode = v; }
+;;GETTER
+static inline u64 WebSocket_pongsSent(const WebSocket *s) { return (*s).pongsSent; }
+;;GETTER
+static inline u64 *WebSocket_pongsSentMut(WebSocket *s) { return &(*s).pongsSent; }
+;;SETTER
+static inline fn WebSocket_setPongsSent(WebSocket *s, u64 v) { (*s).pongsSent = v; }
+;;GETTER
+static inline WebSocketState WebSocket_state(const WebSocket *s) { return (*s).state; }
+;;GETTER
+static inline WebSocketState *WebSocket_stateMut(WebSocket *s) { return &(*s).state; }
+;;SETTER
+static inline fn WebSocket_setState(WebSocket *s, WebSocketState v) { (*s).state = v; }
+;;GETTER
+static inline u32 WebSocket_timeoutMs(const WebSocket *s) { return (*s).timeoutMs; }
+;;GETTER
+static inline u32 *WebSocket_timeoutMsMut(WebSocket *s) { return &(*s).timeoutMs; }
+;;SETTER
+static inline fn WebSocket_setTimeoutMs(WebSocket *s, u32 v) { (*s).timeoutMs = v; }
+;;GETTER
+static inline TlsConn * WebSocket_tls(const WebSocket *s) { return (*s).tls; }
+;;GETTER
+static inline TlsConn * *WebSocket_tlsMut(WebSocket *s) { return &(*s).tls; }
+;;SETTER
+static inline fn WebSocket_setTls(WebSocket *s, TlsConn * v) { (*s).tls = v; }
+
 // PRIVATE HELPER RECORD
 
 typedef struct WsTarget {
@@ -137,6 +235,28 @@ typedef struct WsTarget {
     i32 port;                 // 80 for ws://, 443 for wss://, when omitted
     bool secure;              // true for wss://, decided by the scheme alone
 } WsTarget;
+
+;;GETTER
+static inline char *WsTarget_hostMut(WsTarget *s) { return (*s).host; }
+;;GETTER
+static inline const char *WsTarget_host(const WsTarget *s) { return (*s).host; }
+;;GETTER
+static inline char *WsTarget_pathMut(WsTarget *s) { return (*s).path; }
+;;GETTER
+static inline const char *WsTarget_path(const WsTarget *s) { return (*s).path; }
+;;GETTER
+static inline i32 WsTarget_port(const WsTarget *s) { return (*s).port; }
+;;GETTER
+static inline i32 *WsTarget_portMut(WsTarget *s) { return &(*s).port; }
+;;SETTER
+static inline fn WsTarget_setPort(WsTarget *s, i32 v) { (*s).port = v; }
+;;GETTER
+static inline bool WsTarget_secure(const WsTarget *s) { return (*s).secure; }
+;;GETTER
+static inline bool *WsTarget_secureMut(WsTarget *s) { return &(*s).secure; }
+;;SETTER
+static inline fn WsTarget_setSecure(WsTarget *s, bool v) { (*s).secure = v; }
+
 
 // PRIVATE HELPERS
 
@@ -166,15 +286,17 @@ static i32 wsConnect(const WsTarget *target, u32 timeoutMs) {
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     char service[8];
-    snprintf(service, sizeof(service), "%d", (*target).port);
+    snprintf(service, sizeof(service), "%d", WsTarget_port(target));
     struct addrinfo *resolved = nullptr;
-    if (getaddrinfo((*target).host, service, &hints, &resolved) != 0 ||
+    if (getaddrinfo(WsTarget_hostMut(target), service, &hints, &resolved) != 0 ||
         resolved == nullptr)
         return -1;
 
     i32 fd = -1;
-    for (struct addrinfo *it = resolved; it != nullptr; it = (*it).ai_next) {
-        fd = socket((*it).ai_family, (*it).ai_socktype, (*it).ai_protocol);
+    for (struct addrinfo *it = resolved; it != nullptr;) {
+        struct addrinfo addrInfo = *it;
+        it = addrInfo.ai_next;
+        fd = socket(addrInfo.ai_family, addrInfo.ai_socktype, addrInfo.ai_protocol);
         if (fd < 0)
             continue;
         i32 flags = fcntl(fd, F_GETFL, 0);
@@ -183,7 +305,7 @@ static i32 wsConnect(const WsTarget *target, u32 timeoutMs) {
             fd = -1;
             continue;
         }
-        i32 state = connect(fd, (*it).ai_addr, (*it).ai_addrlen);
+        i32 state = connect(fd, addrInfo.ai_addr, addrInfo.ai_addrlen);
         if (state != 0 && errno == EINPROGRESS) {
             struct pollfd waiting = { .fd = fd, .events = POLLOUT };
             if (poll(&waiting, 1, (i32) timeoutMs) > 0) {
@@ -223,24 +345,24 @@ static bool wsSendAll(i32 fd, const u8 *data, bytes length) {
 static bool wsWrite(WebSocket *self, const u8 *data, bytes length) {
     if (self == nullptr)
         return false;
-    if ((*self).tls != nullptr)
-        return Tls_send((*self).tls, (const char*) data, length);
-    return (*self).fd >= 0 && wsSendAll((*self).fd, data, length);
+    if (WebSocket_tls(self) != nullptr)
+        return Tls_send(WebSocket_tls(self), (const char*) data, length);
+    return WebSocket_fd(self) >= 0 && wsSendAll(WebSocket_fd(self), data, length);
 }
 
 /** Read exactly length Bytes, retrying i16 reads within the transport budget. */
 static bool wsReadExact(WebSocket *self, u8 *dest, bytes length) {
     bytes got = 0u;
     while (got < length) {
-        if ((*self).tls != nullptr) {
+        if (WebSocket_tls(self) != nullptr) {
             bytes taken = 0u;
-            if (!Tls_recv((*self).tls, (char*) dest + got, length - got, &taken) ||
+            if (!Tls_recv(WebSocket_tls(self), (char*) dest + got, length - got, &taken) ||
                 taken == 0u)
                 return false;
             got += taken;
             continue;
         }
-        ssize_t taken = recv((*self).fd, dest + got, length - got, 0);
+        ssize_t taken = recv(WebSocket_fd(self), dest + got, length - got, 0);
         if (taken <= 0)
             return false;
         got += (bytes) taken;
@@ -354,8 +476,8 @@ static bool wsParseUrl(const char *url, WsTarget *out) {
         if (hostLength == 0u || hostLength >= WS_HOST_BYTES)
             return false;
         memset(out, 0, sizeof(*out));
-        memcpy((*out).host, hostPort + 1, hostLength);
-        (*out).host[hostLength] = '\0';
+        memcpy(WsTarget_hostMut(out), hostPort + 1, hostLength);
+        WsTarget_hostMut(out)[hostLength] = '\0';
     } else {
         const char *colon = strrchr(hostPort, ':');
         if (colon != nullptr) {
@@ -376,16 +498,16 @@ static bool wsParseUrl(const char *url, WsTarget *out) {
         if (hostLength == 0u || hostLength >= WS_HOST_BYTES)
             return false;
         memset(out, 0, sizeof(*out));
-        memcpy((*out).host, hostPort, hostLength);
-        (*out).host[hostLength] = '\0';
+        memcpy(WsTarget_hostMut(out), hostPort, hostLength);
+        WsTarget_hostMut(out)[hostLength] = '\0';
     }
 
     const char *path = slash == nullptr ? "/" : slash;
     if (strlen(path) >= WS_PATH_BYTES)
         return false;
-    memcpy((*out).path, path, strlen(path) + 1u);
-    (*out).port = port;
-    (*out).secure = secure;
+    memcpy(WsTarget_pathMut(out), path, strlen(path) + 1u);
+    WsTarget_setPort(out, port);
+    WsTarget_setSecure(out, secure);
     return true;
 }
 
@@ -393,12 +515,12 @@ static bool wsParseUrl(const char *url, WsTarget *out) {
 static fn wsFail(WebSocket *self, const char *reason) {
     if (self == nullptr)
         return;
-    bytes cap = sizeof((*self).error);
+    bytes cap = sizeof ((WebSocket){0}).error;
     bytes length = strlen(reason);
     bytes copy = length < cap - 1u ? length : cap - 1u;
-    memcpy((*self).error, reason, copy);
-    (*self).error[copy] = '\0';
-    (*self).state = WEBSOCKET_FAILED;
+    memcpy(WebSocket_errorMut(self), reason, copy);
+    WebSocket_errorMut(self)[copy] = '\0';
+    WebSocket_setState(self, WEBSOCKET_FAILED);
 }
 
 /** RFC 3629 validation: rejects overlong forms and surrogate halves. */
@@ -445,31 +567,31 @@ static bool wsUtf8Valid(const u8 *data, bytes length) {
 
 /** Append reassembled payload Bytes, refusing anything past the message cap. */
 static bool wsAppendMessage(WebSocket *self, const u8 *data, bytes length) {
-    if (length > (*self).maxMessageBytes - (*self).messageLength) {
+    if (length > WebSocket_maxMessageBytes(self) - WebSocket_messageLength(self)) {
         wsFail(self, "message exceeds the configured cap");
         return false;
     }
-    bytes wanted = (*self).messageLength + length;
-    if (wanted > (*self).messageCap) {
-        bytes cap = (*self).messageCap == 0u ? 1024u : (*self).messageCap;
+    bytes wanted = WebSocket_messageLength(self) + length;
+    if (wanted > WebSocket_messageCap(self)) {
+        bytes cap = WebSocket_messageCap(self) == 0u ? 1024u : WebSocket_messageCap(self);
         while (cap < wanted)
             cap *= 2u;
-        u8 *grown = (u8*) Memory_realloc((*self).message, cap);
+        u8 *grown = (u8*) Memory_realloc(WebSocket_message(self), cap);
         if (grown == nullptr) {
             wsFail(self, "message buffer growth failed");
             return false;
         }
-        (*self).message = grown;
-        (*self).messageCap = cap;
+        WebSocket_setMessage(self, grown);
+        WebSocket_setMessageCap(self, cap);
     }
-    memcpy((*self).message + (*self).messageLength, data, length);
-    (*self).messageLength += length;
+    memcpy(WebSocket_message(self) + WebSocket_messageLength(self), data, length);
+    WebSocket_setMessageLength(self, WebSocket_messageLength(self) + (length));
     return true;
 }
 
 /** True when this client owns a live transport — a socket or a TLS session. */
 static inline bool wsConnected(const WebSocket *self) {
-    return self != nullptr && ((*self).fd >= 0 || (*self).tls != nullptr);
+    return self != nullptr && (WebSocket_fd(self) >= 0 || WebSocket_tls(self) != nullptr);
 }
 
 /** Encode one final-or-fragmented frame with a fresh mask and send it. */
@@ -517,7 +639,7 @@ static bool wsSendFrame(WebSocket *self, u8 opcode, bool fin,
             return false;
         sent += take;
     }
-    (*self).framesOut++;
+    WebSocket_setFramesOut(self, WebSocket_framesOut(self) + 1u);
     return true;
 }
 
@@ -575,19 +697,19 @@ static WebSocketMessage wsConsumeFrame(WebSocket *self) {
     u64 length = 0u;
     if (!wsReadFrameHeader(self, &fin, &opcode, &masked, &length)) {
         result.kind = WS_MESSAGE_ERROR;
-        memcpy(result.error, (*self).error, sizeof(result.error));
+        memcpy(result.error, WebSocket_errorMut(self), sizeof(result.error));
         return result;
     }
     if (masked) {
         wsFail(self, "server frames must not be masked");
         result.kind = WS_MESSAGE_ERROR;
-        memcpy(result.error, (*self).error, sizeof(result.error));
+        memcpy(result.error, WebSocket_errorMut(self), sizeof(result.error));
         return result;
     }
-    if (length > (*self).maxMessageBytes) {
+    if (length > WebSocket_maxMessageBytes(self)) {
         wsFail(self, "frame length exceeds the configured cap");
         result.kind = WS_MESSAGE_ERROR;
-        memcpy(result.error, (*self).error, sizeof(result.error));
+        memcpy(result.error, WebSocket_errorMut(self), sizeof(result.error));
         return result;
     }
 
@@ -595,24 +717,24 @@ static WebSocketMessage wsConsumeFrame(WebSocket *self) {
         if (!fin || length > WS_CONTROL_MAX_BYTES) {
             wsFail(self, "control frames must be final and within 125 Bytes");
             result.kind = WS_MESSAGE_ERROR;
-            memcpy(result.error, (*self).error, sizeof(result.error));
+            memcpy(result.error, WebSocket_errorMut(self), sizeof(result.error));
             return result;
         }
-        if (length > 0u && !wsReadExact(self, (*self).control, (bytes) length)) {
+        if (length > 0u && !wsReadExact(self, WebSocket_controlMut(self), (bytes) length)) {
             wsFail(self, "control payload read failed");
             result.kind = WS_MESSAGE_ERROR;
-            memcpy(result.error, (*self).error, sizeof(result.error));
+            memcpy(result.error, WebSocket_errorMut(self), sizeof(result.error));
             return result;
         }
-        (*self).framesIn++;
+        WebSocket_setFramesIn(self, WebSocket_framesIn(self) + 1u);
         if (opcode == WEBSOCKET_PING) {
-            if (!wsSendFrame(self, WEBSOCKET_PONG, true, (*self).control, (bytes) length)) {
+            if (!wsSendFrame(self, WEBSOCKET_PONG, true, WebSocket_controlMut(self), (bytes) length)) {
                 wsFail(self, "pong reply failed");
                 result.kind = WS_MESSAGE_ERROR;
-                memcpy(result.error, (*self).error, sizeof(result.error));
+                memcpy(result.error, WebSocket_errorMut(self), sizeof(result.error));
                 return result;
             }
-            (*self).pongsSent++;
+            WebSocket_setPongsSent(self, WebSocket_pongsSent(self) + 1u);
             return result;
         }
         if (opcode == WEBSOCKET_PONG)
@@ -620,53 +742,53 @@ static WebSocketMessage wsConsumeFrame(WebSocket *self) {
         if (opcode == WEBSOCKET_CLOSE) {
             u16 code = 1005u;
             if (length >= 2u)
-                code = (u16) (((u16) (*self).control[0] << 8) |
-                                   (u16) (*self).control[1]);
-            (*self).closeCode = code;
-            (*self).closeReason[0] = '\0';
-            (*self).closeReasonTruncated = false;
+                code = (u16) (((u16) WebSocket_controlMut(self)[0] << 8) |
+                                   (u16) WebSocket_controlMut(self)[1]);
+            WebSocket_setCloseCode(self, code);
+            WebSocket_closeReasonMut(self)[0] = '\0';
+            WebSocket_setCloseReasonTruncated(self, false);
             if (length > 2u) {
                 bytes textLength = (bytes) length - 2u;
-                bytes cap = sizeof((*self).closeReason) - 1u;
+                bytes cap = sizeof ((WebSocket){0}).closeReason - 1u;
                 bytes copy = textLength < cap ? textLength : cap;
-                memcpy((*self).closeReason, (*self).control + 2u, copy);
-                (*self).closeReason[copy] = '\0';
-                (*self).closeReasonTruncated = copy < textLength;
+                memcpy(WebSocket_closeReasonMut(self), WebSocket_controlMut(self) + 2u, copy);
+                WebSocket_closeReasonMut(self)[copy] = '\0';
+                WebSocket_setCloseReasonTruncated(self, copy < textLength);
             }
-            if ((*self).state == WEBSOCKET_OPEN)
-                (discard) wsSendFrame(self, WEBSOCKET_CLOSE, true, (*self).control, (bytes) length);
-            (*self).state = WEBSOCKET_CLOSED;
+            if (WebSocket_state(self) == WEBSOCKET_OPEN)
+                (discard) wsSendFrame(self, WEBSOCKET_CLOSE, true, WebSocket_controlMut(self), (bytes) length);
+            WebSocket_setState(self, WEBSOCKET_CLOSED);
             result.kind = WS_MESSAGE_CLOSE;
             result.closeCode = code;
-            result.truncated = (*self).closeReasonTruncated;
+            result.truncated = WebSocket_closeReasonTruncated(self);
             return result;
         }
         wsFail(self, "unknown control opcode");
         result.kind = WS_MESSAGE_ERROR;
-        memcpy(result.error, (*self).error, sizeof(result.error));
+        memcpy(result.error, WebSocket_errorMut(self), sizeof(result.error));
         return result;
     }
 
     if (opcode == WEBSOCKET_CONTINUATION) {
-        if ((*self).messageOpcode == 0u) {
+        if (WebSocket_messageOpcode(self) == 0u) {
             wsFail(self, "continuation frame without a start frame");
             result.kind = WS_MESSAGE_ERROR;
-            memcpy(result.error, (*self).error, sizeof(result.error));
+            memcpy(result.error, WebSocket_errorMut(self), sizeof(result.error));
             return result;
         }
     } else if (opcode == WEBSOCKET_TEXT || opcode == WEBSOCKET_BINARY) {
-        if ((*self).messageOpcode != 0u) {
+        if (WebSocket_messageOpcode(self) != 0u) {
             wsFail(self, "new data frame inside a fragmented message");
             result.kind = WS_MESSAGE_ERROR;
-            memcpy(result.error, (*self).error, sizeof(result.error));
+            memcpy(result.error, WebSocket_errorMut(self), sizeof(result.error));
             return result;
         }
-        (*self).messageOpcode = opcode;
-        (*self).messageLength = 0u;
+        WebSocket_setMessageOpcode(self, opcode);
+        WebSocket_setMessageLength(self, 0u);
     } else {
         wsFail(self, "unknown data opcode");
         result.kind = WS_MESSAGE_ERROR;
-        memcpy(result.error, (*self).error, sizeof(result.error));
+        memcpy(result.error, WebSocket_errorMut(self), sizeof(result.error));
         return result;
     }
 
@@ -675,31 +797,31 @@ static WebSocketMessage wsConsumeFrame(WebSocket *self) {
     while (remaining > 0u) {
         bytes take = remaining < sizeof(chunk) ? remaining : sizeof(chunk);
         if (!wsReadExact(self, chunk, take) || !wsAppendMessage(self, chunk, take)) {
-            if ((*self).state != WEBSOCKET_FAILED)
+            if (WebSocket_state(self) != WEBSOCKET_FAILED)
                 wsFail(self, "message payload read failed");
             result.kind = WS_MESSAGE_ERROR;
-            memcpy(result.error, (*self).error, sizeof(result.error));
+            memcpy(result.error, WebSocket_errorMut(self), sizeof(result.error));
             return result;
         }
         remaining -= take;
     }
-    (*self).framesIn++;
+    WebSocket_setFramesIn(self, WebSocket_framesIn(self) + 1u);
     if (!fin)
         return result; // a fragmented message continues on the next frame
 
-    if ((*self).messageOpcode == WEBSOCKET_TEXT &&
-        !wsUtf8Valid((*self).message, (*self).messageLength)) {
+    if (WebSocket_messageOpcode(self) == WEBSOCKET_TEXT &&
+        !wsUtf8Valid(WebSocket_message(self), WebSocket_messageLength(self))) {
         wsFail(self, "text message is not valid UTF-8");
         result.kind = WS_MESSAGE_ERROR;
-        memcpy(result.error, (*self).error, sizeof(result.error));
+        memcpy(result.error, WebSocket_errorMut(self), sizeof(result.error));
         return result;
     }
-    result.kind = (*self).messageOpcode == WEBSOCKET_TEXT ? WS_MESSAGE_TEXT
+    result.kind = WebSocket_messageOpcode(self) == WEBSOCKET_TEXT ? WS_MESSAGE_TEXT
                                                          : WS_MESSAGE_BINARY;
-    result.payload = (*self).message;
-    result.length = (*self).messageLength;
-    (*self).messageOpcode = 0u;
-    (*self).messageLength = 0u;
+    result.payload = WebSocket_message(self);
+    result.length = WebSocket_messageLength(self);
+    WebSocket_setMessageOpcode(self, 0u);
+    WebSocket_setMessageLength(self, 0u);
     return result;
 }
 
@@ -743,7 +865,7 @@ static bool wsHandshake(WebSocket *self, const WsTarget *target) {
         "Sec-WebSocket-Key: %s\r\n"
         "Sec-WebSocket-Version: 13\r\n"
         "\r\n",
-        (*target).path, (*target).host, (*target).port, key);
+        WsTarget_pathMut(target), WsTarget_hostMut(target), WsTarget_port(target), key);
     if (written < 0 || (bytes) written >= sizeof(request)) {
         THROW("WebSocket_open: handshake request does not fit");
         wsFail(self, "handshake request does not fit");
@@ -815,18 +937,18 @@ bool WebSocket_open(WebSocket *self, const char *url, WebSocketConfig config) {
         return false;
     }
     WebSocket_close(self);
-    (*self).timeoutMs = config.timeoutMs == 0u ? 5000u : config.timeoutMs;
-    (*self).maxMessageBytes = config.maxMessageBytes == 0u
+    WebSocket_setTimeoutMs(self, config.timeoutMs == 0u ? 5000u : config.timeoutMs);
+    (*WebSocket_maxMessageBytesMut(self)) = config.maxMessageBytes == 0u
         ? WS_MESSAGE_BYTES_DEFAULT : config.maxMessageBytes;
-    (*self).error[0] = '\0';
-    (*self).closeReason[0] = '\0';
-    (*self).closeReasonTruncated = false;
-    (*self).closeCode = 1005u;
-    (*self).messageOpcode = 0u;
-    (*self).messageLength = 0u;
-    (*self).framesIn = 0u;
-    (*self).framesOut = 0u;
-    (*self).pongsSent = 0u;
+    WebSocket_errorMut(self)[0] = '\0';
+    WebSocket_closeReasonMut(self)[0] = '\0';
+    WebSocket_setCloseReasonTruncated(self, false);
+    WebSocket_setCloseCode(self, 1005u);
+    WebSocket_setMessageOpcode(self, 0u);
+    WebSocket_setMessageLength(self, 0u);
+    WebSocket_setFramesIn(self, 0u);
+    WebSocket_setFramesOut(self, 0u);
+    WebSocket_setPongsSent(self, 0u);
 
     WsTarget target;
     if (!wsParseUrl(url, &target)) {
@@ -841,30 +963,30 @@ bool WebSocket_open(WebSocket *self, const char *url, WebSocketConfig config) {
             wsFail(self, "TLS connect failed");
             return false;
         }
-        Tls_setBudget(tls, (*self).timeoutMs);
-        (*self).tls = tls;
+        Tls_setBudget(tls, WebSocket_timeoutMs(self));
+        WebSocket_setTls(self, tls);
     } else {
-        i32 fd = wsConnect(&target, (*self).timeoutMs);
+        i32 fd = wsConnect(&target, WebSocket_timeoutMs(self));
         if (fd < 0) {
             THROW("WebSocket_open: connect failed");
             wsFail(self, "connect failed");
             return false;
         }
-        (*self).fd = fd;
+        WebSocket_setFd(self, fd);
     }
-    (*self).message = (u8*) Memory_alloc(TYPE_BYTE_ARRAY, 1024u);
-    if ((*self).message == nullptr) {
+    WebSocket_setMessage(self, (u8*) Memory_alloc(TYPE_BYTE_ARRAY, 1024u));
+    if (WebSocket_message(self) == nullptr) {
         THROW("WebSocket_open: reassembly buffer allocation failed");
         wsFail(self, "reassembly buffer allocation failed");
         WebSocket_close(self);
         return false;
     }
-    (*self).messageCap = 1024u;
+    WebSocket_setMessageCap(self, 1024u);
     if (!wsHandshake(self, &target)) {
         WebSocket_close(self);
         return false;
     }
-    (*self).state = WEBSOCKET_OPEN;
+    WebSocket_setState(self, WEBSOCKET_OPEN);
     return true;
 }
 
@@ -872,25 +994,25 @@ bool WebSocket_open(WebSocket *self, const char *url, WebSocketConfig config) {
 fn WebSocket_close(WebSocket *self) {
     if (self == nullptr)
         return;
-    if ((*self).state == WEBSOCKET_OPEN &&
-        ((*self).fd >= 0 || (*self).tls != nullptr))
+    if (WebSocket_state(self) == WEBSOCKET_OPEN &&
+        (WebSocket_fd(self) >= 0 || WebSocket_tls(self) != nullptr))
         (discard) WebSocket_writeClose(self, 1000u, nullptr);
-    if ((*self).tls != nullptr) {
-        Tls_close((*self).tls);
-        (*self).tls = nullptr;
+    if (WebSocket_tls(self) != nullptr) {
+        Tls_close(WebSocket_tls(self));
+        WebSocket_setTls(self, nullptr);
     }
-    if ((*self).fd >= 0) {
-        close((*self).fd);
-        (*self).fd = -1;
+    if (WebSocket_fd(self) >= 0) {
+        close(WebSocket_fd(self));
+        WebSocket_setFd(self, -1);
     }
-    if ((*self).message != nullptr) {
-        Memory_free((*self).message);
-        (*self).message = nullptr;
+    if (WebSocket_message(self) != nullptr) {
+        Memory_free(WebSocket_message(self));
+        WebSocket_setMessage(self, nullptr);
     }
-    (*self).messageCap = 0u;
-    (*self).messageLength = 0u;
-    (*self).messageOpcode = 0u;
-    (*self).state = WEBSOCKET_CLOSED;
+    WebSocket_setMessageCap(self, 0u);
+    WebSocket_setMessageLength(self, 0u);
+    WebSocket_setMessageOpcode(self, 0u);
+    WebSocket_setState(self, WEBSOCKET_CLOSED);
 }
 
 // CORE FUNCTIONS
@@ -901,19 +1023,19 @@ WebSocketMessage WebSocket_poll(WebSocket *self, u32 budgetMs) {
     memset(&result, 0, sizeof(result));
     result.kind = WS_MESSAGE_NONE;
     result.closeCode = 1005u;
-    if (self == nullptr || ((*self).fd < 0 && (*self).tls == nullptr)) {
+    if (self == nullptr || (WebSocket_fd(self) < 0 && WebSocket_tls(self) == nullptr)) {
         result.kind = WS_MESSAGE_ERROR;
         memcpy(result.error, "connection is not open", sizeof("connection is not open"));
         return result;
     }
-    if ((*self).state == WEBSOCKET_FAILED) {
+    if (WebSocket_state(self) == WEBSOCKET_FAILED) {
         result.kind = WS_MESSAGE_ERROR;
-        memcpy(result.error, (*self).error, sizeof(result.error));
+        memcpy(result.error, WebSocket_errorMut(self), sizeof(result.error));
         return result;
     }
-    if ((*self).state == WEBSOCKET_CLOSED) {
+    if (WebSocket_state(self) == WEBSOCKET_CLOSED) {
         result.kind = WS_MESSAGE_CLOSE;
-        result.closeCode = (*self).closeCode;
+        result.closeCode = WebSocket_closeCode(self);
         return result;
     }
 
@@ -925,23 +1047,23 @@ WebSocketMessage WebSocket_poll(WebSocket *self, u32 budgetMs) {
         u32 slice = (u32) (deadline - now);
         if (slice > 100u)
             slice = 100u; // bounded slices: re-check the budget, never park
-        if ((*self).tls != nullptr) {
+        if (WebSocket_tls(self) != nullptr) {
             // A TLS connection has no descriptor to poll, so ask the transport
             // for readiness instead. A quiet budget keeps the connection healthy
             // and simply yields nothing this step; a broken peer is reported by
             // the read or write that actually fails.
-            Tls_setBudget((*self).tls, slice);
-            if (!Tls_readable((*self).tls, slice))
+            Tls_setBudget(WebSocket_tls(self), slice);
+            if (!Tls_readable(WebSocket_tls(self), slice))
                 continue;
         } else {
-            struct pollfd waiting = { .fd = (*self).fd, .events = POLLIN };
+            struct pollfd waiting = { .fd = WebSocket_fd(self), .events = POLLIN };
             i32 ready = poll(&waiting, 1, (i32) slice);
             if (ready == 0)
                 continue;
             if (ready < 0) {
                 wsFail(self, "poll failed");
                 result.kind = WS_MESSAGE_ERROR;
-                memcpy(result.error, (*self).error, sizeof(result.error));
+                memcpy(result.error, WebSocket_errorMut(self), sizeof(result.error));
                 return result;
             }
         }
@@ -1009,14 +1131,14 @@ bool WebSocket_writeClose(WebSocket *self, u16 code, const char *reason) {
             bytes copy = textLength < WS_CLOSE_REASON_BYTES ? textLength : WS_CLOSE_REASON_BYTES;
             memcpy(payload + 2u, reason, copy);
             length += copy;
-            (*self).closeReasonTruncated = copy < textLength;
+            WebSocket_setCloseReasonTruncated(self, copy < textLength);
         }
     }
     if (!wsSendFrame(self, WEBSOCKET_CLOSE, true, payload, length)) {
         wsFail(self, "close frame write failed");
         return false;
     }
-    (*self).state = WEBSOCKET_CLOSING;
+    WebSocket_setState(self, WEBSOCKET_CLOSING);
     return true;
 }
 
@@ -1024,47 +1146,47 @@ bool WebSocket_writeClose(WebSocket *self, u16 code, const char *reason) {
 
 /** The connection state, or CLOSED for a null client. */
 WebSocketState WebSocket_state(const WebSocket *self) {
-    return self == nullptr ? WEBSOCKET_CLOSED : (*self).state;
+    return self == nullptr ? WEBSOCKET_CLOSED : WebSocket_state(self);
 }
 
 /** True only while the handshake is accepted and no close has been seen. */
 bool WebSocket_isOpen(const WebSocket *self) {
-    return self != nullptr && (*self).state == WEBSOCKET_OPEN;
+    return self != nullptr && WebSocket_state(self) == WEBSOCKET_OPEN;
 }
 
 /** The bounded last-failure text, or "" when there is none. */
 const char *WebSocket_lastError(const WebSocket *self) {
-    return self == nullptr ? "" : (*self).error;
+    return self == nullptr ? "" : WebSocket_errorMut(self);
 }
 
 /** The finalized close code, or 1005 when the peer sent none. */
 u16 WebSocket_closeCode(const WebSocket *self) {
-    return self == nullptr ? 1005u : (*self).closeCode;
+    return self == nullptr ? 1005u : WebSocket_closeCode(self);
 }
 
 /** The bounded close reason text, or "" when there is none. */
 const char *WebSocket_closeReason(const WebSocket *self) {
-    return self == nullptr ? "" : (*self).closeReason;
+    return self == nullptr ? "" : WebSocket_closeReasonMut(self);
 }
 
 /** The reassembly cap in force, or zero for a null client. */
 bytes WebSocket_maxMessageBytes(const WebSocket *self) {
-    return self == nullptr ? 0u : (*self).maxMessageBytes;
+    return self == nullptr ? 0u : WebSocket_maxMessageBytes(self);
 }
 
 /** Complete frames decoded since open. */
 u64 WebSocket_framesIn(const WebSocket *self) {
-    return self == nullptr ? 0u : (*self).framesIn;
+    return self == nullptr ? 0u : WebSocket_framesIn(self);
 }
 
 /** Complete frames encoded and sent since open. */
 u64 WebSocket_framesOut(const WebSocket *self) {
-    return self == nullptr ? 0u : (*self).framesOut;
+    return self == nullptr ? 0u : WebSocket_framesOut(self);
 }
 
 /** Automatic pong replies sent since open. */
 u64 WebSocket_pongsSent(const WebSocket *self) {
-    return self == nullptr ? 0u : (*self).pongsSent;
+    return self == nullptr ? 0u : WebSocket_pongsSent(self);
 }
 
 // STRING PROJECTIONS (the toString Law)
@@ -1089,10 +1211,10 @@ fn WebSocket_toString(const WebSocket *self, char *dest, bytes cap, bool *outTru
         Str_printf(&out,
             "WebSocket { state=%s, fd=%d, closeCode=%u, framesIn=%llu, framesOut=%llu, "
             "pongs=%llu }",
-            wsStateName((*self).state), (*self).fd, (u32) (*self).closeCode,
-            (u64) (*self).framesIn,
-            (u64) (*self).framesOut,
-            (u64) (*self).pongsSent);
+            wsStateName(WebSocket_state(self)), WebSocket_fd(self), (u32) WebSocket_closeCode(self),
+            (u64) WebSocket_framesIn(self),
+            (u64) WebSocket_framesOut(self),
+            (u64) WebSocket_pongsSent(self));
     }
     if (outTruncated != nullptr)
         *outTruncated = Str_isTruncated(&out);
@@ -1110,16 +1232,16 @@ fn WebSocket_toStringStruct(const WebSocket *self, char *dest, bytes cap,
             "message=%s, messageCap=%llu, messageLength=%llu, messageOpcode=%u, "
             "closeCode=%u, closeReasonTruncated=%s, framesIn=%llu, framesOut=%llu, "
             "pongsSent=%llu }",
-            (*self).fd, wsStateName((*self).state), (*self).timeoutMs,
-            (u64) (*self).maxMessageBytes,
-            (*self).message == nullptr ? "nullptr" : "owned",
-            (u64) (*self).messageCap,
-            (u64) (*self).messageLength, (*self).messageOpcode,
-            (u32) (*self).closeCode,
-            (*self).closeReasonTruncated ? "true" : "false",
-            (u64) (*self).framesIn,
-            (u64) (*self).framesOut,
-            (u64) (*self).pongsSent);
+            WebSocket_fd(self), wsStateName(WebSocket_state(self)), WebSocket_timeoutMs(self),
+            (u64) WebSocket_maxMessageBytes(self),
+            WebSocket_message(self) == nullptr ? "nullptr" : "owned",
+            (u64) WebSocket_messageCap(self),
+            (u64) WebSocket_messageLength(self), WebSocket_messageOpcode(self),
+            (u32) WebSocket_closeCode(self),
+            WebSocket_closeReasonTruncated(self) ? "true" : "false",
+            (u64) WebSocket_framesIn(self),
+            (u64) WebSocket_framesOut(self),
+            (u64) WebSocket_pongsSent(self));
     }
     if (outTruncated != nullptr)
         *outTruncated = Str_isTruncated(&out);

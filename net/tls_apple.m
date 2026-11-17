@@ -76,6 +76,20 @@
  * ============================================================================
  */
 
+
+;;GETTER
+static inline i32 TlsConn_backend(const TlsConn *s) { return (*s).backend; }
+;;GETTER
+static inline i32 *TlsConn_backendMut(TlsConn *s) { return &(*s).backend; }
+;;SETTER
+static inline fn TlsConn_setBackend(TlsConn *s, i32 v) { (*s).backend = v; }
+;;GETTER
+static inline any TlsConn_opaque(const TlsConn *s) { return (*s).opaque; }
+;;GETTER
+static inline any *TlsConn_opaqueMut(TlsConn *s) { return &(*s).opaque; }
+;;SETTER
+static inline fn TlsConn_setOpaque(TlsConn *s, any v) { (*s).opaque = v; }
+
 // The seam's own budgets. A connect or an IO burst never waits longer than its
 // constant here; the seam carries no per-call budget, so these are the contract.
 // A refused or unresolvable peer is reported when this budget runs out rather
@@ -242,10 +256,10 @@ static bool vexAwaitRead(VexTlsSession *session, u32 budgetMs) {
 
 /** Borrow the session a TlsConn carries, or null when the handle is unusable. */
 static inline VexTlsSession *vexSession(const TlsConn *conn) {
-    if (conn == nullptr || (*conn).opaque == nullptr ||
-        (*conn).backend != (i32) TLS_BACKEND_APPLE)
+    if (conn == nullptr || TlsConn_opaque(conn) == nullptr ||
+        TlsConn_backend(conn) != (i32) TLS_BACKEND_APPLE)
         return nullptr;
-    return (__bridge VexTlsSession*) (*conn).opaque;
+    return (__bridge VexTlsSession*) TlsConn_opaque(conn);
 }
 
 // THE SEAM
@@ -310,8 +324,8 @@ bool Tls_connect(const char *host, i32 port, TlsConn **connOut) {
             THROW("Tls_connect: connection record allocation failed");
             return false;
         }
-        (*conn).backend = (i32) TLS_BACKEND_APPLE;
-        (*conn).opaque = (__bridge_retained any) session; // released by Tls_close
+        TlsConn_setBackend(conn, (i32) TLS_BACKEND_APPLE);
+        TlsConn_setOpaque(conn, (__bridge_retained any) session); // released by Tls_close
         s_lastBackend = TLS_BACKEND_APPLE;
         *connOut = conn;
     }
@@ -394,15 +408,15 @@ fn Tls_close(TlsConn *conn) {
     if (conn == nullptr)
         return;
     @autoreleasepool {
-        if ((*conn).opaque != nullptr) {
-            VexTlsSession *session = (__bridge_transfer VexTlsSession*) (*conn).opaque;
+        if (TlsConn_opaque(conn) != nullptr) {
+            VexTlsSession *session = (__bridge_transfer VexTlsSession*) TlsConn_opaque(conn);
             if (session.connection != nullptr)
                 nw_connection_cancel(session.connection);
             session = nil; // ARC releases the session and its connection here
         }
     }
-    (*conn).opaque = nullptr;
-    (*conn).backend = (i32) TLS_BACKEND_NONE;
+    TlsConn_setOpaque(conn, nullptr);
+    TlsConn_setBackend(conn, (i32) TLS_BACKEND_NONE);
     free(conn);
 }
 

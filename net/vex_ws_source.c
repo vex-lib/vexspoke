@@ -72,6 +72,65 @@
  * ============================================================================
  */
 
+
+;;GETTER
+static inline u16 WebSocketMessage_closeCode(const WebSocketMessage *s) { return (*s).closeCode; }
+;;GETTER
+static inline u16 *WebSocketMessage_closeCodeMut(WebSocketMessage *s) { return &(*s).closeCode; }
+;;SETTER
+static inline fn WebSocketMessage_setCloseCode(WebSocketMessage *s, u16 v) { (*s).closeCode = v; }
+;;GETTER
+static inline char *WebSocketMessage_errorMut(WebSocketMessage *s) { return (*s).error; }
+;;GETTER
+static inline const char *WebSocketMessage_error(const WebSocketMessage *s) { return (*s).error; }
+;;GETTER
+static inline WebSocketMessageKind WebSocketMessage_kind(const WebSocketMessage *s) { return (*s).kind; }
+;;GETTER
+static inline WebSocketMessageKind *WebSocketMessage_kindMut(WebSocketMessage *s) { return &(*s).kind; }
+;;SETTER
+static inline fn WebSocketMessage_setKind(WebSocketMessage *s, WebSocketMessageKind v) { (*s).kind = v; }
+;;GETTER
+static inline bytes WebSocketMessage_length(const WebSocketMessage *s) { return (*s).length; }
+;;GETTER
+static inline bytes *WebSocketMessage_lengthMut(WebSocketMessage *s) { return &(*s).length; }
+;;SETTER
+static inline fn WebSocketMessage_setLength(WebSocketMessage *s, bytes v) { (*s).length = v; }
+;;GETTER
+static inline const u8 * WebSocketMessage_payload(const WebSocketMessage *s) { return (*s).payload; }
+;;GETTER
+static inline const u8 * *WebSocketMessage_payloadMut(WebSocketMessage *s) { return &(*s).payload; }
+;;SETTER
+static inline fn WebSocketMessage_setPayload(WebSocketMessage *s, const u8 * v) { (*s).payload = v; }
+
+;;GETTER
+static inline WebSocketConfig VexWsSource_config(const VexWsSource *s) { return (*s).config; }
+;;GETTER
+static inline WebSocketConfig *VexWsSource_configMut(VexWsSource *s) { return &(*s).config; }
+;;SETTER
+static inline fn VexWsSource_setConfig(VexWsSource *s, WebSocketConfig v) { (*s).config = v; }
+;;GETTER
+static inline bool VexWsSource_configured(const VexWsSource *s) { return (*s).configured; }
+;;GETTER
+static inline bool *VexWsSource_configuredMut(VexWsSource *s) { return &(*s).configured; }
+;;SETTER
+static inline fn VexWsSource_setConfigured(VexWsSource *s, bool v) { (*s).configured = v; }
+;;GETTER
+static inline WebSocketMessage VexWsSource_last(const VexWsSource *s) { return (*s).last; }
+;;GETTER
+static inline WebSocketMessage *VexWsSource_lastMut(VexWsSource *s) { return &(*s).last; }
+;;SETTER
+static inline fn VexWsSource_setLast(VexWsSource *s, WebSocketMessage v) { (*s).last = v; }
+;;GETTER
+static inline WebSocket VexWsSource_socket(const VexWsSource *s) { return (*s).socket; }
+;;GETTER
+static inline WebSocket *VexWsSource_socketMut(VexWsSource *s) { return &(*s).socket; }
+;;SETTER
+static inline fn VexWsSource_setSocket(VexWsSource *s, WebSocket v) { (*s).socket = v; }
+;;GETTER
+static inline char *VexWsSource_urlMut(VexWsSource *s) { return (*s).url; }
+;;GETTER
+static inline const char *VexWsSource_url(const VexWsSource *s) { return (*s).url; }
+
 // CONSTRUCTORS
 
 /** Store a target and connect, so a later _connect can retry through the table. */
@@ -81,19 +140,19 @@ bool VexWsSource_open(VexWsSource *self, const char *url, WebSocketConfig config
         return false;
     }
     bytes length = strlen(url);
-    if (length + 1u > sizeof((*self).url)) {
+    if (length + 1u > sizeof ((VexWsSource){0}).url) {
         THROW("VexWsSource_open: target URL does not fit");
         return false;
     }
-    memcpy((*self).url, url, length + 1u);
-    (*self).config = config;
-    (*self).configured = true;
-    WebSocketMessage *last = &(*self).last;
-    (*last).kind = WS_MESSAGE_NONE;
-    (*last).closeCode = 1005u;
-    (*last).payload = nullptr;
-    (*last).length = 0u;
-    (*last).error[0] = '\0';
+    memcpy(VexWsSource_urlMut(self), url, length + 1u);
+    VexWsSource_setConfig(self, config);
+    VexWsSource_setConfigured(self, true);
+    WebSocketMessage *last = VexWsSource_lastMut(self);
+    WebSocketMessage_setKind(last, WS_MESSAGE_NONE);
+    WebSocketMessage_setCloseCode(last, 1005u);
+    WebSocketMessage_setPayload(last, nullptr);
+    WebSocketMessage_setLength(last, 0u);
+    WebSocketMessage_errorMut(last)[0] = '\0';
     return VexWsSource_connect(self);
 }
 
@@ -102,22 +161,22 @@ bool VexWsSource_open(VexWsSource *self, const char *url, WebSocketConfig config
 /** Connect (or reconnect) to the stored target; the host's retry path. */
 bool VexWsSource_connect(any handle) {
     VexWsSource *self = (VexWsSource*) handle;
-    if (self == nullptr || !(*self).configured) {
+    if (self == nullptr || !VexWsSource_configured(self)) {
         if (self != nullptr)
             THROW("VexWsSource_connect: no target was configured");
         return false;
     }
-    if (!WebSocket_open(&(*self).socket, (*self).url, (*self).config)) {
-        WebSocketMessage *last = &(*self).last;
-        (*last).kind = WS_MESSAGE_ERROR;
-        (*last).payload = nullptr;
-        (*last).length = 0u;
-        bytes cap = sizeof((*last).error);
-        const char *reason = WebSocket_lastError(&(*self).socket);
+    if (!WebSocket_open(VexWsSource_socketMut(self), VexWsSource_urlMut(self), VexWsSource_config(self))) {
+        WebSocketMessage *last = VexWsSource_lastMut(self);
+        WebSocketMessage_setKind(last, WS_MESSAGE_ERROR);
+        WebSocketMessage_setPayload(last, nullptr);
+        WebSocketMessage_setLength(last, 0u);
+        bytes cap = sizeof ((WebSocketMessage){0}).error;
+        const char *reason = WebSocket_lastError(VexWsSource_socketMut(self));
         bytes reasonLength = strlen(reason);
         bytes copy = reasonLength < cap - 1u ? reasonLength : cap - 1u;
-        memcpy((*last).error, reason, copy);
-        (*last).error[copy] = '\0';
+        memcpy(WebSocketMessage_errorMut(last), reason, copy);
+        WebSocketMessage_errorMut(last)[copy] = '\0';
         return false;
     }
     return true;
@@ -129,8 +188,8 @@ u32 VexWsSource_poll(any handle, u64 budgetMs) {
     if (self == nullptr)
         return 0u;
     u32 budget = budgetMs > UINT32_MAX ? UINT32_MAX : (u32) budgetMs;
-    WebSocketMessage delivered = WebSocket_poll(&(*self).socket, budget);
-    (*self).last = delivered;
+    WebSocketMessage delivered = WebSocket_poll(VexWsSource_socketMut(self), budget);
+    VexWsSource_setLast(self, delivered);
     return (delivered.kind == WS_MESSAGE_TEXT ||
             delivered.kind == WS_MESSAGE_BINARY) ? 1u : 0u;
 }
@@ -140,19 +199,19 @@ bool VexWsSource_send(any handle, const u8 *data, u32 length) {
     VexWsSource *self = (VexWsSource*) handle;
     if (self == nullptr || (data == nullptr && length != 0u))
         return false;
-    if (!WebSocket_writeText(&(*self).socket, (const char*) data, (bytes) length))
+    if (!WebSocket_writeText(VexWsSource_socketMut(self), (const char*) data, (bytes) length))
         return false;
     return true;
 }
 
 ;;GETTER
 static WebSocketMessage *VexWsSource_lastMut(VexWsSource *self) {
-    return &(*self).last;
+    return VexWsSource_lastMut(self);
 }
 
 ;;GETTER
 static const WebSocketConfig *VexWsSource_config(const VexWsSource *self) {
-    return &(*self).config;
+    return VexWsSource_configMut(self);
 }
 
 ;;SETTER
@@ -195,7 +254,7 @@ fn VexWsSource_close(any handle) {
     VexWsSource *self = (VexWsSource*) handle;
     if (self == nullptr)
         return;
-    WebSocket_close(&(*self).socket);
+    WebSocket_close(VexWsSource_socketMut(self));
     WebSocketMessage *last = VexWsSource_lastMut(self);
     WebSocketMessage_setPayload(last, nullptr);
     WebSocketMessage_setLength(last, 0u);
@@ -205,22 +264,22 @@ fn VexWsSource_close(any handle) {
 
 /** The last delivered record, or null for a null handle. */
 const WebSocketMessage *VexWsSource_last(const VexWsSource *self) {
-    return self == nullptr ? nullptr : &(*self).last;
+    return self == nullptr ? nullptr : VexWsSource_lastMut(self);
 }
 
 /** The embedded client, for what the four-callback seam cannot express. */
 WebSocket *VexWsSource_socket(VexWsSource *self) {
-    return self == nullptr ? nullptr : &(*self).socket;
+    return self == nullptr ? nullptr : VexWsSource_socketMut(self);
 }
 
 /** The stored target, or "" when none was configured. */
 const char *VexWsSource_url(const VexWsSource *self) {
-    return self == nullptr ? "" : (*self).url;
+    return self == nullptr ? "" : VexWsSource_urlMut(self);
 }
 
 /** True only while the embedded connection is OPEN. */
 bool VexWsSource_isOpen(const VexWsSource *self) {
-    return self != nullptr && WebSocket_isOpen(&(*self).socket);
+    return self != nullptr && WebSocket_isOpen(VexWsSource_socketMut(self));
 }
 
 // STRING PROJECTIONS (the toString Law)
@@ -234,8 +293,8 @@ fn VexWsSource_toString(const VexWsSource *self, char *dest, bytes cap,
     } else {
         const WebSocketMessage *last = VexWsSource_last(self);
         Str_printf(&out, "VexWsSource { url=%s, open=%s, last=%d, closeCode=%u }",
-                   (*self).configured ? (*self).url : "",
-                   WebSocket_isOpen(&(*self).socket) ? "true" : "false",
+                   VexWsSource_configured(self) ? VexWsSource_urlMut(self) : "",
+                   WebSocket_isOpen(VexWsSource_socketMut(self)) ? "true" : "false",
                    (i32) WebSocketMessage_kind(last), (u32) WebSocketMessage_closeCode(last));
     }
     if (outTruncated != nullptr)
@@ -254,9 +313,9 @@ fn VexWsSource_toStringStruct(const VexWsSource *self, char *dest, bytes cap,
         Str_printf(&out,
             "VexWsSource { socket=%s, url=%s, configured=%s, timeoutMs=%u, "
             "maxMessageBytes=%llu, last=%d, lastLength=%llu, closeCode=%u }",
-            WebSocket_isOpen(&(*self).socket) ? "OPEN" : "not-open",
-            (*self).configured ? (*self).url : "",
-            (*self).configured ? "true" : "false", WebSocketConfig_timeoutMs(config),
+            WebSocket_isOpen(VexWsSource_socketMut(self)) ? "OPEN" : "not-open",
+            VexWsSource_configured(self) ? VexWsSource_urlMut(self) : "",
+            VexWsSource_configured(self) ? "true" : "false", WebSocketConfig_timeoutMs(config),
             (u64) WebSocketConfig_maxMessageBytes(config),
             (i32) WebSocketMessage_kind(last), (u64) WebSocketMessage_length(last),
             (u32) WebSocketMessage_closeCode(last));

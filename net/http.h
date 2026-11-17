@@ -37,19 +37,24 @@ static inline HttpRequest HttpRequest_3(const char *host, i32 port, const char *
         .port = port, .path = path, .timeoutMs = 5000u };
 }
 #define HttpRequest(...) CONSTRUCTOR_DISPATCH(HttpRequest, __VA_ARGS__)
+;;SETTER
 static inline fn HttpRequest_setScheme(HttpRequest *request, const char *scheme) {
     if (request) (*request).scheme = scheme;
 }
+;;SETTER
 static inline fn HttpRequest_setMethod(HttpRequest *request, const char *method) {
     if (request) (*request).method = method;
 }
+;;SETTER
 static inline fn HttpRequest_setHeaders(HttpRequest *request,
                                           const HttpHeader *headers, u32 count) {
     if (request) { (*request).headers = headers; (*request).headerCount = count; }
 }
+;;SETTER
 static inline fn HttpRequest_setBody(HttpRequest *request, const char *body, bytes length) {
     if (request) { (*request).body = body; (*request).bodyLen = length; }
 }
+;;SETTER
 static inline fn HttpRequest_setTimeout(HttpRequest *request, u32 timeoutMilliseconds) {
     if (request) (*request).timeoutMs = timeoutMilliseconds;
 }

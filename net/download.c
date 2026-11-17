@@ -46,19 +46,45 @@ extern char **environ;
  * ============================================================================
  */
 
+
+;;GETTER
+static inline char * DownloadResponse_data(const DownloadResponse *s) { return (*s).data; }
+;;GETTER
+static inline char * *DownloadResponse_dataMut(DownloadResponse *s) { return &(*s).data; }
+;;SETTER
+static inline fn DownloadResponse_setData(DownloadResponse *s, char * v) { (*s).data = v; }
+;;GETTER
+static inline i32 DownloadResponse_exit_code(const DownloadResponse *s) { return (*s).exit_code; }
+;;GETTER
+static inline i32 *DownloadResponse_exit_codeMut(DownloadResponse *s) { return &(*s).exit_code; }
+;;SETTER
+static inline fn DownloadResponse_setExit_code(DownloadResponse *s, i32 v) { (*s).exit_code = v; }
+;;GETTER
+static inline u32 DownloadResponse_http_status(const DownloadResponse *s) { return (*s).http_status; }
+;;GETTER
+static inline u32 *DownloadResponse_http_statusMut(DownloadResponse *s) { return &(*s).http_status; }
+;;SETTER
+static inline fn DownloadResponse_setHttp_status(DownloadResponse *s, u32 v) { (*s).http_status = v; }
+;;GETTER
+static inline bytes DownloadResponse_size(const DownloadResponse *s) { return (*s).size; }
+;;GETTER
+static inline bytes *DownloadResponse_sizeMut(DownloadResponse *s) { return &(*s).size; }
+;;SETTER
+static inline fn DownloadResponse_setSize(DownloadResponse *s, bytes v) { (*s).size = v; }
+
 ;;INTENTION("Reliable download manager leveraging system curl and HTTP/TLS stacks")
 
 fn DownloadResponse_free(DownloadResponse *res) {
     if (!res) {
         return;
     }
-    if ((*res).data) {
-        free((*res).data);
-        (*res).data = nullptr;
+    if (DownloadResponse_data(res)) {
+        free(DownloadResponse_data(res));
+        DownloadResponse_setData(res, nullptr);
     }
-    (*res).size = 0;
-    (*res).http_status = 0;
-    (*res).exit_code = 0;
+    DownloadResponse_setSize(res, 0);
+    DownloadResponse_setHttp_status(res, 0);
+    DownloadResponse_setExit_code(res, 0);
 }
 
 bool Download_to_file(const char *url, const char *output_file, const DownloadOptions *opts) {
@@ -115,10 +141,10 @@ bool Download_to_memory(const char *url, const DownloadOptions *opts, DownloadRe
         return false;
     }
 
-    (*response_out).exit_code = -1;
-    (*response_out).http_status = 0;
-    (*response_out).data = nullptr;
-    (*response_out).size = 0;
+    DownloadResponse_setExit_code(response_out, -1);
+    DownloadResponse_setHttp_status(response_out, 0);
+    DownloadResponse_setData(response_out, nullptr);
+    DownloadResponse_setSize(response_out, 0);
 
     char temp_path[] = "/tmp/vex_dl_XXXXXX";
     i32 fd = mkstemp(temp_path);
@@ -161,10 +187,10 @@ bool Download_to_memory(const char *url, const DownloadOptions *opts, DownloadRe
     fclose(f);
     unlink(temp_path);
 
-    (*response_out).exit_code = 0;
-    (*response_out).http_status = 200;
-    (*response_out).data = buf;
-    (*response_out).size = read_bytes;
+    DownloadResponse_setExit_code(response_out, 0);
+    DownloadResponse_setHttp_status(response_out, 200);
+    DownloadResponse_setData(response_out, buf);
+    DownloadResponse_setSize(response_out, read_bytes);
 
     return true;
 }

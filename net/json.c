@@ -2,7 +2,7 @@
 //
 // A single-pass recursive-descent parser over the caller's text. Depth is
 // bounded by JSON_MAX_DEPTH; every pool exhaustion or syntax error flips
-// (*doc).ok once and the parse unwinds. Escaped strings decode forward into
+// JsonDoc_ok(doc) once and the parse unwinds. Escaped strings decode forward into
 // the scratch arena so value views stay pointer-stable.
 
 #include "vex.h"
@@ -19,7 +19,7 @@
  * recursive-descent parser over the caller's text that writes into a
  * caller-owned node pool and scratch arena — zero allocation of its own.
  * Depth is bounded by JSON_MAX_DEPTH; every pool exhaustion or syntax error
- * flips (*doc).ok once and the parse unwinds. Escaped strings decode forward
+ * flips JsonDoc_ok(doc) once and the parse unwinds. Escaped strings decode forward
  * into the scratch arena so value views stay pointer-stable and contiguous,
  * while unescaped strings view the source text in place (the source must
  * outlive all string views). A streaming writer (JsonWriter) emits
@@ -91,29 +91,147 @@
  */
 
 
+
+;;GETTER
+static inline u32 JsonDoc_nodeCap(const JsonDoc *s) { return (*s).nodeCap; }
+;;GETTER
+static inline u32 *JsonDoc_nodeCapMut(JsonDoc *s) { return &(*s).nodeCap; }
+;;SETTER
+static inline fn JsonDoc_setNodeCap(JsonDoc *s, u32 v) { (*s).nodeCap = v; }
+;;GETTER
+static inline u32 JsonDoc_nodeCount(const JsonDoc *s) { return (*s).nodeCount; }
+;;GETTER
+static inline u32 *JsonDoc_nodeCountMut(JsonDoc *s) { return &(*s).nodeCount; }
+;;SETTER
+static inline fn JsonDoc_setNodeCount(JsonDoc *s, u32 v) { (*s).nodeCount = v; }
+;;GETTER
+static inline JsonNode * JsonDoc_nodes(const JsonDoc *s) { return (*s).nodes; }
+;;GETTER
+static inline JsonNode * *JsonDoc_nodesMut(JsonDoc *s) { return &(*s).nodes; }
+;;SETTER
+static inline fn JsonDoc_setNodes(JsonDoc *s, JsonNode * v) { (*s).nodes = v; }
+;;GETTER
+static inline bool JsonDoc_ok(const JsonDoc *s) { return (*s).ok; }
+;;GETTER
+static inline bool *JsonDoc_okMut(JsonDoc *s) { return &(*s).ok; }
+;;SETTER
+static inline fn JsonDoc_setOk(JsonDoc *s, bool v) { (*s).ok = v; }
+;;GETTER
+static inline JsonRef JsonDoc_root(const JsonDoc *s) { return (*s).root; }
+;;GETTER
+static inline JsonRef *JsonDoc_rootMut(JsonDoc *s) { return &(*s).root; }
+;;SETTER
+static inline fn JsonDoc_setRoot(JsonDoc *s, JsonRef v) { (*s).root = v; }
+;;GETTER
+static inline char * JsonDoc_scratch(const JsonDoc *s) { return (*s).scratch; }
+;;GETTER
+static inline char * *JsonDoc_scratchMut(JsonDoc *s) { return &(*s).scratch; }
+;;SETTER
+static inline fn JsonDoc_setScratch(JsonDoc *s, char * v) { (*s).scratch = v; }
+;;GETTER
+static inline u32 JsonDoc_scratchCap(const JsonDoc *s) { return (*s).scratchCap; }
+;;GETTER
+static inline u32 *JsonDoc_scratchCapMut(JsonDoc *s) { return &(*s).scratchCap; }
+;;SETTER
+static inline fn JsonDoc_setScratchCap(JsonDoc *s, u32 v) { (*s).scratchCap = v; }
+;;GETTER
+static inline u32 JsonDoc_scratchUsed(const JsonDoc *s) { return (*s).scratchUsed; }
+;;GETTER
+static inline u32 *JsonDoc_scratchUsedMut(JsonDoc *s) { return &(*s).scratchUsed; }
+;;SETTER
+static inline fn JsonDoc_setScratchUsed(JsonDoc *s, u32 v) { (*s).scratchUsed = v; }
+;;GETTER
+static inline const char * JsonDoc_src(const JsonDoc *s) { return (*s).src; }
+;;GETTER
+static inline const char * *JsonDoc_srcMut(JsonDoc *s) { return &(*s).src; }
+;;SETTER
+static inline fn JsonDoc_setSrc(JsonDoc *s, const char * v) { (*s).src = v; }
+
+;;GETTER
+static inline JsonRef JsonNode_child(const JsonNode *s) { return (*s).child; }
+;;GETTER
+static inline JsonRef *JsonNode_childMut(JsonNode *s) { return &(*s).child; }
+;;SETTER
+static inline fn JsonNode_setChild(JsonNode *s, JsonRef v) { (*s).child = v; }
+;;GETTER
+static inline JsonRef JsonNode_next(const JsonNode *s) { return (*s).next; }
+;;GETTER
+static inline JsonRef *JsonNode_nextMut(JsonNode *s) { return &(*s).next; }
+;;SETTER
+static inline fn JsonNode_setNext(JsonNode *s, JsonRef v) { (*s).next = v; }
+
+;;GETTER
+static inline bytes JsonWriter_cap(const JsonWriter *s) { return (*s).cap; }
+;;GETTER
+static inline bytes *JsonWriter_capMut(JsonWriter *s) { return &(*s).cap; }
+;;SETTER
+static inline fn JsonWriter_setCap(JsonWriter *s, bytes v) { (*s).cap = v; }
+;;GETTER
+static inline i32 JsonWriter_depth(const JsonWriter *s) { return (*s).depth; }
+;;GETTER
+static inline i32 *JsonWriter_depthMut(JsonWriter *s) { return &(*s).depth; }
+;;SETTER
+static inline fn JsonWriter_setDepth(JsonWriter *s, i32 v) { (*s).depth = v; }
+;;GETTER
+static inline bool *JsonWriter_needCommaMut(JsonWriter *s) { return (*s).needComma; }
+;;GETTER
+static inline const bool *JsonWriter_needComma(const JsonWriter *s) { return (*s).needComma; }
+;;GETTER
+static inline bool JsonWriter_ok(const JsonWriter *s) { return (*s).ok; }
+;;GETTER
+static inline bool *JsonWriter_okMut(JsonWriter *s) { return &(*s).ok; }
+;;SETTER
+static inline fn JsonWriter_setOk(JsonWriter *s, bool v) { (*s).ok = v; }
+;;GETTER
+static inline char * JsonWriter_out(const JsonWriter *s) { return (*s).out; }
+;;GETTER
+static inline char * *JsonWriter_outMut(JsonWriter *s) { return &(*s).out; }
+;;SETTER
+static inline fn JsonWriter_setOut(JsonWriter *s, char * v) { (*s).out = v; }
+;;GETTER
+static inline bytes JsonWriter_used(const JsonWriter *s) { return (*s).used; }
+;;GETTER
+static inline bytes *JsonWriter_usedMut(JsonWriter *s) { return &(*s).used; }
+;;SETTER
+static inline fn JsonWriter_setUsed(JsonWriter *s, bytes v) { (*s).used = v; }
+
 typedef struct Parser {
     JsonDoc *doc;
     const char *p;   // cursor
 } Parser;
 
+;;GETTER
+static inline JsonDoc * Parser_doc(const Parser *s) { return (*s).doc; }
+;;GETTER
+static inline JsonDoc * *Parser_docMut(Parser *s) { return &(*s).doc; }
+;;SETTER
+static inline fn Parser_setDoc(Parser *s, JsonDoc * v) { (*s).doc = v; }
+;;GETTER
+static inline const char * Parser_p(const Parser *s) { return (*s).p; }
+;;GETTER
+static inline const char * *Parser_pMut(Parser *s) { return &(*s).p; }
+;;SETTER
+static inline fn Parser_setP(Parser *s, const char * v) { (*s).p = v; }
+
+
 static JsonRef allocNode(Parser *ps) {
-    JsonDoc *d = (*ps).doc;
-    if ((*d).nodeCount >= (*d).nodeCap) return -1;
-    JsonNode *n = &(*d).nodes[(*d).nodeCount];
+    JsonDoc *d = Parser_doc(ps);
+    if (JsonDoc_nodeCount(d) >= JsonDoc_nodeCap(d)) return -1;
+    JsonNode *n = &JsonDoc_nodesMut(d)[JsonDoc_nodeCount(d)];
     memset(n, 0, sizeof(*n));
     // Zero is a VALID ref (the root); terminals must be none-refs.
-    (*n).child = -1;
-    (*n).next = -1;
-    return (JsonRef)(*d).nodeCount++;
+    JsonNode_setChild(n, -1);
+    JsonNode_setNext(n, -1);
+    return (JsonRef)(*JsonDoc_nodeCountMut(d))++;
 }
 
 static fn skipWs(Parser *ps) {
-    while (*(*ps).p == ' ' || *(*ps).p == '\t' || *(*ps).p == '\n' || *(*ps).p == '\r')
-        (*ps).p++;
+    while (*Parser_p(ps) == ' ' || *Parser_p(ps) == '\t' || *Parser_p(ps) == '\n' || *Parser_p(ps) == '\r')
+        Parser_setP(ps, Parser_p(ps) + 1u);
 }
 
 static bool fail(JsonDoc *d) {
-    (*d).ok = false;
+    JsonDoc_setOk(d, false);
     return false;
 }
 
@@ -123,53 +241,53 @@ static bool fail(JsonDoc *d) {
 // input is viewed in place; any escape forces a scratch copy of the whole
 // string so the returned view is always contiguous.
 static bool parseStringBody(Parser *ps, u32 *offOut, u32 *lenOut, bool *scratchFlagOut) {
-    JsonDoc *d = (*ps).doc;
-    const char *start = (*ps).p;
+    JsonDoc *d = Parser_doc(ps);
+    const char *start = Parser_p(ps);
 
     // Fast path: scan for the closing quote with no escapes.
     const char *q = start;
     while (*q && *q != '"' && *q != '\\') q++;
     if (*q == '"') {
         // No escapes: the view points straight into the caller's text.
-        *offOut = (u32)(start - (*d).src);
+        *offOut = (u32)(start - JsonDoc_src(d));
         *lenOut = (u32)(q - start);
         *scratchFlagOut = false;
-        (*ps).p = q + 1;
+        Parser_setP(ps, q + 1);
         return true;
     }
     if (!*q) return fail(d);
 
     // Escape present: copy-decode into scratch.
-    char *dst = (*d).scratch + (*d).scratchUsed;
-    bytes capLeft = (*d).scratchCap - (*d).scratchUsed;
+    char *dst = JsonDoc_scratch(d) + JsonDoc_scratchUsed(d);
+    bytes capLeft = JsonDoc_scratchCap(d) - JsonDoc_scratchUsed(d);
     char *out = dst;
-    (*ps).p = start;
-    while (*(*ps).p && *(*ps).p != '"') {
-        char c = *(*ps).p;
+    Parser_setP(ps, start);
+    while (*Parser_p(ps) && *Parser_p(ps) != '"') {
+        char c = *Parser_p(ps);
         if (c == '\\') {
-            (*ps).p++; // step onto the escape designator
-            switch (*(*ps).p) {
-                case '"': c = '"'; (*ps).p++; break;
-                case '\\': c = '\\'; (*ps).p++; break;
-                case '/': c = '/'; (*ps).p++; break;
-                case 'b': c = '\b'; (*ps).p++; break;
-                case 'f': c = '\f'; (*ps).p++; break;
-                case 'n': c = '\n'; (*ps).p++; break;
-                case 'r': c = '\r'; (*ps).p++; break;
-                case 't': c = '\t'; (*ps).p++; break;
+            Parser_setP(ps, Parser_p(ps) + 1u); // step onto the escape designator
+            switch (*Parser_p(ps)) {
+                case '"': c = '"'; Parser_setP(ps, Parser_p(ps) + 1); break;
+                case '\\': c = '\\'; Parser_setP(ps, Parser_p(ps) + 1); break;
+                case '/': c = '/'; Parser_setP(ps, Parser_p(ps) + 1); break;
+                case 'b': c = '\b'; Parser_setP(ps, Parser_p(ps) + 1); break;
+                case 'f': c = '\f'; Parser_setP(ps, Parser_p(ps) + 1); break;
+                case 'n': c = '\n'; Parser_setP(ps, Parser_p(ps) + 1); break;
+                case 'r': c = '\r'; Parser_setP(ps, Parser_p(ps) + 1); break;
+                case 't': c = '\t'; Parser_setP(ps, Parser_p(ps) + 1); break;
                 case 'u': {
                     // \uXXXX => UTF-8 (BMP only)
                     u32 cp = 0;
                     for (i32 i = 0; i < 4; i++) {
-                        (*ps).p++;
-                        char h = *(*ps).p;
+                        Parser_setP(ps, Parser_p(ps) + 1u);
+                        char h = *Parser_p(ps);
                         cp <<= 4;
                         if (h >= '0' && h <= '9') cp |= (u32)(h - '0');
                         else if (h >= 'a' && h <= 'f') cp |= (u32)(h - 'a' + 10);
                         else if (h >= 'A' && h <= 'F') cp |= (u32)(h - 'A' + 10);
                         else return fail(d);
                     }
-                    (*ps).p++; // past the last hex digit
+                    Parser_setP(ps, Parser_p(ps) + 1u); // past the last hex digit
                     if (cp < 0x80) {
                         if ((bytes)(out - dst) + 1 > capLeft) return fail(d);
                         *out++ = (char)cp;
@@ -188,19 +306,19 @@ static bool parseStringBody(Parser *ps, u32 *offOut, u32 *lenOut, bool *scratchF
                 default: return fail(d);
             }
         } else {
-            (*ps).p++; // consume the plain character
+            Parser_setP(ps, Parser_p(ps) + 1u); // consume the plain character
         }
         if ((bytes)(out - dst) + 1 > capLeft) return fail(d);
         *out++ = c;
     }
-    if (*(*ps).p != '"') return fail(d);
-    (*ps).p++; // closing quote
+    if (*Parser_p(ps) != '"') return fail(d);
+    Parser_setP(ps, Parser_p(ps) + 1u); // closing quote
 
-    *offOut = (u32)(dst - (*d).scratch);
+    *offOut = (u32)(dst - JsonDoc_scratch(d));
     *lenOut = (u32)(out - dst);
     *scratchFlagOut = true;
-    (*d).scratchUsed += (u32)(out - dst) + 1; // keep NUL space per string
-    if ((*d).scratchUsed < (*d).scratchCap) (*d).scratch[(*d).scratchUsed - 1] = '\0';
+    JsonDoc_setScratchUsed(d, JsonDoc_scratchUsed(d) + ((u32)(out - dst) + 1)); // keep NUL space per string
+    if (JsonDoc_scratchUsed(d) < JsonDoc_scratchCap(d)) JsonDoc_scratch(d)[JsonDoc_scratchUsed(d) - 1] = '\0';
     return true;
 }
 
@@ -209,42 +327,42 @@ static bool parseStringBody(Parser *ps, u32 *offOut, u32 *lenOut, bool *scratchF
 static bool parseValue(Parser *ps, JsonRef *out, i32 depth);
 
 static bool parseObject(Parser *ps, JsonRef *out, i32 depth) {
-    JsonDoc *d = (*ps).doc;
+    JsonDoc *d = Parser_doc(ps);
     JsonRef obj = allocNode(ps);
     if (obj < 0) return fail(d);
-    (*d).nodes[obj].type = JSON_OBJECT;
-    (*ps).p++; // '{'
+    JsonDoc_nodes(d)[obj].type = JSON_OBJECT;
+    Parser_setP(ps, Parser_p(ps) + 1u); // '{'
     skipWs(ps);
 
     JsonRef tail = -1;
-    if (*(*ps).p == '}') { (*ps).p++; *out = obj; return true; }
+    if (*Parser_p(ps) == '}') { Parser_setP(ps, Parser_p(ps) + 1); *out = obj; return true; }
 
     while (true) {
         skipWs(ps);
-        if (*(*ps).p != '"') return fail(d);
-        (*ps).p++;
+        if (*Parser_p(ps) != '"') return fail(d);
+        Parser_setP(ps, Parser_p(ps) + 1u);
         u32 kOff, kLen;
         bool kScratch;
         if (!parseStringBody(ps, &kOff, &kLen, &kScratch)) return fail(d);
 
         skipWs(ps);
-        if (*(*ps).p != ':') return fail(d);
-        (*ps).p++;
+        if (*Parser_p(ps) != ':') return fail(d);
+        Parser_setP(ps, Parser_p(ps) + 1u);
 
         JsonRef member = allocNode(ps);
         if (member < 0) return fail(d);
-        (*d).nodes[member].offset = kOff;
-        (*d).nodes[member].length = kLen;
-        (*d).nodes[member].inScratch = kScratch;
-        if (!parseValue(ps, &(*d).nodes[member].child, depth + 1)) return fail(d);
+        JsonDoc_nodes(d)[member].offset = kOff;
+        JsonDoc_nodes(d)[member].length = kLen;
+        JsonDoc_nodes(d)[member].inScratch = kScratch;
+        if (!parseValue(ps, &JsonDoc_nodesMut(d)[member].child, depth + 1)) return fail(d);
 
-        if (tail < 0) (*d).nodes[obj].child = member;
-        else (*d).nodes[tail].next = member;
+        if (tail < 0) JsonDoc_nodes(d)[obj].child = member;
+        else JsonDoc_nodes(d)[tail].next = member;
         tail = member;
 
         skipWs(ps);
-        if (*(*ps).p == ',') { (*ps).p++; continue; }
-        if (*(*ps).p == '}') { (*ps).p++; break; }
+        if (*Parser_p(ps) == ',') { Parser_setP(ps, Parser_p(ps) + 1); continue; }
+        if (*Parser_p(ps) == '}') { Parser_setP(ps, Parser_p(ps) + 1); break; }
         return fail(d);
     }
     *out = obj;
@@ -252,28 +370,28 @@ static bool parseObject(Parser *ps, JsonRef *out, i32 depth) {
 }
 
 static bool parseArray(Parser *ps, JsonRef *out, i32 depth) {
-    JsonDoc *d = (*ps).doc;
+    JsonDoc *d = Parser_doc(ps);
     JsonRef arr = allocNode(ps);
     if (arr < 0) return fail(d);
-    (*d).nodes[arr].type = JSON_ARRAY;
-    (*ps).p++; // '['
+    JsonDoc_nodes(d)[arr].type = JSON_ARRAY;
+    Parser_setP(ps, Parser_p(ps) + 1u); // '['
     skipWs(ps);
 
     JsonRef tail = -1;
-    if (*(*ps).p == ']') { (*ps).p++; *out = arr; return true; }
+    if (*Parser_p(ps) == ']') { Parser_setP(ps, Parser_p(ps) + 1); *out = arr; return true; }
 
     while (true) {
         JsonRef element = allocNode(ps);
         if (element < 0) return fail(d);
-        if (!parseValue(ps, &(*d).nodes[element].child, depth + 1)) return fail(d);
+        if (!parseValue(ps, &JsonDoc_nodesMut(d)[element].child, depth + 1)) return fail(d);
 
-        if (tail < 0) (*d).nodes[arr].child = element;
-        else (*d).nodes[tail].next = element;
+        if (tail < 0) JsonDoc_nodes(d)[arr].child = element;
+        else JsonDoc_nodes(d)[tail].next = element;
         tail = element;
 
         skipWs(ps);
-        if (*(*ps).p == ',') { (*ps).p++; continue; }
-        if (*(*ps).p == ']') { (*ps).p++; break; }
+        if (*Parser_p(ps) == ',') { Parser_setP(ps, Parser_p(ps) + 1); continue; }
+        if (*Parser_p(ps) == ']') { Parser_setP(ps, Parser_p(ps) + 1); break; }
         return fail(d);
     }
     *out = arr;
@@ -281,165 +399,165 @@ static bool parseArray(Parser *ps, JsonRef *out, i32 depth) {
 }
 
 static bool parseValue(Parser *ps, JsonRef *out, i32 depth) {
-    JsonDoc *d = (*ps).doc;
+    JsonDoc *d = Parser_doc(ps);
     if (depth > JSON_MAX_DEPTH) return fail(d);
     skipWs(ps);
 
-    char c = *(*ps).p;
+    char c = *Parser_p(ps);
     if (c == '{') return parseObject(ps, out, depth);
     if (c == '[') return parseArray(ps, out, depth);
 
     if (c == '"') {
-        (*ps).p++;
+        Parser_setP(ps, Parser_p(ps) + 1u);
         u32 off, len;
         bool scratch;
         if (!parseStringBody(ps, &off, &len, &scratch)) return fail(d);
         JsonRef s = allocNode(ps);
         if (s < 0) return fail(d);
-        (*d).nodes[s].type = JSON_STRING;
-        (*d).nodes[s].offset = off;
-        (*d).nodes[s].length = len;
-        (*d).nodes[s].inScratch = scratch;
+        JsonDoc_nodes(d)[s].type = JSON_STRING;
+        JsonDoc_nodes(d)[s].offset = off;
+        JsonDoc_nodes(d)[s].length = len;
+        JsonDoc_nodes(d)[s].inScratch = scratch;
         *out = s;
         return true;
     }
 
     if (c == 't') {
-        if (strncmp((*ps).p, "true", 4) != 0) return fail(d);
-        (*ps).p += 4;
+        if (strncmp(Parser_p(ps), "true", 4) != 0) return fail(d);
+        Parser_setP(ps, Parser_p(ps) + (4));
         JsonRef v = allocNode(ps);
         if (v < 0) return fail(d);
-        (*d).nodes[v].type = JSON_TRUE;
+        JsonDoc_nodes(d)[v].type = JSON_TRUE;
         *out = v;
         return true;
     }
     if (c == 'f') {
-        if (strncmp((*ps).p, "false", 5) != 0) return fail(d);
-        (*ps).p += 5;
+        if (strncmp(Parser_p(ps), "false", 5) != 0) return fail(d);
+        Parser_setP(ps, Parser_p(ps) + (5));
         JsonRef v = allocNode(ps);
         if (v < 0) return fail(d);
-        (*d).nodes[v].type = JSON_FALSE;
+        JsonDoc_nodes(d)[v].type = JSON_FALSE;
         *out = v;
         return true;
     }
     if (c == 'n') {
-        if (strncmp((*ps).p, "null", 4) != 0) return fail(d);
-        (*ps).p += 4;
+        if (strncmp(Parser_p(ps), "null", 4) != 0) return fail(d);
+        Parser_setP(ps, Parser_p(ps) + (4));
         JsonRef v = allocNode(ps);
         if (v < 0) return fail(d);
-        (*d).nodes[v].type = JSON_NULL;
+        JsonDoc_nodes(d)[v].type = JSON_NULL;
         *out = v;
         return true;
     }
 
     // Number: strtod handles sign/exponent/fraction in one bite.
     char *end = nullptr;
-    d64 num = strtod((*ps).p, &end);
-    if (end == (*ps).p) return fail(d);
+    d64 num = strtod(Parser_p(ps), &end);
+    if (end == Parser_p(ps)) return fail(d);
     JsonRef v = allocNode(ps);
     if (v < 0) return fail(d);
-    (*d).nodes[v].type = JSON_NUMBER;
-    (*d).nodes[v].number = num;
-    (*ps).p = end;
+    JsonDoc_nodes(d)[v].type = JSON_NUMBER;
+    JsonDoc_nodes(d)[v].number = num;
+    Parser_setP(ps, end);
     *out = v;
     return true;
 }
 
 bool Json_parse(JsonDoc *doc, JsonNode *nodes, u32 nodeCap,
                 char *scratch, u32 scratchCap, const char *text) {
-    (*doc).nodes = nodes;
-    (*doc).nodeCap = nodeCap;
-    (*doc).nodeCount = 0;
-    (*doc).src = text;
-    (*doc).scratch = scratch;
-    (*doc).scratchCap = scratchCap;
-    (*doc).scratchUsed = 0;
-    (*doc).root = -1;
-    (*doc).ok = true;
+    JsonDoc_setNodes(doc, nodes);
+    JsonDoc_setNodeCap(doc, nodeCap);
+    JsonDoc_setNodeCount(doc, 0);
+    JsonDoc_setSrc(doc, text);
+    JsonDoc_setScratch(doc, scratch);
+    JsonDoc_setScratchCap(doc, scratchCap);
+    JsonDoc_setScratchUsed(doc, 0);
+    JsonDoc_setRoot(doc, -1);
+    JsonDoc_setOk(doc, true);
 
     Parser ps = { .doc = doc, .p = text };
     JsonRef root = -1;
     if (!parseValue(&ps, &root, 0)) {
-        (*doc).ok = false;
+        JsonDoc_setOk(doc, false);
         return false;
     }
     skipWs(&ps);
     if (*ps.p != '\0')
-        (*doc).ok = false; // trailing garbage
-    (*doc).root = root;
-    return (*doc).ok;
+        JsonDoc_setOk(doc, false); // trailing garbage
+    JsonDoc_setRoot(doc, root);
+    return JsonDoc_ok(doc);
 }
 
 JsonRef Json_root(const JsonDoc *doc) {
-    return (*doc).root;
+    return JsonDoc_root(doc);
 }
 
 bool Json_ok(const JsonDoc *doc) {
-    return (*doc).ok;
+    return JsonDoc_ok(doc);
 }
 
 JsonRef Json_member(const JsonDoc *doc, JsonRef obj, const char *key) {
-    if (obj < 0 || (*doc).nodes[obj].type != JSON_OBJECT) return -1;
+    if (obj < 0 || JsonDoc_nodes(doc)[obj].type != JSON_OBJECT) return -1;
     bytes klen = strlen(key);
-    for (JsonRef m = (*doc).nodes[obj].child; m >= 0; m = (*doc).nodes[m].next) {
+    for (JsonRef m = JsonDoc_nodes(doc)[obj].child; m >= 0; m = JsonDoc_nodes(doc)[m].next) {
         u32 len = 0;
         const char *base = Json_key(doc, m, &len);
         if (len == klen && memcmp(base, key, klen) == 0)
-            return (*doc).nodes[m].child;
+            return JsonDoc_nodes(doc)[m].child;
     }
     return -1;
 }
 
 JsonRef Json_at(const JsonDoc *doc, JsonRef node, u32 index) {
     if (node < 0) return -1;
-    JsonType t = (*doc).nodes[node].type;
+    JsonType t = JsonDoc_nodes(doc)[node].type;
     if (t != JSON_ARRAY && t != JSON_OBJECT) return -1;
     u32 i = 0;
-    for (JsonRef e = (*doc).nodes[node].child; e >= 0; e = (*doc).nodes[e].next, i++)
-        if (i == index) return (*doc).nodes[e].child;
+    for (JsonRef e = JsonDoc_nodes(doc)[node].child; e >= 0; e = JsonDoc_nodes(doc)[e].next, i++)
+        if (i == index) return JsonDoc_nodes(doc)[e].child;
     return -1;
 }
 
 u32 Json_count(const JsonDoc *doc, JsonRef node) {
     if (node < 0) return 0;
-    JsonType t = (*doc).nodes[node].type;
+    JsonType t = JsonDoc_nodes(doc)[node].type;
     if (t != JSON_ARRAY && t != JSON_OBJECT) return 0;
     u32 n = 0;
-    for (JsonRef e = (*doc).nodes[node].child; e >= 0; e = (*doc).nodes[e].next) n++;
+    for (JsonRef e = JsonDoc_nodes(doc)[node].child; e >= 0; e = JsonDoc_nodes(doc)[e].next) n++;
     return n;
 }
 
 JsonType Json_type(const JsonDoc *doc, JsonRef ref) {
     if (ref < 0) return JSON_NULL;
-    return (*doc).nodes[ref].type;
+    return JsonDoc_nodes(doc)[ref].type;
 }
 
 bool Json_bool(const JsonDoc *doc, JsonRef ref) {
     if (ref < 0) return false;
-    return (*doc).nodes[ref].type == JSON_TRUE;
+    return JsonDoc_nodes(doc)[ref].type == JSON_TRUE;
 }
 
 d64 Json_number(const JsonDoc *doc, JsonRef ref) {
     if (ref < 0) return 0.0;
-    return (*doc).nodes[ref].number;
+    return JsonDoc_nodes(doc)[ref].number;
 }
 
 const char *Json_string(const JsonDoc *doc, JsonRef ref, u32 *lengthOut) {
     if (lengthOut) *lengthOut = 0;
-    if (ref < 0 || (*doc).nodes[ref].type != JSON_STRING) return "";
-    if (lengthOut) *lengthOut = (*doc).nodes[ref].length;
-    if ((*doc).nodes[ref].inScratch)
-        return (*doc).scratch + (*doc).nodes[ref].offset;
-    return (*doc).src + (*doc).nodes[ref].offset;
+    if (ref < 0 || JsonDoc_nodes(doc)[ref].type != JSON_STRING) return "";
+    if (lengthOut) *lengthOut = JsonDoc_nodes(doc)[ref].length;
+    if (JsonDoc_nodes(doc)[ref].inScratch)
+        return JsonDoc_scratch(doc) + JsonDoc_nodes(doc)[ref].offset;
+    return JsonDoc_src(doc) + JsonDoc_nodes(doc)[ref].offset;
 }
 
 const char *Json_key(const JsonDoc *doc, JsonRef ref, u32 *lengthOut) {
     if (lengthOut) *lengthOut = 0;
     if (ref < 0) return "";
-    if (lengthOut) *lengthOut = (*doc).nodes[ref].length;
-    if ((*doc).nodes[ref].inScratch)
-        return (*doc).scratch + (*doc).nodes[ref].offset;
-    return (*doc).src + (*doc).nodes[ref].offset;
+    if (lengthOut) *lengthOut = JsonDoc_nodes(doc)[ref].length;
+    if (JsonDoc_nodes(doc)[ref].inScratch)
+        return JsonDoc_scratch(doc) + JsonDoc_nodes(doc)[ref].offset;
+    return JsonDoc_src(doc) + JsonDoc_nodes(doc)[ref].offset;
 }
 
 // --- Writer ---
@@ -518,7 +636,7 @@ JsonRef Json_path(const JsonDoc *doc, JsonRef root, const char *path) {
             }
             keyBuf[klen] = '\0';
             if (klen > 0) {
-                if (cur < 0 || (*doc).nodes[cur].type != JSON_OBJECT)
+                if (cur < 0 || JsonDoc_nodes(doc)[cur].type != JSON_OBJECT)
                     return -1;
                 cur = Json_member(doc, cur, keyBuf);
                 if (cur < 0)
@@ -547,7 +665,7 @@ JsonRef Json_path(const JsonDoc *doc, JsonRef root, const char *path) {
 bool Json_getBool(const JsonDoc *doc, JsonRef ref, bool def) {
     if (!doc || ref < 0)
         return def;
-    JsonType t = (*doc).nodes[ref].type;
+    JsonType t = JsonDoc_nodes(doc)[ref].type;
     if (t == JSON_TRUE)
         return true;
     if (t == JSON_FALSE)
@@ -558,16 +676,16 @@ bool Json_getBool(const JsonDoc *doc, JsonRef ref, bool def) {
 d64 Json_getNumber(const JsonDoc *doc, JsonRef ref, d64 def) {
     if (!doc || ref < 0)
         return def;
-    if ((*doc).nodes[ref].type != JSON_NUMBER)
+    if (JsonDoc_nodes(doc)[ref].type != JSON_NUMBER)
         return def;
-    return (*doc).nodes[ref].number;
+    return JsonDoc_nodes(doc)[ref].number;
 }
 
 JsonStringView Json_getString(const JsonDoc *doc, JsonRef ref) {
     JsonStringView empty = { nullptr, 0u };
     if (!doc)
         return empty;
-    if (ref < 0 || (*doc).nodes[ref].type != JSON_STRING)
+    if (ref < 0 || JsonDoc_nodes(doc)[ref].type != JSON_STRING)
         return empty;
     JsonStringView view;
     view.data = Json_string(doc, ref, &view.length);
@@ -577,14 +695,14 @@ JsonStringView Json_getString(const JsonDoc *doc, JsonRef ref) {
 // --- Streaming builder (~ JSON.stringify) ---
 
 static bool writerFail(JsonWriter *w) {
-    (*w).ok = false;
+    JsonWriter_setOk(w, false);
     return false;
 }
 
 static bool writerReserve(JsonWriter *w, bytes n) {
-    if (!(*w).ok)
+    if (!JsonWriter_ok(w))
         return false;
-    if (!(*w).out || (*w).used + n >= (*w).cap)
+    if (!JsonWriter_out(w) || JsonWriter_used(w) + n >= JsonWriter_cap(w))
         return writerFail(w);
     return true;
 }
@@ -592,8 +710,8 @@ static bool writerReserve(JsonWriter *w, bytes n) {
 static bool writerPut(JsonWriter *w, char c) {
     if (!writerReserve(w, 1))
         return false;
-    (*w).out[(*w).used++] = c;
-    (*w).out[(*w).used] = '\0';
+    JsonWriter_out(w)[(*JsonWriter_usedMut(w))++] = c;
+    JsonWriter_out(w)[JsonWriter_used(w)] = '\0';
     return true;
 }
 
@@ -602,9 +720,9 @@ static bool writerAppend(JsonWriter *w, const char *s, bytes n) {
         return true;
     if (!writerReserve(w, n))
         return false;
-    memcpy((*w).out + (*w).used, s, n);
-    (*w).used += n;
-    (*w).out[(*w).used] = '\0';
+    memcpy(JsonWriter_out(w) + JsonWriter_used(w), s, n);
+    JsonWriter_setUsed(w, JsonWriter_used(w) + (n));
+    JsonWriter_out(w)[JsonWriter_used(w)] = '\0';
     return true;
 }
 
@@ -650,37 +768,37 @@ JsonWriter JsonWriter_2(char *out, bytes cap) {
 bool JsonWriter_ok(const JsonWriter *w) {
     if (!w)
         return false;
-    return (*w).ok;
+    return JsonWriter_ok(w);
 }
 
 bytes JsonWriter_used(const JsonWriter *w) {
     if (!w)
         return 0;
-    return (*w).used;
+    return JsonWriter_used(w);
 }
 
 static bool writerValueOpen(JsonWriter *w) {
-    if (!(*w).ok)
+    if (!JsonWriter_ok(w))
         return false;
-    if ((*w).depth == 0)
+    if (JsonWriter_depth(w) == 0)
         return true;
-    if ((*w).depth < 0 || (*w).depth > JSON_MAX_DEPTH)
+    if (JsonWriter_depth(w) < 0 || JsonWriter_depth(w) > JSON_MAX_DEPTH)
         return writerFail(w);
-    i32 parent = (*w).depth - 1;
-    if ((*w).needComma[parent]) {
+    i32 parent = JsonWriter_depth(w) - 1;
+    if (JsonWriter_needCommaMut(w)[parent]) {
         if (!writerPut(w, ','))
             return false;
-        (*w).needComma[parent] = false;
+        JsonWriter_needCommaMut(w)[parent] = false;
     }
     return true;
 }
 
 static bool writerValueClose(JsonWriter *w) {
-    if ((*w).depth == 0)
-        return (*w).ok;
-    i32 parent = (*w).depth - 1;
-    (*w).needComma[parent] = true;
-    return (*w).ok;
+    if (JsonWriter_depth(w) == 0)
+        return JsonWriter_ok(w);
+    i32 parent = JsonWriter_depth(w) - 1;
+    JsonWriter_needCommaMut(w)[parent] = true;
+    return JsonWriter_ok(w);
 }
 
 bool Json_beginObject(JsonWriter *w) {
@@ -688,21 +806,21 @@ bool Json_beginObject(JsonWriter *w) {
         return false;
     if (!writerPut(w, '{'))
         return false;
-    if ((*w).depth < 0 || (*w).depth >= JSON_MAX_DEPTH)
+    if (JsonWriter_depth(w) < 0 || JsonWriter_depth(w) >= JSON_MAX_DEPTH)
         return writerFail(w);
-    (*w).needComma[(*w).depth] = false;
-    (*w).depth++;
+    JsonWriter_needCommaMut(w)[JsonWriter_depth(w)] = false;
+    JsonWriter_setDepth(w, JsonWriter_depth(w) + 1u);
     return true;
 }
 
 bool Json_endObject(JsonWriter *w) {
-    if (!w || !(*w).ok)
+    if (!w || !JsonWriter_ok(w))
         return false;
-    if ((*w).depth <= 0)
+    if (JsonWriter_depth(w) <= 0)
         return writerFail(w);
     if (!writerPut(w, '}'))
         return false;
-    (*w).depth--;
+    JsonWriter_setDepth(w, JsonWriter_depth(w) - 1u);
     return writerValueClose(w);
 }
 
@@ -711,31 +829,31 @@ bool Json_beginArray(JsonWriter *w) {
         return false;
     if (!writerPut(w, '['))
         return false;
-    if ((*w).depth < 0 || (*w).depth >= JSON_MAX_DEPTH)
+    if (JsonWriter_depth(w) < 0 || JsonWriter_depth(w) >= JSON_MAX_DEPTH)
         return writerFail(w);
-    (*w).needComma[(*w).depth] = false;
-    (*w).depth++;
+    JsonWriter_needCommaMut(w)[JsonWriter_depth(w)] = false;
+    JsonWriter_setDepth(w, JsonWriter_depth(w) + 1u);
     return true;
 }
 
 bool Json_endArray(JsonWriter *w) {
-    if (!w || !(*w).ok)
+    if (!w || !JsonWriter_ok(w))
         return false;
-    if ((*w).depth <= 0)
+    if (JsonWriter_depth(w) <= 0)
         return writerFail(w);
     if (!writerPut(w, ']'))
         return false;
-    (*w).depth--;
+    JsonWriter_setDepth(w, JsonWriter_depth(w) - 1u);
     return writerValueClose(w);
 }
 
 bool Json_addKey(JsonWriter *w, const char *k) {
-    if (!w || !k || !(*w).ok)
+    if (!w || !k || !JsonWriter_ok(w))
         return false;
-    if ((*w).depth <= 0)
+    if (JsonWriter_depth(w) <= 0)
         return writerFail(w);
-    i32 idx = (*w).depth - 1;
-    if ((*w).needComma[idx]) {
+    i32 idx = JsonWriter_depth(w) - 1;
+    if (JsonWriter_needCommaMut(w)[idx]) {
         if (!writerPut(w, ','))
             return false;
     }
@@ -745,7 +863,7 @@ bool Json_addKey(JsonWriter *w, const char *k) {
         return false;
     if (!writerAppend(w, "\":", 2))
         return false;
-    (*w).needComma[idx] = false;
+    JsonWriter_needCommaMut(w)[idx] = false;
     return true;
 }
 

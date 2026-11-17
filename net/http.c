@@ -101,6 +101,134 @@
  */
 
 
+
+;;GETTER
+static inline const char * HttpRequest_body(const HttpRequest *s) { return (*s).body; }
+;;GETTER
+static inline const char * *HttpRequest_bodyMut(HttpRequest *s) { return &(*s).body; }
+;;SETTER
+static inline fn HttpRequest_setBody(HttpRequest *s, const char * v) { (*s).body = v; }
+;;GETTER
+static inline bytes HttpRequest_bodyLen(const HttpRequest *s) { return (*s).bodyLen; }
+;;GETTER
+static inline bytes *HttpRequest_bodyLenMut(HttpRequest *s) { return &(*s).bodyLen; }
+;;SETTER
+static inline fn HttpRequest_setBodyLen(HttpRequest *s, bytes v) { (*s).bodyLen = v; }
+;;GETTER
+static inline u32 HttpRequest_headerCount(const HttpRequest *s) { return (*s).headerCount; }
+;;GETTER
+static inline u32 *HttpRequest_headerCountMut(HttpRequest *s) { return &(*s).headerCount; }
+;;SETTER
+static inline fn HttpRequest_setHeaderCount(HttpRequest *s, u32 v) { (*s).headerCount = v; }
+;;GETTER
+static inline const HttpHeader * HttpRequest_headers(const HttpRequest *s) { return (*s).headers; }
+;;GETTER
+static inline const HttpHeader * *HttpRequest_headersMut(HttpRequest *s) { return &(*s).headers; }
+;;SETTER
+static inline fn HttpRequest_setHeaders(HttpRequest *s, const HttpHeader * v) { (*s).headers = v; }
+;;GETTER
+static inline const char * HttpRequest_host(const HttpRequest *s) { return (*s).host; }
+;;GETTER
+static inline const char * *HttpRequest_hostMut(HttpRequest *s) { return &(*s).host; }
+;;SETTER
+static inline fn HttpRequest_setHost(HttpRequest *s, const char * v) { (*s).host = v; }
+;;GETTER
+static inline const char * HttpRequest_method(const HttpRequest *s) { return (*s).method; }
+;;GETTER
+static inline const char * *HttpRequest_methodMut(HttpRequest *s) { return &(*s).method; }
+;;SETTER
+static inline fn HttpRequest_setMethod(HttpRequest *s, const char * v) { (*s).method = v; }
+;;GETTER
+static inline const char * HttpRequest_path(const HttpRequest *s) { return (*s).path; }
+;;GETTER
+static inline const char * *HttpRequest_pathMut(HttpRequest *s) { return &(*s).path; }
+;;SETTER
+static inline fn HttpRequest_setPath(HttpRequest *s, const char * v) { (*s).path = v; }
+;;GETTER
+static inline i32 HttpRequest_port(const HttpRequest *s) { return (*s).port; }
+;;GETTER
+static inline i32 *HttpRequest_portMut(HttpRequest *s) { return &(*s).port; }
+;;SETTER
+static inline fn HttpRequest_setPort(HttpRequest *s, i32 v) { (*s).port = v; }
+;;GETTER
+static inline const char * HttpRequest_scheme(const HttpRequest *s) { return (*s).scheme; }
+;;GETTER
+static inline const char * *HttpRequest_schemeMut(HttpRequest *s) { return &(*s).scheme; }
+;;SETTER
+static inline fn HttpRequest_setScheme(HttpRequest *s, const char * v) { (*s).scheme = v; }
+;;GETTER
+static inline u32 HttpRequest_timeoutMs(const HttpRequest *s) { return (*s).timeoutMs; }
+;;GETTER
+static inline u32 *HttpRequest_timeoutMsMut(HttpRequest *s) { return &(*s).timeoutMs; }
+;;SETTER
+static inline fn HttpRequest_setTimeoutMs(HttpRequest *s, u32 v) { (*s).timeoutMs = v; }
+
+;;GETTER
+static inline char * HttpResponse_body(const HttpResponse *s) { return (*s).body; }
+;;GETTER
+static inline char * *HttpResponse_bodyMut(HttpResponse *s) { return &(*s).body; }
+;;SETTER
+static inline fn HttpResponse_setBody(HttpResponse *s, char * v) { (*s).body = v; }
+;;GETTER
+static inline bytes HttpResponse_bodyCap(const HttpResponse *s) { return (*s).bodyCap; }
+;;GETTER
+static inline bytes *HttpResponse_bodyCapMut(HttpResponse *s) { return &(*s).bodyCap; }
+;;SETTER
+static inline fn HttpResponse_setBodyCap(HttpResponse *s, bytes v) { (*s).bodyCap = v; }
+;;GETTER
+static inline bytes HttpResponse_bodyLen(const HttpResponse *s) { return (*s).bodyLen; }
+;;GETTER
+static inline bytes *HttpResponse_bodyLenMut(HttpResponse *s) { return &(*s).bodyLen; }
+;;SETTER
+static inline fn HttpResponse_setBodyLen(HttpResponse *s, bytes v) { (*s).bodyLen = v; }
+;;GETTER
+static inline char *HttpResponse_contentTypeMut(HttpResponse *s) { return (*s).contentType; }
+;;GETTER
+static inline const char *HttpResponse_contentType(const HttpResponse *s) { return (*s).contentType; }
+;;GETTER
+static inline bool HttpResponse_ok(const HttpResponse *s) { return (*s).ok; }
+;;GETTER
+static inline bool *HttpResponse_okMut(HttpResponse *s) { return &(*s).ok; }
+;;SETTER
+static inline fn HttpResponse_setOk(HttpResponse *s, bool v) { (*s).ok = v; }
+;;GETTER
+static inline i32 HttpResponse_status(const HttpResponse *s) { return (*s).status; }
+;;GETTER
+static inline i32 *HttpResponse_statusMut(HttpResponse *s) { return &(*s).status; }
+;;SETTER
+static inline fn HttpResponse_setStatus(HttpResponse *s, i32 v) { (*s).status = v; }
+
+;;GETTER
+static inline HttpHandler HttpServer_handler(const HttpServer *s) { return (*s).handler; }
+;;GETTER
+static inline HttpHandler *HttpServer_handlerMut(HttpServer *s) { return &(*s).handler; }
+;;SETTER
+static inline fn HttpServer_setHandler(HttpServer *s, HttpHandler v) { (*s).handler = v; }
+;;GETTER
+static inline i32 HttpServer_listenFd(const HttpServer *s) { return (*s).listenFd; }
+;;GETTER
+static inline i32 *HttpServer_listenFdMut(HttpServer *s) { return &(*s).listenFd; }
+;;SETTER
+static inline fn HttpServer_setListenFd(HttpServer *s, i32 v) { (*s).listenFd = v; }
+;;GETTER
+static inline volatile bool HttpServer_running(const HttpServer *s) { return (*s).running; }
+;;GETTER
+static inline volatile bool *HttpServer_runningMut(HttpServer *s) { return &(*s).running; }
+;;SETTER
+static inline fn HttpServer_setRunning(HttpServer *s, volatile bool v) { (*s).running = v; }
+;;GETTER
+static inline pthread_t HttpServer_thread(const HttpServer *s) { return (*s).thread; }
+;;GETTER
+static inline pthread_t *HttpServer_threadMut(HttpServer *s) { return &(*s).thread; }
+;;SETTER
+static inline fn HttpServer_setThread(HttpServer *s, pthread_t v) { (*s).thread = v; }
+;;GETTER
+static inline any HttpServer_userdata(const HttpServer *s) { return (*s).userdata; }
+;;GETTER
+static inline any *HttpServer_userdataMut(HttpServer *s) { return &(*s).userdata; }
+;;SETTER
+static inline fn HttpServer_setUserdata(HttpServer *s, any v) { (*s).userdata = v; }
+
 #define HEADER_BLOCK_CAP 8192
 #define RECV_TIMEOUT_DEFAULT_MS 5000
 #define SERVER_BODY_CAP 16384
@@ -164,20 +292,20 @@ static bool hasCRLF(const char *s) {
 
 bool Http_perform(const HttpRequest *req, HttpResponse *resp) {
     // Preserve the caller's receive buffer across the init wipe.
-    char *bodyOut = resp ? (*resp).body : nullptr;
-    bytes bodyCap = resp ? (*resp).bodyCap : 0;
+    char *bodyOut = resp ? HttpResponse_body(resp) : nullptr;
+    bytes bodyCap = resp ? HttpResponse_bodyCap(resp) : 0;
 
     memset(resp, 0, sizeof(*resp));
-    (*resp).status = -1;
-    (*resp).body = bodyOut;
-    (*resp).bodyCap = bodyCap;
+    HttpResponse_setStatus(resp, -1);
+    HttpResponse_setBody(resp, bodyOut);
+    HttpResponse_setBodyCap(resp, bodyCap);
 
-    if (!req || !(*req).host || !(*resp).body)
+    if (!req || !HttpRequest_host(req) || !HttpResponse_body(resp))
         return false;
 
-    const char *method = (*req).method ? (*req).method : "GET";
-    const char *path = (*req).path ? (*req).path : "/";
-    const char *scheme = (*req).scheme ? (*req).scheme : "http";
+    const char *method = HttpRequest_method(req) ? HttpRequest_method(req) : "GET";
+    const char *path = HttpRequest_path(req) ? HttpRequest_path(req) : "/";
+    const char *scheme = HttpRequest_scheme(req) ? HttpRequest_scheme(req) : "http";
     // Fail closed: https:// requires a TLS backend (tls_apple / tls_curl).
     // Refuse instead of downgrading to plain text.
     if (strcasecmp(scheme, "https") == 0)
@@ -186,30 +314,31 @@ bool Http_perform(const HttpRequest *req, HttpResponse *resp) {
         return false;
     // Fail closed on CRLF injection: untrusted method/path/host/header
     // must not smuggle extra requests into the head block.
-    if (hasCRLF(method) || hasCRLF(path) || hasCRLF((*req).host))
+    if (hasCRLF(method) || hasCRLF(path) || hasCRLF(HttpRequest_host(req)))
         return false;
-    for (u32 i = 0; i < (*req).headerCount && i < HTTP_MAX_HEADERS; i++) {
-        if (hasCRLF((*req).headers[i].name) || hasCRLF((*req).headers[i].value))
+    for (u32 i = 0; i < HttpRequest_headerCount(req) && i < HTTP_MAX_HEADERS; i++) {
+        if (hasCRLF(HttpRequest_headers(req)[i].name) || hasCRLF(HttpRequest_headers(req)[i].value))
             return false;
     }
-    i32 port = (*req).port > 0 ? (*req).port : Url_defaultPort(scheme);
-    u32 timeoutMs = (*req).timeoutMs ? (*req).timeoutMs : RECV_TIMEOUT_DEFAULT_MS;
+    i32 port = HttpRequest_port(req) > 0 ? HttpRequest_port(req) : Url_defaultPort(scheme);
+    u32 timeoutMs = HttpRequest_timeoutMs(req) ? HttpRequest_timeoutMs(req) : RECV_TIMEOUT_DEFAULT_MS;
 
     // --- Resolve ---
     char portStr[8];
     snprintf(portStr, sizeof(portStr), "%d", port);
     struct addrinfo hints = { .ai_family = AF_UNSPEC, .ai_socktype = SOCK_STREAM };
     struct addrinfo *res = nullptr;
-    if (getaddrinfo((*req).host, portStr, &hints, &res) != 0 || !res) return false;
+    if (getaddrinfo(HttpRequest_host(req), portStr, &hints, &res) != 0 || !res) return false;
 
-    i32 fd = socket((*res).ai_family, (*res).ai_socktype, (*res).ai_protocol);
+    struct addrinfo addrInfo = *res;
+    i32 fd = socket(addrInfo.ai_family, addrInfo.ai_socktype, addrInfo.ai_protocol);
     if (fd < 0) {
         freeaddrinfo(res);
         return false;
     }
     applyTimeout(fd, timeoutMs);
 
-    bool ok = connect(fd, (*res).ai_addr, (*res).ai_addrlen) == 0;
+    bool ok = connect(fd, addrInfo.ai_addr, addrInfo.ai_addrlen) == 0;
     freeaddrinfo(res);
     if (!ok) {
         close(fd);
@@ -223,15 +352,15 @@ bool Http_perform(const HttpRequest *req, HttpResponse *resp) {
                      "Host: %s\r\n"
                      "Connection: close\r\n"
                      "Content-Length: %zu\r\n",
-                     method, path, (*req).host, (*req).bodyLen);
+                     method, path, HttpRequest_host(req), HttpRequest_bodyLen(req));
     if (h < 0 || (bytes)h >= sizeof(head)) {
         close(fd);
         return false;
     }
 
-    for (u32 i = 0; i < (*req).headerCount && i < HTTP_MAX_HEADERS; i++) {
+    for (u32 i = 0; i < HttpRequest_headerCount(req) && i < HTTP_MAX_HEADERS; i++) {
         i32 k = snprintf(head + h, sizeof(head) - (bytes)h, "%s: %s\r\n",
-                         (*req).headers[i].name, (*req).headers[i].value);
+                         HttpRequest_headers(req)[i].name, HttpRequest_headers(req)[i].value);
         if (k < 0 || (bytes)k >= sizeof(head) - (bytes)h) {
             close(fd);
             return false;
@@ -242,8 +371,8 @@ bool Http_perform(const HttpRequest *req, HttpResponse *resp) {
     ok = writeAll(fd, head, (bytes)h);
 
     // --- Send body (skip for GET-style no-body verbs) ---
-    if (ok && (*req).body && (*req).bodyLen)
-        ok = writeAll(fd, (*req).body, (*req).bodyLen);
+    if (ok && HttpRequest_body(req) && HttpRequest_bodyLen(req))
+        ok = writeAll(fd, HttpRequest_body(req), HttpRequest_bodyLen(req));
 
     // --- Status line + headers ---
     char line[2048];
@@ -256,7 +385,7 @@ bool Http_perform(const HttpRequest *req, HttpResponse *resp) {
         close(fd);
         return false;
     }
-    (*resp).status = atoi(line + 9); // "HTTP/1.1 NNN ..."
+    HttpResponse_setStatus(resp, atoi(line + 9)); // "HTTP/1.1 NNN ..."
 
     bool chunked = false;
     while (readLine(fd, line, sizeof(line), &lineLen) && lineLen > 0) {
@@ -265,7 +394,7 @@ bool Http_perform(const HttpRequest *req, HttpResponse *resp) {
         if (strncasecmp(line, ct, strlen(ct)) == 0) {
             const char *v = line + strlen(ct);
             while (*v == ' ') v++;
-            snprintf((*resp).contentType, sizeof((*resp).contentType), "%s", v);
+            snprintf(HttpResponse_contentTypeMut(resp), sizeof ((HttpResponse){0}).contentType, "%s", v);
         } else if (strncasecmp(line, te, strlen(te)) == 0) {
             if (strcasestr(line, "chunked")) chunked = true;
         }
@@ -280,11 +409,11 @@ bool Http_perform(const HttpRequest *req, HttpResponse *resp) {
             if (!readLine(fd, line, sizeof(line), &lineLen)) { ok = false; break; }
             bytes chunkLen = (bytes)strtoul(line, nullptr, 16);
             if (chunkLen == 0) break;
-            if (total + chunkLen > (*resp).bodyCap) { ok = false; break; }
+            if (total + chunkLen > HttpResponse_bodyCap(resp)) { ok = false; break; }
             bytes got = 0;
             while (got < chunkLen && ok) {
                 bytes step;
-                if (!recvSome(fd, (*resp).body + total + got, chunkLen - got, &step)) ok = false;
+                if (!recvSome(fd, HttpResponse_body(resp) + total + got, chunkLen - got, &step)) ok = false;
                 else got += step;
             }
             total += got;
@@ -293,15 +422,15 @@ bool Http_perform(const HttpRequest *req, HttpResponse *resp) {
         }
     } else {
         ssize_t r;
-        while (total < (*resp).bodyCap && (r = recv(fd, (*resp).body + total, (*resp).bodyCap - total, 0)) > 0)
+        while (total < HttpResponse_bodyCap(resp) && (r = recv(fd, HttpResponse_body(resp) + total, HttpResponse_bodyCap(resp) - total, 0)) > 0)
             total += (bytes)r;
     }
     close(fd);
 
-    (*resp).bodyLen = total;
-    if (total < (*resp).bodyCap)
-        (*resp).body[total] = '\0';
-    (*resp).ok = ok;
+    HttpResponse_setBodyLen(resp, total);
+    if (total < HttpResponse_bodyCap(resp))
+        HttpResponse_body(resp)[total] = '\0';
+    HttpResponse_setOk(resp, ok);
     return ok;
 }
 
@@ -332,15 +461,15 @@ fn Http_respond(i32 clientFd, i32 status, const char *contentType,
 
 static any acceptLoop(any arg) {
     HttpServer *server = arg;
-    while ((*server).running) {
+    while (HttpServer_running(server)) {
         // Poll with a i16 budget instead of blocking in accept forever:
         // stopping must stay cooperative, since closing the listener does
         // not reliably wake a parked accept on every platform.
-        struct pollfd pfd = { .fd = (*server).listenFd, .events = POLLIN };
+        struct pollfd pfd = { .fd = HttpServer_listenFd(server), .events = POLLIN };
         if (poll(&pfd, 1, 100) <= 0)
             continue;
 
-        i32 clientFd = accept((*server).listenFd, nullptr, nullptr);
+        i32 clientFd = accept(HttpServer_listenFd(server), nullptr, nullptr);
         if (clientFd < 0) continue;
 
         applyTimeout(clientFd, RECV_TIMEOUT_DEFAULT_MS);
@@ -383,7 +512,7 @@ static any acceptLoop(any arg) {
         ex.body = total ? s_serverBody : nullptr;
         ex.bodyLen = total;
 
-        (*server).handler(&ex, clientFd, (*server).userdata);
+        HttpServer_handler(server)(&ex, clientFd, HttpServer_userdata(server));
         close(clientFd);
     }
     return nullptr;
@@ -392,8 +521,8 @@ static any acceptLoop(any arg) {
 bool HttpServer_start(HttpServer *server, i32 port, HttpHandler handler,
                       any userdata, i32 *portOut) {
     memset(server, 0, sizeof(*server));
-    (*server).handler = handler;
-    (*server).userdata = userdata;
+    HttpServer_setHandler(server, handler);
+    HttpServer_setUserdata(server, userdata);
 
     i32 fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd < 0) return false;
@@ -413,15 +542,15 @@ bool HttpServer_start(HttpServer *server, i32 port, HttpHandler handler,
     getsockname(fd, (struct sockaddr*) &addr, &len);
     if (portOut) *portOut = ntohs(addr.sin_port);
 
-    (*server).listenFd = fd;
-    (*server).running = true;
-    return pthread_create(&(*server).thread, nullptr, acceptLoop, server) == 0;
+    HttpServer_setListenFd(server, fd);
+    HttpServer_setRunning(server, true);
+    return pthread_create(HttpServer_threadMut(server), nullptr, acceptLoop, server) == 0;
 }
 
 fn HttpServer_stop(HttpServer *server) {
-    if (!(*server).listenFd) return;
-    (*server).running = false;      // loop notices within one poll period
-    pthread_join((*server).thread, nullptr);
-    close((*server).listenFd);
-    (*server).listenFd = 0;
+    if (!HttpServer_listenFd(server)) return;
+    HttpServer_setRunning(server, false);      // loop notices within one poll period
+    pthread_join(HttpServer_thread(server), nullptr);
+    close(HttpServer_listenFd(server));
+    HttpServer_setListenFd(server, 0);
 }
