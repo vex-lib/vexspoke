@@ -43,6 +43,38 @@
  * ============================================================================
  */
 
+
+;;GETTER
+static inline u64 Bespoke_checks(const Bespoke *s) { return (*s).checks; }
+;;GETTER
+static inline u64 *Bespoke_checksMut(Bespoke *s) { return &(*s).checks; }
+;;SETTER
+static inline fn Bespoke_setChecks(Bespoke *s, u64 v) { (*s).checks = v; }
+;;GETTER
+static inline BespokeState Bespoke_graphicsState(const Bespoke *s) { return (*s).graphicsState; }
+;;GETTER
+static inline BespokeState *Bespoke_graphicsStateMut(Bespoke *s) { return &(*s).graphicsState; }
+;;SETTER
+static inline fn Bespoke_setGraphicsState(Bespoke *s, BespokeState v) { (*s).graphicsState = v; }
+;;GETTER
+static inline BespokeState Bespoke_networkingState(const Bespoke *s) { return (*s).networkingState; }
+;;GETTER
+static inline BespokeState *Bespoke_networkingStateMut(Bespoke *s) { return &(*s).networkingState; }
+;;SETTER
+static inline fn Bespoke_setNetworkingState(Bespoke *s, BespokeState v) { (*s).networkingState = v; }
+;;GETTER
+static inline u64 Bespoke_runs(const Bespoke *s) { return (*s).runs; }
+;;GETTER
+static inline u64 *Bespoke_runsMut(Bespoke *s) { return &(*s).runs; }
+;;SETTER
+static inline fn Bespoke_setRuns(Bespoke *s, u64 v) { (*s).runs = v; }
+;;GETTER
+static inline BespokeState Bespoke_smthState(const Bespoke *s) { return (*s).smthState; }
+;;GETTER
+static inline BespokeState *Bespoke_smthStateMut(Bespoke *s) { return &(*s).smthState; }
+;;SETTER
+static inline fn Bespoke_setSmthState(Bespoke *s, BespokeState v) { (*s).smthState = v; }
+
 #if defined(VEX_PLATFORM_APPLE) || defined(VEX_PLATFORM_LINUX)
 __attribute__((weak)) bool runGraphics() { return false; }
 __attribute__((weak)) BespokeState checkGraphics() { return BESPOKE_ABSENT; }
@@ -68,18 +100,18 @@ fn Bespoke_bridge(Bespoke *self) {
     if (!self)
         return;
 
-    (*self).runs++;
+    Bespoke_setRuns(self, Bespoke_runs(self) + 1u);
 
     // 1. Networking (api-haven)
     if (runNetworking != nullptr) {
         BespokeState state = checkNetworking ? checkNetworking() : BESPOKE_READY;
         if (state == BESPOKE_READY) {
             if (runNetworking())
-                (*self).networkingState = BESPOKE_RUNNING;
+                Bespoke_setNetworkingState(self, BESPOKE_RUNNING);
             else
-                (*self).networkingState = BESPOKE_LATE;
+                Bespoke_setNetworkingState(self, BESPOKE_LATE);
         } else {
-            (*self).networkingState = state;
+            Bespoke_setNetworkingState(self, state);
         }
     }
 
@@ -88,11 +120,11 @@ fn Bespoke_bridge(Bespoke *self) {
         BespokeState state = checkSmth ? checkSmth() : BESPOKE_READY;
         if (state == BESPOKE_READY) {
             if (doSmth())
-                (*self).smthState = BESPOKE_RUNNING;
+                Bespoke_setSmthState(self, BESPOKE_RUNNING);
             else
-                (*self).smthState = BESPOKE_LATE;
+                Bespoke_setSmthState(self, BESPOKE_LATE);
         } else {
-            (*self).smthState = state;
+            Bespoke_setSmthState(self, state);
         }
     }
 
@@ -101,11 +133,11 @@ fn Bespoke_bridge(Bespoke *self) {
         BespokeState state = checkGraphics ? checkGraphics() : BESPOKE_READY;
         if (state == BESPOKE_READY) {
             if (runGraphics())
-                (*self).graphicsState = BESPOKE_RUNNING;
+                Bespoke_setGraphicsState(self, BESPOKE_RUNNING);
             else
-                (*self).graphicsState = BESPOKE_LATE;
+                Bespoke_setGraphicsState(self, BESPOKE_LATE);
         } else {
-            (*self).graphicsState = state;
+            Bespoke_setGraphicsState(self, state);
         }
     }
 }
@@ -114,47 +146,47 @@ bool Bespoke_check(Bespoke *self) {
     if (!self)
         return false;
 
-    (*self).checks++;
+    Bespoke_setChecks(self, Bespoke_checks(self) + 1u);
     bool changed = false;
 
     // 1. Check Graphics: handle late arrival or hot replacement
     if (runGraphics != nullptr) {
-        BespokeState live = checkGraphics ? checkGraphics() : (*self).graphicsState;
+        BespokeState live = checkGraphics ? checkGraphics() : Bespoke_graphicsState(self);
         if (live == BESPOKE_READY || live == BESPOKE_REPLACED) {
             if (runGraphics()) {
-                (*self).graphicsState = BESPOKE_RUNNING;
+                Bespoke_setGraphicsState(self, BESPOKE_RUNNING);
                 changed = true;
             }
-        } else if (live != (*self).graphicsState) {
-            (*self).graphicsState = live;
+        } else if (live != Bespoke_graphicsState(self)) {
+            Bespoke_setGraphicsState(self, live);
             changed = true;
         }
     }
 
     // 2. Check Networking
     if (runNetworking != nullptr) {
-        BespokeState live = checkNetworking ? checkNetworking() : (*self).networkingState;
+        BespokeState live = checkNetworking ? checkNetworking() : Bespoke_networkingState(self);
         if (live == BESPOKE_READY || live == BESPOKE_REPLACED) {
             if (runNetworking()) {
-                (*self).networkingState = BESPOKE_RUNNING;
+                Bespoke_setNetworkingState(self, BESPOKE_RUNNING);
                 changed = true;
             }
-        } else if (live != (*self).networkingState) {
-            (*self).networkingState = live;
+        } else if (live != Bespoke_networkingState(self)) {
+            Bespoke_setNetworkingState(self, live);
             changed = true;
         }
     }
 
     // 3. Check doSmth
     if (doSmth != nullptr) {
-        BespokeState live = checkSmth ? checkSmth() : (*self).smthState;
+        BespokeState live = checkSmth ? checkSmth() : Bespoke_smthState(self);
         if (live == BESPOKE_READY || live == BESPOKE_REPLACED) {
             if (doSmth()) {
-                (*self).smthState = BESPOKE_RUNNING;
+                Bespoke_setSmthState(self, BESPOKE_RUNNING);
                 changed = true;
             }
-        } else if (live != (*self).smthState) {
-            (*self).smthState = live;
+        } else if (live != Bespoke_smthState(self)) {
+            Bespoke_setSmthState(self, live);
             changed = true;
         }
     }
