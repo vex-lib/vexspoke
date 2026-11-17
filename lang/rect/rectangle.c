@@ -74,24 +74,50 @@
  * ============================================================================
  */
 
+
+;;GETTER
+static inline f32 Rectangle_height(const Rectangle *s) { return (*s).height; }
+;;GETTER
+static inline f32 *Rectangle_heightMut(Rectangle *s) { return &(*s).height; }
+;;SETTER
+static inline fn Rectangle_setHeight(Rectangle *s, f32 v) { (*s).height = v; }
+;;GETTER
+static inline f32 Rectangle_width(const Rectangle *s) { return (*s).width; }
+;;GETTER
+static inline f32 *Rectangle_widthMut(Rectangle *s) { return &(*s).width; }
+;;SETTER
+static inline fn Rectangle_setWidth(Rectangle *s, f32 v) { (*s).width = v; }
+;;GETTER
+static inline f32 Rectangle_x(const Rectangle *s) { return (*s).x; }
+;;GETTER
+static inline f32 *Rectangle_xMut(Rectangle *s) { return &(*s).x; }
+;;SETTER
+static inline fn Rectangle_setX(Rectangle *s, f32 v) { (*s).x = v; }
+;;GETTER
+static inline f32 Rectangle_y(const Rectangle *s) { return (*s).y; }
+;;GETTER
+static inline f32 *Rectangle_yMut(Rectangle *s) { return &(*s).y; }
+;;SETTER
+static inline fn Rectangle_setY(Rectangle *s, f32 v) { (*s).y = v; }
+
 // CONSTRUCTORS
 Rectangle *Rectangle_0() {
     Rectangle *r = (Rectangle*) Memory_alloc(ID_RECT, RECTANGLE_BYTES);
     if (!r) return nullptr;
-    (*r).x = 0.0f;
-    (*r).y = 0.0f;
-    (*r).width = 0.0f;
-    (*r).height = 0.0f;
+    Rectangle_setX(r, 0.0f);
+    Rectangle_setY(r, 0.0f);
+    Rectangle_setWidth(r, 0.0f);
+    Rectangle_setHeight(r, 0.0f);
     return r;
 }
 
 Rectangle *Rectangle_4(f32 x, f32 y, f32 width, f32 height) {
     Rectangle *r = (Rectangle*) Memory_alloc(ID_RECT, RECTANGLE_BYTES);
     if (!r) return nullptr;
-    (*r).x = x;
-    (*r).y = y;
-    (*r).width = width;
-    (*r).height = height;
+    Rectangle_setX(r, x);
+    Rectangle_setY(r, y);
+    Rectangle_setWidth(r, width);
+    Rectangle_setHeight(r, height);
     return r;
 }
 
@@ -102,132 +128,132 @@ fn Rectangle_free(Rectangle *r) {
 // SETTERS
 fn Rectangle_setX(Rectangle *r, f32 x) { if (r) (*r).x = x; }
 fn Rectangle_setY(Rectangle *r, f32 y) { if (r) (*r).y = y; }
-fn Rectangle_setWidth(Rectangle *r, f32 width) { if (r) (*r).width = width; }
-fn Rectangle_setHeight(Rectangle *r, f32 height) { if (r) (*r).height = height; }
+fn Rectangle_setWidth(Rectangle *r, f32 width) { if (r) (*Rectangle_widthMut(r)) = width; }
+fn Rectangle_setHeight(Rectangle *r, f32 height) { if (r) (*Rectangle_heightMut(r)) = height; }
 
 fn Rectangle_set(Rectangle *r, f32 x, f32 y, f32 width, f32 height) {
     if (!r) return;
-    (*r).x = x;
-    (*r).y = y;
-    (*r).width = width;
-    (*r).height = height;
+    Rectangle_setX(r, x);
+    Rectangle_setY(r, y);
+    Rectangle_setWidth(r, width);
+    Rectangle_setHeight(r, height);
 }
 
 // GETTERS
-f32 Rectangle_getX(const Rectangle *r) { return r ? (*r).x : 0.0f; }
-f32 Rectangle_getY(const Rectangle *r) { return r ? (*r).y : 0.0f; }
-f32 Rectangle_getWidth(const Rectangle *r) { return r ? (*r).width : 0.0f; }
-f32 Rectangle_getHeight(const Rectangle *r) { return r ? (*r).height : 0.0f; }
-f32 Rectangle_getLeft(const Rectangle *r) { return r ? (*r).x : 0.0f; }
-f32 Rectangle_getTop(const Rectangle *r) { return r ? (*r).y : 0.0f; }
-f32 Rectangle_getRight(const Rectangle *r) { return r ? (*r).x + (*r).width : 0.0f; }
-f32 Rectangle_getBottom(const Rectangle *r) { return r ? (*r).y + (*r).height : 0.0f; }
+f32 Rectangle_getX(const Rectangle *r) { return r ? Rectangle_x(r) : 0.0f; }
+f32 Rectangle_getY(const Rectangle *r) { return r ? Rectangle_y(r) : 0.0f; }
+f32 Rectangle_getWidth(const Rectangle *r) { return r ? Rectangle_width(r) : 0.0f; }
+f32 Rectangle_getHeight(const Rectangle *r) { return r ? Rectangle_height(r) : 0.0f; }
+f32 Rectangle_getLeft(const Rectangle *r) { return r ? Rectangle_x(r) : 0.0f; }
+f32 Rectangle_getTop(const Rectangle *r) { return r ? Rectangle_y(r) : 0.0f; }
+f32 Rectangle_getRight(const Rectangle *r) { return r ? Rectangle_x(r) + Rectangle_width(r) : 0.0f; }
+f32 Rectangle_getBottom(const Rectangle *r) { return r ? Rectangle_y(r) + Rectangle_height(r) : 0.0f; }
 
 // CORE FUNCTIONS
 fn Rectangle_copy(const Rectangle *src, Rectangle *dest) {
     if (!src || !dest) return;
-    (*dest).x = (*src).x;
-    (*dest).y = (*src).y;
-    (*dest).width = (*src).width;
-    (*dest).height = (*src).height;
+    Rectangle_setX(dest, Rectangle_x(src));
+    Rectangle_setY(dest, Rectangle_y(src));
+    Rectangle_setWidth(dest, Rectangle_width(src));
+    Rectangle_setHeight(dest, Rectangle_height(src));
 }
 
 fn Rectangle_translate(const Rectangle *src, f32 dx, f32 dy, Rectangle *dest) {
     if (!src || !dest) return;
-    (*dest).x = (*src).x + dx;
-    (*dest).y = (*src).y + dy;
-    (*dest).width = (*src).width;
-    (*dest).height = (*src).height;
+    Rectangle_setX(dest, Rectangle_x(src) + dx);
+    Rectangle_setY(dest, Rectangle_y(src) + dy);
+    Rectangle_setWidth(dest, Rectangle_width(src));
+    Rectangle_setHeight(dest, Rectangle_height(src));
 }
 
 fn Rectangle_inflate(const Rectangle *src, f32 dx, f32 dy, Rectangle *dest) {
     if (!src || !dest) return;
-    (*dest).x = (*src).x - dx;
-    (*dest).y = (*src).y - dy;
-    (*dest).width = (*src).width + dx + dx;
-    (*dest).height = (*src).height + dy + dy;
+    Rectangle_setX(dest, Rectangle_x(src) - dx);
+    Rectangle_setY(dest, Rectangle_y(src) - dy);
+    Rectangle_setWidth(dest, Rectangle_width(src) + dx + dx);
+    Rectangle_setHeight(dest, Rectangle_height(src) + dy + dy);
 }
 
 fn Rectangle_inset(const Rectangle *src, f32 l, f32 t, f32 r, f32 b, Rectangle *dest) {
     if (!src || !dest) return;
-    (*dest).x = (*src).x + l;
-    (*dest).y = (*src).y + t;
-    (*dest).width = (*src).width - l - r;
-    (*dest).height = (*src).height - t - b;
-    if ((*dest).width < 0.0f) (*dest).width = 0.0f;
-    if ((*dest).height < 0.0f) (*dest).height = 0.0f;
+    Rectangle_setX(dest, Rectangle_x(src) + l);
+    Rectangle_setY(dest, Rectangle_y(src) + t);
+    Rectangle_setWidth(dest, Rectangle_width(src) - l - r);
+    Rectangle_setHeight(dest, Rectangle_height(src) - t - b);
+    if (Rectangle_width(dest) < 0.0f) (*Rectangle_widthMut(dest)) = 0.0f;
+    if (Rectangle_height(dest) < 0.0f) (*Rectangle_heightMut(dest)) = 0.0f;
 }
 
 fn Rectangle_intersection(const Rectangle *a, const Rectangle *b, Rectangle *dest) {
     if (!a || !b || !dest) return;
-    f32 l = ((*a).x > (*b).x) ? (*a).x : (*b).x;
-    f32 t = ((*a).y > (*b).y) ? (*a).y : (*b).y;
-    f32 rA = (*a).x + (*a).width;
-    f32 rB = (*b).x + (*b).width;
-    f32 bA = (*a).y + (*a).height;
-    f32 bB = (*b).y + (*b).height;
+    f32 l = (Rectangle_x(a) > Rectangle_x(b)) ? Rectangle_x(a) : Rectangle_x(b);
+    f32 t = (Rectangle_y(a) > Rectangle_y(b)) ? Rectangle_y(a) : Rectangle_y(b);
+    f32 rA = Rectangle_x(a) + Rectangle_width(a);
+    f32 rB = Rectangle_x(b) + Rectangle_width(b);
+    f32 bA = Rectangle_y(a) + Rectangle_height(a);
+    f32 bB = Rectangle_y(b) + Rectangle_height(b);
     f32 r = (rA < rB) ? rA : rB;
     f32 bot = (bA < bB) ? bA : bB;
     if (r <= l || bot <= t) {
-        (*dest).x = 0.0f;
-        (*dest).y = 0.0f;
-        (*dest).width = 0.0f;
-        (*dest).height = 0.0f;
+        Rectangle_setX(dest, 0.0f);
+        Rectangle_setY(dest, 0.0f);
+        Rectangle_setWidth(dest, 0.0f);
+        Rectangle_setHeight(dest, 0.0f);
         return;
     }
-    (*dest).x = l;
-    (*dest).y = t;
-    (*dest).width = r - l;
-    (*dest).height = bot - t;
+    Rectangle_setX(dest, l);
+    Rectangle_setY(dest, t);
+    Rectangle_setWidth(dest, r - l);
+    Rectangle_setHeight(dest, bot - t);
 }
 
 fn Rectangle_merge(const Rectangle *a, const Rectangle *b, Rectangle *dest) {
     if (!a || !b || !dest) return;
-    f32 l = ((*a).x < (*b).x) ? (*a).x : (*b).x;
-    f32 t = ((*a).y < (*b).y) ? (*a).y : (*b).y;
-    f32 rA = (*a).x + (*a).width;
-    f32 rB = (*b).x + (*b).width;
-    f32 bA = (*a).y + (*a).height;
-    f32 bB = (*b).y + (*b).height;
+    f32 l = (Rectangle_x(a) < Rectangle_x(b)) ? Rectangle_x(a) : Rectangle_x(b);
+    f32 t = (Rectangle_y(a) < Rectangle_y(b)) ? Rectangle_y(a) : Rectangle_y(b);
+    f32 rA = Rectangle_x(a) + Rectangle_width(a);
+    f32 rB = Rectangle_x(b) + Rectangle_width(b);
+    f32 bA = Rectangle_y(a) + Rectangle_height(a);
+    f32 bB = Rectangle_y(b) + Rectangle_height(b);
     f32 r = (rA > rB) ? rA : rB;
     f32 bot = (bA > bB) ? bA : bB;
-    (*dest).x = l;
-    (*dest).y = t;
-    (*dest).width = r - l;
-    (*dest).height = bot - t;
+    Rectangle_setX(dest, l);
+    Rectangle_setY(dest, t);
+    Rectangle_setWidth(dest, r - l);
+    Rectangle_setHeight(dest, bot - t);
 }
 
 bool Rectangle_isEmpty(const Rectangle *r) {
     if (!r) return true;
-    return (*r).width <= 0.0f || (*r).height <= 0.0f;
+    return Rectangle_width(r) <= 0.0f || Rectangle_height(r) <= 0.0f;
 }
 
 bool Rectangle_containsPoint(const Rectangle *r, f32 px, f32 py) {
     if (!r) return false;
-    if (px < (*r).x || py < (*r).y) return false;
-    if (px > (*r).x + (*r).width || py > (*r).y + (*r).height) return false;
+    if (px < Rectangle_x(r) || py < Rectangle_y(r)) return false;
+    if (px > Rectangle_x(r) + Rectangle_width(r) || py > Rectangle_y(r) + Rectangle_height(r)) return false;
     return true;
 }
 
 bool Rectangle_containsRect(const Rectangle *outer, const Rectangle *inner) {
     if (!outer || !inner) return false;
-    if ((*inner).x < (*outer).x || (*inner).y < (*outer).y) return false;
-    if ((*inner).x + (*inner).width > (*outer).x + (*outer).width) return false;
-    if ((*inner).y + (*inner).height > (*outer).y + (*outer).height) return false;
+    if (Rectangle_x(inner) < Rectangle_x(outer) || Rectangle_y(inner) < Rectangle_y(outer)) return false;
+    if (Rectangle_x(inner) + Rectangle_width(inner) > Rectangle_x(outer) + Rectangle_width(outer)) return false;
+    if (Rectangle_y(inner) + Rectangle_height(inner) > Rectangle_y(outer) + Rectangle_height(outer)) return false;
     return true;
 }
 
 bool Rectangle_intersects(const Rectangle *a, const Rectangle *b) {
     if (!a || !b) return false;
-    if ((*a).x + (*a).width <= (*b).x) return false;
-    if ((*b).x + (*b).width <= (*a).x) return false;
-    if ((*a).y + (*a).height <= (*b).y) return false;
-    if ((*b).y + (*b).height <= (*a).y) return false;
+    if (Rectangle_x(a) + Rectangle_width(a) <= Rectangle_x(b)) return false;
+    if (Rectangle_x(b) + Rectangle_width(b) <= Rectangle_x(a)) return false;
+    if (Rectangle_y(a) + Rectangle_height(a) <= Rectangle_y(b)) return false;
+    if (Rectangle_y(b) + Rectangle_height(b) <= Rectangle_y(a)) return false;
     return true;
 }
 
 bool Rectangle_equals(const Rectangle *a, const Rectangle *b) {
     if (!a || !b) return false;
-    return (*a).x == (*b).x && (*a).y == (*b).y &&
-           (*a).width == (*b).width && (*a).height == (*b).height;
+    return Rectangle_x(a) == Rectangle_x(b) && Rectangle_y(a) == Rectangle_y(b) &&
+           Rectangle_setWidth(a, = Rectangle_width(b) && Rectangle_height(a) == Rectangle_height(b));
 }

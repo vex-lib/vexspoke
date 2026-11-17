@@ -51,11 +51,37 @@
  * ============================================================================
  */
 
+
+;;GETTER
+static inline bytes Str_cap(const Str *s) { return (*s).cap; }
+;;GETTER
+static inline bytes *Str_capMut(Str *s) { return &(*s).cap; }
+;;SETTER
+static inline fn Str_setCap(Str *s, bytes v) { (*s).cap = v; }
+;;GETTER
+static inline char * Str_dest(const Str *s) { return (*s).dest; }
+;;GETTER
+static inline char * *Str_destMut(Str *s) { return &(*s).dest; }
+;;SETTER
+static inline fn Str_setDest(Str *s, char * v) { (*s).dest = v; }
+;;GETTER
+static inline bytes Str_len(const Str *s) { return (*s).len; }
+;;GETTER
+static inline bytes *Str_lenMut(Str *s) { return &(*s).len; }
+;;SETTER
+static inline fn Str_setLen(Str *s, bytes v) { (*s).len = v; }
+;;GETTER
+static inline bool Str_truncated(const Str *s) { return (*s).truncated; }
+;;GETTER
+static inline bool *Str_truncatedMut(Str *s) { return &(*s).truncated; }
+;;SETTER
+static inline fn Str_setTruncated(Str *s, bool v) { (*s).truncated = v; }
+
 // Remaining writable Bytes (excluding the reserved terminator).
 static bytes room(const Str *s) {
-    if (s == nullptr || (*s).dest == nullptr || (*s).cap == 0)
+    if (s == nullptr || Str_dest(s) == nullptr || Str_cap(s) == 0)
         return 0;
-    return ((*s).len < (*s).cap - 1u) ? ((*s).cap - 1u - (*s).len) : 0u;
+    return (Str_len(s) < Str_cap(s) - 1u) ? (Str_cap(s) - 1u - Str_len(s)) : 0u;
 }
 
 Str Str_2(char *dest, bytes cap) {
@@ -72,16 +98,16 @@ Str Str_2(char *dest, bytes cap) {
 fn Str_putc(Str *s, char c) {
     if (s == nullptr)
         return;
-    if ((*s).dest == nullptr || (*s).cap == 0) {
-        (*s).truncated = true;
+    if (Str_dest(s) == nullptr || Str_cap(s) == 0) {
+        Str_setTruncated(s, true);
         return;
     }
-    if ((*s).len + 1u >= (*s).cap) {
-        (*s).truncated = true;
+    if (Str_len(s) + 1u >= Str_cap(s)) {
+        Str_setTruncated(s, true);
         return;
     }
-    (*s).dest[(*s).len++] = c;
-    (*s).dest[(*s).len] = '\0';
+    Str_dest(s)[(*Str_lenMut(s))++] = c;
+    Str_dest(s)[Str_len(s)] = '\0';
 }
 
 fn Str_put(Str *s, const char *text) {
@@ -91,12 +117,12 @@ fn Str_put(Str *s, const char *text) {
     bytes r = room(s);
     if (n > r) {
         n = r;
-        (*s).truncated = true;
+        Str_setTruncated(s, true);
     }
     if (n > 0) {
-        memcpy((*s).dest + (*s).len, text, n);
-        (*s).len += n;
-        (*s).dest[(*s).len] = '\0';
+        memcpy(Str_dest(s) + Str_len(s), text, n);
+        Str_setLen(s, Str_len(s) + (n));
+        Str_dest(s)[Str_len(s)] = '\0';
     }
 }
 
@@ -122,39 +148,39 @@ fn Str_putQuoted(Str *s, const char *text) {
 fn Str_printf(Str *s, const char *fmt, ...) {
     if (s == nullptr || fmt == nullptr)
         return;
-    if ((*s).dest == nullptr || (*s).cap == 0) {
-        (*s).truncated = true;
+    if (Str_dest(s) == nullptr || Str_cap(s) == 0) {
+        Str_setTruncated(s, true);
         return;
     }
     va_list args;
     va_start(args, fmt);
-    i32 written = vsnprintf((*s).dest + (*s).len, (*s).cap - (*s).len, fmt, args);
+    i32 written = vsnprintf(Str_dest(s) + Str_len(s), Str_cap(s) - Str_len(s), fmt, args);
     va_end(args);
     if (written < 0) {
-        (*s).truncated = true;
+        Str_setTruncated(s, true);
         return;
     }
     bytes w = (bytes) written;
     bytes r = room(s);
     if (w > r) {
-        (*s).len = (*s).cap - 1u;   // vsnprintf wrote r Bytes + terminator
-        (*s).truncated = true;
+        Str_setLen(s, Str_cap(s) - 1u);   // vsnprintf wrote r Bytes + terminator
+        Str_setTruncated(s, true);
     } else {
-        (*s).len += w;
+        Str_setLen(s, Str_len(s) + (w));
     }
 }
 
 ;;GETTER
 bool Str_isTruncated(const Str *s) {
-    return s ? (*s).truncated : false;
+    return s ? Str_truncated(s) : false;
 }
 
 ;;GETTER
 bytes Str_length(const Str *s) {
-    return s ? (*s).len : 0u;
+    return s ? Str_len(s) : 0u;
 }
 
 ;;GETTER
 const char *Str_cstr(const Str *s) {
-    return (s && (*s).dest) ? (*s).dest : "";
+    return (s && Str_dest(s)) ? Str_dest(s) : "";
 }
