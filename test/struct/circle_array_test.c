@@ -142,23 +142,55 @@ typedef struct WalkStats {
     i64 checksum;
 } WalkStats;
 
+;;GETTER
+static inline bytes WalkStats_badDistance(const WalkStats *s) { return (*s).badDistance; }
+;;GETTER
+static inline bytes *WalkStats_badDistanceMut(WalkStats *s) { return &(*s).badDistance; }
+;;SETTER
+static inline fn WalkStats_setBadDistance(WalkStats *s, bytes v) { (*s).badDistance = v; }
+;;GETTER
+static inline i64 WalkStats_checksum(const WalkStats *s) { return (*s).checksum; }
+;;GETTER
+static inline i64 *WalkStats_checksumMut(WalkStats *s) { return &(*s).checksum; }
+;;SETTER
+static inline fn WalkStats_setChecksum(WalkStats *s, i64 v) { (*s).checksum = v; }
+;;GETTER
+static inline bytes WalkStats_count(const WalkStats *s) { return (*s).count; }
+;;GETTER
+static inline bytes *WalkStats_countMut(WalkStats *s) { return &(*s).count; }
+;;SETTER
+static inline fn WalkStats_setCount(WalkStats *s, bytes v) { (*s).count = v; }
+;;GETTER
+static inline bytes WalkStats_mismatchedOffset(const WalkStats *s) { return (*s).mismatchedOffset; }
+;;GETTER
+static inline bytes *WalkStats_mismatchedOffsetMut(WalkStats *s) { return &(*s).mismatchedOffset; }
+;;SETTER
+static inline fn WalkStats_setMismatchedOffset(WalkStats *s, bytes v) { (*s).mismatchedOffset = v; }
+;;GETTER
+static inline bytes WalkStats_nullElement(const WalkStats *s) { return (*s).nullElement; }
+;;GETTER
+static inline bytes *WalkStats_nullElementMut(WalkStats *s) { return &(*s).nullElement; }
+;;SETTER
+static inline fn WalkStats_setNullElement(WalkStats *s, bytes v) { (*s).nullElement = v; }
+
+
 // Accumulates callback count, coordinate consistency, and payload checksum.
 static fn walkCell(i32 gridX, i32 gridY, i32 dx, i32 dy,
                      const_any element, any userData) {
     WalkStats *s = (WalkStats*) userData;
-    (*s).count++;
+    WalkStats_setCount(s, WalkStats_count(s) + 1u);
     if (element == nullptr)
-        (*s).nullElement++;
+        WalkStats_setNullElement(s, WalkStats_nullElement(s) + 1u);
     i64 dist = (i64) dx * dx + (i64) dy * dy;
     if (dist > 9)                                       // radius 3
-        (*s).badDistance++;
+        WalkStats_setBadDistance(s, WalkStats_badDistance(s) + 1u);
     if (gridX != dx + 3 || gridY != dy + 3)
-        (*s).mismatchedOffset++;
+        WalkStats_setMismatchedOffset(s, WalkStats_mismatchedOffset(s) + 1u);
     if (element != nullptr) {
         i32 v = 0;
         for (bytes i = 0; i < sizeof(i32); i++)
             ((u8*) &v)[i] = ((const u8*) element)[i];
-        (*s).checksum += v;
+        WalkStats_setChecksum(s, WalkStats_checksum(s) + (v));
     }
 }
 

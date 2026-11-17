@@ -134,24 +134,56 @@ typedef struct WalkStats {
     i64 checksum;
 } WalkStats;
 
+;;GETTER
+static inline bytes WalkStats_badDistance(const WalkStats *s) { return (*s).badDistance; }
+;;GETTER
+static inline bytes *WalkStats_badDistanceMut(WalkStats *s) { return &(*s).badDistance; }
+;;SETTER
+static inline fn WalkStats_setBadDistance(WalkStats *s, bytes v) { (*s).badDistance = v; }
+;;GETTER
+static inline i64 WalkStats_checksum(const WalkStats *s) { return (*s).checksum; }
+;;GETTER
+static inline i64 *WalkStats_checksumMut(WalkStats *s) { return &(*s).checksum; }
+;;SETTER
+static inline fn WalkStats_setChecksum(WalkStats *s, i64 v) { (*s).checksum = v; }
+;;GETTER
+static inline bytes WalkStats_count(const WalkStats *s) { return (*s).count; }
+;;GETTER
+static inline bytes *WalkStats_countMut(WalkStats *s) { return &(*s).count; }
+;;SETTER
+static inline fn WalkStats_setCount(WalkStats *s, bytes v) { (*s).count = v; }
+;;GETTER
+static inline bytes WalkStats_mismatchedOffset(const WalkStats *s) { return (*s).mismatchedOffset; }
+;;GETTER
+static inline bytes *WalkStats_mismatchedOffsetMut(WalkStats *s) { return &(*s).mismatchedOffset; }
+;;SETTER
+static inline fn WalkStats_setMismatchedOffset(WalkStats *s, bytes v) { (*s).mismatchedOffset = v; }
+;;GETTER
+static inline bytes WalkStats_nullVoxel(const WalkStats *s) { return (*s).nullVoxel; }
+;;GETTER
+static inline bytes *WalkStats_nullVoxelMut(WalkStats *s) { return &(*s).nullVoxel; }
+;;SETTER
+static inline fn WalkStats_setNullVoxel(WalkStats *s, bytes v) { (*s).nullVoxel = v; }
+
+
 // Accumulates traversal count, coordinate checks, and the visited payload checksum.
 static fn walkVoxel(i32 gx, i32 gy, i32 gz,
                       i32 dx, i32 dy, i32 dz,
                       const_any voxel, any userData) {
     WalkStats *s = (WalkStats*) userData;
-    (*s).count++;
+    WalkStats_setCount(s, WalkStats_count(s) + 1u);
     if (voxel == nullptr)
-        (*s).nullVoxel++;
+        WalkStats_setNullVoxel(s, WalkStats_nullVoxel(s) + 1u);
     i64 dist = (i64) dx * dx + (i64) dy * dy + (i64) dz * dz;
     if (dist > 4)                                        // radius 2
-        (*s).badDistance++;
+        WalkStats_setBadDistance(s, WalkStats_badDistance(s) + 1u);
     if (gx != dx + 2 || gy != dy + 2 || gz != dz + 2)
-        (*s).mismatchedOffset++;
+        WalkStats_setMismatchedOffset(s, WalkStats_mismatchedOffset(s) + 1u);
     if (voxel != nullptr) {
         i32 v = 0;
         for (bytes i = 0; i < sizeof(i32); i++)
             ((u8*) &v)[i] = ((const u8*) voxel)[i];
-        (*s).checksum += v;
+        WalkStats_setChecksum(s, WalkStats_checksum(s) + (v));
     }
 }
 
