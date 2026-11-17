@@ -50,22 +50,26 @@ static inline Function Function_2(FunctionCallFn call, any context) {
 
 #define Function(...) CONSTRUCTOR_DISPATCH(Function, __VA_ARGS__)
 
+;;GETTER
 static inline bool Function_setCall(Function *function, FunctionCallFn call) {
     if (!function) return false;
     (*function).call = call;
     return true;
 }
 
+;;GETTER
 static inline bool Function_setContext(Function *function, any context) {
     if (!function) return false;
     (*function).context = context;
     return true;
 }
 
+;;GETTER
 static inline FunctionCallFn Function_getCall(const Function *function) {
     return function ? (*function).call : nullptr;
 }
 
+;;GETTER
 static inline any Function_getContext(const Function *function) {
     return function ? (*function).context : nullptr;
 }
