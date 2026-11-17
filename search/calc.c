@@ -56,10 +56,24 @@ typedef struct CalcParser {
     bool hasError;
 } CalcParser;
 
+;;GETTER
+static inline bool CalcParser_hasError(const CalcParser *s) { return (*s).hasError; }
+;;GETTER
+static inline bool *CalcParser_hasErrorMut(CalcParser *s) { return &(*s).hasError; }
+;;SETTER
+static inline fn CalcParser_setHasError(CalcParser *s, bool v) { (*s).hasError = v; }
+;;GETTER
+static inline const char * CalcParser_p(const CalcParser *s) { return (*s).p; }
+;;GETTER
+static inline const char * *CalcParser_pMut(CalcParser *s) { return &(*s).p; }
+;;SETTER
+static inline fn CalcParser_setP(CalcParser *s, const char * v) { (*s).p = v; }
+
+
 // Advances the parser cursor past ASCII whitespace.
 static fn skip_whitespace(CalcParser *cp) {
-    while (*(*cp).p != '\0' && isspace((u8)*(*cp).p)) {
-        (*cp).p++;
+    while (*CalcParser_p(cp) != '\0' && isspace((u8)*CalcParser_p(cp))) {
+        CalcParser_setP(cp, CalcParser_p(cp) + 1u);
     }
 }
 
@@ -68,53 +82,53 @@ static d64 parse_expression(CalcParser *cp);
 // Parses a number, parenthesized expression, constant, or supported function call.
 static d64 parse_primary(CalcParser *cp) {
     skip_whitespace(cp);
-    if (*(*cp).p == '\0') {
-        (*cp).hasError = true;
+    if (*CalcParser_p(cp) == '\0') {
+        CalcParser_setHasError(cp, true);
         return 0.0;
     }
 
     // Unary plus and minus
-    if (*(*cp).p == '+') {
-        (*cp).p++;
+    if (*CalcParser_p(cp) == '+') {
+        CalcParser_setP(cp, CalcParser_p(cp) + 1u);
         return parse_primary(cp);
     }
-    if (*(*cp).p == '-') {
-        (*cp).p++;
+    if (*CalcParser_p(cp) == '-') {
+        CalcParser_setP(cp, CalcParser_p(cp) + 1u);
         return -parse_primary(cp);
     }
 
     // Parenthesized sub-expression
-    if (*(*cp).p == '(') {
-        (*cp).p++;
+    if (*CalcParser_p(cp) == '(') {
+        CalcParser_setP(cp, CalcParser_p(cp) + 1u);
         d64 val = parse_expression(cp);
         skip_whitespace(cp);
-        if (*(*cp).p == ')') {
-            (*cp).p++;
+        if (*CalcParser_p(cp) == ')') {
+            CalcParser_setP(cp, CalcParser_p(cp) + 1u);
         } else {
-            (*cp).hasError = true;
+            CalcParser_setHasError(cp, true);
         }
         return val;
     }
 
     // Number literal
-    if (isdigit((u8)*(*cp).p) || *(*cp).p == '.') {
+    if (isdigit((u8)*CalcParser_p(cp)) || *CalcParser_p(cp) == '.') {
         char *endptr = nullptr;
-        d64 val = strtod((*cp).p, &endptr);
-        if (endptr == (*cp).p) {
-            (*cp).hasError = true;
+        d64 val = strtod(CalcParser_p(cp), &endptr);
+        if (endptr == CalcParser_p(cp)) {
+            CalcParser_setHasError(cp, true);
             return 0.0;
         }
-        (*cp).p = endptr;
+        CalcParser_setP(cp, endptr);
         return val;
     }
 
     // Identifier: constant or function
-    if (isalpha((u8)*(*cp).p) || *(*cp).p == '_') {
+    if (isalpha((u8)*CalcParser_p(cp)) || *CalcParser_p(cp) == '_') {
         char name[32];
         bytes n = 0;
-        while ((isalnum((u8)*(*cp).p) || *(*cp).p == '_') && n < sizeof(name) - 1) {
-            name[n++] = (char) tolower((u8)*(*cp).p);
-            (*cp).p++;
+        while ((isalnum((u8)*CalcParser_p(cp)) || *CalcParser_p(cp) == '_') && n < sizeof(name) - 1) {
+            name[n++] = (char) tolower((u8)*CalcParser_p(cp));
+            CalcParser_setP(cp, CalcParser_p(cp) + 1u);
         }
         name[n] = '\0';
         skip_whitespace(cp);
@@ -125,31 +139,31 @@ static d64 parse_primary(CalcParser *cp) {
         if (strcmp(name, "tau") == 0) return STRICT_MATH_TAU;
 
         // Function call: expect '('
-        if (*(*cp).p != '(') {
-            (*cp).hasError = true;
+        if (*CalcParser_p(cp) != '(') {
+            CalcParser_setHasError(cp, true);
             return 0.0;
         }
-        (*cp).p++; // consume '('
+        CalcParser_setP(cp, CalcParser_p(cp) + 1u); // consume '('
 
         // Parse arguments
         d64 arg1 = parse_expression(cp);
         d64 arg2 = 0.0;
         d64 arg3 = 0.0;
         skip_whitespace(cp);
-        if (*(*cp).p == ',') {
-            (*cp).p++;
+        if (*CalcParser_p(cp) == ',') {
+            CalcParser_setP(cp, CalcParser_p(cp) + 1u);
             arg2 = parse_expression(cp);
             skip_whitespace(cp);
-            if (*(*cp).p == ',') {
-                (*cp).p++;
+            if (*CalcParser_p(cp) == ',') {
+                CalcParser_setP(cp, CalcParser_p(cp) + 1u);
                 arg3 = parse_expression(cp);
                 skip_whitespace(cp);
             }
         }
-        if (*(*cp).p == ')') {
-            (*cp).p++;
+        if (*CalcParser_p(cp) == ')') {
+            CalcParser_setP(cp, CalcParser_p(cp) + 1u);
         } else {
-            (*cp).hasError = true;
+            CalcParser_setHasError(cp, true);
             return 0.0;
         }
 
@@ -176,11 +190,11 @@ static d64 parse_primary(CalcParser *cp) {
         if (strcmp(name, "exp") == 0) return exp(arg1);
         if (strcmp(name, "log") == 0) return arg1 > 0.0 ? log(arg1) : 0.0;
 
-        (*cp).hasError = true;
+        CalcParser_setHasError(cp, true);
         return 0.0;
     }
 
-    (*cp).hasError = true;
+    CalcParser_setHasError(cp, true);
     return 0.0;
 }
 
@@ -188,8 +202,8 @@ static d64 parse_primary(CalcParser *cp) {
 static d64 parse_factor(CalcParser *cp) {
     d64 base = parse_primary(cp);
     skip_whitespace(cp);
-    while (*(*cp).p == '^') {
-        (*cp).p++;
+    while (*CalcParser_p(cp) == '^') {
+        CalcParser_setP(cp, CalcParser_p(cp) + 1u);
         d64 expVal = parse_factor(cp); // right-associative
         base = pow(base, expVal);
         skip_whitespace(cp);
@@ -201,20 +215,20 @@ static d64 parse_factor(CalcParser *cp) {
 static d64 parse_term(CalcParser *cp) {
     d64 left = parse_factor(cp);
     skip_whitespace(cp);
-    while (*(*cp).p == '*' || *(*cp).p == '/' || *(*cp).p == '%') {
-        char op = *(*cp).p++;
+    while (*CalcParser_p(cp) == '*' || *CalcParser_p(cp) == '/' || *CalcParser_p(cp) == '%') {
+        char op = *CalcParser_p(cp); CalcParser_setP(cp, CalcParser_p(cp) + 1);
         d64 right = parse_factor(cp);
         if (op == '*') {
             left *= right;
         } else if (op == '/') {
             if (right == 0.0) {
-                (*cp).hasError = true;
+                CalcParser_setHasError(cp, true);
                 return 0.0;
             }
             left /= right;
         } else if (op == '%') {
             if (right == 0.0) {
-                (*cp).hasError = true;
+                CalcParser_setHasError(cp, true);
                 return 0.0;
             }
             left = fmod(left, right);
@@ -228,8 +242,8 @@ static d64 parse_term(CalcParser *cp) {
 static d64 parse_expression(CalcParser *cp) {
     d64 left = parse_term(cp);
     skip_whitespace(cp);
-    while (*(*cp).p == '+' || *(*cp).p == '-') {
-        char op = *(*cp).p++;
+    while (*CalcParser_p(cp) == '+' || *CalcParser_p(cp) == '-') {
+        char op = *CalcParser_p(cp); CalcParser_setP(cp, CalcParser_p(cp) + 1);
         d64 right = parse_term(cp);
         if (op == '+') {
             left += right;

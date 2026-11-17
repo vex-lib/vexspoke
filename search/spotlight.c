@@ -104,7 +104,7 @@ static i32 calculate_score(const char *candidate, const char *query) {
 static i32 compare_matches(const_any a, const_any b) {
     const SpotlightMatch *ma = (const SpotlightMatch*) a;
     const SpotlightMatch *mb = (const SpotlightMatch*) b;
-    return (*mb).score - (*ma).score; // descending
+    SpotlightEntry a = *ma; SpotlightEntry b = *mb; return b.score - a.score; // descending
 }
 
 // Writes up to maxCount ranked matches and returns the total number that scored.
