@@ -50,6 +50,32 @@
  */
 
 
+
+;;GETTER
+static inline i64 Loop_frame_ms(const Loop *s) { return (*s).frame_ms; }
+;;GETTER
+static inline i64 *Loop_frame_msMut(Loop *s) { return &(*s).frame_ms; }
+;;SETTER
+static inline fn Loop_setFrame_ms(Loop *s, i64 v) { (*s).frame_ms = v; }
+;;GETTER
+static inline _Atomic bool Loop_running(const Loop *s) { return (*s).running; }
+;;GETTER
+static inline _Atomic bool *Loop_runningMut(Loop *s) { return &(*s).running; }
+;;SETTER
+static inline fn Loop_setRunning(Loop *s, _Atomic bool v) { (*s).running = v; }
+;;GETTER
+static inline TickFn Loop_tick(const Loop *s) { return (*s).tick; }
+;;GETTER
+static inline TickFn *Loop_tickMut(Loop *s) { return &(*s).tick; }
+;;SETTER
+static inline fn Loop_setTick(Loop *s, TickFn v) { (*s).tick = v; }
+;;GETTER
+static inline any Loop_userdata(const Loop *s) { return (*s).userdata; }
+;;GETTER
+static inline any *Loop_userdataMut(Loop *s) { return &(*s).userdata; }
+;;SETTER
+static inline fn Loop_setUserdata(Loop *s, any v) { (*s).userdata = v; }
+
 static i64 nowMs() {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
@@ -58,16 +84,16 @@ static i64 nowMs() {
 
 // Runs fixed-step ticks until stopped, limiting catch-up to four steps per pass.
 fn Loop_run(Loop *loop) {
-    if (!loop || !(*loop).tick)
+    if (!loop || !Loop_tick(loop))
         return;
-    if ((*loop).frame_ms <= 0)
+    if (Loop_frame_ms(loop) <= 0)
         return;
 
-    atomic_store_explicit(&(*loop).running, true, memory_order_release);
+    atomic_store_explicit(Loop_runningMut(loop), true, memory_order_release);
     i64 accumulator = 0;
     i64 prev = nowMs();
 
-    while (atomic_load_explicit(&(*loop).running, memory_order_acquire)) {
+    while (atomic_load_explicit(Loop_runningMut(loop), memory_order_acquire)) {
         i64 now = nowMs();
         accumulator += now - prev;
         prev = now;
@@ -75,11 +101,11 @@ fn Loop_run(Loop *loop) {
         // Clamp catch-up: at most 4 steps per frame, then drop backlog.
         // Prevents spiral-of-death after a stall and bounds frame time.
         i32 steps = 0;
-        while (accumulator >= (*loop).frame_ms && steps < 4) {
-            (*loop).tick((*loop).userdata);
-            accumulator -= (*loop).frame_ms;
+        while (accumulator >= Loop_frame_ms(loop) && steps < 4) {
+            Loop_tick(loop)(Loop_userdata(loop));
+            accumulator -= Loop_frame_ms(loop);
             steps++;
-            if (!atomic_load_explicit(&(*loop).running, memory_order_acquire))
+            if (!atomic_load_explicit(Loop_runningMut(loop), memory_order_acquire))
                 break;
         }
         if (steps == 4)
@@ -90,5 +116,5 @@ fn Loop_run(Loop *loop) {
 // Clears the atomic running flag so an active Loop_run can return.
 fn Loop_stop(Loop *loop) {
     if (loop)
-        atomic_store_explicit(&(*loop).running, false, memory_order_release);
+        atomic_store_explicit(Loop_runningMut(loop), false, memory_order_release);
 }

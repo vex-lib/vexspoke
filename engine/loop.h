@@ -24,12 +24,15 @@ static inline Loop Loop_3(TickFn tick, any userdata, i64 frameMilliseconds) {
         .running = false };
 }
 #define Loop(...) CONSTRUCTOR_DISPATCH(Loop, __VA_ARGS__)
+;;SETTER
 static inline fn Loop_setTick(Loop *loop, TickFn tick) {
     if (loop) (*loop).tick = tick;
 }
+;;SETTER
 static inline fn Loop_setUserdata(Loop *loop, any userdata) {
     if (loop) (*loop).userdata = userdata;
 }
+;;SETTER
 static inline fn Loop_setFrameMilliseconds(Loop *loop, i64 frameMilliseconds) {
     if (loop) (*loop).frame_ms = frameMilliseconds;
 }
