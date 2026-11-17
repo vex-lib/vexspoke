@@ -13,6 +13,56 @@
 static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
+
+;;GETTER
+static inline u32 RegexNode_a(const RegexNode *s) { return (*s).a; }
+;;GETTER
+static inline u32 *RegexNode_aMut(RegexNode *s) { return &(*s).a; }
+;;SETTER
+static inline fn RegexNode_setA(RegexNode *s, u32 v) { (*s).a = v; }
+;;GETTER
+static inline u32 RegexNode_b(const RegexNode *s) { return (*s).b; }
+;;GETTER
+static inline u32 *RegexNode_bMut(RegexNode *s) { return &(*s).b; }
+;;SETTER
+static inline fn RegexNode_setB(RegexNode *s, u32 v) { (*s).b = v; }
+;;GETTER
+static inline u8 RegexNode_byte(const RegexNode *s) { return (*s).byte; }
+;;GETTER
+static inline u8 *RegexNode_byteMut(RegexNode *s) { return &(*s).byte; }
+;;SETTER
+static inline fn RegexNode_setByte(RegexNode *s, u8 v) { (*s).byte = v; }
+;;GETTER
+static inline u32 RegexNode_clsIndex(const RegexNode *s) { return (*s).clsIndex; }
+;;GETTER
+static inline u32 *RegexNode_clsIndexMut(RegexNode *s) { return &(*s).clsIndex; }
+;;SETTER
+static inline fn RegexNode_setClsIndex(RegexNode *s, u32 v) { (*s).clsIndex = v; }
+;;GETTER
+static inline u32 RegexNode_group(const RegexNode *s) { return (*s).group; }
+;;GETTER
+static inline u32 *RegexNode_groupMut(RegexNode *s) { return &(*s).group; }
+;;SETTER
+static inline fn RegexNode_setGroup(RegexNode *s, u32 v) { (*s).group = v; }
+;;GETTER
+static inline u8 RegexNode_kind(const RegexNode *s) { return (*s).kind; }
+;;GETTER
+static inline u8 *RegexNode_kindMut(RegexNode *s) { return &(*s).kind; }
+;;SETTER
+static inline fn RegexNode_setKind(RegexNode *s, u8 v) { (*s).kind = v; }
+;;GETTER
+static inline u32 RegexNode_repMax(const RegexNode *s) { return (*s).repMax; }
+;;GETTER
+static inline u32 *RegexNode_repMaxMut(RegexNode *s) { return &(*s).repMax; }
+;;SETTER
+static inline fn RegexNode_setRepMax(RegexNode *s, u32 v) { (*s).repMax = v; }
+;;GETTER
+static inline u32 RegexNode_repMin(const RegexNode *s) { return (*s).repMin; }
+;;GETTER
+static inline u32 *RegexNode_repMinMut(RegexNode *s) { return &(*s).repMin; }
+;;SETTER
+static inline fn RegexNode_setRepMin(RegexNode *s, u32 v) { (*s).repMin = v; }
+
     do {                                                                   \
         if (!(cond)) {                                                     \
             printf("FAIL %s:%d %s\n", __FILE__, __LINE__, #cond);          \
@@ -34,16 +84,16 @@ static fn testAdd() {
 
     RegexNode *first = RegexNodeList_get(&list, a);
     CHECK(first != nullptr);
-    CHECK((*first).kind == REGEX_NODE_CHAR);
+    CHECK(RegexNode_kind(first) == REGEX_NODE_CHAR);
     // A freshly added node is fully zeroed apart from its kind.
-    CHECK((*first).byte == 0);
-    CHECK((*first).a == 0 && (*first).b == 0);
-    CHECK((*first).repMin == 0 && (*first).repMax == 0);
-    CHECK((*first).group == 0 && (*first).clsIndex == 0);
+    CHECK(RegexNode_byte(first) == 0);
+    CHECK(RegexNode_a(first) == 0 && RegexNode_b(first) == 0);
+    CHECK(RegexNode_repMin(first) == 0 && RegexNode_repMax(first) == 0);
+    CHECK(RegexNode_group(first) == 0 && RegexNode_clsIndex(first) == 0);
 
     RegexNode *second = RegexNodeList_get(&list, b);
     CHECK(second != nullptr);
-    CHECK((*second).kind == REGEX_NODE_CONCAT);
+    CHECK(RegexNode_kind(second) == REGEX_NODE_CONCAT);
 
     RegexNodeList_free(&list);
 }
@@ -59,7 +109,7 @@ static fn testGrowth() {
         CHECK(index == i);
         RegexNode *node = RegexNodeList_get(&list, index);
         CHECK(node != nullptr);
-        (*node).byte = (u8) (i & 0xFFu);
+        RegexNode_setByte(node, (u8) (i & 0xFFu));
     }
     CHECK(list.count == TOTAL);
     CHECK(list.capacity >= TOTAL);
@@ -68,7 +118,7 @@ static fn testGrowth() {
     for (u32 i = 0; i < TOTAL; i++) {
         const RegexNode *node = RegexNodeList_at(&list, i);
         CHECK(node != nullptr);
-        CHECK((*node).byte == (u8) (i & 0xFFu));
+        CHECK(RegexNode_byte(node) == (u8) (i & 0xFFu));
     }
 
     CHECK(RegexNodeList_get(&list, TOTAL) == nullptr);

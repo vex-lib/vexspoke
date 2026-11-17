@@ -16,6 +16,57 @@
 static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
+
+;;GETTER
+static inline u32 RegexNode_a(const RegexNode *s) { return (*s).a; }
+;;GETTER
+static inline u32 *RegexNode_aMut(RegexNode *s) { return &(*s).a; }
+;;SETTER
+static inline fn RegexNode_setA(RegexNode *s, u32 v) { (*s).a = v; }
+;;GETTER
+static inline u32 RegexNode_b(const RegexNode *s) { return (*s).b; }
+;;GETTER
+static inline u32 *RegexNode_bMut(RegexNode *s) { return &(*s).b; }
+;;SETTER
+static inline fn RegexNode_setB(RegexNode *s, u32 v) { (*s).b = v; }
+;;GETTER
+static inline u8 RegexNode_byte(const RegexNode *s) { return (*s).byte; }
+;;GETTER
+static inline u8 *RegexNode_byteMut(RegexNode *s) { return &(*s).byte; }
+;;SETTER
+static inline fn RegexNode_setByte(RegexNode *s, u8 v) { (*s).byte = v; }
+;;GETTER
+static inline u32 RegexNode_clsIndex(const RegexNode *s) { return (*s).clsIndex; }
+;;GETTER
+static inline u32 *RegexNode_clsIndexMut(RegexNode *s) { return &(*s).clsIndex; }
+;;SETTER
+static inline fn RegexNode_setClsIndex(RegexNode *s, u32 v) { (*s).clsIndex = v; }
+;;GETTER
+static inline u8 RegexNode_kind(const RegexNode *s) { return (*s).kind; }
+;;GETTER
+static inline u8 *RegexNode_kindMut(RegexNode *s) { return &(*s).kind; }
+;;SETTER
+static inline fn RegexNode_setKind(RegexNode *s, u8 v) { (*s).kind = v; }
+;;GETTER
+static inline u32 RegexNode_repMax(const RegexNode *s) { return (*s).repMax; }
+;;GETTER
+static inline u32 *RegexNode_repMaxMut(RegexNode *s) { return &(*s).repMax; }
+;;SETTER
+static inline fn RegexNode_setRepMax(RegexNode *s, u32 v) { (*s).repMax = v; }
+;;GETTER
+static inline u32 RegexNode_repMin(const RegexNode *s) { return (*s).repMin; }
+;;GETTER
+static inline u32 *RegexNode_repMinMut(RegexNode *s) { return &(*s).repMin; }
+;;SETTER
+static inline fn RegexNode_setRepMin(RegexNode *s, u32 v) { (*s).repMin = v; }
+
+;;GETTER
+static inline u32 RegexNodeList_count(const RegexNodeList *s) { return (*s).count; }
+;;GETTER
+static inline u32 *RegexNodeList_countMut(RegexNodeList *s) { return &(*s).count; }
+;;SETTER
+static inline fn RegexNodeList_setCount(RegexNodeList *s, u32 v) { (*s).count = v; }
+
     do {                                                                   \
         if (!(cond)) {                                                     \
             printf("FAIL %s:%d %s\n", __FILE__, __LINE__, #cond);          \
@@ -40,32 +91,32 @@ static fn testShapes() {
     CHECK(RegexParser_groupCount(&parser) == 0);
     RegexNodeList *nodes = RegexParser_nodes(&parser);
     CHECK(nodes != nullptr);
-    CHECK((*nodes).count >= 1);
+    CHECK(RegexNodeList_count(nodes) >= 1);
     const RegexNode *root = RegexNodeList_at(nodes, 0);
     CHECK(root != nullptr);
-    CHECK((*root).kind == REGEX_NODE_CHAR);
-    CHECK((*root).byte == (u8) 'a');
+    CHECK(RegexNode_kind(root) == REGEX_NODE_CHAR);
+    CHECK(RegexNode_byte(root) == (u8) 'a');
     RegexParser_free(&parser);
 
     // ignoreCase folds the literal at parse time.
     CHECK(parse("A", true, &parser) != REGEX_NODE_NONE);
     const RegexNode *folded = RegexNodeList_at(RegexParser_nodes(&parser), 0);
     CHECK(folded != nullptr);
-    CHECK((*folded).byte == (u8) 'a');
+    CHECK(RegexNode_byte(folded) == (u8) 'a');
     RegexParser_free(&parser);
 
     // Concatenation nests left and keeps the operands as indices.
     CHECK(parse("ab", false, &parser) != REGEX_NODE_NONE);
     RegexNodeList *cat = RegexParser_nodes(&parser);
-    CHECK((*cat).count == 3);
-    const RegexNode *top = RegexNodeList_at(cat, (*cat).count - 1u);
+    CHECK(RegexNodeList_count(cat) == 3);
+    const RegexNode *top = RegexNodeList_at(cat, RegexNodeList_count(cat) - 1u);
     CHECK(top != nullptr);
-    CHECK((*top).kind == REGEX_NODE_CONCAT);
-    const RegexNode *left = RegexNodeList_at(cat, (*top).a);
-    const RegexNode *right = RegexNodeList_at(cat, (*top).b);
+    CHECK(RegexNode_kind(top) == REGEX_NODE_CONCAT);
+    const RegexNode *left = RegexNodeList_at(cat, RegexNode_a(top));
+    const RegexNode *right = RegexNodeList_at(cat, RegexNode_b(top));
     CHECK(left != nullptr && right != nullptr);
-    CHECK((*left).byte == (u8) 'a');
-    CHECK((*right).byte == (u8) 'b');
+    CHECK(RegexNode_byte(left) == (u8) 'a');
+    CHECK(RegexNode_byte(right) == (u8) 'b');
     RegexParser_free(&parser);
 
     // A capturing group counts; a non-capturing group does not.
@@ -85,18 +136,18 @@ static fn testShapes() {
     // A repetition carries its bounds.
     CHECK(parse("a{2,4}", false, &parser) != REGEX_NODE_NONE);
     RegexNodeList *rep = RegexParser_nodes(&parser);
-    CHECK((*rep).count == 2);
+    CHECK(RegexNodeList_count(rep) == 2);
     const RegexNode *bounds = RegexNodeList_at(rep, 1);
     CHECK(bounds != nullptr);
-    CHECK((*bounds).kind == REGEX_NODE_REPEAT);
-    CHECK((*bounds).repMin == 2 && (*bounds).repMax == 4);
+    CHECK(RegexNode_kind(bounds) == REGEX_NODE_REPEAT);
+    CHECK(RegexNode_repMin(bounds) == 2 && RegexNode_repMax(bounds) == 4);
     RegexParser_free(&parser);
 
     // {m,} has no upper bound.
     CHECK(parse("a{2,}", false, &parser) != REGEX_NODE_NONE);
     const RegexNode *open = RegexNodeList_at(RegexParser_nodes(&parser), 1);
     CHECK(open != nullptr);
-    CHECK((*open).repMin == 2 && (*open).repMax == REGEX_REP_INF);
+    CHECK(RegexNode_repMin(open) == 2 && RegexNode_repMax(open) == REGEX_REP_INF);
     RegexParser_free(&parser);
 }
 
@@ -107,14 +158,14 @@ static fn testClasses() {
     CHECK(RegexParser_groupCount(&parser) == 0);
     const RegexNode *node = RegexNodeList_at(RegexParser_nodes(&parser), 0);
     CHECK(node != nullptr);
-    CHECK((*node).kind == REGEX_NODE_CLASS);
+    CHECK(RegexNode_kind(node) == REGEX_NODE_CLASS);
 
     u32 classCount = 0;
     RegexCharClass *classes = RegexParser_releaseClasses(&parser, &classCount);
     CHECK(classes != nullptr);
     CHECK(classCount == 1);
-    CHECK(RegexCharClass_test(&classes[(*node).clsIndex], (u8) 'm'));
-    CHECK(!RegexCharClass_test(&classes[(*node).clsIndex], (u8) 'M'));
+    CHECK(RegexCharClass_test(&classes[RegexNode_clsIndex(node)], (u8) 'm'));
+    CHECK(!RegexCharClass_test(&classes[RegexNode_clsIndex(node)], (u8) 'M'));
 
     // The transfer is one-shot: a second call yields nothing.
     u32 again = 7;
