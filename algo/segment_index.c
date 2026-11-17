@@ -94,19 +94,94 @@
  * ============================================================================
  */
 
+
+;;GETTER
+static inline u32 SegmentMatch_entry(const SegmentMatch *s) { return (*s).entry; }
+;;GETTER
+static inline u32 *SegmentMatch_entryMut(SegmentMatch *s) { return &(*s).entry; }
+;;SETTER
+static inline fn SegmentMatch_setEntry(SegmentMatch *s, u32 v) { (*s).entry = v; }
+;;GETTER
+static inline u32 SegmentMatch_start(const SegmentMatch *s) { return (*s).start; }
+;;GETTER
+static inline u32 *SegmentMatch_startMut(SegmentMatch *s) { return &(*s).start; }
+;;SETTER
+static inline fn SegmentMatch_setStart(SegmentMatch *s, u32 v) { (*s).start = v; }
+;;GETTER
+static inline u32 SegmentMatch_tier(const SegmentMatch *s) { return (*s).tier; }
+;;GETTER
+static inline u32 *SegmentMatch_tierMut(SegmentMatch *s) { return &(*s).tier; }
+;;SETTER
+static inline fn SegmentMatch_setTier(SegmentMatch *s, u32 v) { (*s).tier = v; }
+
+;;GETTER
+static inline char *SegmentEntry_nameMut(SegmentEntry *s) { return (*s).name; }
+;;GETTER
+static inline const char *SegmentEntry_name(const SegmentEntry *s) { return (*s).name; }
+;;GETTER
+static inline pointer SegmentEntry_payload(const SegmentEntry *s) { return (*s).payload; }
+;;GETTER
+static inline pointer *SegmentEntry_payloadMut(SegmentEntry *s) { return &(*s).payload; }
+;;SETTER
+static inline fn SegmentEntry_setPayload(SegmentEntry *s, pointer v) { (*s).payload = v; }
+;;GETTER
+static inline u32 SegmentEntry_segments(const SegmentEntry *s) { return (*s).segments; }
+;;GETTER
+static inline u32 *SegmentEntry_segmentsMut(SegmentEntry *s) { return &(*s).segments; }
+;;SETTER
+static inline fn SegmentEntry_setSegments(SegmentEntry *s, u32 v) { (*s).segments = v; }
+
+;;GETTER
+static inline bool SegmentIndex_active(const SegmentIndex *s) { return (*s).active; }
+;;GETTER
+static inline bool *SegmentIndex_activeMut(SegmentIndex *s) { return &(*s).active; }
+;;SETTER
+static inline fn SegmentIndex_setActive(SegmentIndex *s, bool v) { (*s).active = v; }
+;;GETTER
+static inline u32 SegmentIndex_count(const SegmentIndex *s) { return (*s).count; }
+;;GETTER
+static inline u32 *SegmentIndex_countMut(SegmentIndex *s) { return &(*s).count; }
+;;SETTER
+static inline fn SegmentIndex_setCount(SegmentIndex *s, u32 v) { (*s).count = v; }
+;;GETTER
+static inline ChunkedList * SegmentIndex_entries(const SegmentIndex *s) { return (*s).entries; }
+;;GETTER
+static inline ChunkedList * *SegmentIndex_entriesMut(SegmentIndex *s) { return &(*s).entries; }
+;;SETTER
+static inline fn SegmentIndex_setEntries(SegmentIndex *s, ChunkedList * v) { (*s).entries = v; }
+;;GETTER
+static inline VariableHashMap * SegmentIndex_postings(const SegmentIndex *s) { return (*s).postings; }
+;;GETTER
+static inline VariableHashMap * *SegmentIndex_postingsMut(SegmentIndex *s) { return &(*s).postings; }
+;;SETTER
+static inline fn SegmentIndex_setPostings(SegmentIndex *s, VariableHashMap * v) { (*s).postings = v; }
+
+;;GETTER
+static inline u32 SegmentPosting_entry(const SegmentPosting *s) { return (*s).entry; }
+;;GETTER
+static inline u32 *SegmentPosting_entryMut(SegmentPosting *s) { return &(*s).entry; }
+;;SETTER
+static inline fn SegmentPosting_setEntry(SegmentPosting *s, u32 v) { (*s).entry = v; }
+;;GETTER
+static inline u32 SegmentPosting_position(const SegmentPosting *s) { return (*s).position; }
+;;GETTER
+static inline u32 *SegmentPosting_positionMut(SegmentPosting *s) { return &(*s).position; }
+;;SETTER
+static inline fn SegmentPosting_setPosition(SegmentPosting *s, u32 v) { (*s).position = v; }
+
 // PRIVATE HELPERS
 
 static const SegmentEntry *entryAt(const SegmentIndex *index, u32 entry) {
-    if (!index || !(*index).entries)
+    if (!index || !SegmentIndex_entries(index))
         return nullptr;
-    return (const SegmentEntry*) ChunkedList_slot((*index).entries, entry);
+    return (const SegmentEntry*) ChunkedList_slot(SegmentIndex_entries(index), entry);
 }
 
 // Append one posting (entry, position) for `segment`, minting the segment's
 // list on first use. Postings stay sorted by entry because entries are added in
 // order, so findPosting can binary search.
 static bool postSegment(SegmentIndex *index, u32 entry, u32 position, const char *segment) {
-    VariableHashMap *postings = (*index).postings;
+    VariableHashMap *postings = SegmentIndex_postings(index);
     pointer existing = VariableHashMap_get(postings, segment);
     ChunkedList *list = nullptr;
     if (VariableHashMap_contains(postings, segment))
@@ -123,8 +198,8 @@ static bool postSegment(SegmentIndex *index, u32 entry, u32 position, const char
     SegmentPosting *row = (SegmentPosting*) ChunkedList_addSlot(list);
     if (!row)
         return false;
-    (*row).entry = entry;
-    (*row).position = position;
+    SegmentPosting_setEntry(row, entry);
+    SegmentPosting_setPosition(row, position);
     return true;
 }
 
@@ -139,7 +214,7 @@ static bool findPosting(const ChunkedList *list, u32 entry, u32 position) {
         const SegmentPosting *p = (const SegmentPosting*) ChunkedList_slot(list, mid);
         if (!p)
             return false;
-        if ((*p).entry < entry)
+        if (SegmentPosting_entry(p) < entry)
             lo = mid + 1u;
         else
             hi = mid;
@@ -147,9 +222,9 @@ static bool findPosting(const ChunkedList *list, u32 entry, u32 position) {
     u32 n = ChunkedList_size(list);
     for (u32 i = lo; i < n; i++) {
         const SegmentPosting *p = (const SegmentPosting*) ChunkedList_slot(list, i);
-        if (!p || (*p).entry != entry)
+        if (!p || SegmentPosting_entry(p) != entry)
             return false;
-        if ((*p).position == position)
+        if (SegmentPosting_position(p) == position)
             return true;
     }
     return false;
@@ -179,19 +254,19 @@ static bytes splitFold(const char *path, char segs[][SEGMENT_NAME_BYTES]) {
 
 // Ranking: tier, then match start, then shorter name, then lexicographic.
 static bool matchBefore(const SegmentIndex *index, const SegmentMatch *a, const SegmentMatch *b) {
-    if ((*a).tier != (*b).tier)
-        return (*a).tier < (*b).tier;
-    if ((*a).start != (*b).start)
-        return (*a).start < (*b).start;
-    const SegmentEntry *ea = entryAt(index, (*a).entry);
-    const SegmentEntry *eb = entryAt(index, (*b).entry);
+    if (SegmentMatch_tier(a) != SegmentMatch_tier(b))
+        return SegmentMatch_tier(a) < SegmentMatch_tier(b);
+    if (SegmentMatch_start(a) != SegmentMatch_start(b))
+        return SegmentMatch_start(a) < SegmentMatch_start(b);
+    const SegmentEntry *ea = entryAt(index, SegmentMatch_entry(a));
+    const SegmentEntry *eb = entryAt(index, SegmentMatch_entry(b));
     if (!ea || !eb)
         return ea != nullptr;
-    bytes la = strlen((*ea).name);
-    bytes lb = strlen((*eb).name);
+    bytes la = strlen(SegmentEntry_nameMut(ea));
+    bytes lb = strlen(SegmentEntry_nameMut(eb));
     if (la != lb)
         return la < lb;
-    return strcmp((*ea).name, (*eb).name) < 0;
+    return strcmp(SegmentEntry_nameMut(ea), SegmentEntry_nameMut(eb)) < 0;
 }
 
 // Insert into the bounded best-first output array (top-`cap`, insertion sort).
@@ -215,12 +290,20 @@ typedef struct BuildCtx {
     SegmentIndex *index;
 } BuildCtx;
 
+;;GETTER
+static inline SegmentIndex * BuildCtx_index(const BuildCtx *s) { return (*s).index; }
+;;GETTER
+static inline SegmentIndex * *BuildCtx_indexMut(BuildCtx *s) { return &(*s).index; }
+;;SETTER
+static inline fn BuildCtx_setIndex(BuildCtx *s, SegmentIndex * v) { (*s).index = v; }
+
+
 static fn buildFn(VariableSlot *slot, any userdata) {
     BuildCtx *ctx = (BuildCtx*) userdata;
     const char *name = VariableSlot_getName(slot);
     if (!name)
         return;
-    SegmentIndex_add((*ctx).index, name, (pointer) slot);
+    SegmentIndex_add(BuildCtx_index(ctx), name, (pointer) slot);
 }
 
 static fn freePostingsFn(VariableSlot *slot, any userdata) {
@@ -297,26 +380,26 @@ bool SegmentIndex_init(SegmentIndex *index) {
         ChunkedList_free(entries);
         return false;
     }
-    (*index).active = true;
-    (*index).count = 0u;
-    (*index).entries = entries;
-    (*index).postings = postings;
+    SegmentIndex_setActive(index, true);
+    SegmentIndex_setCount(index, 0u);
+    SegmentIndex_setEntries(index, entries);
+    SegmentIndex_setPostings(index, postings);
     return true;
 }
 
 fn SegmentIndex_shutdown(SegmentIndex *index) {
     if (!index)
         return;
-    if ((*index).postings) {
-        VariableHashMap_forEach((*index).postings, freePostingsFn, nullptr);
-        VariableHashMap_free((*index).postings);
+    if (SegmentIndex_postings(index)) {
+        VariableHashMap_forEach(SegmentIndex_postings(index), freePostingsFn, nullptr);
+        VariableHashMap_free(SegmentIndex_postings(index));
     }
-    if ((*index).entries)
-        ChunkedList_free((*index).entries);
-    (*index).postings = nullptr;
-    (*index).entries = nullptr;
-    (*index).count = 0u;
-    (*index).active = false;
+    if (SegmentIndex_entries(index))
+        ChunkedList_free(SegmentIndex_entries(index));
+    SegmentIndex_setPostings(index, nullptr);
+    SegmentIndex_setEntries(index, nullptr);
+    SegmentIndex_setCount(index, 0u);
+    SegmentIndex_setActive(index, false);
 }
 
 SegmentIndex *SegmentIndex_0() {
@@ -340,32 +423,32 @@ fn SegmentIndex_free(SegmentIndex *index) {
 // CORE FUNCTIONS
 
 fn SegmentIndex_clear(SegmentIndex *index) {
-    if (!index || !(*index).active)
+    if (!index || !SegmentIndex_active(index))
         return;
-    VariableHashMap_forEach((*index).postings, freePostingsFn, nullptr);
-    VariableHashMap_shutdown((*index).postings);
-    VariableHashMap_init((*index).postings);
-    ChunkedList_free((*index).entries);
+    VariableHashMap_forEach(SegmentIndex_postings(index), freePostingsFn, nullptr);
+    VariableHashMap_shutdown(SegmentIndex_postings(index));
+    VariableHashMap_init(SegmentIndex_postings(index));
+    ChunkedList_free(SegmentIndex_entries(index));
     ChunkedList *entries = ChunkedList_3(ID_SEGMENT_ENTRY, (u32) sizeof(SegmentEntry), VEX_CHUNKED_BYTES_DEFAULT);
-    (*index).entries = entries;
-    (*index).count = 0u;
+    SegmentIndex_setEntries(index, entries);
+    SegmentIndex_setCount(index, 0u);
     if (!entries)
-        (*index).active = false;
+        SegmentIndex_setActive(index, false);
 }
 
 u32 SegmentIndex_add(SegmentIndex *index, const char *name, pointer payload) {
-    if (!index || !(*index).active)
+    if (!index || !SegmentIndex_active(index))
         return SEGMENT_ENTRY_NONE;
     char folded[SEGMENT_NAME_BYTES];
     if (!VariableSlot_foldName(name, folded))
         return SEGMENT_ENTRY_NONE;
-    SegmentEntry *row = (SegmentEntry*) ChunkedList_addSlot((*index).entries);
+    SegmentEntry *row = (SegmentEntry*) ChunkedList_addSlot(SegmentIndex_entries(index));
     if (!row)
         return SEGMENT_ENTRY_NONE;
     memset(row, 0, sizeof(*row));
-    memcpy((*row).name, folded, strlen(folded) + 1);
-    (*row).payload = payload;
-    u32 entry = ChunkedList_size((*index).entries) - 1u;
+    memcpy(SegmentEntry_nameMut(row), folded, strlen(folded) + 1);
+    SegmentEntry_setPayload(row, payload);
+    u32 entry = ChunkedList_size(SegmentIndex_entries(index)) - 1u;
 
     u32 position = 0u;
     const char *p = folded;
@@ -376,8 +459,8 @@ u32 SegmentIndex_add(SegmentIndex *index, const char *name, pointer payload) {
         memcpy(segment, p, len);
         segment[len] = '\0';
         if (!postSegment(index, entry, position, segment)) {
-            (*row).segments = position;
-            (*index).count = entry + 1u;
+            SegmentEntry_setSegments(row, position);
+            SegmentIndex_setCount(index, entry + 1u);
             return SEGMENT_ENTRY_NONE;
         }
         position++;
@@ -385,8 +468,8 @@ u32 SegmentIndex_add(SegmentIndex *index, const char *name, pointer payload) {
             break;
         p = dot + 1;
     }
-    (*row).segments = position;
-    (*index).count = entry + 1u;
+    SegmentEntry_setSegments(row, position);
+    SegmentIndex_setCount(index, entry + 1u);
     return entry;
 }
 
@@ -411,7 +494,7 @@ bytes SegmentIndex_buildFromMini(SegmentIndex *index, VariableMiniMap *map) {
 bytes SegmentIndex_query(const SegmentIndex *index, const char *query, SegmentMatch *out, bytes cap, bool *outTruncated) {
     if (outTruncated)
         *outTruncated = false;
-    if (!index || !(*index).active || !query || !out || cap == 0u)
+    if (!index || !SegmentIndex_active(index) || !query || !out || cap == 0u)
         return 0u;
 
     char segs[SEGMENT_QUERY_SEGMENTS_MAX][SEGMENT_NAME_BYTES];
@@ -422,7 +505,7 @@ bytes SegmentIndex_query(const SegmentIndex *index, const char *query, SegmentMa
     const ChunkedList *lists[SEGMENT_QUERY_SEGMENTS_MAX];
     bytes rarest = 0u;
     for (bytes k = 0u; k < qn; k++) {
-        pointer value = VariableHashMap_get((*index).postings, segs[k]);
+        pointer value = VariableHashMap_get(SegmentIndex_postings(index), segs[k]);
         if (value == 0u)
             return 0u;
         lists[k] = (const ChunkedList*) value;
@@ -437,10 +520,10 @@ bytes SegmentIndex_query(const SegmentIndex *index, const char *query, SegmentMa
     bytes total = 0u;
     for (u32 i = 0u; i < candCount; i++) {
         const SegmentPosting *p = (const SegmentPosting*) ChunkedList_slot(cand, i);
-        if (!p || (*p).position < rarest)
+        if (!p || SegmentPosting_position(p) < rarest)
             continue;
-        u32 entry = (*p).entry;
-        u32 start = (*p).position - (u32) rarest;
+        u32 entry = SegmentPosting_entry(p);
+        u32 start = SegmentPosting_position(p) - (u32) rarest;
 
         bool ok = true;
         for (bytes k = 0u; k < qn; k++) {
@@ -455,7 +538,7 @@ bytes SegmentIndex_query(const SegmentIndex *index, const char *query, SegmentMa
         const SegmentEntry *e = entryAt(index, entry);
         if (!e)
             continue;
-        u32 entrySegments = (*e).segments;
+        u32 entrySegments = SegmentEntry_segments(e);
         u32 tier = SEGMENT_MATCH_CONTAINS;
         if (qn == entrySegments && start == 0u)
             tier = SEGMENT_MATCH_EXACT;
@@ -463,7 +546,7 @@ bytes SegmentIndex_query(const SegmentIndex *index, const char *query, SegmentMa
             tier = SEGMENT_MATCH_SUFFIX;
 
         SegmentMatch m;
-        m.payload = (*e).payload;
+        m.payload = SegmentEntry_payload(e);
         m.entry = entry;
         m.start = start;
         m.tier = tier;
@@ -479,13 +562,13 @@ bytes SegmentIndex_query(const SegmentIndex *index, const char *query, SegmentMa
 // GETTERS
 
 u32 SegmentIndex_count(const SegmentIndex *index) {
-    return index ? (*index).count : 0u;
+    return index ? SegmentIndex_count(index) : 0u;
 }
 
 bool SegmentIndex_isEmpty(const SegmentIndex *index) {
     if (!index)
         return true;
-    return (*index).count == 0u;
+    return SegmentIndex_count(index) == 0u;
 }
 
 // STRING PROJECTIONS (the toString Law)
@@ -499,7 +582,7 @@ fn SegmentIndex_toString(const SegmentIndex *index, char *dest, bytes cap, bool 
         snprintf(dest, cap, "nullptr");
         return;
     }
-    i32 written = snprintf(dest, cap, "SegmentIndex(entries=%u)", (*index).count);
+    i32 written = snprintf(dest, cap, "SegmentIndex(entries=%u)", SegmentIndex_count(index));
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
@@ -516,9 +599,9 @@ fn SegmentIndex_toStringStruct(const SegmentIndex *index, char *dest, bytes cap,
         return;
     }
     i32 written = snprintf(dest, cap, "SegmentIndex { active=%s, count=%u, entries=0x%llx, postings=0x%llx }",
-                           (*index).active ? "true" : "false", (*index).count,
-                           (u64) (pointer) (*index).entries,
-                           (u64) (pointer) (*index).postings);
+                           SegmentIndex_active(index) ? "true" : "false", SegmentIndex_count(index),
+                           (u64) (pointer) SegmentIndex_entries(index),
+                           (u64) (pointer) SegmentIndex_postings(index));
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;

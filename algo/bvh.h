@@ -12,11 +12,14 @@ typedef struct BvhAabb {
     f32 max_point[3];
 } BvhAabb;
 
+;;SETTER
 static inline BvhAabb BvhAabb_0() { return (BvhAabb) {0}; }
 #define BvhAabb(...) CONSTRUCTOR_DISPATCH(BvhAabb, __VA_ARGS__)
+;;SETTER
 static inline fn BvhAabb_setMinimum(BvhAabb *box, f32 x, f32 y, f32 z) {
     if (box) { (*box).min_point[0] = x; (*box).min_point[1] = y; (*box).min_point[2] = z; }
 }
+;;SETTER
 static inline fn BvhAabb_setMaximum(BvhAabb *box, f32 x, f32 y, f32 z) {
     if (box) { (*box).max_point[0] = x; (*box).max_point[1] = y; (*box).max_point[2] = z; }
 }
@@ -39,12 +42,15 @@ static inline BvhRay BvhRay_8(f32 originX, f32 originY, f32 originZ,
     };
 }
 #define BvhRay(...) CONSTRUCTOR_DISPATCH(BvhRay, __VA_ARGS__)
+;;SETTER
 static inline fn BvhRay_setOrigin(BvhRay *ray, f32 x, f32 y, f32 z) {
     if (ray) { (*ray).origin[0] = x; (*ray).origin[1] = y; (*ray).origin[2] = z; }
 }
+;;SETTER
 static inline fn BvhRay_setDirection(BvhRay *ray, f32 x, f32 y, f32 z) {
     if (ray) { (*ray).direction[0] = x; (*ray).direction[1] = y; (*ray).direction[2] = z; }
 }
+;;SETTER
 static inline fn BvhRay_setRange(BvhRay *ray, f32 minimumDistance, f32 maximumDistance) {
     if (ray) { (*ray).t_min = minimumDistance; (*ray).t_max = maximumDistance; }
 }

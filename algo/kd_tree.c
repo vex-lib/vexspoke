@@ -63,6 +63,45 @@
  * ============================================================================
  */
 
+
+;;GETTER
+static inline u8 KdNode_axis(const KdNode *s) { return (*s).axis; }
+;;GETTER
+static inline u8 *KdNode_axisMut(KdNode *s) { return &(*s).axis; }
+;;SETTER
+static inline fn KdNode_setAxis(KdNode *s, u8 v) { (*s).axis = v; }
+;;GETTER
+static inline struct KdNode * KdNode_left(const KdNode *s) { return (*s).left; }
+;;GETTER
+static inline struct KdNode * *KdNode_leftMut(KdNode *s) { return &(*s).left; }
+;;SETTER
+static inline fn KdNode_setLeft(KdNode *s, struct KdNode * v) { (*s).left = v; }
+;;GETTER
+static inline KdPoint KdNode_point(const KdNode *s) { return (*s).point; }
+;;GETTER
+static inline KdPoint *KdNode_pointMut(KdNode *s) { return &(*s).point; }
+;;SETTER
+static inline fn KdNode_setPoint(KdNode *s, KdPoint v) { (*s).point = v; }
+;;GETTER
+static inline struct KdNode * KdNode_right(const KdNode *s) { return (*s).right; }
+;;GETTER
+static inline struct KdNode * *KdNode_rightMut(KdNode *s) { return &(*s).right; }
+;;SETTER
+static inline fn KdNode_setRight(KdNode *s, struct KdNode * v) { (*s).right = v; }
+
+;;GETTER
+static inline bytes KdTree_count(const KdTree *s) { return (*s).count; }
+;;GETTER
+static inline bytes *KdTree_countMut(KdTree *s) { return &(*s).count; }
+;;SETTER
+static inline fn KdTree_setCount(KdTree *s, bytes v) { (*s).count = v; }
+;;GETTER
+static inline KdNode * KdTree_root(const KdTree *s) { return (*s).root; }
+;;GETTER
+static inline KdNode * *KdTree_rootMut(KdTree *s) { return &(*s).root; }
+;;SETTER
+static inline fn KdTree_setRoot(KdTree *s, KdNode * v) { (*s).root = v; }
+
 static fn swapPoints(KdPoint *a, KdPoint *b) {
     KdPoint tmp = *a;
     *a = *b;
@@ -107,10 +146,10 @@ static KdNode *KdTree_buildRecursive(KdPoint *points, bytes left, bytes right, u
     KdNode *node = (KdNode*) Memory_alloc(TYPE_BYTE_ARRAY, sizeof(KdNode));
     if (node == nullptr) return nullptr;
 
-    (*node).point = points[mid];
-    (*node).axis = axis;
-    (*node).left = (mid > left) ? KdTree_buildRecursive(points, left, mid - 1, depth + 1) : nullptr;
-    (*node).right = (mid < right) ? KdTree_buildRecursive(points, mid + 1, right, depth + 1) : nullptr;
+    KdNode_setPoint(node, points[mid]);
+    KdNode_setAxis(node, axis);
+    KdNode_setLeft(node, (mid > left) ? KdTree_buildRecursive(points, left, mid - 1, depth + 1) : nullptr);
+    KdNode_setRight(node, (mid < right) ? KdTree_buildRecursive(points, mid + 1, right, depth + 1) : nullptr);
 
     return node;
 }
@@ -121,23 +160,23 @@ KdTree *KdTree_build(KdPoint *points, bytes count) {
     KdTree *tree = (KdTree*) Memory_alloc(TYPE_BYTE_ARRAY, sizeof(KdTree));
     if (tree == nullptr) return nullptr;
 
-    (*tree).count = count;
-    (*tree).root = KdTree_buildRecursive(points, 0, count - 1, 0);
+    KdTree_setCount(tree, count);
+    KdTree_setRoot(tree, KdTree_buildRecursive(points, 0, count - 1, 0));
     return tree;
 }
 
 static fn KdNode_freeRecursive(KdNode *node) {
     if (node == nullptr) return;
-    if ((*node).left != nullptr) KdNode_freeRecursive((*node).left);
-    if ((*node).right != nullptr) KdNode_freeRecursive((*node).right);
+    if (KdNode_left(node) != nullptr) KdNode_freeRecursive(KdNode_left(node));
+    if (KdNode_right(node) != nullptr) KdNode_freeRecursive(KdNode_right(node));
     Memory_free(node);
 }
 
 fn KdTree_free(KdTree *tree) {
     if (tree == nullptr) return;
-    if ((*tree).root != nullptr) {
-        KdNode_freeRecursive((*tree).root);
-        (*tree).root = nullptr;
+    if (KdTree_root(tree) != nullptr) {
+        KdNode_freeRecursive(KdTree_root(tree));
+        KdTree_setRoot(tree, nullptr);
     }
     Memory_free(tree);
 }
@@ -155,18 +194,18 @@ static fn nearestRecursive(const KdNode *node,
                              f32        *bestDistSq) {
     if (node == nullptr) return;
 
-    KdPoint point = (*node).point;
+    KdPoint point = KdNode_point(node);
     f32 d = distSq(query, point.coord);
     if (d < *bestDistSq) {
         *bestDistSq = d;
         *bestPoint = point;
     }
 
-    u8 axis = (*node).axis;
+    u8 axis = KdNode_axis(node);
     f32 planeDelta = query[axis] - point.coord[axis];
 
-    const KdNode *nearChild = (planeDelta <= 0.0f) ? (*node).left : (*node).right;
-    const KdNode *farChild  = (planeDelta <= 0.0f) ? (*node).right : (*node).left;
+    const KdNode *nearChild = (planeDelta <= 0.0f) ? KdNode_left(node) : KdNode_right(node);
+    const KdNode *farChild  = (planeDelta <= 0.0f) ? KdNode_right(node) : KdNode_left(node);
 
     // Search near side first
     nearestRecursive(nearChild, query, bestPoint, bestDistSq);
@@ -178,12 +217,12 @@ static fn nearestRecursive(const KdNode *node,
 }
 
 bool KdTree_nearest(const KdTree *tree, const f32 queryCoord[3], KdPoint *outNearest, f32 *outDistSq) {
-    if (tree == nullptr || (*tree).root == nullptr || outNearest == nullptr) {
+    if (tree == nullptr || KdTree_root(tree) == nullptr || outNearest == nullptr) {
         return false;
     }
     f32 bestD = 1e30f;
-    const KdNode *root = (*tree).root;
-    KdPoint bestP = (*root).point;
+    const KdNode *root = KdTree_root(tree);
+    KdPoint bestP = KdNode_point(root);
     nearestRecursive(root, queryCoord, &bestP, &bestD);
 
     *outNearest = bestP;
@@ -201,18 +240,18 @@ static bytes radiusRecursive(const KdNode *node,
                               bytes        count) {
     if (node == nullptr || count >= maxCount) return count;
 
-    KdPoint point = (*node).point;
+    KdPoint point = KdNode_point(node);
     f32 d = distSq(query, point.coord);
     if (d <= radiusSq) {
         outPayloads[count++] = point.payload;
         if (count >= maxCount) return count;
     }
 
-    u8 axis = (*node).axis;
+    u8 axis = KdNode_axis(node);
     f32 planeDelta = query[axis] - point.coord[axis];
 
-    const KdNode *nearChild = (planeDelta <= 0.0f) ? (*node).left : (*node).right;
-    const KdNode *farChild  = (planeDelta <= 0.0f) ? (*node).right : (*node).left;
+    const KdNode *nearChild = (planeDelta <= 0.0f) ? KdNode_left(node) : KdNode_right(node);
+    const KdNode *farChild  = (planeDelta <= 0.0f) ? KdNode_right(node) : KdNode_left(node);
 
     count = radiusRecursive(nearChild, query, radiusSq, outPayloads, maxCount, count);
 
@@ -224,8 +263,8 @@ static bytes radiusRecursive(const KdNode *node,
 }
 
 bytes KdTree_queryRadius(const KdTree *tree, const f32 queryCoord[3], f32 radius, u64 *outPayloads, bytes maxCount) {
-    if (tree == nullptr || (*tree).root == nullptr || outPayloads == nullptr || maxCount == 0 || radius < 0.0f) {
+    if (tree == nullptr || KdTree_root(tree) == nullptr || outPayloads == nullptr || maxCount == 0 || radius < 0.0f) {
         return 0;
     }
-    return radiusRecursive((*tree).root, queryCoord, radius * radius, outPayloads, maxCount, 0);
+    return radiusRecursive(KdTree_root(tree), queryCoord, radius * radius, outPayloads, maxCount, 0);
 }

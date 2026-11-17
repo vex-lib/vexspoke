@@ -49,6 +49,151 @@
  * ============================================================================
  */
 
+
+;;GETTER
+static inline f32 *BvhAabb_max_pointMut(BvhAabb *s) { return (*s).max_point; }
+;;GETTER
+static inline const f32 *BvhAabb_max_point(const BvhAabb *s) { return (*s).max_point; }
+;;GETTER
+static inline f32 *BvhAabb_min_pointMut(BvhAabb *s) { return (*s).min_point; }
+;;GETTER
+static inline const f32 *BvhAabb_min_point(const BvhAabb *s) { return (*s).min_point; }
+
+;;GETTER
+static inline bool BvhRayHit_hit(const BvhRayHit *s) { return (*s).hit; }
+;;GETTER
+static inline bool *BvhRayHit_hitMut(BvhRayHit *s) { return &(*s).hit; }
+;;SETTER
+static inline fn BvhRayHit_setHit(BvhRayHit *s, bool v) { (*s).hit = v; }
+;;GETTER
+static inline f32 *BvhRayHit_normalMut(BvhRayHit *s) { return (*s).normal; }
+;;GETTER
+static inline const f32 *BvhRayHit_normal(const BvhRayHit *s) { return (*s).normal; }
+;;GETTER
+static inline u32 BvhRayHit_primitive_id(const BvhRayHit *s) { return (*s).primitive_id; }
+;;GETTER
+static inline u32 *BvhRayHit_primitive_idMut(BvhRayHit *s) { return &(*s).primitive_id; }
+;;SETTER
+static inline fn BvhRayHit_setPrimitive_id(BvhRayHit *s, u32 v) { (*s).primitive_id = v; }
+;;GETTER
+static inline f32 BvhRayHit_t(const BvhRayHit *s) { return (*s).t; }
+;;GETTER
+static inline f32 *BvhRayHit_tMut(BvhRayHit *s) { return &(*s).t; }
+;;SETTER
+static inline fn BvhRayHit_setT(BvhRayHit *s, f32 v) { (*s).t = v; }
+
+;;GETTER
+static inline BvhAabb BvhNode_bounds(const BvhNode *s) { return (*s).bounds; }
+;;GETTER
+static inline BvhAabb *BvhNode_boundsMut(BvhNode *s) { return &(*s).bounds; }
+;;SETTER
+static inline fn BvhNode_setBounds(BvhNode *s, BvhAabb v) { (*s).bounds = v; }
+;;GETTER
+static inline bool BvhNode_is_leaf(const BvhNode *s) { return (*s).is_leaf; }
+;;GETTER
+static inline bool *BvhNode_is_leafMut(BvhNode *s) { return &(*s).is_leaf; }
+;;SETTER
+static inline fn BvhNode_setIs_leaf(BvhNode *s, bool v) { (*s).is_leaf = v; }
+;;GETTER
+static inline i32 BvhNode_left_child(const BvhNode *s) { return (*s).left_child; }
+;;GETTER
+static inline i32 *BvhNode_left_childMut(BvhNode *s) { return &(*s).left_child; }
+;;SETTER
+static inline fn BvhNode_setLeft_child(BvhNode *s, i32 v) { (*s).left_child = v; }
+;;GETTER
+static inline u32 BvhNode_primitive_count(const BvhNode *s) { return (*s).primitive_count; }
+;;GETTER
+static inline u32 *BvhNode_primitive_countMut(BvhNode *s) { return &(*s).primitive_count; }
+;;SETTER
+static inline fn BvhNode_setPrimitive_count(BvhNode *s, u32 v) { (*s).primitive_count = v; }
+;;GETTER
+static inline u32 BvhNode_primitive_offset(const BvhNode *s) { return (*s).primitive_offset; }
+;;GETTER
+static inline u32 *BvhNode_primitive_offsetMut(BvhNode *s) { return &(*s).primitive_offset; }
+;;SETTER
+static inline fn BvhNode_setPrimitive_offset(BvhNode *s, u32 v) { (*s).primitive_offset = v; }
+;;GETTER
+static inline i32 BvhNode_right_child(const BvhNode *s) { return (*s).right_child; }
+;;GETTER
+static inline i32 *BvhNode_right_childMut(BvhNode *s) { return &(*s).right_child; }
+;;SETTER
+static inline fn BvhNode_setRight_child(BvhNode *s, i32 v) { (*s).right_child = v; }
+
+;;GETTER
+static inline BvhAabb BvhPrimitive_bounds(const BvhPrimitive *s) { return (*s).bounds; }
+;;GETTER
+static inline BvhAabb *BvhPrimitive_boundsMut(BvhPrimitive *s) { return &(*s).bounds; }
+;;SETTER
+static inline fn BvhPrimitive_setBounds(BvhPrimitive *s, BvhAabb v) { (*s).bounds = v; }
+;;GETTER
+static inline f32 *BvhPrimitive_centroidMut(BvhPrimitive *s) { return (*s).centroid; }
+;;GETTER
+static inline const f32 *BvhPrimitive_centroid(const BvhPrimitive *s) { return (*s).centroid; }
+;;GETTER
+static inline u32 BvhPrimitive_id(const BvhPrimitive *s) { return (*s).id; }
+;;GETTER
+static inline u32 *BvhPrimitive_idMut(BvhPrimitive *s) { return &(*s).id; }
+;;SETTER
+static inline fn BvhPrimitive_setId(BvhPrimitive *s, u32 v) { (*s).id = v; }
+
+;;GETTER
+static inline f32 *BvhRay_directionMut(BvhRay *s) { return (*s).direction; }
+;;GETTER
+static inline const f32 *BvhRay_direction(const BvhRay *s) { return (*s).direction; }
+;;GETTER
+static inline f32 *BvhRay_originMut(BvhRay *s) { return (*s).origin; }
+;;GETTER
+static inline const f32 *BvhRay_origin(const BvhRay *s) { return (*s).origin; }
+;;GETTER
+static inline f32 BvhRay_t_max(const BvhRay *s) { return (*s).t_max; }
+;;GETTER
+static inline f32 *BvhRay_t_maxMut(BvhRay *s) { return &(*s).t_max; }
+;;SETTER
+static inline fn BvhRay_setT_max(BvhRay *s, f32 v) { (*s).t_max = v; }
+;;GETTER
+static inline f32 BvhRay_t_min(const BvhRay *s) { return (*s).t_min; }
+;;GETTER
+static inline f32 *BvhRay_t_minMut(BvhRay *s) { return &(*s).t_min; }
+;;SETTER
+static inline fn BvhRay_setT_min(BvhRay *s, f32 v) { (*s).t_min = v; }
+
+;;GETTER
+static inline u32 BvhTree_node_capacity(const BvhTree *s) { return (*s).node_capacity; }
+;;GETTER
+static inline u32 *BvhTree_node_capacityMut(BvhTree *s) { return &(*s).node_capacity; }
+;;SETTER
+static inline fn BvhTree_setNode_capacity(BvhTree *s, u32 v) { (*s).node_capacity = v; }
+;;GETTER
+static inline u32 BvhTree_node_count(const BvhTree *s) { return (*s).node_count; }
+;;GETTER
+static inline u32 *BvhTree_node_countMut(BvhTree *s) { return &(*s).node_count; }
+;;SETTER
+static inline fn BvhTree_setNode_count(BvhTree *s, u32 v) { (*s).node_count = v; }
+;;GETTER
+static inline BvhNode * BvhTree_nodes(const BvhTree *s) { return (*s).nodes; }
+;;GETTER
+static inline BvhNode * *BvhTree_nodesMut(BvhTree *s) { return &(*s).nodes; }
+;;SETTER
+static inline fn BvhTree_setNodes(BvhTree *s, BvhNode * v) { (*s).nodes = v; }
+;;GETTER
+static inline u32 BvhTree_primitive_count(const BvhTree *s) { return (*s).primitive_count; }
+;;GETTER
+static inline u32 *BvhTree_primitive_countMut(BvhTree *s) { return &(*s).primitive_count; }
+;;SETTER
+static inline fn BvhTree_setPrimitive_count(BvhTree *s, u32 v) { (*s).primitive_count = v; }
+;;GETTER
+static inline u32 * BvhTree_primitive_indices(const BvhTree *s) { return (*s).primitive_indices; }
+;;GETTER
+static inline u32 * *BvhTree_primitive_indicesMut(BvhTree *s) { return &(*s).primitive_indices; }
+;;SETTER
+static inline fn BvhTree_setPrimitive_indices(BvhTree *s, u32 * v) { (*s).primitive_indices = v; }
+;;GETTER
+static inline const BvhPrimitive * BvhTree_primitives(const BvhTree *s) { return (*s).primitives; }
+;;GETTER
+static inline const BvhPrimitive * *BvhTree_primitivesMut(BvhTree *s) { return &(*s).primitives; }
+;;SETTER
+static inline fn BvhTree_setPrimitives(BvhTree *s, const BvhPrimitive * v) { (*s).primitives = v; }
+
 ;;INTENTION("Accelerated spatial ray tracing and AABB bounding volume queries")
 
 static inline f32 fminf_local(f32 a, f32 b) {
@@ -85,24 +230,24 @@ fn BvhAabb_expand_point(const f32 point[3], BvhAabb *box) {
     if (!point || !box) {
         return;
     }
-    (*box).min_point[0] = fminf_local((*box).min_point[0], point[0]);
-    (*box).min_point[1] = fminf_local((*box).min_point[1], point[1]);
-    (*box).min_point[2] = fminf_local((*box).min_point[2], point[2]);
-    (*box).max_point[0] = fmaxf_local((*box).max_point[0], point[0]);
-    (*box).max_point[1] = fmaxf_local((*box).max_point[1], point[1]);
-    (*box).max_point[2] = fmaxf_local((*box).max_point[2], point[2]);
+    BvhAabb_min_pointMut(box)[0] = fminf_local(BvhAabb_min_pointMut(box)[0], point[0]);
+    BvhAabb_min_pointMut(box)[1] = fminf_local(BvhAabb_min_pointMut(box)[1], point[1]);
+    BvhAabb_min_pointMut(box)[2] = fminf_local(BvhAabb_min_pointMut(box)[2], point[2]);
+    BvhAabb_max_pointMut(box)[0] = fmaxf_local(BvhAabb_max_pointMut(box)[0], point[0]);
+    BvhAabb_max_pointMut(box)[1] = fmaxf_local(BvhAabb_max_pointMut(box)[1], point[1]);
+    BvhAabb_max_pointMut(box)[2] = fmaxf_local(BvhAabb_max_pointMut(box)[2], point[2]);
 }
 
 fn BvhAabb_merge(const BvhAabb *other, BvhAabb *dest) {
     if (!other || !dest) {
         return;
     }
-    (*dest).min_point[0] = fminf_local((*dest).min_point[0], (*other).min_point[0]);
-    (*dest).min_point[1] = fminf_local((*dest).min_point[1], (*other).min_point[1]);
-    (*dest).min_point[2] = fminf_local((*dest).min_point[2], (*other).min_point[2]);
-    (*dest).max_point[0] = fmaxf_local((*dest).max_point[0], (*other).max_point[0]);
-    (*dest).max_point[1] = fmaxf_local((*dest).max_point[1], (*other).max_point[1]);
-    (*dest).max_point[2] = fmaxf_local((*dest).max_point[2], (*other).max_point[2]);
+    BvhAabb_min_pointMut(dest)[0] = fminf_local(BvhAabb_min_pointMut(dest)[0], BvhAabb_min_pointMut(other)[0]);
+    BvhAabb_min_pointMut(dest)[1] = fminf_local(BvhAabb_min_pointMut(dest)[1], BvhAabb_min_pointMut(other)[1]);
+    BvhAabb_min_pointMut(dest)[2] = fminf_local(BvhAabb_min_pointMut(dest)[2], BvhAabb_min_pointMut(other)[2]);
+    BvhAabb_max_pointMut(dest)[0] = fmaxf_local(BvhAabb_max_pointMut(dest)[0], BvhAabb_max_pointMut(other)[0]);
+    BvhAabb_max_pointMut(dest)[1] = fmaxf_local(BvhAabb_max_pointMut(dest)[1], BvhAabb_max_pointMut(other)[1]);
+    BvhAabb_max_pointMut(dest)[2] = fmaxf_local(BvhAabb_max_pointMut(dest)[2], BvhAabb_max_pointMut(other)[2]);
 }
 
 bool BvhAabb_intersect_ray(const BvhRay *ray, const BvhAabb *box, f32 *t_near_out) {
@@ -110,13 +255,13 @@ bool BvhAabb_intersect_ray(const BvhRay *ray, const BvhAabb *box, f32 *t_near_ou
         return false;
     }
 
-    f32 t_min = (*ray).t_min;
-    f32 t_max = (*ray).t_max;
+    f32 t_min = BvhRay_t_min(ray);
+    f32 t_max = BvhRay_t_max(ray);
 
     for (i32 i = 0; i < 3; i++) {
-        f32 inv_d = ((*ray).direction[i] != 0.0f) ? (1.0f / (*ray).direction[i]) : 1e30f;
-        f32 t0 = ((*box).min_point[i] - (*ray).origin[i]) * inv_d;
-        f32 t1 = ((*box).max_point[i] - (*ray).origin[i]) * inv_d;
+        f32 inv_d = (BvhRay_directionMut(ray)[i] != 0.0f) ? (1.0f / BvhRay_directionMut(ray)[i]) : 1e30f;
+        f32 t0 = (BvhAabb_min_pointMut(box)[i] - BvhRay_originMut(ray)[i]) * inv_d;
+        f32 t1 = (BvhAabb_max_pointMut(box)[i] - BvhRay_originMut(ray)[i]) * inv_d;
         if (inv_d < 0.0f) {
             f32 temp = t0;
             t0 = t1;
@@ -172,18 +317,18 @@ fn BvhTree_destroy(BvhTree *tree) {
     if (!tree) {
         return;
     }
-    if ((*tree).nodes) {
-        free((*tree).nodes);
-        (*tree).nodes = nullptr;
+    if (BvhTree_nodes(tree)) {
+        free(BvhTree_nodes(tree));
+        BvhTree_setNodes(tree, nullptr);
     }
-    if ((*tree).primitive_indices) {
-        free((*tree).primitive_indices);
-        (*tree).primitive_indices = nullptr;
+    if (BvhTree_primitive_indices(tree)) {
+        free(BvhTree_primitive_indices(tree));
+        BvhTree_setPrimitive_indices(tree, nullptr);
     }
-    (*tree).node_count = 0;
-    (*tree).node_capacity = 0;
-    (*tree).primitive_count = 0;
-    (*tree).primitives = nullptr;
+    BvhTree_setNode_count(tree, 0);
+    BvhTree_setNode_capacity(tree, 0);
+    BvhTree_setPrimitive_count(tree, 0);
+    BvhTree_setPrimitives(tree, nullptr);
 }
 
 static i32 bvh_build_recursive(
@@ -196,25 +341,25 @@ static i32 bvh_build_recursive(
         return -1;
     }
 
-    u32 node_idx = (*tree).node_count++;
-    BvhNode *node = &(*tree).nodes[node_idx];
-    (*node).bounds = BvhAabb_empty();
-    (*node).left_child = -1;
-    (*node).right_child = -1;
-    (*node).primitive_offset = offset;
-    (*node).primitive_count = count;
-    (*node).is_leaf = false;
+    u32 node_idx = (*BvhTree_node_countMut(tree))++;
+    BvhNode *node = &BvhTree_nodesMut(tree)[node_idx];
+    BvhNode_setBounds(node, BvhAabb_empty());
+    BvhNode_setLeft_child(node, -1);
+    BvhNode_setRight_child(node, -1);
+    BvhNode_setPrimitive_offset(node, offset);
+    BvhNode_setPrimitive_count(node, count);
+    BvhNode_setIs_leaf(node, false);
 
     BvhAabb centroid_bounds = BvhAabb_empty();
     for (u32 i = 0; i < count; i++) {
-        u32 prim_id = (*tree).primitive_indices[offset + i];
-        const BvhPrimitive *prim = &(*tree).primitives[prim_id];
-        BvhAabb_merge(&(*prim).bounds, &(*node).bounds);
-        BvhAabb_expand_point((*prim).centroid, &centroid_bounds);
+        u32 prim_id = BvhTree_primitive_indices(tree)[offset + i];
+        const BvhPrimitive *prim = &BvhTree_primitivesMut(tree)[prim_id];
+        BvhAabb_merge(BvhPrimitive_boundsMut(prim), BvhNode_boundsMut(node));
+        BvhAabb_expand_point(BvhPrimitive_centroidMut(prim), &centroid_bounds);
     }
 
     if (count <= max_leaf_prims) {
-        (*node).is_leaf = true;
+        BvhNode_setIs_leaf(node, true);
         return (i32) node_idx;
     }
 
@@ -232,7 +377,7 @@ static i32 bvh_build_recursive(
     }
 
     if (extent[axis] <= 1e-6f) {
-        (*node).is_leaf = true;
+        BvhNode_setIs_leaf(node, true);
         return (i32) node_idx;
     }
 
@@ -243,13 +388,13 @@ static i32 bvh_build_recursive(
     i32 right = (i32) (offset + count - 1);
 
     while (left <= right) {
-        u32 prim_id = (*tree).primitive_indices[left];
-        if ((*tree).primitives[prim_id].centroid[axis] < split_pos) {
+        u32 prim_id = BvhTree_primitive_indices(tree)[left];
+        if (BvhTree_primitives(tree)[prim_id].centroid[axis] < split_pos) {
             left++;
         } else {
-            u32 temp = (*tree).primitive_indices[left];
-            (*tree).primitive_indices[left] = (*tree).primitive_indices[right];
-            (*tree).primitive_indices[right] = temp;
+            u32 temp = BvhTree_primitive_indices(tree)[left];
+            BvhTree_primitive_indices(tree)[left] = BvhTree_primitive_indices(tree)[right];
+            BvhTree_primitive_indices(tree)[right] = temp;
             right--;
         }
     }
@@ -263,10 +408,10 @@ static i32 bvh_build_recursive(
     i32 right_child = bvh_build_recursive(tree, offset + left_count, count - left_count, max_leaf_prims);
 
     // Re-acquire node pointer in case memory relocated (though capacity was pre-allocated)
-    node = &(*tree).nodes[node_idx];
-    (*node).left_child = left_child;
-    (*node).right_child = right_child;
-    (*node).is_leaf = false;
+    node = &BvhTree_nodesMut(tree)[node_idx];
+    BvhNode_setLeft_child(node, left_child);
+    BvhNode_setRight_child(node, right_child);
+    BvhNode_setIs_leaf(node, false);
 
     return (i32) node_idx;
 }
@@ -275,37 +420,37 @@ bool BvhTree_build(const BvhPrimitive *prims, u32 count, BvhTree *tree) {
     if (!tree || (count > 0u && !prims)) {
         return false;
     }
-    if ((*tree).primitive_count != count
-        || (count > 0u && (!(*tree).nodes || !(*tree).primitive_indices))) {
+    if (BvhTree_primitive_count(tree) != count
+        || (count > 0u && (!BvhTree_nodes(tree) || !BvhTree_primitive_indices(tree)))) {
         return false;
     }
-    (*tree).node_count = 0u;
-    (*tree).primitives = nullptr;
+    BvhTree_setNode_count(tree, 0u);
+    BvhTree_setPrimitives(tree, nullptr);
     if (count == 0) {
         return true;
     }
 
-    (*tree).primitives = prims;
+    BvhTree_setPrimitives(tree, prims);
     for (u32 i = 0; i < count; i++)
-        (*tree).primitive_indices[i] = i;
+        BvhTree_primitive_indices(tree)[i] = i;
     bvh_build_recursive(tree, 0, count, 2);
     return true;
 }
 
 bool BvhTree_intersect_ray(const BvhTree *tree, const BvhRay *ray, BvhRayHit *hit_out) {
-    if (!tree || !ray || !hit_out || (*tree).node_count == 0) {
+    if (!tree || !ray || !hit_out || BvhTree_node_count(tree) == 0) {
         if (hit_out) {
-            (*hit_out).hit = false;
+            BvhRayHit_setHit(hit_out, false);
         }
         return false;
     }
 
-    (*hit_out).hit = false;
-    (*hit_out).t = (*ray).t_max;
-    (*hit_out).primitive_id = 0;
-    (*hit_out).normal[0] = 0.0f;
-    (*hit_out).normal[1] = 0.0f;
-    (*hit_out).normal[2] = 1.0f;
+    BvhRayHit_setHit(hit_out, false);
+    BvhRayHit_setT(hit_out, BvhRay_t_max(ray));
+    BvhRayHit_setPrimitive_id(hit_out, 0);
+    BvhRayHit_normalMut(hit_out)[0] = 0.0f;
+    BvhRayHit_normalMut(hit_out)[1] = 0.0f;
+    BvhRayHit_normalMut(hit_out)[2] = 1.0f;
 
     i32 stack[64];
     i32 stack_ptr = 0;
@@ -313,39 +458,39 @@ bool BvhTree_intersect_ray(const BvhTree *tree, const BvhRay *ray, BvhRayHit *hi
 
     while (stack_ptr > 0) {
         i32 node_idx = stack[--stack_ptr];
-        const BvhNode *node = &(*tree).nodes[node_idx];
+        const BvhNode *node = &BvhTree_nodesMut(tree)[node_idx];
 
         f32 t_box = 0.0f;
         BvhRay curr_ray = *ray;
-        curr_ray.t_max = (*hit_out).t;
+        curr_ray.t_max = BvhRayHit_t(hit_out);
 
-        if (!BvhAabb_intersect_ray(&curr_ray, &(*node).bounds, &t_box)) {
+        if (!BvhAabb_intersect_ray(&curr_ray, BvhNode_boundsMut(node), &t_box)) {
             continue;
         }
 
-        if ((*node).is_leaf) {
-            for (u32 i = 0; i < (*node).primitive_count; i++) {
-                u32 prim_idx = (*tree).primitive_indices[(*node).primitive_offset + i];
-                const BvhPrimitive *prim = &(*tree).primitives[prim_idx];
+        if (BvhNode_is_leaf(node)) {
+            for (u32 i = 0; i < BvhNode_primitive_count(node); i++) {
+                u32 prim_idx = BvhTree_primitive_indices(tree)[BvhNode_primitive_offset(node) + i];
+                const BvhPrimitive *prim = &BvhTree_primitivesMut(tree)[prim_idx];
 
                 f32 t_prim = 0.0f;
-                if (BvhAabb_intersect_ray(&curr_ray, &(*prim).bounds, &t_prim)) {
-                    if (t_prim < (*hit_out).t) {
-                        (*hit_out).hit = true;
-                        (*hit_out).t = t_prim;
-                        (*hit_out).primitive_id = (*prim).id;
+                if (BvhAabb_intersect_ray(&curr_ray, BvhPrimitive_boundsMut(prim), &t_prim)) {
+                    if (t_prim < BvhRayHit_t(hit_out)) {
+                        BvhRayHit_setHit(hit_out, true);
+                        BvhRayHit_setT(hit_out, t_prim);
+                        BvhRayHit_setPrimitive_id(hit_out, BvhPrimitive_id(prim));
                     }
                 }
             }
         } else {
-            if ((*node).left_child >= 0 && stack_ptr < 64) {
-                stack[stack_ptr++] = (*node).left_child;
+            if (BvhNode_left_child(node) >= 0 && stack_ptr < 64) {
+                stack[stack_ptr++] = BvhNode_left_child(node);
             }
-            if ((*node).right_child >= 0 && stack_ptr < 64) {
-                stack[stack_ptr++] = (*node).right_child;
+            if (BvhNode_right_child(node) >= 0 && stack_ptr < 64) {
+                stack[stack_ptr++] = BvhNode_right_child(node);
             }
         }
     }
 
-    return (*hit_out).hit;
+    return BvhRayHit_hit(hit_out);
 }

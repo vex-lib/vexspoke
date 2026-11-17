@@ -4,6 +4,39 @@
 #include "nio/mem.h"
 #include "oop/vexspoke_type.h"
 
+;;GETTER
+static inline u32 DijkstraGraph_nodeCount(const DijkstraGraph *s) { return (*s).nodeCount; }
+;;GETTER
+static inline u32 *DijkstraGraph_nodeCountMut(DijkstraGraph *s) { return &(*s).nodeCount; }
+;;SETTER
+static inline fn DijkstraGraph_setNodeCount(DijkstraGraph *s, u32 v) { (*s).nodeCount = v; }
+;;GETTER
+static inline DijkstraNode * DijkstraGraph_nodes(const DijkstraGraph *s) { return (*s).nodes; }
+;;GETTER
+static inline DijkstraNode * *DijkstraGraph_nodesMut(DijkstraGraph *s) { return &(*s).nodes; }
+;;SETTER
+static inline fn DijkstraGraph_setNodes(DijkstraGraph *s, DijkstraNode * v) { (*s).nodes = v; }
+
+;;GETTER
+static inline u32 DijkstraNode_edgeCapacity(const DijkstraNode *s) { return (*s).edgeCapacity; }
+;;GETTER
+static inline u32 *DijkstraNode_edgeCapacityMut(DijkstraNode *s) { return &(*s).edgeCapacity; }
+;;SETTER
+static inline fn DijkstraNode_setEdgeCapacity(DijkstraNode *s, u32 v) { (*s).edgeCapacity = v; }
+;;GETTER
+static inline u32 DijkstraNode_edgeCount(const DijkstraNode *s) { return (*s).edgeCount; }
+;;GETTER
+static inline u32 *DijkstraNode_edgeCountMut(DijkstraNode *s) { return &(*s).edgeCount; }
+;;SETTER
+static inline fn DijkstraNode_setEdgeCount(DijkstraNode *s, u32 v) { (*s).edgeCount = v; }
+;;GETTER
+static inline DijkstraEdge * DijkstraNode_edges(const DijkstraNode *s) { return (*s).edges; }
+;;GETTER
+static inline DijkstraEdge * *DijkstraNode_edgesMut(DijkstraNode *s) { return &(*s).edges; }
+;;SETTER
+static inline fn DijkstraNode_setEdges(DijkstraNode *s, DijkstraEdge * v) { (*s).edges = v; }
+
+
 ;;DEFINITION
 /**
  * ============================================================================
@@ -68,18 +101,18 @@ DijkstraGraph *Dijkstra_1(u32 nodeCount) {
     DijkstraGraph *graph = (DijkstraGraph*) Memory_alloc(TYPE_BYTE_ARRAY, sizeof(DijkstraGraph));
     if (graph == nullptr) return nullptr;
 
-    (*graph).nodeCount = nodeCount;
+    DijkstraGraph_setNodeCount(graph, nodeCount);
     bytes nodesBytes = (bytes) nodeCount * sizeof(DijkstraNode);
-    (*graph).nodes = (DijkstraNode*) Memory_alloc(TYPE_BYTE_ARRAY, nodesBytes);
-    if ((*graph).nodes == nullptr) {
+    DijkstraGraph_setNodes(graph, (DijkstraNode*) Memory_alloc(TYPE_BYTE_ARRAY, nodesBytes));
+    if (DijkstraGraph_nodes(graph) == nullptr) {
         Memory_free(graph);
         return nullptr;
     }
 
     for (u32 i = 0; i < nodeCount; i++) {
-        (*graph).nodes[i].edgeCount = 0;
-        (*graph).nodes[i].edgeCapacity = 0;
-        (*graph).nodes[i].edges = nullptr;
+        DijkstraGraph_nodes(graph)[i].edgeCount = 0;
+        DijkstraGraph_nodes(graph)[i].edgeCapacity = 0;
+        DijkstraGraph_nodes(graph)[i].edges = nullptr;
     }
 
     return graph;
@@ -87,39 +120,39 @@ DijkstraGraph *Dijkstra_1(u32 nodeCount) {
 
 fn Dijkstra_free(DijkstraGraph *graph) {
     if (graph == nullptr) return;
-    if ((*graph).nodes != nullptr) {
-        for (u32 i = 0; i < (*graph).nodeCount; i++) {
-            if ((*graph).nodes[i].edges != nullptr) {
-                Memory_free((*graph).nodes[i].edges);
-                (*graph).nodes[i].edges = nullptr;
+    if (DijkstraGraph_nodes(graph) != nullptr) {
+        for (u32 i = 0; i < DijkstraGraph_nodeCount(graph); i++) {
+            if (DijkstraGraph_nodes(graph)[i].edges != nullptr) {
+                Memory_free(DijkstraGraph_nodes(graph)[i].edges);
+                DijkstraGraph_nodes(graph)[i].edges = nullptr;
             }
         }
-        Memory_free((*graph).nodes);
-        (*graph).nodes = nullptr;
+        Memory_free(DijkstraGraph_nodes(graph));
+        DijkstraGraph_setNodes(graph, nullptr);
     }
     Memory_free(graph);
 }
 
 bool Dijkstra_addEdge(DijkstraGraph *graph, u32 from, u32 to, f32 weight) {
-    if (graph == nullptr || from >= (*graph).nodeCount || to >= (*graph).nodeCount) {
+    if (graph == nullptr || from >= DijkstraGraph_nodeCount(graph) || to >= DijkstraGraph_nodeCount(graph)) {
         return false;
     }
-    DijkstraNode *node = &(*graph).nodes[from];
-    if ((*node).edgeCount >= (*node).edgeCapacity) {
-        u32 newCap = ((*node).edgeCapacity == 0) ? 4 : (*node).edgeCapacity * 2;
+    DijkstraNode *node = &DijkstraGraph_nodesMut(graph)[from];
+    if (DijkstraNode_edgeCount(node) >= DijkstraNode_edgeCapacity(node)) {
+        u32 newCap = (DijkstraNode_edgeCapacity(node) == 0) ? 4 : DijkstraNode_edgeCapacity(node) * 2;
         DijkstraEdge *newEdges = (DijkstraEdge*) Memory_alloc(TYPE_BYTE_ARRAY, (bytes) newCap * sizeof(DijkstraEdge));
         if (newEdges == nullptr) return false;
-        if ((*node).edges != nullptr) {
-            memcpy(newEdges, (*node).edges, (bytes) (*node).edgeCount * sizeof(DijkstraEdge));
-            Memory_free((*node).edges);
+        if (DijkstraNode_edges(node) != nullptr) {
+            memcpy(newEdges, DijkstraNode_edges(node), (bytes) DijkstraNode_edgeCount(node) * sizeof(DijkstraEdge));
+            Memory_free(DijkstraNode_edges(node));
         }
-        (*node).edges = newEdges;
-        (*node).edgeCapacity = newCap;
+        DijkstraNode_setEdges(node, newEdges);
+        DijkstraNode_setEdgeCapacity(node, newCap);
     }
 
-    (*node).edges[(*node).edgeCount].target = to;
-    (*node).edges[(*node).edgeCount].weight = weight;
-    (*node).edgeCount++;
+    DijkstraNode_edges(node)[DijkstraNode_edgeCount(node)].target = to;
+    DijkstraNode_edges(node)[DijkstraNode_edgeCount(node)].weight = weight;
+    DijkstraNode_setEdgeCount(node, DijkstraNode_edgeCount(node) + 1u);
     return true;
 }
 
@@ -141,19 +174,39 @@ typedef struct MinQ {
     u32 capacity;
 } MinQ;
 
+;;GETTER
+static inline u32 MinQ_capacity(const MinQ *s) { return (*s).capacity; }
+;;GETTER
+static inline u32 *MinQ_capacityMut(MinQ *s) { return &(*s).capacity; }
+;;SETTER
+static inline fn MinQ_setCapacity(MinQ *s, u32 v) { (*s).capacity = v; }
+;;GETTER
+static inline QItem * MinQ_items(const MinQ *s) { return (*s).items; }
+;;GETTER
+static inline QItem * *MinQ_itemsMut(MinQ *s) { return &(*s).items; }
+;;SETTER
+static inline fn MinQ_setItems(MinQ *s, QItem * v) { (*s).items = v; }
+;;GETTER
+static inline u32 MinQ_size(const MinQ *s) { return (*s).size; }
+;;GETTER
+static inline u32 *MinQ_sizeMut(MinQ *s) { return &(*s).size; }
+;;SETTER
+static inline fn MinQ_setSize(MinQ *s, u32 v) { (*s).size = v; }
+
+
 static fn MinQ_push(MinQ *q, u32 node, f32 dist) {
-    if ((*q).size >= (*q).capacity) return;
-    u32 i = (*q).size++;
-    (*q).items[i].node = node;
-    (*q).items[i].dist = dist;
+    if (MinQ_size(q) >= MinQ_capacity(q)) return;
+    u32 i = (*MinQ_sizeMut(q))++;
+    MinQ_items(q)[i].node = node;
+    MinQ_items(q)[i].dist = dist;
 
     // Sift up
     while (i > 0) {
         u32 parent = (i - 1) / 2;
-        if ((*q).items[i].dist < (*q).items[parent].dist) {
-            QItem swap = (*q).items[i];
-            (*q).items[i] = (*q).items[parent];
-            (*q).items[parent] = swap;
+        if (MinQ_items(q)[i].dist < MinQ_items(q)[parent].dist) {
+            QItem swap = MinQ_items(q)[i];
+            MinQ_items(q)[i] = MinQ_items(q)[parent];
+            MinQ_items(q)[parent] = swap;
             i = parent;
         } else {
             break;
@@ -162,13 +215,13 @@ static fn MinQ_push(MinQ *q, u32 node, f32 dist) {
 }
 
 static bool MinQ_pop(MinQ *q, u32 *outNode, f32 *outDist) {
-    if ((*q).size == 0) return false;
-    *outNode = (*q).items[0].node;
-    *outDist = (*q).items[0].dist;
+    if (MinQ_size(q) == 0) return false;
+    *outNode = MinQ_items(q)[0].node;
+    *outDist = MinQ_items(q)[0].dist;
 
-    (*q).size--;
-    if ((*q).size > 0) {
-        (*q).items[0] = (*q).items[(*q).size];
+    MinQ_setSize(q, MinQ_size(q) - 1u);
+    if (MinQ_size(q) > 0) {
+        MinQ_items(q)[0] = MinQ_items(q)[MinQ_size(q)];
         // Sift down
         u32 i = 0;
         while (true) {
@@ -176,16 +229,16 @@ static bool MinQ_pop(MinQ *q, u32 *outNode, f32 *outDist) {
             u32 right = 2 * i + 2;
             u32 smallest = i;
 
-            if (left < (*q).size && (*q).items[left].dist < (*q).items[smallest].dist) {
+            if (left < MinQ_size(q) && MinQ_items(q)[left].dist < MinQ_items(q)[smallest].dist) {
                 smallest = left;
             }
-            if (right < (*q).size && (*q).items[right].dist < (*q).items[smallest].dist) {
+            if (right < MinQ_size(q) && MinQ_items(q)[right].dist < MinQ_items(q)[smallest].dist) {
                 smallest = right;
             }
             if (smallest != i) {
-                QItem swap = (*q).items[i];
-                (*q).items[i] = (*q).items[smallest];
-                (*q).items[smallest] = swap;
+                QItem swap = MinQ_items(q)[i];
+                MinQ_items(q)[i] = MinQ_items(q)[smallest];
+                MinQ_items(q)[smallest] = swap;
                 i = smallest;
             } else {
                 break;
@@ -202,7 +255,7 @@ bytes Dijkstra_shortestPath(const DijkstraGraph *graph,
                              bytes               maxPathNodes,
                              f32               *outTotalDistance) {
     if (graph == nullptr || outPath == nullptr || maxPathNodes == 0) return 0;
-    u32 N = (*graph).nodeCount;
+    u32 N = DijkstraGraph_nodeCount(graph);
     if (startNode >= N || goalNode >= N) return 0;
 
     f32 *dist = (f32*) Memory_alloc(TYPE_BYTE_ARRAY, (bytes) N * sizeof(f32));
@@ -241,10 +294,10 @@ bytes Dijkstra_shortestPath(const DijkstraGraph *graph,
 
         if (u == goalNode) break;
 
-        const DijkstraNode *node = &(*graph).nodes[u];
-        for (u32 e = 0; e < (*node).edgeCount; e++) {
-            u32 v = (*node).edges[e].target;
-            f32 w = (*node).edges[e].weight;
+        const DijkstraNode *node = &DijkstraGraph_nodesMut(graph)[u];
+        for (u32 e = 0; e < DijkstraNode_edgeCount(node); e++) {
+            u32 v = DijkstraNode_edges(node)[e].target;
+            f32 w = DijkstraNode_edges(node)[e].weight;
             if (!visited[v] && dist[u] + w < dist[v]) {
                 dist[v] = dist[u] + w;
                 prev[v] = u;
