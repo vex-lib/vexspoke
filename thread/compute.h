@@ -33,12 +33,15 @@ static inline ComputeJob ComputeJob_3(ComputeJobFn run, any context,
         .ctx = context, .onDone = onDone };
 }
 #define ComputeJob(...) CONSTRUCTOR_DISPATCH(ComputeJob, __VA_ARGS__)
+;;SETTER
 static inline fn ComputeJob_setRun(ComputeJob *job, ComputeJobFn run) {
     if (job) (*job).run = run;
 }
+;;SETTER
 static inline fn ComputeJob_setContext(ComputeJob *job, any context) {
     if (job) (*job).ctx = context;
 }
+;;SETTER
 static inline fn ComputeJob_setOnDone(ComputeJob *job, ComputeJobFn onDone) {
     if (job) (*job).onDone = onDone;
 }

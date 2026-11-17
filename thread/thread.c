@@ -82,6 +82,56 @@ typedef struct Thread {
     bool core;
 } Thread;
 
+;;GETTER
+static inline bool Thread_core(const Thread *s) { return (*s).core; }
+;;GETTER
+static inline bool *Thread_coreMut(Thread *s) { return &(*s).core; }
+;;SETTER
+static inline fn Thread_setCore(Thread *s, bool v) { (*s).core = v; }
+;;GETTER
+static inline Thread_Job Thread_job(const Thread *s) { return (*s).job; }
+;;GETTER
+static inline Thread_Job *Thread_jobMut(Thread *s) { return &(*s).job; }
+;;SETTER
+static inline fn Thread_setJob(Thread *s, Thread_Job v) { (*s).job = v; }
+;;GETTER
+static inline pthread_t Thread_platform(const Thread *s) { return (*s).platform; }
+;;GETTER
+static inline pthread_t *Thread_platformMut(Thread *s) { return &(*s).platform; }
+;;SETTER
+static inline fn Thread_setPlatform(Thread *s, pthread_t v) { (*s).platform = v; }
+;;GETTER
+static inline bool Thread_platformStarted(const Thread *s) { return (*s).platformStarted; }
+;;GETTER
+static inline bool *Thread_platformStartedMut(Thread *s) { return &(*s).platformStarted; }
+;;SETTER
+static inline fn Thread_setPlatformStarted(Thread *s, bool v) { (*s).platformStarted = v; }
+;;GETTER
+static inline RingBuffer Thread_queue(const Thread *s) { return (*s).queue; }
+;;GETTER
+static inline RingBuffer *Thread_queueMut(Thread *s) { return &(*s).queue; }
+;;SETTER
+static inline fn Thread_setQueue(Thread *s, RingBuffer v) { (*s).queue = v; }
+;;GETTER
+static inline _Atomic i32 Thread_state(const Thread *s) { return (*s).state; }
+;;GETTER
+static inline _Atomic i32 *Thread_stateMut(Thread *s) { return &(*s).state; }
+;;SETTER
+static inline fn Thread_setState(Thread *s, _Atomic i32 v) { (*s).state = v; }
+;;GETTER
+static inline bool Thread_tickWhenIdle(const Thread *s) { return (*s).tickWhenIdle; }
+;;GETTER
+static inline bool *Thread_tickWhenIdleMut(Thread *s) { return &(*s).tickWhenIdle; }
+;;SETTER
+static inline fn Thread_setTickWhenIdle(Thread *s, bool v) { (*s).tickWhenIdle = v; }
+;;GETTER
+static inline u64 Thread_typeId(const Thread *s) { return (*s).typeId; }
+;;GETTER
+static inline u64 *Thread_typeIdMut(Thread *s) { return &(*s).typeId; }
+;;SETTER
+static inline fn Thread_setTypeId(Thread *s, u64 v) { (*s).typeId = v; }
+
+
 #define THREAD_TASK_SIZE sizeof(any)
 
 // Central registry: handle address => 1. Legacy used Map.put(workerPtr, 1L).
@@ -107,13 +157,13 @@ Thread *Thread_5(u64 typeId, Thread_Job job, bytes queueCapacity,
     Thread *t = Memory_alloc(typeId, sizeof(Thread));
     if (!t)
         return nullptr;
-    atomic_init(&(*t).state, 0);
-    (*t).typeId = typeId;
-    (*t).platformStarted = false;
-    (*t).job = job;
-    (*t).tickWhenIdle = tickWhenIdle;
-    (*t).core = core;
-    (*t).queue = RingBuffer(THREAD_TASK_SIZE, queueCapacity);
+    atomic_init(Thread_stateMut(t), 0);
+    Thread_setTypeId(t, typeId);
+    Thread_setPlatformStarted(t, false);
+    Thread_setJob(t, job);
+    Thread_setTickWhenIdle(t, tickWhenIdle);
+    Thread_setCore(t, core);
+    Thread_setQueue(t, RingBuffer(THREAD_TASK_SIZE, queueCapacity));
     if (RingBuffer_slots(Thread_queue(t)) == nullptr) {
         Memory_free(t);
         return nullptr;
@@ -126,39 +176,39 @@ bool Thread_run(Thread *self) {
     if (!self)
         return false;
     i32 expected = 0;
-    if (!atomic_compare_exchange_strong(&(*self).state, &expected, 1))
+    if (!atomic_compare_exchange_strong(Thread_stateMut(self), &expected, 1))
         return true; // already running
-    if ((*self).platformStarted) {
+    if (Thread_platformStarted(self)) {
         // Re-running a joined handle: the old pthread_t is spent; start fresh.
-        (*self).platformStarted = false;
+        Thread_setPlatformStarted(self, false);
     }
-    if (pthread_create(&(*self).platform, nullptr, platform_main, self) != 0) {
-        atomic_store(&(*self).state, 0);
+    if (pthread_create(Thread_platformMut(self), nullptr, platform_main, self) != 0) {
+        atomic_store(Thread_stateMut(self), 0);
         return false;
     }
-    (*self).platformStarted = true;
+    Thread_setPlatformStarted(self, true);
     return true;
 }
 
 bool Thread_submit(Thread *self, any task) {
     if (!self || !task)
         return false;
-    if (atomic_load(&(*self).state) != 1)
+    if (atomic_load(Thread_stateMut(self)) != 1)
         return false;
-    return RingBuffer_push(&(*self).queue, &task);
+    return RingBuffer_push(Thread_queueMut(self), &task);
 }
 
 static fn joinPlatform(Thread *self) {
-    if ((*self).platformStarted) {
-        pthread_join((*self).platform, nullptr);
-        (*self).platformStarted = false;
+    if (Thread_platformStarted(self)) {
+        pthread_join(Thread_platform(self), nullptr);
+        Thread_setPlatformStarted(self, false);
     }
 }
 
 fn Thread_stop(Thread *self) {
-    if (!self || (*self).core)
+    if (!self || Thread_core(self))
         return;
-    atomic_store(&(*self).state, 0);
+    atomic_store(Thread_stateMut(self), 0);
     joinPlatform(self);
 }
 
@@ -166,11 +216,11 @@ fn Thread_stop(Thread *self) {
 static fn freeInternal(Thread *self, bool force) {
     if (!self)
         return;
-    if ((*self).core && !force)
+    if (Thread_core(self) && !force)
         return;
-    atomic_store(&(*self).state, 0);
+    atomic_store(Thread_stateMut(self), 0);
     joinPlatform(self);
-    RingBuffer_shutdown(&(*self).queue);
+    RingBuffer_shutdown(Thread_queueMut(self));
     Map_remove(workers(), (u64)(pointer)self);
     Memory_free(self);
 }
@@ -180,25 +230,25 @@ fn Thread_free(Thread *self) {
 }
 
 bool Thread_isRunning(Thread *self) {
-    return self && atomic_load(&(*self).state) == 1;
+    return self && atomic_load(Thread_stateMut(self)) == 1;
 }
 
 RingBuffer *Thread_queue(Thread *self) {
-    return self ? &(*self).queue : nullptr;
+    return self ? Thread_queueMut(self) : nullptr;
 }
 
 u64 Thread_purpose(Thread *self) {
-    return self ? (*self).typeId : 0;
+    return self ? Thread_typeId(self) : 0;
 }
 
 static any platform_main(any arg) {
     Thread *self = (Thread*) arg;
-    while (atomic_load(&(*self).state) == 1) {
+    while (atomic_load(Thread_stateMut(self)) == 1) {
         any task = nullptr;
-        if (RingBuffer_pop(&(*self).queue, &task)) {
-            (*(*self).job)(self, task);
-        } else if ((*self).tickWhenIdle) {
-            (*(*self).job)(self, nullptr);
+        if (RingBuffer_pop(Thread_queueMut(self), &task)) {
+            (*Thread_job(self))(self, task);
+        } else if (Thread_tickWhenIdle(self)) {
+            (*Thread_job(self))(self, nullptr);
         } else {
             struct timespec idle = { 0, 1000 * 1000 }; // legacy Thread.sleep(1)
             nanosleep(&idle, nullptr);
