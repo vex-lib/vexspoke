@@ -61,6 +61,38 @@
  */
 
 
+
+;;GETTER
+static inline u64 NanoTimer_currentNanos(const NanoTimer *s) { return (*s).currentNanos; }
+;;GETTER
+static inline u64 *NanoTimer_currentNanosMut(NanoTimer *s) { return &(*s).currentNanos; }
+;;SETTER
+static inline fn NanoTimer_setCurrentNanos(NanoTimer *s, u64 v) { (*s).currentNanos = v; }
+;;GETTER
+static inline d64 NanoTimer_deltaTime(const NanoTimer *s) { return (*s).deltaTime; }
+;;GETTER
+static inline d64 *NanoTimer_deltaTimeMut(NanoTimer *s) { return &(*s).deltaTime; }
+;;SETTER
+static inline fn NanoTimer_setDeltaTime(NanoTimer *s, d64 v) { (*s).deltaTime = v; }
+;;GETTER
+static inline u64 NanoTimer_lastNanos(const NanoTimer *s) { return (*s).lastNanos; }
+;;GETTER
+static inline u64 *NanoTimer_lastNanosMut(NanoTimer *s) { return &(*s).lastNanos; }
+;;SETTER
+static inline fn NanoTimer_setLastNanos(NanoTimer *s, u64 v) { (*s).lastNanos = v; }
+;;GETTER
+static inline u64 NanoTimer_startNanos(const NanoTimer *s) { return (*s).startNanos; }
+;;GETTER
+static inline u64 *NanoTimer_startNanosMut(NanoTimer *s) { return &(*s).startNanos; }
+;;SETTER
+static inline fn NanoTimer_setStartNanos(NanoTimer *s, u64 v) { (*s).startNanos = v; }
+;;GETTER
+static inline d64 NanoTimer_totalTime(const NanoTimer *s) { return (*s).totalTime; }
+;;GETTER
+static inline d64 *NanoTimer_totalTimeMut(NanoTimer *s) { return &(*s).totalTime; }
+;;SETTER
+static inline fn NanoTimer_setTotalTime(NanoTimer *s, d64 v) { (*s).totalTime = v; }
+
 // little conflicted.. would need this to be localthread variable to ensure thread safety
 static u64 s_startNanos = 0;
 static i32 s_started = 0;
@@ -97,19 +129,19 @@ u64 NanoTime_elapsedNanos() {
 
 fn NanoTimer_reset(NanoTimer *timer) {
     u64 now = nanoTime();
-    (*timer).startNanos = now;
-    (*timer).lastNanos = now;
-    (*timer).currentNanos = now;
-    (*timer).deltaTime = 0.0;
-    (*timer).totalTime = 0.0;
+    NanoTimer_setStartNanos(timer, now);
+    NanoTimer_setLastNanos(timer, now);
+    NanoTimer_setCurrentNanos(timer, now);
+    NanoTimer_setDeltaTime(timer, 0.0);
+    NanoTimer_setTotalTime(timer, 0.0);
 }
 
 fn NanoTimer_tickWithClock(NanoTimer *timer, const Clock *clock) {
     u64 now = nanoTime();
-    u64 current = (*timer).currentNanos;
+    u64 current = NanoTimer_currentNanos(timer);
 
-    (*timer).lastNanos = current;
-    (*timer).currentNanos = now;
+    NanoTimer_setLastNanos(timer, current);
+    NanoTimer_setCurrentNanos(timer, now);
 
     d64 realDeltaSec = (d64)(now - current) / 1000000000.0;
 
@@ -122,8 +154,8 @@ fn NanoTimer_tickWithClock(NanoTimer *timer, const Clock *clock) {
     }
 
     d64 scaledDeltaSec = realDeltaSec * scale;
-    (*timer).deltaTime = scaledDeltaSec;
-    (*timer).totalTime += scaledDeltaSec;
+    NanoTimer_setDeltaTime(timer, scaledDeltaSec);
+    NanoTimer_setTotalTime(timer, NanoTimer_totalTime(timer) + (scaledDeltaSec));
 }
 
 fn NanoTimer_tick(NanoTimer *timer) {
@@ -131,17 +163,17 @@ fn NanoTimer_tick(NanoTimer *timer) {
 }
 
 d64 NanoTimer_deltaTime(const NanoTimer *timer) {
-    return (*timer).deltaTime;
+    return NanoTimer_deltaTime(timer);
 }
 
 d64 NanoTimer_totalTime(const NanoTimer *timer) {
-    return (*timer).totalTime;
+    return NanoTimer_totalTime(timer);
 }
 
 u64 NanoTimer_deltaNanos(const NanoTimer *timer) {
-    return (*timer).currentNanos - (*timer).lastNanos;
+    return NanoTimer_currentNanos(timer) - NanoTimer_lastNanos(timer);
 }
 
 u64 NanoTimer_elapsedNanosOf(const NanoTimer *timer) {
-    return (*timer).currentNanos - (*timer).startNanos;
+    return NanoTimer_currentNanos(timer) - NanoTimer_startNanos(timer);
 }
