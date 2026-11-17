@@ -85,8 +85,8 @@ static fn test_bind_and_match() {
     // Exact match
     const KeyBinding *hit = KeyMap_match(map, cmdA);
     CHECK(hit != nullptr);
-    CHECK((*hit).combo == cmdA);
-    CHECK((*hit).fn == onFire);
+    CHECK(KeyBinding_combo(hit) == cmdA);
+    CHECK(KeyBinding_fn(hit) == onFire);
 
     // Miss: different combo
     CHECK(KeyMap_match(map, KEY_A) == nullptr);
@@ -100,11 +100,11 @@ static fn test_bind_and_match() {
     // Both match
     hit = KeyMap_match(map, cmdA);
     CHECK(hit != nullptr);
-    CHECK((*hit).fn == onFire);
+    CHECK(KeyBinding_fn(hit) == onFire);
 
     hit = KeyMap_match(map, f64Left);
     CHECK(hit != nullptr);
-    CHECK((*hit).fn == onFire2);
+    CHECK(KeyBinding_fn(hit) == onFire2);
 
     KeyMap_destroy(map);
     MemoryArena_destroy(arena);
@@ -125,7 +125,7 @@ static fn test_bind_replaces() {
 
     const KeyBinding *hit = KeyMap_match(map, combo);
     CHECK(hit != nullptr);
-    CHECK((*hit).userdata == (any) 0x1234);
+    CHECK(KeyBinding_userdata(hit) == (any) 0x1234);
 
     KeyMap_destroy(map);
     MemoryArena_destroy(arena);
@@ -177,7 +177,7 @@ static fn test_growth() {
         i64 combo = (i64)(KEY_A + i);
         const KeyBinding *hit = KeyMap_match(map, combo);
         CHECK(hit != nullptr);
-        CHECK((*hit).combo == combo);
+        CHECK(KeyBinding_combo(hit) == combo);
     }
 
     KeyMap_destroy(map);
@@ -284,6 +284,26 @@ static fn onResolveFire(any userdata, i64 combo) {
 // semantics as the 250ms platform drivers, without 250ms of test latency.
 #define TAP_WIN_NS 30000000ULL   // 30 ms tap window
 #define SETTLE_SLEEP_US 40000    // 40 ms > window, so settlement always lands
+
+;;GETTER
+static inline i64 KeyBinding_combo(const KeyBinding *s) { return (*s).combo; }
+;;GETTER
+static inline i64 *KeyBinding_comboMut(KeyBinding *s) { return &(*s).combo; }
+;;SETTER
+static inline fn KeyBinding_setCombo(KeyBinding *s, i64 v) { (*s).combo = v; }
+;;GETTER
+static inline KeyBindingFn KeyBinding_fn(const KeyBinding *s) { return (*s).fn; }
+;;GETTER
+static inline KeyBindingFn *KeyBinding_fnMut(KeyBinding *s) { return &(*s).fn; }
+;;SETTER
+static inline fn KeyBinding_setFn(KeyBinding *s, KeyBindingFn v) { (*s).fn = v; }
+;;GETTER
+static inline any KeyBinding_userdata(const KeyBinding *s) { return (*s).userdata; }
+;;GETTER
+static inline any *KeyBinding_userdataMut(KeyBinding *s) { return &(*s).userdata; }
+;;SETTER
+static inline fn KeyBinding_setUserdata(KeyBinding *s, any v) { (*s).userdata = v; }
+
 
 // Sends one synthetic key press/release using the requested tap window.
 static fn tapKeyWin(i32 key, u64 winNanos) {
