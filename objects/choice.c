@@ -60,6 +60,15 @@ typedef struct ChoiceSlot {
     ChoiceCallback callback;
 } ChoiceSlot;
 
+;;GETTER
+static inline u64 ChoiceSlot_objectPtr(const ChoiceSlot *s) { return (*s).objectPtr; }
+;;SETTER
+static inline fn ChoiceSlot_setObjectPtr(ChoiceSlot *s, u64 v) { (*s).objectPtr = v; }
+;;GETTER
+static inline ChoiceCallback ChoiceSlot_callback(const ChoiceSlot *s) { return (*s).callback; }
+;;SETTER
+static inline fn ChoiceSlot_setCallback(ChoiceSlot *s, ChoiceCallback v) { (*s).callback = v; }
+
 typedef struct Choice {
     bytes     count;
     ChoiceSlot slots[];
@@ -73,10 +82,10 @@ Choice *Choice_3(const u64 *objectPtrs, const ChoiceCallback *callbacks, bytes c
     Choice *choice = (Choice*) Memory_alloc(type, Bytes);
     if (!choice)
         return nullptr;
-    (*choice).count = count;
+    Choice_setCount(choice, count);
     for (bytes i = 0; i < count; i++) {
-        (*choice).slots[i].objectPtr = objectPtrs ? objectPtrs[i] : 0;
-        (*choice).slots[i].callback = callbacks ? callbacks[i] : nullptr;
+        ChoiceSlot_setObjectPtr(Choice_slotAt(choice, i), objectPtrs ? objectPtrs[i] : 0);
+        ChoiceSlot_setCallback(Choice_slotAt(choice, i), callbacks ? callbacks[i] : nullptr);
     }
     return choice;
 }
@@ -102,22 +111,22 @@ fn Choice_free(Choice *choice) {
 
 // Returns the number of options, or zero for a null choice.
 bytes Choice_length(const Choice *choice) {
-    return choice ? (*choice).count : 0;
+    return choice ? Choice_countRaw(choice) : 0;
 }
 
 // Returns the indexed object payload, or zero when choice or index is invalid.
 u64 Choice_getObject(const Choice *choice, bytes index) {
-    if (!choice || index >= (*choice).count)
+    if (!choice || index >= Choice_countRaw(choice))
         return 0;
-    return (*choice).slots[index].objectPtr;
+    return ChoiceSlot_objectPtr(Choice_slotAtConst(choice, index));
 }
 
 // Invokes the selected option callback with its object payload and userdata.
 fn Choice_trigger(const Choice *choice, bytes index, any userdata) {
-    if (!choice || index >= (*choice).count)
+    if (!choice || index >= Choice_countRaw(choice))
         return;
-    ChoiceCallback cb = (*choice).slots[index].callback;
+    ChoiceCallback cb = ChoiceSlot_callback(Choice_slotAtConst(choice, index));
     if (cb) {
-        cb((*choice).slots[index].objectPtr, userdata);
+        cb(ChoiceSlot_objectPtr(Choice_slotAtConst(choice, index)), userdata);
     }
 }

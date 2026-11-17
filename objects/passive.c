@@ -61,15 +61,41 @@ struct Passive {
     any userdata;
 };
 
+;;GETTER
+static inline u64 Passive_cachedValue(const Passive *s) { return (*s).cachedValue; }
+;;GETTER
+static inline u64 *Passive_cachedValueMut(Passive *s) { return &(*s).cachedValue; }
+;;SETTER
+static inline fn Passive_setCachedValue(Passive *s, u64 v) { (*s).cachedValue = v; }
+;;GETTER
+static inline PassiveGetter Passive_getter(const Passive *s) { return (*s).getter; }
+;;GETTER
+static inline PassiveGetter *Passive_getterMut(Passive *s) { return &(*s).getter; }
+;;SETTER
+static inline fn Passive_setGetter(Passive *s, PassiveGetter v) { (*s).getter = v; }
+;;GETTER
+static inline PassiveSetter Passive_setter(const Passive *s) { return (*s).setter; }
+;;GETTER
+static inline PassiveSetter *Passive_setterMut(Passive *s) { return &(*s).setter; }
+;;SETTER
+static inline fn Passive_setSetter(Passive *s, PassiveSetter v) { (*s).setter = v; }
+;;GETTER
+static inline any Passive_userdata(const Passive *s) { return (*s).userdata; }
+;;GETTER
+static inline any *Passive_userdataMut(Passive *s) { return &(*s).userdata; }
+;;SETTER
+static inline fn Passive_setUserdata(Passive *s, any v) { (*s).userdata = v; }
+
+
 Passive *Passive_3(PassiveGetter getter, PassiveSetter setter, any userdata) {
     u64 type = Type_make(PROJ_VEXSPOKE, FORM_SINGLETON, ID_PASSIVE) | WRAP_PROACTIVE;
     Passive *passive = (Passive*) Memory_alloc(type, sizeof(Passive));
     if (!passive)
         return nullptr;
-    (*passive).cachedValue = 0;
-    (*passive).getter = getter;
-    (*passive).setter = setter;
-    (*passive).userdata = userdata;
+    Passive_setCachedValue(passive, 0);
+    Passive_setGetter(passive, getter);
+    Passive_setSetter(passive, setter);
+    Passive_setUserdata(passive, userdata);
     return passive;
 }
 
@@ -92,16 +118,16 @@ fn Passive_free(Passive *passive) {
 
 u64 Passive_get(Passive *passive) {
     if (!passive) return 0;
-    if ((*passive).getter) {
-        return (*passive).getter((*passive).userdata);
+    if (Passive_getter(passive)) {
+        return Passive_getter(passive)(Passive_userdata(passive));
     }
-    return (*passive).cachedValue;
+    return Passive_cachedValue(passive);
 }
 
 fn Passive_set(Passive *passive, u64 value) {
     if (!passive) return;
-    (*passive).cachedValue = value;
-    if ((*passive).setter) {
-        (*passive).setter(value, (*passive).userdata);
+    Passive_setCachedValue(passive, value);
+    if (Passive_setter(passive)) {
+        Passive_setter(passive)(value, Passive_userdata(passive));
     }
 }

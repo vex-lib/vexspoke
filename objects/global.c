@@ -54,13 +54,21 @@ typedef struct Global {
     atomic_uint_least64_t value;
 } Global;
 
+;;GETTER
+static inline atomic_uint_least64_t Global_value(const Global *s) { return (*s).value; }
+;;GETTER
+static inline atomic_uint_least64_t *Global_valueMut(Global *s) { return &(*s).value; }
+;;SETTER
+static inline fn Global_setValue(Global *s, atomic_uint_least64_t v) { (*s).value = v; }
+
+
 // Allocates one atomic global initialized to initialValue, or returns nullptr.
 Global *Global_1(u64 initialValue) {
     u64 type = Type_make(PROJ_VEXSPOKE, FORM_SINGLETON, ID_GLOBAL) | MOD_GLOBAL;
     Global *global = (Global*) Memory_alloc(type, sizeof(Global));
     if (!global)
         return nullptr;
-    atomic_init(&(*global).value, initialValue);
+    atomic_init(Global_valueMut(global), initialValue);
     return global;
 }
 
@@ -86,13 +94,13 @@ fn Global_free(Global *global) {
 // Loads the atomic value with acquire ordering, or returns zero for nullptr.
 u64 Global_get(const Global *global) {
     if (!global) return 0;
-    return atomic_load_explicit(&(*global).value, memory_order_acquire);
+    return atomic_load_explicit(Global_valueMut(global), memory_order_acquire);
 }
 
 // Stores value with release ordering when global is non-null.
 fn Global_set(Global *global, u64 value) {
     if (!global) return;
-    atomic_store_explicit(&(*global).value, value, memory_order_release);
+    atomic_store_explicit(Global_valueMut(global), value, memory_order_release);
 }
 
 // Atomically replaces expected with value and reports whether the comparison matched.
@@ -100,6 +108,6 @@ bool Global_compareAndSet(Global *global, u64 expected, u64 value) {
     if (!global) return false;
     u64 exp = expected;
     return atomic_compare_exchange_strong_explicit(
-        &(*global).value, &exp, value,
+        Global_valueMut(global), &exp, value,
         memory_order_acq_rel, memory_order_acquire);
 }

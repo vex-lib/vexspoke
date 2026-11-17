@@ -56,14 +56,28 @@ typedef struct Future {
     u64    value;
 } Future;
 
+;;GETTER
+static inline atomic_bool Future_isGiven(const Future *s) { return (*s).isGiven; }
+;;GETTER
+static inline atomic_bool *Future_isGivenMut(Future *s) { return &(*s).isGiven; }
+;;SETTER
+static inline fn Future_setIsGiven(Future *s, atomic_bool v) { (*s).isGiven = v; }
+;;GETTER
+static inline u64 Future_value(const Future *s) { return (*s).value; }
+;;GETTER
+static inline u64 *Future_valueMut(Future *s) { return &(*s).value; }
+;;SETTER
+static inline fn Future_setValue(Future *s, u64 v) { (*s).value = v; }
+
+
 // Allocates one unresolved future with a zero payload.
 Future *Future_0() {
     u64 type = Type_make(PROJ_VEXSPOKE, FORM_SINGLETON, ID_FUTURE) | WRAP2_FUTURE;
     Future *future = Memory_alloc(type, sizeof(Future));
     if (!future)
         return nullptr;
-    atomic_init(&(*future).isGiven, false);
-    (*future).value = 0;
+    atomic_init(Future_isGivenMut(future), false);
+    Future_setValue(future, 0);
     return future;
 }
 
@@ -89,13 +103,13 @@ fn Future_free(Future *future) {
 // Reports whether the future's atomic fulfillment flag is set.
 bool Future_isGiven(const Future *future) {
     if (!future) return false;
-    return atomic_load_explicit(&(*future).isGiven, memory_order_acquire);
+    return atomic_load_explicit(Future_isGivenMut(future), memory_order_acquire);
 }
 
 // Returns the payload, or zero for a null future.
 u64 Future_get(const Future *future) {
     if (!future) return 0;
-    return (*future).value;
+    return Future_value(future);
 }
 
 // Attempts one single-assignment fulfillment; returns false if already fulfilled.
@@ -103,9 +117,9 @@ bool Future_setDesiredValue(Future *future, u64 value) {
     if (!future) return false;
     bool expected = false;
     if (atomic_compare_exchange_strong_explicit(
-            &(*future).isGiven, &expected, true,
+            Future_isGivenMut(future), &expected, true,
             memory_order_acq_rel, memory_order_acquire)) {
-        (*future).value = value;
+        Future_setValue(future, value);
         return true;
     }
     return false;

@@ -56,12 +56,32 @@
  */
 
 
+
+;;GETTER
+static inline pointer Probable_object(const Probable *s) { return (*s).object; }
+;;GETTER
+static inline pointer *Probable_objectMut(Probable *s) { return &(*s).object; }
+;;SETTER
+static inline fn Probable_setObject(Probable *s, pointer v) { (*s).object = v; }
+;;GETTER
+static inline u32 Probable_total(const Probable *s) { return (*s).total; }
+;;GETTER
+static inline u32 *Probable_totalMut(Probable *s) { return &(*s).total; }
+;;SETTER
+static inline fn Probable_setTotal(Probable *s, u32 v) { (*s).total = v; }
+;;GETTER
+static inline u32 Probable_weight(const Probable *s) { return (*s).weight; }
+;;GETTER
+static inline u32 *Probable_weightMut(Probable *s) { return &(*s).weight; }
+;;SETTER
+static inline fn Probable_setWeight(Probable *s, u32 v) { (*s).weight = v; }
+
 Probable *Probable_3(pointer object, u32 weight, u32 total) {
     Probable *p = (Probable*) Memory_alloc(TYPE_PROBABLE, sizeof(Probable));
     if (!p) return nullptr;
-    (*p).object = object;
-    (*p).weight = weight;
-    (*p).total = total;
+    Probable_setObject(p, object);
+    Probable_setWeight(p, weight);
+    Probable_setTotal(p, total);
     return p;
 }
 
@@ -86,32 +106,32 @@ fn Probable_free(Probable *p) {
 
 pointer Probable_object(Probable *p) {
     if (!p) return 0;
-    return (*p).object;
+    return Probable_object(p);
 }
 
 u32 Probable_weight(Probable *p) {
     if (!p) return 0;
-    return (*p).weight;
+    return Probable_weight(p);
 }
 
 u32 Probable_total(Probable *p) {
     if (!p) return 0;
-    return (*p).total;
+    return Probable_total(p);
 }
 
 fn Probable_setObject(Probable *p, pointer object) {
     if (!p) return;
-    (*p).object = object;
+    Probable_setObject(p, object);
 }
 
 fn Probable_setWeight(Probable *p, u32 weight) {
     if (!p) return;
-    (*p).weight = weight;
+    Probable_setWeight(p, weight);
 }
 
 fn Probable_setTotal(Probable *p, u32 total) {
     if (!p) return;
-    (*p).total = total;
+    Probable_setTotal(p, total);
 }
 
 pointer Probable_get(Probable *p) {
