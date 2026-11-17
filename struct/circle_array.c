@@ -73,6 +73,81 @@
  * ============================================================================
  */
 
+
+;;GETTER
+static inline u32 Collection_activeCount(const Collection *s) { return (*s).activeCount; }
+;;GETTER
+static inline u32 *Collection_activeCountMut(Collection *s) { return &(*s).activeCount; }
+;;SETTER
+static inline fn Collection_setActiveCount(Collection *s, u32 v) { (*s).activeCount = v; }
+;;GETTER
+static inline u32 Collection_capacity(const Collection *s) { return (*s).capacity; }
+;;GETTER
+static inline u32 *Collection_capacityMut(Collection *s) { return &(*s).capacity; }
+;;SETTER
+static inline fn Collection_setCapacity(Collection *s, u32 v) { (*s).capacity = v; }
+;;GETTER
+static inline u8 * Collection_data(const Collection *s) { return (*s).data; }
+;;GETTER
+static inline u8 * *Collection_dataMut(Collection *s) { return &(*s).data; }
+;;SETTER
+static inline fn Collection_setData(Collection *s, u8 * v) { (*s).data = v; }
+;;GETTER
+static inline u32 Collection_elementClass(const Collection *s) { return (*s).elementClass; }
+;;GETTER
+static inline u32 *Collection_elementClassMut(Collection *s) { return &(*s).elementClass; }
+;;SETTER
+static inline fn Collection_setElementClass(Collection *s, u32 v) { (*s).elementClass = v; }
+;;GETTER
+static inline u64 Collection_exhaustionCount(const Collection *s) { return (*s).exhaustionCount; }
+;;GETTER
+static inline u64 *Collection_exhaustionCountMut(Collection *s) { return &(*s).exhaustionCount; }
+;;SETTER
+static inline fn Collection_setExhaustionCount(Collection *s, u64 v) { (*s).exhaustionCount = v; }
+;;GETTER
+static inline bool Collection_exhaustionReported(const Collection *s) { return (*s).exhaustionReported; }
+;;GETTER
+static inline bool *Collection_exhaustionReportedMut(Collection *s) { return &(*s).exhaustionReported; }
+;;SETTER
+static inline fn Collection_setExhaustionReported(Collection *s, bool v) { (*s).exhaustionReported = v; }
+;;GETTER
+static inline u32 Collection_head(const Collection *s) { return (*s).head; }
+;;GETTER
+static inline u32 *Collection_headMut(Collection *s) { return &(*s).head; }
+;;SETTER
+static inline fn Collection_setHead(Collection *s, u32 v) { (*s).head = v; }
+;;GETTER
+static inline u32 Collection_stride(const Collection *s) { return (*s).stride; }
+;;GETTER
+static inline u32 *Collection_strideMut(Collection *s) { return &(*s).stride; }
+;;SETTER
+static inline fn Collection_setStride(Collection *s, u32 v) { (*s).stride = v; }
+;;GETTER
+static inline u64 Collection_typeId(const Collection *s) { return (*s).typeId; }
+;;GETTER
+static inline u64 *Collection_typeIdMut(Collection *s) { return &(*s).typeId; }
+;;SETTER
+static inline fn Collection_setTypeId(Collection *s, u64 v) { (*s).typeId = v; }
+
+;;GETTER
+static inline Collection CircleArray_collection(const CircleArray *s) { return (*s).collection; }
+;;GETTER
+static inline Collection *CircleArray_collectionMut(CircleArray *s) { return &(*s).collection; }
+;;SETTER
+static inline fn CircleArray_setCollection(CircleArray *s, Collection v) { (*s).collection = v; }
+;;GETTER
+static inline i32 CircleArray_diameter(const CircleArray *s) { return (*s).diameter; }
+;;GETTER
+static inline i32 *CircleArray_diameterMut(CircleArray *s) { return &(*s).diameter; }
+;;SETTER
+static inline fn CircleArray_setDiameter(CircleArray *s, i32 v) { (*s).diameter = v; }
+;;GETTER
+static inline i32 CircleArray_radius(const CircleArray *s) { return (*s).radius; }
+;;GETTER
+static inline i32 *CircleArray_radiusMut(CircleArray *s) { return &(*s).radius; }
+;;SETTER
+static inline fn CircleArray_setRadius(CircleArray *s, i32 v) { (*s).radius = v; }
+
 CircleArray *CircleArray_3(i32 radius, u32 elementClass, bytes stride) {
     if (radius < 0) {
         return nullptr;
@@ -95,17 +170,17 @@ CircleArray *CircleArray_3(i32 radius, u32 elementClass, bytes stride) {
     }
     memset(data, 0, dataBytes);
 
-    Collection *coll = &(*self).collection;
-    (*coll).typeId = TYPE_CIRCLE_ARRAY;
-    (*coll).elementClass = elementClass;
-    (*coll).stride = (u32) stride;
-    (*coll).capacity = (u32) totalCells;
-    (*coll).head = 0;
-    (*coll).exhaustionCount = 0;
-    (*coll).exhaustionReported = false;
-    (*coll).data = data;
-    (*self).radius = radius;
-    (*self).diameter = diameter;
+    Collection *coll = CircleArray_collectionMut(self);
+    Collection_setTypeId(coll, TYPE_CIRCLE_ARRAY);
+    Collection_setElementClass(coll, elementClass);
+    Collection_setStride(coll, (u32) stride);
+    Collection_setCapacity(coll, (u32) totalCells);
+    Collection_setHead(coll, 0);
+    Collection_setExhaustionCount(coll, 0);
+    Collection_setExhaustionReported(coll, false);
+    Collection_setData(coll, data);
+    CircleArray_setRadius(self, radius);
+    CircleArray_setDiameter(self, diameter);
 
     // Calculate active count: number of valid cells where Pythagorean inequality holds
     i64 rSq = (i64) radius * (i64) radius;
@@ -119,7 +194,7 @@ CircleArray *CircleArray_3(i32 radius, u32 elementClass, bytes stride) {
             }
         }
     }
-    (*coll).activeCount = active;
+    Collection_setActiveCount(coll, active);
 
     return self;
 }
@@ -136,28 +211,28 @@ fn CircleArray_free(CircleArray *self) {
     if (self == nullptr) {
         return;
     }
-    Collection *coll = &(*self).collection;
-    if ((*coll).data != nullptr) {
-        Memory_free((*coll).data);
-        (*coll).data = nullptr;
+    Collection *coll = CircleArray_collectionMut(self);
+    if (Collection_data(coll) != nullptr) {
+        Memory_free(Collection_data(coll));
+        Collection_setData(coll, nullptr);
     }
     Memory_free(self);
 }
 
 i32 CircleArray_radius(const CircleArray *self) {
     if (self == nullptr) return 0;
-    return (*self).radius;
+    return CircleArray_radius(self);
 }
 
 i32 CircleArray_diameter(const CircleArray *self) {
     if (self == nullptr) return 0;
-    return (*self).diameter;
+    return CircleArray_diameter(self);
 }
 
 bytes CircleArray_validCellCount(const CircleArray *self) {
     if (self == nullptr) return 0;
-    const Collection *coll = &(*self).collection;
-    return (bytes) (*coll).activeCount;
+    const Collection *coll = CircleArray_collectionMut(self);
+    return (bytes) Collection_activeCount(coll);
 }
 
 i64 CircleArray_distanceSquaredOffset(i32 dx, i32 dy) {
@@ -168,14 +243,14 @@ i64 CircleArray_distanceSquaredOffset(i32 dx, i32 dy) {
 
 i64 CircleArray_distanceSquaredGrid(const CircleArray *self, i32 gridX, i32 gridY) {
     if (self == nullptr) return -1;
-    i64 dx = (i64) gridX - (i64) (*self).radius;
-    i64 dy = (i64) gridY - (i64) (*self).radius;
+    i64 dx = (i64) gridX - (i64) CircleArray_radius(self);
+    i64 dy = (i64) gridY - (i64) CircleArray_radius(self);
     return dx * dx + dy * dy;
 }
 
 bool CircleArray_containsOffset(const CircleArray *self, i32 dx, i32 dy) {
     if (self == nullptr) return false;
-    i32 r = (*self).radius;
+    i32 r = CircleArray_radius(self);
     if (dx < -r || dx > r || dy < -r || dy > r) {
         return false;
     }
@@ -186,12 +261,12 @@ bool CircleArray_containsOffset(const CircleArray *self, i32 dx, i32 dy) {
 
 bool CircleArray_containsGrid(const CircleArray *self, i32 gridX, i32 gridY) {
     if (self == nullptr) return false;
-    i32 d = (*self).diameter;
+    i32 d = CircleArray_diameter(self);
     if (gridX < 0 || gridX >= d || gridY < 0 || gridY >= d) {
         return false;
     }
     i64 distSq = CircleArray_distanceSquaredGrid(self, gridX, gridY);
-    i64 rSq = (i64) (*self).radius * (i64) (*self).radius;
+    i64 rSq = (i64) CircleArray_radius(self) * (i64) CircleArray_radius(self);
     return distSq <= rSq;
 }
 
@@ -199,15 +274,15 @@ u8 *CircleArray_slotGrid(CircleArray *self, i32 gridX, i32 gridY) {
     if (!CircleArray_containsGrid(self, gridX, gridY)) {
         return nullptr;
     }
-    bytes index = (bytes) gridY * (bytes) (*self).diameter + (bytes) gridX;
-    const Collection *coll = &(*self).collection;
-    return (*coll).data + (index * (bytes) (*coll).stride);
+    bytes index = (bytes) gridY * (bytes) CircleArray_diameter(self) + (bytes) gridX;
+    const Collection *coll = CircleArray_collectionMut(self);
+    return Collection_data(coll) + (index * (bytes) Collection_stride(coll));
 }
 
 u8 *CircleArray_slotOffset(CircleArray *self, i32 dx, i32 dy) {
     if (self == nullptr) return nullptr;
-    i32 gridX = dx + (*self).radius;
-    i32 gridY = dy + (*self).radius;
+    i32 gridX = dx + CircleArray_radius(self);
+    i32 gridY = dy + CircleArray_radius(self);
     return CircleArray_slotGrid(self, gridX, gridY);
 }
 
@@ -216,10 +291,10 @@ bool CircleArray_getGrid(any dest, const CircleArray *self, i32 gridX, i32 gridY
     if (!CircleArray_containsGrid(self, gridX, gridY)) {
         return false;
     }
-    bytes index = (bytes) gridY * (bytes) (*self).diameter + (bytes) gridX;
-    const Collection *coll = &(*self).collection;
-    bytes stride = (bytes) (*coll).stride;
-    const u8 *src = (*coll).data + (index * stride);
+    bytes index = (bytes) gridY * (bytes) CircleArray_diameter(self) + (bytes) gridX;
+    const Collection *coll = CircleArray_collectionMut(self);
+    bytes stride = (bytes) Collection_stride(coll);
+    const u8 *src = Collection_data(coll) + (index * stride);
     memcpy(dest, src, stride);
     return true;
 }
@@ -229,35 +304,35 @@ bool CircleArray_setGrid(CircleArray *self, i32 gridX, i32 gridY, const_any src)
     if (!CircleArray_containsGrid(self, gridX, gridY)) {
         return false;
     }
-    bytes index = (bytes) gridY * (bytes) (*self).diameter + (bytes) gridX;
-    Collection *coll = &(*self).collection;
-    bytes stride = (bytes) (*coll).stride;
-    u8 *dest = (*coll).data + (index * stride);
+    bytes index = (bytes) gridY * (bytes) CircleArray_diameter(self) + (bytes) gridX;
+    Collection *coll = CircleArray_collectionMut(self);
+    bytes stride = (bytes) Collection_stride(coll);
+    u8 *dest = Collection_data(coll) + (index * stride);
     memcpy(dest, src, stride);
     return true;
 }
 
 bool CircleArray_getOffset(any dest, const CircleArray *self, i32 dx, i32 dy) {
     if (self == nullptr) return false;
-    i32 gridX = dx + (*self).radius;
-    i32 gridY = dy + (*self).radius;
+    i32 gridX = dx + CircleArray_radius(self);
+    i32 gridY = dy + CircleArray_radius(self);
     return CircleArray_getGrid(dest, self, gridX, gridY);
 }
 
 bool CircleArray_setOffset(CircleArray *self, i32 dx, i32 dy, const_any src) {
     if (self == nullptr) return false;
-    i32 gridX = dx + (*self).radius;
-    i32 gridY = dy + (*self).radius;
+    i32 gridX = dx + CircleArray_radius(self);
+    i32 gridY = dy + CircleArray_radius(self);
     return CircleArray_setGrid(self, gridX, gridY, src);
 }
 
 fn CircleArray_forEach(const CircleArray *self, CircleArrayCellFn callback, any userData) {
     if (self == nullptr || callback == nullptr) return;
-    i32 r = (*self).radius;
-    i32 d = (*self).diameter;
+    i32 r = CircleArray_radius(self);
+    i32 d = CircleArray_diameter(self);
     i64 rSq = (i64) r * (i64) r;
-    const Collection *coll = &(*self).collection;
-    bytes stride = (bytes) (*coll).stride;
+    const Collection *coll = CircleArray_collectionMut(self);
+    bytes stride = (bytes) Collection_stride(coll);
     for (i32 gy = 0; gy < d; gy++) {
         i32 dy = gy - r;
         i64 dySq = (i64) dy * (i64) dy;
@@ -265,7 +340,7 @@ fn CircleArray_forEach(const CircleArray *self, CircleArrayCellFn callback, any 
             i32 dx = gx - r;
             if ((i64) dx * (i64) dx + dySq <= rSq) {
                 bytes index = (bytes) gy * (bytes) d + (bytes) gx;
-                const u8 *element = (*coll).data + (index * stride);
+                const u8 *element = Collection_data(coll) + (index * stride);
                 callback(gx, gy, dx, dy, element, userData);
             }
         }

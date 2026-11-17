@@ -72,6 +72,81 @@
  * ============================================================================
  */
 
+
+;;GETTER
+static inline u32 Collection_activeCount(const Collection *s) { return (*s).activeCount; }
+;;GETTER
+static inline u32 *Collection_activeCountMut(Collection *s) { return &(*s).activeCount; }
+;;SETTER
+static inline fn Collection_setActiveCount(Collection *s, u32 v) { (*s).activeCount = v; }
+;;GETTER
+static inline u32 Collection_capacity(const Collection *s) { return (*s).capacity; }
+;;GETTER
+static inline u32 *Collection_capacityMut(Collection *s) { return &(*s).capacity; }
+;;SETTER
+static inline fn Collection_setCapacity(Collection *s, u32 v) { (*s).capacity = v; }
+;;GETTER
+static inline u8 * Collection_data(const Collection *s) { return (*s).data; }
+;;GETTER
+static inline u8 * *Collection_dataMut(Collection *s) { return &(*s).data; }
+;;SETTER
+static inline fn Collection_setData(Collection *s, u8 * v) { (*s).data = v; }
+;;GETTER
+static inline u32 Collection_elementClass(const Collection *s) { return (*s).elementClass; }
+;;GETTER
+static inline u32 *Collection_elementClassMut(Collection *s) { return &(*s).elementClass; }
+;;SETTER
+static inline fn Collection_setElementClass(Collection *s, u32 v) { (*s).elementClass = v; }
+;;GETTER
+static inline u64 Collection_exhaustionCount(const Collection *s) { return (*s).exhaustionCount; }
+;;GETTER
+static inline u64 *Collection_exhaustionCountMut(Collection *s) { return &(*s).exhaustionCount; }
+;;SETTER
+static inline fn Collection_setExhaustionCount(Collection *s, u64 v) { (*s).exhaustionCount = v; }
+;;GETTER
+static inline bool Collection_exhaustionReported(const Collection *s) { return (*s).exhaustionReported; }
+;;GETTER
+static inline bool *Collection_exhaustionReportedMut(Collection *s) { return &(*s).exhaustionReported; }
+;;SETTER
+static inline fn Collection_setExhaustionReported(Collection *s, bool v) { (*s).exhaustionReported = v; }
+;;GETTER
+static inline u32 Collection_head(const Collection *s) { return (*s).head; }
+;;GETTER
+static inline u32 *Collection_headMut(Collection *s) { return &(*s).head; }
+;;SETTER
+static inline fn Collection_setHead(Collection *s, u32 v) { (*s).head = v; }
+;;GETTER
+static inline u32 Collection_stride(const Collection *s) { return (*s).stride; }
+;;GETTER
+static inline u32 *Collection_strideMut(Collection *s) { return &(*s).stride; }
+;;SETTER
+static inline fn Collection_setStride(Collection *s, u32 v) { (*s).stride = v; }
+;;GETTER
+static inline u64 Collection_typeId(const Collection *s) { return (*s).typeId; }
+;;GETTER
+static inline u64 *Collection_typeIdMut(Collection *s) { return &(*s).typeId; }
+;;SETTER
+static inline fn Collection_setTypeId(Collection *s, u64 v) { (*s).typeId = v; }
+
+;;GETTER
+static inline Collection SphereArray_collection(const SphereArray *s) { return (*s).collection; }
+;;GETTER
+static inline Collection *SphereArray_collectionMut(SphereArray *s) { return &(*s).collection; }
+;;SETTER
+static inline fn SphereArray_setCollection(SphereArray *s, Collection v) { (*s).collection = v; }
+;;GETTER
+static inline i32 SphereArray_diameter(const SphereArray *s) { return (*s).diameter; }
+;;GETTER
+static inline i32 *SphereArray_diameterMut(SphereArray *s) { return &(*s).diameter; }
+;;SETTER
+static inline fn SphereArray_setDiameter(SphereArray *s, i32 v) { (*s).diameter = v; }
+;;GETTER
+static inline i32 SphereArray_radius(const SphereArray *s) { return (*s).radius; }
+;;GETTER
+static inline i32 *SphereArray_radiusMut(SphereArray *s) { return &(*s).radius; }
+;;SETTER
+static inline fn SphereArray_setRadius(SphereArray *s, i32 v) { (*s).radius = v; }
+
 SphereArray *SphereArray_3(i32 radius, u32 elementClass, bytes stride) {
     if (radius < 0) {
         return nullptr;
@@ -94,17 +169,17 @@ SphereArray *SphereArray_3(i32 radius, u32 elementClass, bytes stride) {
     }
     memset(data, 0, dataBytes);
 
-    Collection *coll = &(*self).collection;
-    (*coll).typeId = TYPE_SPHERE_ARRAY;
-    (*coll).elementClass = elementClass;
-    (*coll).stride = (u32) stride;
-    (*coll).capacity = (u32) totalVoxels;
-    (*coll).head = 0;
-    (*coll).exhaustionCount = 0;
-    (*coll).exhaustionReported = false;
-    (*coll).data = data;
-    (*self).radius = radius;
-    (*self).diameter = diameter;
+    Collection *coll = SphereArray_collectionMut(self);
+    Collection_setTypeId(coll, TYPE_SPHERE_ARRAY);
+    Collection_setElementClass(coll, elementClass);
+    Collection_setStride(coll, (u32) stride);
+    Collection_setCapacity(coll, (u32) totalVoxels);
+    Collection_setHead(coll, 0);
+    Collection_setExhaustionCount(coll, 0);
+    Collection_setExhaustionReported(coll, false);
+    Collection_setData(coll, data);
+    SphereArray_setRadius(self, radius);
+    SphereArray_setDiameter(self, diameter);
 
     // Precalculate active count of voxels satisfying dx^2 + dy^2 + dz^2 <= r^2
     i64 rSq = (i64) radius * (i64) radius;
@@ -124,7 +199,7 @@ SphereArray *SphereArray_3(i32 radius, u32 elementClass, bytes stride) {
             }
         }
     }
-    (*coll).activeCount = active;
+    Collection_setActiveCount(coll, active);
 
     return self;
 }
@@ -141,28 +216,28 @@ fn SphereArray_free(SphereArray *self) {
     if (self == nullptr) {
         return;
     }
-    Collection *coll = &(*self).collection;
-    if ((*coll).data != nullptr) {
-        Memory_free((*coll).data);
-        (*coll).data = nullptr;
+    Collection *coll = SphereArray_collectionMut(self);
+    if (Collection_data(coll) != nullptr) {
+        Memory_free(Collection_data(coll));
+        Collection_setData(coll, nullptr);
     }
     Memory_free(self);
 }
 
 i32 SphereArray_radius(const SphereArray *self) {
     if (self == nullptr) return 0;
-    return (*self).radius;
+    return SphereArray_radius(self);
 }
 
 i32 SphereArray_diameter(const SphereArray *self) {
     if (self == nullptr) return 0;
-    return (*self).diameter;
+    return SphereArray_diameter(self);
 }
 
 bytes SphereArray_validVoxelCount(const SphereArray *self) {
     if (self == nullptr) return 0;
-    const Collection *coll = &(*self).collection;
-    return (bytes) (*coll).activeCount;
+    const Collection *coll = SphereArray_collectionMut(self);
+    return (bytes) Collection_activeCount(coll);
 }
 
 i64 SphereArray_distanceSquaredOffset(i32 dx, i32 dy, i32 dz) {
@@ -174,15 +249,15 @@ i64 SphereArray_distanceSquaredOffset(i32 dx, i32 dy, i32 dz) {
 
 i64 SphereArray_distanceSquaredGrid(const SphereArray *self, i32 gx, i32 gy, i32 gz) {
     if (self == nullptr) return -1;
-    i64 dx = (i64) gx - (i64) (*self).radius;
-    i64 dy = (i64) gy - (i64) (*self).radius;
-    i64 dz = (i64) gz - (i64) (*self).radius;
+    i64 dx = (i64) gx - (i64) SphereArray_radius(self);
+    i64 dy = (i64) gy - (i64) SphereArray_radius(self);
+    i64 dz = (i64) gz - (i64) SphereArray_radius(self);
     return dx * dx + dy * dy + dz * dz;
 }
 
 bool SphereArray_containsOffset(const SphereArray *self, i32 dx, i32 dy, i32 dz) {
     if (self == nullptr) return false;
-    i32 r = (*self).radius;
+    i32 r = SphereArray_radius(self);
     if (dx < -r || dx > r || dy < -r || dy > r || dz < -r || dz > r) {
         return false;
     }
@@ -193,12 +268,12 @@ bool SphereArray_containsOffset(const SphereArray *self, i32 dx, i32 dy, i32 dz)
 
 bool SphereArray_containsGrid(const SphereArray *self, i32 gx, i32 gy, i32 gz) {
     if (self == nullptr) return false;
-    i32 d = (*self).diameter;
+    i32 d = SphereArray_diameter(self);
     if (gx < 0 || gx >= d || gy < 0 || gy >= d || gz < 0 || gz >= d) {
         return false;
     }
     i64 distSq = SphereArray_distanceSquaredGrid(self, gx, gy, gz);
-    i64 rSq = (i64) (*self).radius * (i64) (*self).radius;
+    i64 rSq = (i64) SphereArray_radius(self) * (i64) SphereArray_radius(self);
     return distSq <= rSq;
 }
 
@@ -211,16 +286,16 @@ u8 *SphereArray_slotGrid(SphereArray *self, i32 gx, i32 gy, i32 gz) {
     if (!SphereArray_containsGrid(self, gx, gy, gz)) {
         return nullptr;
     }
-    bytes idx = SphereArray_index(gx, gy, gz, (*self).diameter);
-    const Collection *coll = &(*self).collection;
-    return (*coll).data + (idx * (bytes) (*coll).stride);
+    bytes idx = SphereArray_index(gx, gy, gz, SphereArray_diameter(self));
+    const Collection *coll = SphereArray_collectionMut(self);
+    return Collection_data(coll) + (idx * (bytes) Collection_stride(coll));
 }
 
 u8 *SphereArray_slotOffset(SphereArray *self, i32 dx, i32 dy, i32 dz) {
     if (self == nullptr) return nullptr;
-    i32 gx = dx + (*self).radius;
-    i32 gy = dy + (*self).radius;
-    i32 gz = dz + (*self).radius;
+    i32 gx = dx + SphereArray_radius(self);
+    i32 gy = dy + SphereArray_radius(self);
+    i32 gz = dz + SphereArray_radius(self);
     return SphereArray_slotGrid(self, gx, gy, gz);
 }
 
@@ -229,10 +304,10 @@ bool SphereArray_getGrid(any dest, const SphereArray *self, i32 gx, i32 gy, i32 
     if (!SphereArray_containsGrid(self, gx, gy, gz)) {
         return false;
     }
-    bytes idx = SphereArray_index(gx, gy, gz, (*self).diameter);
-    const Collection *coll = &(*self).collection;
-    bytes stride = (bytes) (*coll).stride;
-    const u8 *src = (*coll).data + (idx * stride);
+    bytes idx = SphereArray_index(gx, gy, gz, SphereArray_diameter(self));
+    const Collection *coll = SphereArray_collectionMut(self);
+    bytes stride = (bytes) Collection_stride(coll);
+    const u8 *src = Collection_data(coll) + (idx * stride);
     memcpy(dest, src, stride);
     return true;
 }
@@ -242,37 +317,37 @@ bool SphereArray_setGrid(SphereArray *self, i32 gx, i32 gy, i32 gz, const_any sr
     if (!SphereArray_containsGrid(self, gx, gy, gz)) {
         return false;
     }
-    bytes idx = SphereArray_index(gx, gy, gz, (*self).diameter);
-    Collection *coll = &(*self).collection;
-    bytes stride = (bytes) (*coll).stride;
-    u8 *dest = (*coll).data + (idx * stride);
+    bytes idx = SphereArray_index(gx, gy, gz, SphereArray_diameter(self));
+    Collection *coll = SphereArray_collectionMut(self);
+    bytes stride = (bytes) Collection_stride(coll);
+    u8 *dest = Collection_data(coll) + (idx * stride);
     memcpy(dest, src, stride);
     return true;
 }
 
 bool SphereArray_getOffset(any dest, const SphereArray *self, i32 dx, i32 dy, i32 dz) {
     if (self == nullptr) return false;
-    i32 gx = dx + (*self).radius;
-    i32 gy = dy + (*self).radius;
-    i32 gz = dz + (*self).radius;
+    i32 gx = dx + SphereArray_radius(self);
+    i32 gy = dy + SphereArray_radius(self);
+    i32 gz = dz + SphereArray_radius(self);
     return SphereArray_getGrid(dest, self, gx, gy, gz);
 }
 
 bool SphereArray_setOffset(SphereArray *self, i32 dx, i32 dy, i32 dz, const_any src) {
     if (self == nullptr) return false;
-    i32 gx = dx + (*self).radius;
-    i32 gy = dy + (*self).radius;
-    i32 gz = dz + (*self).radius;
+    i32 gx = dx + SphereArray_radius(self);
+    i32 gy = dy + SphereArray_radius(self);
+    i32 gz = dz + SphereArray_radius(self);
     return SphereArray_setGrid(self, gx, gy, gz, src);
 }
 
 fn SphereArray_forEach(const SphereArray *self, SphereArrayVoxelFn callback, any userData) {
     if (self == nullptr || callback == nullptr) return;
-    i32 r = (*self).radius;
-    i32 d = (*self).diameter;
+    i32 r = SphereArray_radius(self);
+    i32 d = SphereArray_diameter(self);
     i64 rSq = (i64) r * (i64) r;
-    const Collection *coll = &(*self).collection;
-    bytes stride = (bytes) (*coll).stride;
+    const Collection *coll = SphereArray_collectionMut(self);
+    bytes stride = (bytes) Collection_stride(coll);
     for (i32 gz = 0; gz < d; gz++) {
         i32 dz = gz - r;
         i64 dzSq = (i64) dz * (i64) dz;
@@ -284,7 +359,7 @@ fn SphereArray_forEach(const SphereArray *self, SphereArrayVoxelFn callback, any
                 i32 dx = gx - r;
                 if (dyzSq + ((i64) dx * (i64) dx) <= rSq) {
                     bytes idx = SphereArray_index(gx, gy, gz, d);
-                    const u8 *voxel = (*coll).data + (idx * stride);
+                    const u8 *voxel = Collection_data(coll) + (idx * stride);
                     callback(gx, gy, gz, dx, dy, dz, voxel, userData);
                 }
             }

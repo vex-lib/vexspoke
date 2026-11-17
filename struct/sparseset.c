@@ -60,6 +60,62 @@
  */
 
 
+
+;;GETTER
+static inline i32 SparseSet_capacity(const SparseSet *s) { return (*s).capacity; }
+;;GETTER
+static inline i32 *SparseSet_capacityMut(SparseSet *s) { return &(*s).capacity; }
+;;SETTER
+static inline fn SparseSet_setCapacity(SparseSet *s, i32 v) { (*s).capacity = v; }
+;;GETTER
+static inline i32 SparseSet_count(const SparseSet *s) { return (*s).count; }
+;;GETTER
+static inline i32 *SparseSet_countMut(SparseSet *s) { return &(*s).count; }
+;;SETTER
+static inline fn SparseSet_setCount(SparseSet *s, i32 v) { (*s).count = v; }
+;;GETTER
+static inline u8 * SparseSet_data(const SparseSet *s) { return (*s).data; }
+;;GETTER
+static inline u8 * *SparseSet_dataMut(SparseSet *s) { return &(*s).data; }
+;;SETTER
+static inline fn SparseSet_setData(SparseSet *s, u8 * v) { (*s).data = v; }
+;;GETTER
+static inline i32 * SparseSet_dense(const SparseSet *s) { return (*s).dense; }
+;;GETTER
+static inline i32 * *SparseSet_denseMut(SparseSet *s) { return &(*s).dense; }
+;;SETTER
+static inline fn SparseSet_setDense(SparseSet *s, i32 * v) { (*s).dense = v; }
+;;GETTER
+static inline u64 SparseSet_exhaustionCount(const SparseSet *s) { return (*s).exhaustionCount; }
+;;GETTER
+static inline u64 *SparseSet_exhaustionCountMut(SparseSet *s) { return &(*s).exhaustionCount; }
+;;SETTER
+static inline fn SparseSet_setExhaustionCount(SparseSet *s, u64 v) { (*s).exhaustionCount = v; }
+;;GETTER
+static inline bool SparseSet_exhaustionReported(const SparseSet *s) { return (*s).exhaustionReported; }
+;;GETTER
+static inline bool *SparseSet_exhaustionReportedMut(SparseSet *s) { return &(*s).exhaustionReported; }
+;;SETTER
+static inline fn SparseSet_setExhaustionReported(SparseSet *s, bool v) { (*s).exhaustionReported = v; }
+;;GETTER
+static inline i32 SparseSet_maxEntities(const SparseSet *s) { return (*s).maxEntities; }
+;;GETTER
+static inline i32 *SparseSet_maxEntitiesMut(SparseSet *s) { return &(*s).maxEntities; }
+;;SETTER
+static inline fn SparseSet_setMaxEntities(SparseSet *s, i32 v) { (*s).maxEntities = v; }
+;;GETTER
+static inline i32 * SparseSet_sparse(const SparseSet *s) { return (*s).sparse; }
+;;GETTER
+static inline i32 * *SparseSet_sparseMut(SparseSet *s) { return &(*s).sparse; }
+;;SETTER
+static inline fn SparseSet_setSparse(SparseSet *s, i32 * v) { (*s).sparse = v; }
+;;GETTER
+static inline i32 SparseSet_stride(const SparseSet *s) { return (*s).stride; }
+;;GETTER
+static inline i32 *SparseSet_strideMut(SparseSet *s) { return &(*s).stride; }
+;;SETTER
+static inline fn SparseSet_setStride(SparseSet *s, i32 v) { (*s).stride = v; }
+
 // sparseset.c — SparseSet port (Legacy: struct/SparseSet.java).
 
 static i32 *allocateInts(bytes count) {
@@ -73,157 +129,157 @@ SparseSet *SparseSet_3(bytes capacity, bytes maxEntities, bytes stride) {
         return nullptr;
     }
 
-    (*set).capacity = (i32)capacity;
-    (*set).maxEntities = (i32)maxEntities;
-    (*set).count = 0;
-    (*set).stride = (i32)stride;
-    (*set).exhaustionCount = 0;
-    (*set).exhaustionReported = false;
+    SparseSet_setCapacity(set, (i32)capacity);
+    SparseSet_setMaxEntities(set, (i32)maxEntities);
+    SparseSet_setCount(set, 0);
+    SparseSet_setStride(set, (i32)stride);
+    SparseSet_setExhaustionCount(set, 0);
+    SparseSet_setExhaustionReported(set, false);
 
-    (*set).dense = allocateInts(capacity);
-    if (!(*set).dense) {
+    SparseSet_setDense(set, allocateInts(capacity));
+    if (!SparseSet_dense(set)) {
         (discard) Struct_reportConstructionExhaustion("sparseset", capacity * sizeof(i32));
         Memory_free(set);
         return nullptr;
     }
 
-    (*set).sparse = allocateInts(maxEntities);
-    if (!(*set).sparse) {
+    SparseSet_setSparse(set, allocateInts(maxEntities));
+    if (!SparseSet_sparse(set)) {
         (discard) Struct_reportConstructionExhaustion("sparseset", maxEntities * sizeof(i32));
-        Memory_free((*set).dense);
+        Memory_free(SparseSet_dense(set));
         Memory_free(set);
         return nullptr;
     }
     for (bytes i = 0; i < maxEntities; i++)
-        (*set).sparse[i] = -1;
+        SparseSet_sparse(set)[i] = -1;
 
     if (stride > 0) {
         bytes Bytes = capacity * stride;
         u64 bufType = Type_make(PROJ_VEXSPOKE, FORM_ARRAY, ID_SPARSE_SET);
-        (*set).data = (u8*) Memory_alloc(bufType, Bytes);
-        if (!(*set).data) {
+        SparseSet_setData(set, (u8*) Memory_alloc(bufType, Bytes));
+        if (!SparseSet_data(set)) {
             (discard) Struct_reportConstructionExhaustion("sparseset", Bytes);
-            Memory_free((*set).dense);
-            Memory_free((*set).sparse);
+            Memory_free(SparseSet_dense(set));
+            Memory_free(SparseSet_sparse(set));
             Memory_free(set);
             return nullptr;
         }
     } else {
-        (*set).data = nullptr;
+        SparseSet_setData(set, nullptr);
     }
     return set;
 }
 
 fn SparseSet_free(SparseSet *set) {
     if (!set) return;
-    Memory_free((*set).dense);
-    Memory_free((*set).sparse);
-    Memory_free((*set).data);
+    Memory_free(SparseSet_dense(set));
+    Memory_free(SparseSet_sparse(set));
+    Memory_free(SparseSet_data(set));
     Memory_free(set);
 }
 
 bytes SparseSet_count(SparseSet *set) {
     if (!set) return 0;
-    return (bytes)(*set).count;
+    return (bytes)SparseSet_count(set);
 }
 
 ;;TEST
 u64 SparseSet_exhaustionCount(const SparseSet *set) {
-    return set ? Struct_exhaustionCount(&(*set).exhaustionCount) : 0;
+    return set ? Struct_exhaustionCount(SparseSet_exhaustionCountMut(set)) : 0;
 }
 
 bytes SparseSet_capacity(SparseSet *set) {
     if (!set) return 0;
-    return (bytes)(*set).capacity;
+    return (bytes)SparseSet_capacity(set);
 }
 
 bytes SparseSet_maxEntities(SparseSet *set) {
     if (!set) return 0;
-    return (bytes)(*set).maxEntities;
+    return (bytes)SparseSet_maxEntities(set);
 }
 
 bool SparseSet_contains(SparseSet *set, i32 entityId) {
     if (!set) return false;
-    if (entityId < 0 || entityId >= (*set).maxEntities)
+    if (entityId < 0 || entityId >= SparseSet_maxEntities(set))
         return false;
-    return (*set).sparse[entityId] != -1;
+    return SparseSet_sparse(set)[entityId] != -1;
 }
 
 u8 *SparseSet_add(SparseSet *set, i32 entityId) {
     if (!set) return nullptr;
-    if (entityId < 0 || entityId >= (*set).maxEntities)
+    if (entityId < 0 || entityId >= SparseSet_maxEntities(set))
         return nullptr;
 
-    i32 denseIndex = (*set).sparse[entityId];
+    i32 denseIndex = SparseSet_sparse(set)[entityId];
     if (denseIndex != -1) {
-        if ((*set).stride > 0)
-            return (*set).data + (bytes)denseIndex * (bytes)(*set).stride;
-        return (*set).data;
+        if (SparseSet_stride(set) > 0)
+            return SparseSet_data(set) + (bytes)denseIndex * (bytes)SparseSet_stride(set);
+        return SparseSet_data(set);
     }
 
-    if ((*set).count >= (*set).capacity) {
+    if (SparseSet_count(set) >= SparseSet_capacity(set)) {
         // The dense capacity is full: a refusal, reported (once per epoch).
-        (discard) Struct_reportExhaustion(&(*set).exhaustionCount, &(*set).exhaustionReported,
-                                       "sparseset", (bytes) (*set).capacity, (bytes) (*set).capacity);
+        (discard) Struct_reportExhaustion(SparseSet_exhaustionCountMut(set), SparseSet_exhaustionReportedMut(set),
+                                       "sparseset", (bytes) SparseSet_capacity(set), (bytes) SparseSet_capacity(set));
         return nullptr;
     }
 
-    i32 count = (*set).count;
-    (*set).dense[count] = entityId;
-    (*set).sparse[entityId] = count;
-    (*set).count = count + 1;
+    i32 count = SparseSet_count(set);
+    SparseSet_dense(set)[count] = entityId;
+    SparseSet_sparse(set)[entityId] = count;
+    SparseSet_setCount(set, count + 1);
 
-    if ((*set).stride > 0)
-        return (*set).data + (bytes)count * (bytes)(*set).stride;
-    return (*set).data;
+    if (SparseSet_stride(set) > 0)
+        return SparseSet_data(set) + (bytes)count * (bytes)SparseSet_stride(set);
+    return SparseSet_data(set);
 }
 
 fn SparseSet_remove(SparseSet *set, i32 entityId) {
     if (!set) return;
-    if (entityId < 0 || entityId >= (*set).maxEntities)
+    if (entityId < 0 || entityId >= SparseSet_maxEntities(set))
         return;
 
-    i32 denseIndex = (*set).sparse[entityId];
+    i32 denseIndex = SparseSet_sparse(set)[entityId];
     if (denseIndex == -1)
         return;
 
-    i32 count = (*set).count - 1;
-    i32 lastEntity = (*set).dense[count];
+    i32 count = SparseSet_count(set) - 1;
+    i32 lastEntity = SparseSet_dense(set)[count];
 
     if (denseIndex != count) {
-        (*set).dense[denseIndex] = lastEntity;
-        (*set).sparse[lastEntity] = denseIndex;
-        if ((*set).stride > 0) {
-            u8 *dest = (*set).data + (bytes)denseIndex * (bytes)(*set).stride;
-            u8 *src = (*set).data + (bytes)count * (bytes)(*set).stride;
-            memcpy(dest, src, (bytes)(*set).stride);
+        SparseSet_dense(set)[denseIndex] = lastEntity;
+        SparseSet_sparse(set)[lastEntity] = denseIndex;
+        if (SparseSet_stride(set) > 0) {
+            u8 *dest = SparseSet_data(set) + (bytes)denseIndex * (bytes)SparseSet_stride(set);
+            u8 *src = SparseSet_data(set) + (bytes)count * (bytes)SparseSet_stride(set);
+            memcpy(dest, src, (bytes)SparseSet_stride(set));
         }
     }
 
-    (*set).sparse[entityId] = -1;
-    (*set).count = count;
+    SparseSet_sparse(set)[entityId] = -1;
+    SparseSet_setCount(set, count);
 }
 
 u8 *SparseSet_get(SparseSet *set, i32 entityId) {
     if (!set) return nullptr;
-    if (entityId < 0 || entityId >= (*set).maxEntities)
+    if (entityId < 0 || entityId >= SparseSet_maxEntities(set))
         return nullptr;
 
-    i32 denseIndex = (*set).sparse[entityId];
+    i32 denseIndex = SparseSet_sparse(set)[entityId];
     if (denseIndex == -1)
         return nullptr;
-    if ((*set).stride == 0)
+    if (SparseSet_stride(set) == 0)
         return (u8*) set; // non-nullptr presence sentinel (legacy returns ptr)
 
-    return (*set).data + (bytes)denseIndex * (bytes)(*set).stride;
+    return SparseSet_data(set) + (bytes)denseIndex * (bytes)SparseSet_stride(set);
 }
 
 const i32 *SparseSet_denseEntities(SparseSet *set) {
     if (!set) return nullptr;
-    return (*set).dense;
+    return SparseSet_dense(set);
 }
 
 const u8 *SparseSet_denseData(SparseSet *set) {
     if (!set) return nullptr;
-    return (*set).data;
+    return SparseSet_data(set);
 }

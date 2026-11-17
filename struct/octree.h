@@ -22,8 +22,9 @@ static inline OctreePoint OctreePoint_3(f32 x, f32 y, f32 z) {
     return (OctreePoint) { .x = x, .y = y, .z = z };
 }
 #define OctreePoint(...) CONSTRUCTOR_DISPATCH(OctreePoint, __VA_ARGS__)
+;;SETTER
 static inline fn OctreePoint_set(OctreePoint *point, f32 x, f32 y, f32 z) {
-    if (point) { (*point).x = x; (*point).y = y; (*point).z = z; }
+    if (point) *point = OctreePoint_3(x, y, z);
 }
 
 typedef struct OctreeAABB {
@@ -41,9 +42,11 @@ static inline OctreeAABB OctreeAABB_6(f32 minX, f32 minY, f32 minZ,
         .maxX = maxX, .maxY = maxY, .maxZ = maxZ };
 }
 #define OctreeAABB(...) CONSTRUCTOR_DISPATCH(OctreeAABB, __VA_ARGS__)
+;;SETTER
 static inline fn OctreeAABB_setMin(OctreeAABB *box, f32 x, f32 y, f32 z) {
     if (box) { (*box).minX = x; (*box).minY = y; (*box).minZ = z; }
 }
+;;SETTER
 static inline fn OctreeAABB_setMax(OctreeAABB *box, f32 x, f32 y, f32 z) {
     if (box) { (*box).maxX = x; (*box).maxY = y; (*box).maxZ = z; }
 }

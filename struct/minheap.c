@@ -53,38 +53,76 @@
  */
 
 
+
+;;GETTER
+static inline i32 MinHeap_capacity(const MinHeap *s) { return (*s).capacity; }
+;;GETTER
+static inline i32 *MinHeap_capacityMut(MinHeap *s) { return &(*s).capacity; }
+;;SETTER
+static inline fn MinHeap_setCapacity(MinHeap *s, i32 v) { (*s).capacity = v; }
+;;GETTER
+static inline u64 MinHeap_exhaustionCount(const MinHeap *s) { return (*s).exhaustionCount; }
+;;GETTER
+static inline u64 *MinHeap_exhaustionCountMut(MinHeap *s) { return &(*s).exhaustionCount; }
+;;SETTER
+static inline fn MinHeap_setExhaustionCount(MinHeap *s, u64 v) { (*s).exhaustionCount = v; }
+;;GETTER
+static inline bool MinHeap_exhaustionReported(const MinHeap *s) { return (*s).exhaustionReported; }
+;;GETTER
+static inline bool *MinHeap_exhaustionReportedMut(MinHeap *s) { return &(*s).exhaustionReported; }
+;;SETTER
+static inline fn MinHeap_setExhaustionReported(MinHeap *s, bool v) { (*s).exhaustionReported = v; }
+;;GETTER
+static inline i32 * MinHeap_items(const MinHeap *s) { return (*s).items; }
+;;GETTER
+static inline i32 * *MinHeap_itemsMut(MinHeap *s) { return &(*s).items; }
+;;SETTER
+static inline fn MinHeap_setItems(MinHeap *s, i32 * v) { (*s).items = v; }
+;;GETTER
+static inline f32 * MinHeap_priorities(const MinHeap *s) { return (*s).priorities; }
+;;GETTER
+static inline f32 * *MinHeap_prioritiesMut(MinHeap *s) { return &(*s).priorities; }
+;;SETTER
+static inline fn MinHeap_setPriorities(MinHeap *s, f32 * v) { (*s).priorities = v; }
+;;GETTER
+static inline i32 MinHeap_size(const MinHeap *s) { return (*s).size; }
+;;GETTER
+static inline i32 *MinHeap_sizeMut(MinHeap *s) { return &(*s).size; }
+;;SETTER
+static inline fn MinHeap_setSize(MinHeap *s, i32 v) { (*s).size = v; }
+
 // minheap.c — MinHeap port (Legacy: struct/MinHeap.java). 1-based array, sift
 // up on push, sift down on pop, strictly lower priority rises to the root.
 
 static fn sift_up(MinHeap *heap, bytes index) {
-    i32 item = (*heap).items[index];
-    f32 prio = (*heap).priorities[index];
+    i32 item = MinHeap_items(heap)[index];
+    f32 prio = MinHeap_priorities(heap)[index];
     while (index > 1) {
         bytes parent = index / 2;
-        f32 parent_prio = (*heap).priorities[parent];
+        f32 parent_prio = MinHeap_priorities(heap)[parent];
         if (prio >= parent_prio)
             break;
-        (*heap).items[index] = (*heap).items[parent];
-        (*heap).priorities[index] = parent_prio;
+        MinHeap_items(heap)[index] = MinHeap_items(heap)[parent];
+        MinHeap_priorities(heap)[index] = parent_prio;
         index = parent;
     }
-    (*heap).items[index] = item;
-    (*heap).priorities[index] = prio;
+    MinHeap_items(heap)[index] = item;
+    MinHeap_priorities(heap)[index] = prio;
 }
 
 static fn sift_down(MinHeap *heap, bytes index) {
-    bytes size = (bytes)(*heap).size;
-    i32 item = (*heap).items[index];
-    f32 prio = (*heap).priorities[index];
+    bytes size = (bytes)MinHeap_size(heap);
+    i32 item = MinHeap_items(heap)[index];
+    f32 prio = MinHeap_priorities(heap)[index];
     bytes half = size / 2;
     while (index <= half) {
         bytes left = index * 2;
         bytes right = left + 1;
 
         bytes best = left;
-        f32 best_prio = (*heap).priorities[left];
+        f32 best_prio = MinHeap_priorities(heap)[left];
         if (right <= size) {
-            f32 right_prio = (*heap).priorities[right];
+            f32 right_prio = MinHeap_priorities(heap)[right];
             if (right_prio < best_prio) {
                 best = right;
                 best_prio = right_prio;
@@ -92,12 +130,12 @@ static fn sift_down(MinHeap *heap, bytes index) {
         }
         if (prio <= best_prio)
             break;
-        (*heap).items[index] = (*heap).items[best];
-        (*heap).priorities[index] = best_prio;
+        MinHeap_items(heap)[index] = MinHeap_items(heap)[best];
+        MinHeap_priorities(heap)[index] = best_prio;
         index = best;
     }
-    (*heap).items[index] = item;
-    (*heap).priorities[index] = prio;
+    MinHeap_items(heap)[index] = item;
+    MinHeap_priorities(heap)[index] = prio;
 }
 
 MinHeap *MinHeap_1(bytes capacity) {
@@ -108,15 +146,15 @@ MinHeap *MinHeap_1(bytes capacity) {
         return nullptr;
     }
 
-    (*heap).size = 0;
-    (*heap).capacity = (i32)capacity;
-    (*heap).exhaustionCount = 0;
-    (*heap).exhaustionReported = false;
-    (*heap).items = (i32*) Memory_alloc(TYPE_INT_ARRAY, slots * sizeof(i32));
-    (*heap).priorities = (f32*) Memory_alloc(TYPE_FLOAT_ARRAY, slots * sizeof(f32));
-    if (!(*heap).items || !(*heap).priorities) {
-        Memory_free((*heap).items);
-        Memory_free((*heap).priorities);
+    MinHeap_setSize(heap, 0);
+    MinHeap_setCapacity(heap, (i32)capacity);
+    MinHeap_setExhaustionCount(heap, 0);
+    MinHeap_setExhaustionReported(heap, false);
+    MinHeap_setItems(heap, (i32*) Memory_alloc(TYPE_INT_ARRAY, slots * sizeof(i32)));
+    MinHeap_setPriorities(heap, (f32*) Memory_alloc(TYPE_FLOAT_ARRAY, slots * sizeof(f32)));
+    if (!MinHeap_items(heap) || !MinHeap_priorities(heap)) {
+        Memory_free(MinHeap_items(heap));
+        Memory_free(MinHeap_priorities(heap));
         Memory_free(heap);
         return nullptr;
     }
@@ -125,19 +163,19 @@ MinHeap *MinHeap_1(bytes capacity) {
 
 fn MinHeap_free(MinHeap *heap) {
     if (!heap) return;
-    Memory_free((*heap).items);
-    Memory_free((*heap).priorities);
+    Memory_free(MinHeap_items(heap));
+    Memory_free(MinHeap_priorities(heap));
     Memory_free(heap);
 }
 
 bytes MinHeap_size(MinHeap *heap) {
     if (!heap) return 0;
-    return (bytes)(*heap).size;
+    return (bytes)MinHeap_size(heap);
 }
 
 bytes MinHeap_capacity(MinHeap *heap) {
     if (!heap) return 0;
-    return (bytes)(*heap).capacity;
+    return (bytes)MinHeap_capacity(heap);
 }
 
 bool MinHeap_isEmpty(MinHeap *heap) {
@@ -146,44 +184,44 @@ bool MinHeap_isEmpty(MinHeap *heap) {
 
 ;;TEST
 u64 MinHeap_exhaustionCount(const MinHeap *heap) {
-    return heap ? Struct_exhaustionCount(&(*heap).exhaustionCount) : 0;
+    return heap ? Struct_exhaustionCount(MinHeap_exhaustionCountMut(heap)) : 0;
 }
 
 i32 MinHeap_push(MinHeap *heap, i32 item, f32 priority) {
     if (!heap) return 0;
-    if ((*heap).size >= (*heap).capacity) {
+    if (MinHeap_size(heap) >= MinHeap_capacity(heap)) {
         // A full fixed-capacity heap is a refusal, not a silent no-op.
-        (discard) Struct_reportExhaustion(&(*heap).exhaustionCount, &(*heap).exhaustionReported,
-                                       "minheap", sizeof(i32) * 2u, (bytes) (*heap).capacity);
+        (discard) Struct_reportExhaustion(MinHeap_exhaustionCountMut(heap), MinHeap_exhaustionReportedMut(heap),
+                                       "minheap", sizeof(i32) * 2u, (bytes) MinHeap_capacity(heap));
         return 0;
     }
-    (*heap).size++;
-    bytes index = (bytes)(*heap).size;
-    (*heap).items[index] = item;
-    (*heap).priorities[index] = priority;
+    MinHeap_setSize(heap, MinHeap_size(heap) + 1u);
+    bytes index = (bytes)MinHeap_size(heap);
+    MinHeap_items(heap)[index] = item;
+    MinHeap_priorities(heap)[index] = priority;
     sift_up(heap, index);
     return 1;
 }
 
 i32 MinHeap_popItem(MinHeap *heap) {
     if (!heap) return 0;
-    if ((*heap).size == 0)
+    if (MinHeap_size(heap) == 0)
         return 0;
-    i32 result = (*heap).items[1];
-    bytes size = (bytes)(*heap).size;
-    (*heap).items[1] = (*heap).items[size];
-    (*heap).priorities[1] = (*heap).priorities[size];
-    (*heap).size--;
-    if ((*heap).size > 0)
+    i32 result = MinHeap_items(heap)[1];
+    bytes size = (bytes)MinHeap_size(heap);
+    MinHeap_items(heap)[1] = MinHeap_items(heap)[size];
+    MinHeap_priorities(heap)[1] = MinHeap_priorities(heap)[size];
+    MinHeap_setSize(heap, MinHeap_size(heap) - 1u);
+    if (MinHeap_size(heap) > 0)
         sift_down(heap, 1);
     return result;
 }
 
 i32 MinHeap_peekItem(MinHeap *heap) {
     if (!heap) return 0;
-    if ((*heap).size == 0)
+    if (MinHeap_size(heap) == 0)
         return 0;
-    return (*heap).items[1];
+    return MinHeap_items(heap)[1];
 }
 MinHeap *MinHeap_0() {
     return MinHeap_1(16);
