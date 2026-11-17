@@ -69,6 +69,106 @@
  * ============================================================================
  */
 
+
+;;GETTER
+static inline u32 RegexInst_a(const RegexInst *s) { return (*s).a; }
+;;GETTER
+static inline u32 *RegexInst_aMut(RegexInst *s) { return &(*s).a; }
+;;SETTER
+static inline fn RegexInst_setA(RegexInst *s, u32 v) { (*s).a = v; }
+;;GETTER
+static inline u32 RegexInst_b(const RegexInst *s) { return (*s).b; }
+;;GETTER
+static inline u32 *RegexInst_bMut(RegexInst *s) { return &(*s).b; }
+;;SETTER
+static inline fn RegexInst_setB(RegexInst *s, u32 v) { (*s).b = v; }
+;;GETTER
+static inline u8 RegexInst_byte(const RegexInst *s) { return (*s).byte; }
+;;GETTER
+static inline u8 *RegexInst_byteMut(RegexInst *s) { return &(*s).byte; }
+;;SETTER
+static inline fn RegexInst_setByte(RegexInst *s, u8 v) { (*s).byte = v; }
+;;GETTER
+static inline u8 RegexInst_op(const RegexInst *s) { return (*s).op; }
+;;GETTER
+static inline u8 *RegexInst_opMut(RegexInst *s) { return &(*s).op; }
+;;SETTER
+static inline fn RegexInst_setOp(RegexInst *s, u8 v) { (*s).op = v; }
+;;GETTER
+static inline u16 RegexInst_reserved(const RegexInst *s) { return (*s).reserved; }
+;;GETTER
+static inline u16 *RegexInst_reservedMut(RegexInst *s) { return &(*s).reserved; }
+;;SETTER
+static inline fn RegexInst_setReserved(RegexInst *s, u16 v) { (*s).reserved = v; }
+
+;;GETTER
+static inline u32 RegexNode_a(const RegexNode *s) { return (*s).a; }
+;;GETTER
+static inline u32 *RegexNode_aMut(RegexNode *s) { return &(*s).a; }
+;;SETTER
+static inline fn RegexNode_setA(RegexNode *s, u32 v) { (*s).a = v; }
+;;GETTER
+static inline u32 RegexNode_b(const RegexNode *s) { return (*s).b; }
+;;GETTER
+static inline u32 *RegexNode_bMut(RegexNode *s) { return &(*s).b; }
+;;SETTER
+static inline fn RegexNode_setB(RegexNode *s, u32 v) { (*s).b = v; }
+;;GETTER
+static inline u8 RegexNode_byte(const RegexNode *s) { return (*s).byte; }
+;;GETTER
+static inline u8 *RegexNode_byteMut(RegexNode *s) { return &(*s).byte; }
+;;SETTER
+static inline fn RegexNode_setByte(RegexNode *s, u8 v) { (*s).byte = v; }
+;;GETTER
+static inline u32 RegexNode_clsIndex(const RegexNode *s) { return (*s).clsIndex; }
+;;GETTER
+static inline u32 *RegexNode_clsIndexMut(RegexNode *s) { return &(*s).clsIndex; }
+;;SETTER
+static inline fn RegexNode_setClsIndex(RegexNode *s, u32 v) { (*s).clsIndex = v; }
+;;GETTER
+static inline u32 RegexNode_group(const RegexNode *s) { return (*s).group; }
+;;GETTER
+static inline u32 *RegexNode_groupMut(RegexNode *s) { return &(*s).group; }
+;;SETTER
+static inline fn RegexNode_setGroup(RegexNode *s, u32 v) { (*s).group = v; }
+;;GETTER
+static inline u8 RegexNode_kind(const RegexNode *s) { return (*s).kind; }
+;;GETTER
+static inline u8 *RegexNode_kindMut(RegexNode *s) { return &(*s).kind; }
+;;SETTER
+static inline fn RegexNode_setKind(RegexNode *s, u8 v) { (*s).kind = v; }
+;;GETTER
+static inline u32 RegexNode_repMax(const RegexNode *s) { return (*s).repMax; }
+;;GETTER
+static inline u32 *RegexNode_repMaxMut(RegexNode *s) { return &(*s).repMax; }
+;;SETTER
+static inline fn RegexNode_setRepMax(RegexNode *s, u32 v) { (*s).repMax = v; }
+;;GETTER
+static inline u32 RegexNode_repMin(const RegexNode *s) { return (*s).repMin; }
+;;GETTER
+static inline u32 *RegexNode_repMinMut(RegexNode *s) { return &(*s).repMin; }
+;;SETTER
+static inline fn RegexNode_setRepMin(RegexNode *s, u32 v) { (*s).repMin = v; }
+
+;;GETTER
+static inline u32 RegexProgram_capacity(const RegexProgram *s) { return (*s).capacity; }
+;;GETTER
+static inline u32 *RegexProgram_capacityMut(RegexProgram *s) { return &(*s).capacity; }
+;;SETTER
+static inline fn RegexProgram_setCapacity(RegexProgram *s, u32 v) { (*s).capacity = v; }
+;;GETTER
+static inline u32 RegexProgram_count(const RegexProgram *s) { return (*s).count; }
+;;GETTER
+static inline u32 *RegexProgram_countMut(RegexProgram *s) { return &(*s).count; }
+;;SETTER
+static inline fn RegexProgram_setCount(RegexProgram *s, u32 v) { (*s).count = v; }
+;;GETTER
+static inline RegexInst * RegexProgram_insts(const RegexProgram *s) { return (*s).insts; }
+;;GETTER
+static inline RegexInst * *RegexProgram_instsMut(RegexProgram *s) { return &(*s).insts; }
+;;SETTER
+static inline fn RegexProgram_setInsts(RegexProgram *s, RegexInst * v) { (*s).insts = v; }
+
 #define REGEX_PROGRAM_SEED_CAPACITY 64u
 
 static any programGrow(any block, bytes bytes) {
@@ -79,30 +179,30 @@ static any programGrow(any block, bytes bytes) {
 
 // Appends one instruction; returns its index, or UINT32_MAX on refusal.
 static u32 emit(RegexProgram *program, u8 op, u8 byte, u32 a, u32 b) {
-    if ((*program).count >= REGEX_MAX_PROGRAM)
+    if (RegexProgram_count(program) >= REGEX_MAX_PROGRAM)
         return UINT32_MAX;
-    if ((*program).count == (*program).capacity) {
-        u32 next = (*program).capacity ? (*program).capacity * 2u : REGEX_PROGRAM_SEED_CAPACITY;
+    if (RegexProgram_count(program) == RegexProgram_capacity(program)) {
+        u32 next = RegexProgram_capacity(program) ? RegexProgram_capacity(program) * 2u : REGEX_PROGRAM_SEED_CAPACITY;
         if (next > REGEX_MAX_PROGRAM)
             next = REGEX_MAX_PROGRAM;
-        RegexInst *grown = (RegexInst*) programGrow((*program).insts,
+        RegexInst *grown = (RegexInst*) programGrow(RegexProgram_insts(program),
                                                    (bytes) next * sizeof(RegexInst));
         if (!grown)
             return UINT32_MAX;
-        (*program).insts = grown;
-        (*program).capacity = next;
+        RegexProgram_setInsts(program, grown);
+        RegexProgram_setCapacity(program, next);
     }
-    RegexInst *inst = &(*program).insts[(*program).count];
-    (*inst).op = op;
-    (*inst).byte = byte;
-    (*inst).reserved = 0;
-    (*inst).a = a;
-    (*inst).b = b;
-    return (*program).count++;
+    RegexInst *inst = &RegexProgram_instsMut(program)[RegexProgram_count(program)];
+    RegexInst_setOp(inst, op);
+    RegexInst_setByte(inst, byte);
+    RegexInst_setReserved(inst, 0);
+    RegexInst_setA(inst, a);
+    RegexInst_setB(inst, b);
+    return (*RegexProgram_countMut(program))++;
 }
 
 static RegexInst *instAt(RegexProgram *program, u32 index) {
-    return &(*program).insts[index];
+    return &RegexProgram_instsMut(program)[index];
 }
 
 // Emits the Thompson program for one AST node. Recursion is bounded by AST
@@ -112,35 +212,35 @@ static bool emitNode(RegexProgram *program, const RegexNodeList *nodes, u32 inde
     const RegexNode *node = RegexNodeList_at(nodes, index);
     if (!node)
         return false;
-    switch ((*node).kind) {
+    switch (RegexNode_kind(node)) {
     case REGEX_NODE_EMPTY:
         return true;
     case REGEX_NODE_CHAR:
-        return emit(program, REGEX_OP_CHAR, (*node).byte, 0, 0) != UINT32_MAX;
+        return emit(program, REGEX_OP_CHAR, RegexNode_byte(node), 0, 0) != UINT32_MAX;
     case REGEX_NODE_ANY:
         return emit(program, REGEX_OP_ANY, 0, 0, 0) != UINT32_MAX;
     case REGEX_NODE_CLASS:
-        return emit(program, REGEX_OP_CLASS, 0, (*node).clsIndex, 0) != UINT32_MAX;
+        return emit(program, REGEX_OP_CLASS, 0, RegexNode_clsIndex(node), 0) != UINT32_MAX;
     case REGEX_NODE_BOL:
         return emit(program, REGEX_OP_BOL, 0, 0, 0) != UINT32_MAX;
     case REGEX_NODE_EOL:
         return emit(program, REGEX_OP_EOL, 0, 0, 0) != UINT32_MAX;
     case REGEX_NODE_CONCAT:
-        return emitNode(program, nodes, (*node).a) && emitNode(program, nodes, (*node).b);
+        return emitNode(program, nodes, RegexNode_a(node)) && emitNode(program, nodes, RegexNode_b(node));
     case REGEX_NODE_ALT: {
         u32 split = emit(program, REGEX_OP_SPLIT, 0, 0, 0);
         if (split == UINT32_MAX)
             return false;
         (*instAt(program, split)).a = split + 1u;
-        if (!emitNode(program, nodes, (*node).a))
+        if (!emitNode(program, nodes, RegexNode_a(node)))
             return false;
         u32 jump = emit(program, REGEX_OP_JUMP, 0, 0, 0);
         if (jump == UINT32_MAX)
             return false;
-        (*instAt(program, split)).b = (*program).count;
-        if (!emitNode(program, nodes, (*node).b))
+        (*instAt(program, split)).b = RegexProgram_count(program);
+        if (!emitNode(program, nodes, RegexNode_b(node)))
             return false;
-        (*instAt(program, jump)).a = (*program).count;
+        (*instAt(program, jump)).a = RegexProgram_count(program);
         return true;
     }
     case REGEX_NODE_STAR: {
@@ -148,24 +248,24 @@ static bool emitNode(RegexProgram *program, const RegexNodeList *nodes, u32 inde
         if (split == UINT32_MAX)
             return false;
         (*instAt(program, split)).a = split + 1u;
-        if (!emitNode(program, nodes, (*node).a))
+        if (!emitNode(program, nodes, RegexNode_a(node)))
             return false;
         u32 jump = emit(program, REGEX_OP_JUMP, 0, 0, 0);
         if (jump == UINT32_MAX)
             return false;
         (*instAt(program, jump)).a = split;
-        (*instAt(program, split)).b = (*program).count;
+        (*instAt(program, split)).b = RegexProgram_count(program);
         return true;
     }
     case REGEX_NODE_PLUS: {
-        u32 start = (*program).count;
-        if (!emitNode(program, nodes, (*node).a))
+        u32 start = RegexProgram_count(program);
+        if (!emitNode(program, nodes, RegexNode_a(node)))
             return false;
         u32 split = emit(program, REGEX_OP_SPLIT, 0, 0, 0);
         if (split == UINT32_MAX)
             return false;
         (*instAt(program, split)).a = start;
-        (*instAt(program, split)).b = (*program).count;
+        (*instAt(program, split)).b = RegexProgram_count(program);
         return true;
     }
     case REGEX_NODE_QUEST: {
@@ -173,16 +273,16 @@ static bool emitNode(RegexProgram *program, const RegexNodeList *nodes, u32 inde
         if (split == UINT32_MAX)
             return false;
         (*instAt(program, split)).a = split + 1u;
-        if (!emitNode(program, nodes, (*node).a))
+        if (!emitNode(program, nodes, RegexNode_a(node)))
             return false;
-        (*instAt(program, split)).b = (*program).count;
+        (*instAt(program, split)).b = RegexProgram_count(program);
         return true;
     }
     case REGEX_NODE_REPEAT: {
-        u32 min = (*node).repMin;
-        u32 max = (*node).repMax;
+        u32 min = RegexNode_repMin(node);
+        u32 max = RegexNode_repMax(node);
         for (u32 i = 0; i < min; i++)
-            if (!emitNode(program, nodes, (*node).a))
+            if (!emitNode(program, nodes, RegexNode_a(node)))
                 return false;
         if (max == REGEX_REP_INF) {
             // {m,} is m copies followed by a star of the body.
@@ -190,13 +290,13 @@ static bool emitNode(RegexProgram *program, const RegexNodeList *nodes, u32 inde
             if (split == UINT32_MAX)
                 return false;
             (*instAt(program, split)).a = split + 1u;
-            if (!emitNode(program, nodes, (*node).a))
+            if (!emitNode(program, nodes, RegexNode_a(node)))
                 return false;
             u32 jump = emit(program, REGEX_OP_JUMP, 0, 0, 0);
             if (jump == UINT32_MAX)
                 return false;
             (*instAt(program, jump)).a = split;
-            (*instAt(program, split)).b = (*program).count;
+            (*instAt(program, split)).b = RegexProgram_count(program);
             return true;
         }
         for (u32 i = min; i < max; i++) {
@@ -204,18 +304,18 @@ static bool emitNode(RegexProgram *program, const RegexNodeList *nodes, u32 inde
             if (split == UINT32_MAX)
                 return false;
             (*instAt(program, split)).a = split + 1u;
-            if (!emitNode(program, nodes, (*node).a))
+            if (!emitNode(program, nodes, RegexNode_a(node)))
                 return false;
-            (*instAt(program, split)).b = (*program).count;
+            (*instAt(program, split)).b = RegexProgram_count(program);
         }
         return true;
     }
     case REGEX_NODE_GROUP: {
-        u32 group = (*node).group;
+        u32 group = RegexNode_group(node);
         if (group > 0)
             if (emit(program, REGEX_OP_SAVE, 0, group * 2u, 0) == UINT32_MAX)
                 return false;
-        if (!emitNode(program, nodes, (*node).a))
+        if (!emitNode(program, nodes, RegexNode_a(node)))
             return false;
         if (group > 0)
             if (emit(program, REGEX_OP_SAVE, 0, group * 2u + 1u, 0) == UINT32_MAX)
@@ -248,17 +348,17 @@ bool RegexProgram_build(RegexProgram *program, const RegexNodeList *nodes, u32 r
 }
 
 u32 RegexProgram_count(const RegexProgram *program) {
-    return (*program).count;
+    return RegexProgram_count(program);
 }
 
 const RegexInst *RegexProgram_at(const RegexProgram *program, u32 index) {
-    if (index >= (*program).count)
+    if (index >= RegexProgram_count(program))
         return nullptr;
-    return &(*program).insts[index];
+    return &RegexProgram_instsMut(program)[index];
 }
 
 fn RegexProgram_free(RegexProgram *program) {
-    if ((*program).insts)
-        Memory_free((*program).insts);
+    if (RegexProgram_insts(program))
+        Memory_free(RegexProgram_insts(program));
     *program = RegexProgram();
 }

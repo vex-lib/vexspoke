@@ -60,9 +60,15 @@
  * ============================================================================
  */
 
+
+;;GETTER
+static inline u8 *RegexCharClass_bitsMut(RegexCharClass *s) { return (*s).bits; }
+;;GETTER
+static inline const u8 *RegexCharClass_bits(const RegexCharClass *s) { return (*s).bits; }
+
 // Sets one byte's bit.
 static fn setBit(RegexCharClass *cls, u8 byte) {
-    (*cls).bits[byte >> 3] |= (u8)(1u << (byte & 7u));
+    RegexCharClass_bitsMut(cls)[byte >> 3] |= (u8)(1u << (byte & 7u));
 }
 
 // Sets a byte and, when folding, its opposite ASCII case (letters only).
@@ -78,7 +84,7 @@ static fn addFoldedByte(RegexCharClass *cls, u8 byte, bool insensitive) {
 
 fn RegexCharClass_clear(RegexCharClass *cls) {
     for (u32 i = 0; i < REGEX_CLASS_BYTES; i++)
-        (*cls).bits[i] = 0;
+        RegexCharClass_bitsMut(cls)[i] = 0;
 }
 
 fn RegexCharClass_addByte(RegexCharClass *cls, u8 byte, bool insensitive) {
@@ -145,9 +151,9 @@ fn RegexCharClass_addPredefined(RegexCharClass *cls, char letter) {
 
 fn RegexCharClass_negate(RegexCharClass *cls) {
     for (u32 i = 0; i < REGEX_CLASS_BYTES; i++)
-        (*cls).bits[i] = (u8) ~(*cls).bits[i];
+        RegexCharClass_bitsMut(cls)[i] = (u8) ~RegexCharClass_bitsMut(cls)[i];
 }
 
 bool RegexCharClass_test(const RegexCharClass *cls, u8 byte) {
-    return ((*cls).bits[byte >> 3] & (u8)(1u << (byte & 7u))) != 0;
+    return (RegexCharClass_bitsMut(cls)[byte >> 3] & (u8)(1u << (byte & 7u))) != 0;
 }

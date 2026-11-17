@@ -74,6 +74,33 @@
  * ============================================================================
  */
 
+
+;;GETTER
+static inline u32 RegexNodeList_capacity(const RegexNodeList *s) { return (*s).capacity; }
+;;GETTER
+static inline u32 *RegexNodeList_capacityMut(RegexNodeList *s) { return &(*s).capacity; }
+;;SETTER
+static inline fn RegexNodeList_setCapacity(RegexNodeList *s, u32 v) { (*s).capacity = v; }
+;;GETTER
+static inline u32 RegexNodeList_count(const RegexNodeList *s) { return (*s).count; }
+;;GETTER
+static inline u32 *RegexNodeList_countMut(RegexNodeList *s) { return &(*s).count; }
+;;SETTER
+static inline fn RegexNodeList_setCount(RegexNodeList *s, u32 v) { (*s).count = v; }
+;;GETTER
+static inline RegexNode * RegexNodeList_nodes(const RegexNodeList *s) { return (*s).nodes; }
+;;GETTER
+static inline RegexNode * *RegexNodeList_nodesMut(RegexNodeList *s) { return &(*s).nodes; }
+;;SETTER
+static inline fn RegexNodeList_setNodes(RegexNodeList *s, RegexNode * v) { (*s).nodes = v; }
+
+;;GETTER
+static inline u8 RegexNode_kind(const RegexNode *s) { return (*s).kind; }
+;;GETTER
+static inline u8 *RegexNode_kindMut(RegexNode *s) { return &(*s).kind; }
+;;SETTER
+static inline fn RegexNode_setKind(RegexNode *s, u8 v) { (*s).kind = v; }
+
 #define REGEX_NODELIST_SEED_CAPACITY 64u
 
 static any nodeGrow(any block, bytes bytes) {
@@ -84,14 +111,14 @@ static any nodeGrow(any block, bytes bytes) {
 
 // Guarantees room for one more node; false when the arena refuses.
 static bool growToOneMore(RegexNodeList *list) {
-    if ((*list).count < (*list).capacity)
+    if (RegexNodeList_count(list) < RegexNodeList_capacity(list))
         return true;
-    u32 next = (*list).capacity ? (*list).capacity * 2u : REGEX_NODELIST_SEED_CAPACITY;
-    RegexNode *grown = (RegexNode*) nodeGrow((*list).nodes, (bytes) next * sizeof(RegexNode));
+    u32 next = RegexNodeList_capacity(list) ? RegexNodeList_capacity(list) * 2u : REGEX_NODELIST_SEED_CAPACITY;
+    RegexNode *grown = (RegexNode*) nodeGrow(RegexNodeList_nodes(list), (bytes) next * sizeof(RegexNode));
     if (!grown)
         return false;
-    (*list).nodes = grown;
-    (*list).capacity = next;
+    RegexNodeList_setNodes(list, grown);
+    RegexNodeList_setCapacity(list, next);
     return true;
 }
 
@@ -106,26 +133,26 @@ RegexNodeList RegexNodeList_0() {
 u32 RegexNodeList_add(RegexNodeList *list, u8 kind) {
     if (!growToOneMore(list))
         return REGEX_NODE_NONE;
-    RegexNode *node = &(*list).nodes[(*list).count];
+    RegexNode *node = &RegexNodeList_nodesMut(list)[RegexNodeList_count(list)];
     memset(node, 0, sizeof(RegexNode));
-    (*node).kind = kind;
-    return (*list).count++;
+    RegexNode_setKind(node, kind);
+    return (*RegexNodeList_countMut(list))++;
 }
 
 RegexNode *RegexNodeList_get(RegexNodeList *list, u32 index) {
-    if (index >= (*list).count)
+    if (index >= RegexNodeList_count(list))
         return nullptr;
-    return &(*list).nodes[index];
+    return &RegexNodeList_nodesMut(list)[index];
 }
 
 const RegexNode *RegexNodeList_at(const RegexNodeList *list, u32 index) {
-    if (index >= (*list).count)
+    if (index >= RegexNodeList_count(list))
         return nullptr;
-    return &(*list).nodes[index];
+    return &RegexNodeList_nodesMut(list)[index];
 }
 
 fn RegexNodeList_free(RegexNodeList *list) {
-    if ((*list).nodes)
-        Memory_free((*list).nodes);
+    if (RegexNodeList_nodes(list))
+        Memory_free(RegexNodeList_nodes(list));
     *list = RegexNodeList();
 }
