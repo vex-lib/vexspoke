@@ -94,12 +94,78 @@ struct DisplayMonitor {
     f32 dpi;              // scale factor / density
 };
 
+;;GETTER
+static inline i32 DisplayMonitor_currentHeight(const DisplayMonitor *s) { return (*s).currentHeight; }
+;;GETTER
+static inline i32 *DisplayMonitor_currentHeightMut(DisplayMonitor *s) { return &(*s).currentHeight; }
+;;SETTER
+static inline fn DisplayMonitor_setCurrentHeight(DisplayMonitor *s, i32 v) { (*s).currentHeight = v; }
+;;GETTER
+static inline i32 DisplayMonitor_currentWidth(const DisplayMonitor *s) { return (*s).currentWidth; }
+;;GETTER
+static inline i32 *DisplayMonitor_currentWidthMut(DisplayMonitor *s) { return &(*s).currentWidth; }
+;;SETTER
+static inline fn DisplayMonitor_setCurrentWidth(DisplayMonitor *s, i32 v) { (*s).currentWidth = v; }
+;;GETTER
+static inline f32 DisplayMonitor_dpi(const DisplayMonitor *s) { return (*s).dpi; }
+;;GETTER
+static inline f32 *DisplayMonitor_dpiMut(DisplayMonitor *s) { return &(*s).dpi; }
+;;SETTER
+static inline fn DisplayMonitor_setDpi(DisplayMonitor *s, f32 v) { (*s).dpi = v; }
+;;GETTER
+static inline bool DisplayMonitor_hdrSupported(const DisplayMonitor *s) { return (*s).hdrSupported; }
+;;GETTER
+static inline bool *DisplayMonitor_hdrSupportedMut(DisplayMonitor *s) { return &(*s).hdrSupported; }
+;;SETTER
+static inline fn DisplayMonitor_setHdrSupported(DisplayMonitor *s, bool v) { (*s).hdrSupported = v; }
+;;GETTER
+static inline u32 DisplayMonitor_id(const DisplayMonitor *s) { return (*s).id; }
+;;GETTER
+static inline u32 *DisplayMonitor_idMut(DisplayMonitor *s) { return &(*s).id; }
+;;SETTER
+static inline fn DisplayMonitor_setId(DisplayMonitor *s, u32 v) { (*s).id = v; }
+;;GETTER
+static inline char *DisplayMonitor_nameMut(DisplayMonitor *s) { return (*s).name; }
+;;GETTER
+static inline const char *DisplayMonitor_name(const DisplayMonitor *s) { return (*s).name; }
+;;GETTER
+static inline i32 DisplayMonitor_nativeHeight(const DisplayMonitor *s) { return (*s).nativeHeight; }
+;;GETTER
+static inline i32 *DisplayMonitor_nativeHeightMut(DisplayMonitor *s) { return &(*s).nativeHeight; }
+;;SETTER
+static inline fn DisplayMonitor_setNativeHeight(DisplayMonitor *s, i32 v) { (*s).nativeHeight = v; }
+;;GETTER
+static inline i32 DisplayMonitor_nativeWidth(const DisplayMonitor *s) { return (*s).nativeWidth; }
+;;GETTER
+static inline i32 *DisplayMonitor_nativeWidthMut(DisplayMonitor *s) { return &(*s).nativeWidth; }
+;;SETTER
+static inline fn DisplayMonitor_setNativeWidth(DisplayMonitor *s, i32 v) { (*s).nativeWidth = v; }
+;;GETTER
+static inline i32 DisplayMonitor_pointHeight(const DisplayMonitor *s) { return (*s).pointHeight; }
+;;GETTER
+static inline i32 *DisplayMonitor_pointHeightMut(DisplayMonitor *s) { return &(*s).pointHeight; }
+;;SETTER
+static inline fn DisplayMonitor_setPointHeight(DisplayMonitor *s, i32 v) { (*s).pointHeight = v; }
+;;GETTER
+static inline i32 DisplayMonitor_pointWidth(const DisplayMonitor *s) { return (*s).pointWidth; }
+;;GETTER
+static inline i32 *DisplayMonitor_pointWidthMut(DisplayMonitor *s) { return &(*s).pointWidth; }
+;;SETTER
+static inline fn DisplayMonitor_setPointWidth(DisplayMonitor *s, i32 v) { (*s).pointWidth = v; }
+;;GETTER
+static inline i32 DisplayMonitor_refreshRate(const DisplayMonitor *s) { return (*s).refreshRate; }
+;;GETTER
+static inline i32 *DisplayMonitor_refreshRateMut(DisplayMonitor *s) { return &(*s).refreshRate; }
+;;SETTER
+static inline fn DisplayMonitor_setRefreshRate(DisplayMonitor *s, i32 v) { (*s).refreshRate = v; }
+
+
 DisplayMonitor *DisplayMonitor_0() {
     DisplayMonitor *m = (DisplayMonitor*) Memory_alloc(TYPE_DISPLAY_MONITOR_SINGLETON, sizeof(DisplayMonitor));
     if (!m)
         return nullptr;
     memset(m, 0, sizeof(DisplayMonitor));
-    (*m).dpi = 1.0f;
+    DisplayMonitor_setDpi(m, 1.0f);
     return m;
 }
 
@@ -110,95 +176,95 @@ fn DisplayMonitor_free(DisplayMonitor *monitor) {
 }
 
 u32 DisplayMonitor_getId(const DisplayMonitor *m) {
-    return m ? (*m).id : 0;
+    return m ? DisplayMonitor_id(m) : 0;
 }
 
 fn DisplayMonitor_setId(DisplayMonitor *m, u32 id) {
-    if (m) (*m).id = id;
+    if (m) (*DisplayMonitor_idMut(m)) = id;
 }
 
 const char *DisplayMonitor_getName(const DisplayMonitor *m) {
-    return m ? (*m).name : "";
+    return m ? DisplayMonitor_nameMut(m) : "";
 }
 
 fn DisplayMonitor_setName(DisplayMonitor *m, const char *name) {
     if (!m) return;
     if (name) {
-        strncpy((*m).name, name, sizeof((*m).name) - 1);
-        (*m).name[sizeof((*m).name) - 1] = '\0';
+        strncpy(DisplayMonitor_nameMut(m), name, sizeof ((DisplayMonitor){0}).name - 1);
+        DisplayMonitor_nameMut(m)[sizeof ((DisplayMonitor){0}).name - 1] = '\0';
     } else {
-        (*m).name[0] = '\0';
+        DisplayMonitor_nameMut(m)[0] = '\0';
     }
 }
 
 i32 DisplayMonitor_getCurrentWidth(const DisplayMonitor *m) {
-    return m ? (*m).currentWidth : 0;
+    return m ? DisplayMonitor_currentWidth(m) : 0;
 }
 
 fn DisplayMonitor_setCurrentWidth(DisplayMonitor *m, i32 val) {
-    if (m) (*m).currentWidth = val;
+    if (m) (*DisplayMonitor_currentWidthMut(m)) = val;
 }
 
 i32 DisplayMonitor_getCurrentHeight(const DisplayMonitor *m) {
-    return m ? (*m).currentHeight : 0;
+    return m ? DisplayMonitor_currentHeight(m) : 0;
 }
 
 fn DisplayMonitor_setCurrentHeight(DisplayMonitor *m, i32 val) {
-    if (m) (*m).currentHeight = val;
+    if (m) (*DisplayMonitor_currentHeightMut(m)) = val;
 }
 
 i32 DisplayMonitor_getPointWidth(const DisplayMonitor *m) {
-    return m ? (*m).pointWidth : 0;
+    return m ? DisplayMonitor_pointWidth(m) : 0;
 }
 
 fn DisplayMonitor_setPointWidth(DisplayMonitor *m, i32 val) {
-    if (m) (*m).pointWidth = val;
+    if (m) (*DisplayMonitor_pointWidthMut(m)) = val;
 }
 
 i32 DisplayMonitor_getPointHeight(const DisplayMonitor *m) {
-    return m ? (*m).pointHeight : 0;
+    return m ? DisplayMonitor_pointHeight(m) : 0;
 }
 
 fn DisplayMonitor_setPointHeight(DisplayMonitor *m, i32 val) {
-    if (m) (*m).pointHeight = val;
+    if (m) (*DisplayMonitor_pointHeightMut(m)) = val;
 }
 
 i32 DisplayMonitor_getNativeWidth(const DisplayMonitor *m) {
-    return m ? (*m).nativeWidth : 0;
+    return m ? DisplayMonitor_nativeWidth(m) : 0;
 }
 
 fn DisplayMonitor_setNativeWidth(DisplayMonitor *m, i32 val) {
-    if (m) (*m).nativeWidth = val;
+    if (m) (*DisplayMonitor_nativeWidthMut(m)) = val;
 }
 
 i32 DisplayMonitor_getNativeHeight(const DisplayMonitor *m) {
-    return m ? (*m).nativeHeight : 0;
+    return m ? DisplayMonitor_nativeHeight(m) : 0;
 }
 
 fn DisplayMonitor_setNativeHeight(DisplayMonitor *m, i32 val) {
-    if (m) (*m).nativeHeight = val;
+    if (m) (*DisplayMonitor_nativeHeightMut(m)) = val;
 }
 
 i32 DisplayMonitor_getRefreshRate(const DisplayMonitor *m) {
-    return m ? (*m).refreshRate : 0;
+    return m ? DisplayMonitor_refreshRate(m) : 0;
 }
 
 fn DisplayMonitor_setRefreshRate(DisplayMonitor *m, i32 val) {
-    if (m) (*m).refreshRate = val;
+    if (m) (*DisplayMonitor_refreshRateMut(m)) = val;
 }
 
 bool DisplayMonitor_getHdrSupported(const DisplayMonitor *m) {
-    return m ? (*m).hdrSupported : false;
+    return m ? DisplayMonitor_hdrSupported(m) : false;
 }
 
 fn DisplayMonitor_setHdrSupported(DisplayMonitor *m, bool val) {
-    if (m) (*m).hdrSupported = val;
+    if (m) (*DisplayMonitor_hdrSupportedMut(m)) = val;
 }
 
 f32 DisplayMonitor_getDpi(const DisplayMonitor *m) {
-    return m ? (*m).dpi : 1.0f;
+    return m ? DisplayMonitor_dpi(m) : 1.0f;
 }
 
 fn DisplayMonitor_setDpi(DisplayMonitor *m, f32 val) {
-    if (m) (*m).dpi = val;
+    if (m) (*DisplayMonitor_dpiMut(m)) = val;
 }

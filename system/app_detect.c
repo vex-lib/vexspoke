@@ -74,6 +74,32 @@
  *   - AppDetect_getName / getAltProcs / getDisplayName / getNote(self, slot)
  * ============================================================================
  */
+
+;;GETTER
+static inline const char * AppSlot_altProcs(const AppSlot *s) { return (*s).altProcs; }
+;;GETTER
+static inline const char * *AppSlot_altProcsMut(AppSlot *s) { return &(*s).altProcs; }
+;;SETTER
+static inline fn AppSlot_setAltProcs(AppSlot *s, const char * v) { (*s).altProcs = v; }
+;;GETTER
+static inline const char * AppSlot_displayName(const AppSlot *s) { return (*s).displayName; }
+;;GETTER
+static inline const char * *AppSlot_displayNameMut(AppSlot *s) { return &(*s).displayName; }
+;;SETTER
+static inline fn AppSlot_setDisplayName(AppSlot *s, const char * v) { (*s).displayName = v; }
+;;GETTER
+static inline const char * AppSlot_name(const AppSlot *s) { return (*s).name; }
+;;GETTER
+static inline const char * *AppSlot_nameMut(AppSlot *s) { return &(*s).name; }
+;;SETTER
+static inline fn AppSlot_setName(AppSlot *s, const char * v) { (*s).name = v; }
+;;GETTER
+static inline const char * AppSlot_note(const AppSlot *s) { return (*s).note; }
+;;GETTER
+static inline const char * *AppSlot_noteMut(AppSlot *s) { return &(*s).note; }
+;;SETTER
+static inline fn AppSlot_setNote(AppSlot *s, const char * v) { (*s).note = v; }
+
 ;;INTENTION("probes are PATH-scan + bundle-scan + libproc liveness (vexspoke R1 owns system probes; api-haven consumes for CLI/MCP — PREFERENCES.md Rule 17)")
 ;;INTENTION("isRunning is a loose basename match by design: enough to answer 'is codex alive'; bundle-id verification is deferred (would need ObjC NSRunningApplication)")
 ;;INTENTION("immutable registry rows — setters omitted; access via AppDetect_* table functions — Rule 33 Tier-2 waiver")
@@ -149,17 +175,17 @@ bool AppDetect_isAppBundle(const AppDetect *self, const char *name) {
 bool AppDetect_isInstalled(const AppDetect *self, const AppSlot *slot) {
     if (!self || !slot)
         return false;
-    if (AppDetect_isOnPath(self, (*slot).name))
+    if (AppDetect_isOnPath(self, AppSlot_name(slot)))
         return true;
-    return AppDetect_isAppBundle(self, (*slot).name);
+    return AppDetect_isAppBundle(self, AppSlot_name(slot));
 }
 
 // Static helper: any of the slot's proc names alive right now.
 static bool slotProcessRunning(const AppDetect *self, const AppSlot *slot) {
     ProcessProbe *probe = ProcessProbe_shared();
-    if (ProcessProbe_isRunning(probe, (*slot).name))
+    if (ProcessProbe_isRunning(probe, AppSlot_name(slot)))
         return true;
-    const char *alt = (*slot).altProcs;
+    const char *alt = AppSlot_altProcs(slot);
     if (!alt || (*alt) == '\0')
         return false;
     const char *p = alt;
@@ -216,20 +242,20 @@ const AppSlot *AppDetect_get(const AppDetect *self, const char *name) {
 
 const char *AppDetect_getName(const AppDetect *self, const AppSlot *slot) {
     (discard)self;
-    return slot ? (*slot).name : nullptr;
+    return slot ? AppSlot_name(slot) : nullptr;
 }
 
 const char *AppDetect_getAltProcs(const AppDetect *self, const AppSlot *slot) {
     (discard)self;
-    return slot ? (*slot).altProcs : nullptr;
+    return slot ? AppSlot_altProcs(slot) : nullptr;
 }
 
 const char *AppDetect_getDisplayName(const AppDetect *self, const AppSlot *slot) {
     (discard)self;
-    return slot ? (*slot).displayName : nullptr;
+    return slot ? AppSlot_displayName(slot) : nullptr;
 }
 
 const char *AppDetect_getNote(const AppDetect *self, const AppSlot *slot) {
     (discard)self;
-    return slot ? (*slot).note : nullptr;
+    return slot ? AppSlot_note(slot) : nullptr;
 }

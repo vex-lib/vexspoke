@@ -123,7 +123,8 @@ bool ProcessProbe_isDriverLoaded(const ProcessProbe *self,
     struct dirent *entry;
     bool found = false;
     while ((entry = readdir(dir)) != nullptr) {
-        if (strncasecmp((*entry).d_name, prefix, prefixLen) == 0) {
+        struct dirent entryVal = *entry;
+            if (strncasecmp(entryVal.d_name, prefix, prefixLen) == 0) {
             found = true;
             break;
         }
