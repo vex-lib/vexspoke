@@ -39,6 +39,32 @@
  * logging beyond the cold THROW.
  * ======================================================================== */
 
+
+;;GETTER
+static inline u8 *Blake2b_bufMut(Blake2b *s) { return (*s).buf; }
+;;GETTER
+static inline const u8 *Blake2b_buf(const Blake2b *s) { return (*s).buf; }
+;;GETTER
+static inline u64 *Blake2b_hMut(Blake2b *s) { return (*s).h; }
+;;GETTER
+static inline const u64 *Blake2b_h(const Blake2b *s) { return (*s).h; }
+;;GETTER
+static inline bytes Blake2b_outlen(const Blake2b *s) { return (*s).outlen; }
+;;GETTER
+static inline bytes *Blake2b_outlenMut(Blake2b *s) { return &(*s).outlen; }
+;;SETTER
+static inline fn Blake2b_setOutlen(Blake2b *s, bytes v) { (*s).outlen = v; }
+;;GETTER
+static inline u64 *Blake2b_tMut(Blake2b *s) { return (*s).t; }
+;;GETTER
+static inline const u64 *Blake2b_t(const Blake2b *s) { return (*s).t; }
+;;GETTER
+static inline bytes Blake2b_used(const Blake2b *s) { return (*s).used; }
+;;GETTER
+static inline bytes *Blake2b_usedMut(Blake2b *s) { return &(*s).used; }
+;;SETTER
+static inline fn Blake2b_setUsed(Blake2b *s, bytes v) { (*s).used = v; }
+
 static constexpr u64 BLAKE2B_IV[8] = {
     0x6a09e667f3bcc908ULL, 0xbb67ae8584caa73bULL,
     0x3c6ef372fe94f82bULL, 0xa54ff53a5f1d36f1ULL,
@@ -86,11 +112,11 @@ static fn compress(Blake2b *self, const u8 *block, bool last) {
     }
     u64 v[16];
     for (u32 i = 0; i < 8u; ++i) {
-        v[i] = (*self).h[i];
+        v[i] = Blake2b_hMut(self)[i];
         v[i + 8u] = BLAKE2B_IV[i];
     }
-    v[12] ^= (*self).t[0];
-    v[13] ^= (*self).t[1];
+    v[12] ^= Blake2b_tMut(self)[0];
+    v[13] ^= Blake2b_tMut(self)[1];
     if (last)
         v[14] = ~v[14];
     for (u32 r = 0; r < 12u; ++r) {
@@ -105,7 +131,7 @@ static fn compress(Blake2b *self, const u8 *block, bool last) {
         mix(v, 3u, 4u, 9u, 14u, m[s[14]], m[s[15]]);
     }
     for (u32 i = 0; i < 8u; ++i)
-        (*self).h[i] ^= v[i] ^ v[i + 8u];
+        Blake2b_hMut(self)[i] ^= v[i] ^ v[i + 8u];
 }
 
 bool Blake2b_init(Blake2b *self, bytes outlen) {
@@ -115,9 +141,9 @@ bool Blake2b_init(Blake2b *self, bytes outlen) {
     }
     memset(self, 0, sizeof *self);
     for (u32 i = 0; i < 8u; ++i)
-        (*self).h[i] = BLAKE2B_IV[i];
-    (*self).h[0] ^= (u64) 0x01010000u ^ (u64) outlen;
-    (*self).outlen = outlen;
+        Blake2b_hMut(self)[i] = BLAKE2B_IV[i];
+    Blake2b_hMut(self)[0] ^= (u64) 0x01010000u ^ (u64) outlen;
+    Blake2b_setOutlen(self, outlen);
     return true;
 }
 
@@ -132,10 +158,10 @@ bool Blake2b_initKeyed(Blake2b *self, bytes outlen, const u8 *key, bytes keylen)
     }
     if (!Blake2b_init(self, outlen))
         return false;
-    (*self).h[0] ^= (u64) keylen << 8;
-    memcpy((*self).buf, key, keylen);
-    memset((*self).buf + keylen, 0, BLAKE2B_BLOCK_SIZE - keylen);
-    (*self).used = BLAKE2B_BLOCK_SIZE;
+    Blake2b_hMut(self)[0] ^= (u64) keylen << 8;
+    memcpy(Blake2b_bufMut(self), key, keylen);
+    memset(Blake2b_bufMut(self) + keylen, 0, BLAKE2B_BLOCK_SIZE - keylen);
+    Blake2b_setUsed(self, BLAKE2B_BLOCK_SIZE);
     return true;
 }
 
@@ -149,41 +175,41 @@ fn Blake2b_update(Blake2b *self, const_any data, bytes len) {
         return;
     }
     const u8 *p = (const u8*) data;
-    if ((*self).used + len > BLAKE2B_BLOCK_SIZE) {
-        bytes take = BLAKE2B_BLOCK_SIZE - (*self).used;
-        memcpy((*self).buf + (*self).used, p, take);
-        (*self).t[0] += BLAKE2B_BLOCK_SIZE;
-        if ((*self).t[0] < BLAKE2B_BLOCK_SIZE)
-            (*self).t[1]++;
-        compress(self, (*self).buf, false);
-        (*self).used = 0u;
+    if (Blake2b_used(self) + len > BLAKE2B_BLOCK_SIZE) {
+        bytes take = BLAKE2B_BLOCK_SIZE - Blake2b_used(self);
+        memcpy(Blake2b_bufMut(self) + Blake2b_used(self), p, take);
+        Blake2b_tMut(self)[0] += BLAKE2B_BLOCK_SIZE;
+        if (Blake2b_tMut(self)[0] < BLAKE2B_BLOCK_SIZE)
+            Blake2b_tMut(self)[1]++;
+        compress(self, Blake2b_bufMut(self), false);
+        Blake2b_setUsed(self, 0u);
         p += take;
         len -= take;
         while (len > BLAKE2B_BLOCK_SIZE) {
-            (*self).t[0] += BLAKE2B_BLOCK_SIZE;
-            if ((*self).t[0] < BLAKE2B_BLOCK_SIZE)
-                (*self).t[1]++;
+            Blake2b_tMut(self)[0] += BLAKE2B_BLOCK_SIZE;
+            if (Blake2b_tMut(self)[0] < BLAKE2B_BLOCK_SIZE)
+                Blake2b_tMut(self)[1]++;
             compress(self, p, false);
             p += BLAKE2B_BLOCK_SIZE;
             len -= BLAKE2B_BLOCK_SIZE;
         }
     }
-    memcpy((*self).buf + (*self).used, p, len);
-    (*self).used += len;
+    memcpy(Blake2b_bufMut(self) + Blake2b_used(self), p, len);
+    Blake2b_setUsed(self, Blake2b_used(self) + (len));
 }
 
 bool Blake2b_final(Blake2b *self, u8 *out, bytes outCap) {
-    if (self == nullptr || out == nullptr || outCap < (*self).outlen) {
+    if (self == nullptr || out == nullptr || outCap < Blake2b_outlen(self)) {
         THROW("Blake2b_final: null context/output or short destination");
         return false;
     }
-    (*self).t[0] += (*self).used;
-    if ((*self).t[0] < (*self).used)
-        (*self).t[1]++;
-    memset((*self).buf + (*self).used, 0, BLAKE2B_BLOCK_SIZE - (*self).used);
-    compress(self, (*self).buf, true);
-    for (bytes i = 0; i < (*self).outlen; ++i)
-        out[i] = (u8) ((*self).h[i / 8u] >> (8u * (i % 8u)));
+    Blake2b_tMut(self)[0] += Blake2b_used(self);
+    if (Blake2b_tMut(self)[0] < Blake2b_used(self))
+        Blake2b_tMut(self)[1]++;
+    memset(Blake2b_bufMut(self) + Blake2b_used(self), 0, BLAKE2B_BLOCK_SIZE - Blake2b_used(self));
+    compress(self, Blake2b_bufMut(self), true);
+    for (bytes i = 0; i < Blake2b_outlen(self); ++i)
+        out[i] = (u8) (Blake2b_hMut(self)[i / 8u] >> (8u * (i % 8u)));
     memset(self, 0, sizeof *self);
     return true;
 }

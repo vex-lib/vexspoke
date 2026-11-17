@@ -44,6 +44,32 @@
  * nothing; work memory is wiped and freed on every path. No logging on success.
  * ======================================================================== */
 
+
+;;GETTER
+static inline u32 Argon2Params_lanes(const Argon2Params *s) { return (*s).lanes; }
+;;GETTER
+static inline u32 *Argon2Params_lanesMut(Argon2Params *s) { return &(*s).lanes; }
+;;SETTER
+static inline fn Argon2Params_setLanes(Argon2Params *s, u32 v) { (*s).lanes = v; }
+;;GETTER
+static inline u32 Argon2Params_memoryKiB(const Argon2Params *s) { return (*s).memoryKiB; }
+;;GETTER
+static inline u32 *Argon2Params_memoryKiBMut(Argon2Params *s) { return &(*s).memoryKiB; }
+;;SETTER
+static inline fn Argon2Params_setMemoryKiB(Argon2Params *s, u32 v) { (*s).memoryKiB = v; }
+;;GETTER
+static inline u32 Argon2Params_passes(const Argon2Params *s) { return (*s).passes; }
+;;GETTER
+static inline u32 *Argon2Params_passesMut(Argon2Params *s) { return &(*s).passes; }
+;;SETTER
+static inline fn Argon2Params_setPasses(Argon2Params *s, u32 v) { (*s).passes = v; }
+;;GETTER
+static inline u32 Argon2Params_tagBytes(const Argon2Params *s) { return (*s).tagBytes; }
+;;GETTER
+static inline u32 *Argon2Params_tagBytesMut(Argon2Params *s) { return &(*s).tagBytes; }
+;;SETTER
+static inline fn Argon2Params_setTagBytes(Argon2Params *s, u32 v) { (*s).tagBytes = v; }
+
 #define ARGON2_ADDRESSES_IN_BLOCK 128u
 #define ARGON2_BLOCK_WORDS        128u
 
@@ -57,6 +83,50 @@ typedef struct Argon2Instance {
     u32 version;
     u64 *memory;       // memoryBlocks * 128 words
 } Argon2Instance;
+
+;;GETTER
+static inline u32 Argon2Instance_laneLength(const Argon2Instance *s) { return (*s).laneLength; }
+;;GETTER
+static inline u32 *Argon2Instance_laneLengthMut(Argon2Instance *s) { return &(*s).laneLength; }
+;;SETTER
+static inline fn Argon2Instance_setLaneLength(Argon2Instance *s, u32 v) { (*s).laneLength = v; }
+;;GETTER
+static inline u32 Argon2Instance_lanes(const Argon2Instance *s) { return (*s).lanes; }
+;;GETTER
+static inline u32 *Argon2Instance_lanesMut(Argon2Instance *s) { return &(*s).lanes; }
+;;SETTER
+static inline fn Argon2Instance_setLanes(Argon2Instance *s, u32 v) { (*s).lanes = v; }
+;;GETTER
+static inline u64 * Argon2Instance_memory(const Argon2Instance *s) { return (*s).memory; }
+;;GETTER
+static inline u64 * *Argon2Instance_memoryMut(Argon2Instance *s) { return &(*s).memory; }
+;;SETTER
+static inline fn Argon2Instance_setMemory(Argon2Instance *s, u64 * v) { (*s).memory = v; }
+;;GETTER
+static inline u32 Argon2Instance_memoryBlocks(const Argon2Instance *s) { return (*s).memoryBlocks; }
+;;GETTER
+static inline u32 *Argon2Instance_memoryBlocksMut(Argon2Instance *s) { return &(*s).memoryBlocks; }
+;;SETTER
+static inline fn Argon2Instance_setMemoryBlocks(Argon2Instance *s, u32 v) { (*s).memoryBlocks = v; }
+;;GETTER
+static inline u32 Argon2Instance_passes(const Argon2Instance *s) { return (*s).passes; }
+;;GETTER
+static inline u32 *Argon2Instance_passesMut(Argon2Instance *s) { return &(*s).passes; }
+;;SETTER
+static inline fn Argon2Instance_setPasses(Argon2Instance *s, u32 v) { (*s).passes = v; }
+;;GETTER
+static inline u32 Argon2Instance_segmentLength(const Argon2Instance *s) { return (*s).segmentLength; }
+;;GETTER
+static inline u32 *Argon2Instance_segmentLengthMut(Argon2Instance *s) { return &(*s).segmentLength; }
+;;SETTER
+static inline fn Argon2Instance_setSegmentLength(Argon2Instance *s, u32 v) { (*s).segmentLength = v; }
+;;GETTER
+static inline u32 Argon2Instance_type(const Argon2Instance *s) { return (*s).type; }
+;;GETTER
+static inline u32 *Argon2Instance_typeMut(Argon2Instance *s) { return &(*s).type; }
+;;SETTER
+static inline fn Argon2Instance_setType(Argon2Instance *s, u32 v) { (*s).type = v; }
+
 
 static fn storeLE32(u8 *p, u32 v) {
     p[0] = (u8) v;
@@ -145,15 +215,15 @@ static u32 indexAlpha(const Argon2Instance *inst, u32 pass, u32 slice,
         if (slice == 0u)
             referenceAreaSize = index - 1u;
         else if (sameLane)
-            referenceAreaSize = slice * (*inst).segmentLength + index - 1u;
+            referenceAreaSize = slice * Argon2Instance_segmentLength(inst) + index - 1u;
         else
-            referenceAreaSize = slice * (*inst).segmentLength +
+            referenceAreaSize = slice * Argon2Instance_segmentLength(inst) +
                                 (index == 0u ? 0xFFFFFFFFu : 0u);
     } else {
         if (sameLane)
-            referenceAreaSize = (*inst).laneLength - (*inst).segmentLength + index - 1u;
+            referenceAreaSize = Argon2Instance_laneLength(inst) - Argon2Instance_segmentLength(inst) + index - 1u;
         else
-            referenceAreaSize = (*inst).laneLength - (*inst).segmentLength +
+            referenceAreaSize = Argon2Instance_laneLength(inst) - Argon2Instance_segmentLength(inst) +
                                 (index == 0u ? 0xFFFFFFFFu : 0u);
     }
 
@@ -166,13 +236,13 @@ static u32 indexAlpha(const Argon2Instance *inst, u32 pass, u32 slice,
     if (pass != 0u)
         startPosition = (slice == ARGON2_SYNC_POINTS - 1u)
             ? 0u
-            : (slice + 1u) * (*inst).segmentLength;
+            : (slice + 1u) * Argon2Instance_segmentLength(inst);
 
-    return (u32) (((u64) startPosition + relativePosition) % (*inst).laneLength);
+    return (u32) (((u64) startPosition + relativePosition) % Argon2Instance_laneLength(inst));
 }
 
 static fn fillSegment(const Argon2Instance *inst, u32 pass, u32 lane, u32 slice) {
-    bool dataIndependent = ((*inst).type == ARGON2_TYPE_ID && pass == 0u &&
+    bool dataIndependent = (Argon2Instance_type(inst) == ARGON2_TYPE_ID && pass == 0u &&
                             slice < ARGON2_SYNC_POINTS / 2u);
     u64 addressBlock[ARGON2_BLOCK_WORDS] = {0};
     u64 inputBlock[ARGON2_BLOCK_WORDS] = {0};
@@ -182,9 +252,9 @@ static fn fillSegment(const Argon2Instance *inst, u32 pass, u32 lane, u32 slice)
         inputBlock[0] = pass;
         inputBlock[1] = lane;
         inputBlock[2] = slice;
-        inputBlock[3] = (*inst).memoryBlocks;
-        inputBlock[4] = (*inst).passes;
-        inputBlock[5] = (*inst).type;
+        inputBlock[3] = Argon2Instance_memoryBlocks(inst);
+        inputBlock[4] = Argon2Instance_passes(inst);
+        inputBlock[5] = Argon2Instance_type(inst);
     }
 
     u32 startingIndex = 0u;
@@ -194,14 +264,14 @@ static fn fillSegment(const Argon2Instance *inst, u32 pass, u32 lane, u32 slice)
             nextAddresses(addressBlock, inputBlock, zeroBlock);
     }
 
-    u32 currOffset = lane * (*inst).laneLength + slice * (*inst).segmentLength +
+    u32 currOffset = lane * Argon2Instance_laneLength(inst) + slice * Argon2Instance_segmentLength(inst) +
                           startingIndex;
-    u32 prevOffset = (currOffset % (*inst).laneLength == 0u)
-        ? currOffset + (*inst).laneLength - 1u
+    u32 prevOffset = (currOffset % Argon2Instance_laneLength(inst) == 0u)
+        ? currOffset + Argon2Instance_laneLength(inst) - 1u
         : currOffset - 1u;
 
-    for (u32 i = startingIndex; i < (*inst).segmentLength; ++i, ++currOffset, ++prevOffset) {
-        if (currOffset % (*inst).laneLength == 1u)
+    for (u32 i = startingIndex; i < Argon2Instance_segmentLength(inst); ++i, ++currOffset, ++prevOffset) {
+        if (currOffset % Argon2Instance_laneLength(inst) == 1u)
             prevOffset = currOffset - 1u;
 
         u64 pseudoRand;
@@ -210,20 +280,20 @@ static fn fillSegment(const Argon2Instance *inst, u32 pass, u32 lane, u32 slice)
                 nextAddresses(addressBlock, inputBlock, zeroBlock);
             pseudoRand = addressBlock[i % ARGON2_ADDRESSES_IN_BLOCK];
         } else {
-            pseudoRand = (*inst).memory[(bytes) prevOffset * ARGON2_BLOCK_WORDS];
+            pseudoRand = Argon2Instance_memory(inst)[(bytes) prevOffset * ARGON2_BLOCK_WORDS];
         }
 
-        u32 refLane = (u32) ((pseudoRand >> 32) % (*inst).lanes);
+        u32 refLane = (u32) ((pseudoRand >> 32) % Argon2Instance_lanes(inst));
         if (pass == 0u && slice == 0u)
             refLane = lane;
 
         u32 refIndex = indexAlpha(inst, pass, slice, i,
                                        (u32) (pseudoRand & 0xFFFFFFFFu), refLane == lane);
 
-        const u64 *refBlock = (*inst).memory +
-            (bytes) ((*inst).laneLength * refLane + refIndex) * ARGON2_BLOCK_WORDS;
-        u64 *currBlock = (*inst).memory + (bytes) currOffset * ARGON2_BLOCK_WORDS;
-        const u64 *prevBlock = (*inst).memory + (bytes) prevOffset * ARGON2_BLOCK_WORDS;
+        const u64 *refBlock = Argon2Instance_memory(inst) +
+            (bytes) (Argon2Instance_laneLength(inst) * refLane + refIndex) * ARGON2_BLOCK_WORDS;
+        u64 *currBlock = Argon2Instance_memory(inst) + (bytes) currOffset * ARGON2_BLOCK_WORDS;
+        const u64 *prevBlock = Argon2Instance_memory(inst) + (bytes) prevOffset * ARGON2_BLOCK_WORDS;
         fillBlock(prevBlock, refBlock, currBlock, pass != 0u);
     }
 }
@@ -276,9 +346,9 @@ bool Argon2id_derive(const Argon2Params *params,
                      u8 *tag, bytes tagCap) {
     if (params == nullptr || password == nullptr || passwordLen == 0u ||
         passwordLen > 0xFFFFFFFFu || salt == nullptr || saltLen < ARGON2_SALT_MIN ||
-        saltLen > 0xFFFFFFFFu || tag == nullptr || tagCap < (*params).tagBytes ||
-        (*params).lanes == 0u || (*params).passes == 0u ||
-        (*params).tagBytes < ARGON2_TAG_MIN || (*params).tagBytes > ARGON2_TAG_MAX) {
+        saltLen > 0xFFFFFFFFu || tag == nullptr || tagCap < Argon2Params_tagBytes(params) ||
+        Argon2Params_lanes(params) == 0u || Argon2Params_passes(params) == 0u ||
+        Argon2Params_tagBytes(params) < ARGON2_TAG_MIN || Argon2Params_tagBytes(params) > ARGON2_TAG_MAX) {
         THROW("Argon2id_derive: invalid parameter, password, salt or tag");
         return false;
     }
@@ -289,8 +359,8 @@ bool Argon2id_derive(const Argon2Params *params,
         return false;
     }
 
-    u32 lanes = (*params).lanes;
-    u32 memoryBlocks = 4u * lanes * ((*params).memoryKiB / (4u * lanes));
+    u32 lanes = Argon2Params_lanes(params);
+    u32 memoryBlocks = 4u * lanes * (Argon2Params_memoryKiB(params) / (4u * lanes));
     if (memoryBlocks < 8u * lanes) {
         THROW("Argon2id_derive: memory is too small for the lane count");
         return false;
@@ -315,7 +385,7 @@ bool Argon2id_derive(const Argon2Params *params,
 
     Argon2Instance inst = {
         .lanes = lanes,
-        .passes = (*params).passes,
+        .passes = Argon2Params_passes(params),
         .memoryBlocks = memoryBlocks,
         .segmentLength = segmentLength,
         .laneLength = laneLength,
@@ -334,9 +404,9 @@ bool Argon2id_derive(const Argon2Params *params,
             return false;
         }
         storeLE32(le, lanes);              Blake2b_update(&ctx, le, sizeof le);
-        storeLE32(le, (*params).tagBytes); Blake2b_update(&ctx, le, sizeof le);
-        storeLE32(le, (*params).memoryKiB);Blake2b_update(&ctx, le, sizeof le);
-        storeLE32(le, (*params).passes);   Blake2b_update(&ctx, le, sizeof le);
+        storeLE32(le, Argon2Params_tagBytes(params)); Blake2b_update(&ctx, le, sizeof le);
+        storeLE32(le, Argon2Params_memoryKiB(params));Blake2b_update(&ctx, le, sizeof le);
+        storeLE32(le, Argon2Params_passes(params));   Blake2b_update(&ctx, le, sizeof le);
         storeLE32(le, ARGON2_VERSION_13);  Blake2b_update(&ctx, le, sizeof le);
         storeLE32(le, ARGON2_TYPE_ID);     Blake2b_update(&ctx, le, sizeof le);
         storeLE32(le, (u32) passwordLen);
@@ -383,7 +453,7 @@ bool Argon2id_derive(const Argon2Params *params,
                blockBytes, ARGON2_BLOCK_BYTES);
     }
 
-    for (u32 pass = 0; pass < (*params).passes; ++pass)
+    for (u32 pass = 0; pass < Argon2Params_passes(params); ++pass)
         for (u32 slice = 0; slice < ARGON2_SYNC_POINTS; ++slice)
             for (u32 lane = 0; lane < lanes; ++lane)
                 fillSegment(&inst, pass, lane, slice);
@@ -398,7 +468,7 @@ bool Argon2id_derive(const Argon2Params *params,
             finalBlock[i] ^= last[i];
     }
 
-    bool ok = hPrime(tag, (*params).tagBytes, (const u8*) finalBlock,
+    bool ok = hPrime(tag, Argon2Params_tagBytes(params), (const u8*) finalBlock,
                      ARGON2_BLOCK_BYTES);
     secureWipe(finalBlock, sizeof finalBlock);
     secureWipe(blockBytes, sizeof blockBytes);

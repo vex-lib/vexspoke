@@ -132,11 +132,19 @@ struct SecureRandom {
     u64 draws; // count of draws issued (telemetry)
 };
 
+;;GETTER
+static inline u64 SecureRandom_draws(const SecureRandom *s) { return (*s).draws; }
+;;GETTER
+static inline u64 *SecureRandom_drawsMut(SecureRandom *s) { return &(*s).draws; }
+;;SETTER
+static inline fn SecureRandom_setDraws(SecureRandom *s, u64 v) { (*s).draws = v; }
+
+
 SecureRandom *SecureRandom_0() {
     SecureRandom *self = (SecureRandom*) Memory_alloc(TYPE_SECURE_RANDOM_SINGLETON, sizeof(SecureRandom));
     if (self == nullptr)
         return nullptr;
-    (*self).draws = 0u;
+    SecureRandom_setDraws(self, 0u);
     return self;
 }
 
@@ -149,7 +157,7 @@ bool SecureRandom_bytes(SecureRandom *self, any dest, bytes len) {
         return false;
     if (!osFill(dest, len))
         return false;
-    (*self).draws++;
+    SecureRandom_setDraws(self, SecureRandom_draws(self) + 1u);
     return true;
 }
 
@@ -168,5 +176,5 @@ u32 SecureRandom_u32(SecureRandom *self) {
 }
 
 u64 SecureRandom_draws(const SecureRandom *self) {
-    return self ? (*self).draws : 0;
+    return self ? SecureRandom_draws(self) : 0;
 }

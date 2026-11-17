@@ -63,6 +63,27 @@
  * ============================================================================
  */
 
+
+;;GETTER
+static inline u8 *CryptoSha256_bufferMut(CryptoSha256 *s) { return (*s).buffer; }
+;;GETTER
+static inline const u8 *CryptoSha256_buffer(const CryptoSha256 *s) { return (*s).buffer; }
+;;GETTER
+static inline u64 CryptoSha256_count(const CryptoSha256 *s) { return (*s).count; }
+;;GETTER
+static inline u64 *CryptoSha256_countMut(CryptoSha256 *s) { return &(*s).count; }
+;;SETTER
+static inline fn CryptoSha256_setCount(CryptoSha256 *s, u64 v) { (*s).count = v; }
+;;GETTER
+static inline u32 *CryptoSha256_stateMut(CryptoSha256 *s) { return (*s).state; }
+;;GETTER
+static inline const u32 *CryptoSha256_state(const CryptoSha256 *s) { return (*s).state; }
+
+;;GETTER
+static inline u64 *CryptoRng_sMut(CryptoRng *s) { return (*s).s; }
+;;GETTER
+static inline const u64 *CryptoRng_s(const CryptoRng *s) { return (*s).s; }
+
 // ============================================================================
 // SHA-256 (NIST FIPS 180-4) Implementation
 // ============================================================================
@@ -109,14 +130,14 @@ static fn Crypto_sha256Transform(CryptoSha256 *ctx, const u8 data[64]) {
         m[i] = SIG1(m[i - 2]) + m[i - 7] + SIG0(m[i - 15]) + m[i - 16];
     }
 
-    u32 a = (*ctx).state[0];
-    u32 b = (*ctx).state[1];
-    u32 c = (*ctx).state[2];
-    u32 d = (*ctx).state[3];
-    u32 e = (*ctx).state[4];
-    u32 f = (*ctx).state[5];
-    u32 g = (*ctx).state[6];
-    u32 h = (*ctx).state[7];
+    u32 a = CryptoSha256_stateMut(ctx)[0];
+    u32 b = CryptoSha256_stateMut(ctx)[1];
+    u32 c = CryptoSha256_stateMut(ctx)[2];
+    u32 d = CryptoSha256_stateMut(ctx)[3];
+    u32 e = CryptoSha256_stateMut(ctx)[4];
+    u32 f = CryptoSha256_stateMut(ctx)[5];
+    u32 g = CryptoSha256_stateMut(ctx)[6];
+    u32 h = CryptoSha256_stateMut(ctx)[7];
 
     for (i32 i = 0; i < 64; i++) {
         u32 t1 = h + EP1(e) + CH(e, f, g) + K[i] + m[i];
@@ -131,45 +152,45 @@ static fn Crypto_sha256Transform(CryptoSha256 *ctx, const u8 data[64]) {
         a = t1 + t2;
     }
 
-    (*ctx).state[0] += a;
-    (*ctx).state[1] += b;
-    (*ctx).state[2] += c;
-    (*ctx).state[3] += d;
-    (*ctx).state[4] += e;
-    (*ctx).state[5] += f;
-    (*ctx).state[6] += g;
-    (*ctx).state[7] += h;
+    CryptoSha256_stateMut(ctx)[0] += a;
+    CryptoSha256_stateMut(ctx)[1] += b;
+    CryptoSha256_stateMut(ctx)[2] += c;
+    CryptoSha256_stateMut(ctx)[3] += d;
+    CryptoSha256_stateMut(ctx)[4] += e;
+    CryptoSha256_stateMut(ctx)[5] += f;
+    CryptoSha256_stateMut(ctx)[6] += g;
+    CryptoSha256_stateMut(ctx)[7] += h;
 }
 
 fn Crypto_sha256Init(CryptoSha256 *ctx) {
     if (ctx == nullptr) return;
-    (*ctx).count = 0;
-    (*ctx).state[0] = 0x6a09e667u;
-    (*ctx).state[1] = 0xbb67ae85u;
-    (*ctx).state[2] = 0x3c6ef372u;
-    (*ctx).state[3] = 0xa54ff53au;
-    (*ctx).state[4] = 0x510e527fu;
-    (*ctx).state[5] = 0x9b05688cu;
-    (*ctx).state[6] = 0x1f83d9abu;
-    (*ctx).state[7] = 0x5be0cd19u;
+    CryptoSha256_setCount(ctx, 0);
+    CryptoSha256_stateMut(ctx)[0] = 0x6a09e667u;
+    CryptoSha256_stateMut(ctx)[1] = 0xbb67ae85u;
+    CryptoSha256_stateMut(ctx)[2] = 0x3c6ef372u;
+    CryptoSha256_stateMut(ctx)[3] = 0xa54ff53au;
+    CryptoSha256_stateMut(ctx)[4] = 0x510e527fu;
+    CryptoSha256_stateMut(ctx)[5] = 0x9b05688cu;
+    CryptoSha256_stateMut(ctx)[6] = 0x1f83d9abu;
+    CryptoSha256_stateMut(ctx)[7] = 0x5be0cd19u;
 }
 
 fn Crypto_sha256Update(CryptoSha256 *ctx, const_any data, bytes len) {
     if (ctx == nullptr || data == nullptr || len == 0) return;
 
     const u8 *p = (const u8*) data;
-    bytes bufIdx = (bytes) ((*ctx).count & 0x3F);
-    (*ctx).count += (u64) len;
+    bytes bufIdx = (bytes) (CryptoSha256_count(ctx) & 0x3F);
+    CryptoSha256_setCount(ctx, CryptoSha256_count(ctx) + ((u64) len));
 
     // Fill buffer if partially full
     if (bufIdx > 0) {
         bytes needed = 64 - bufIdx;
         if (len < needed) {
-            memcpy((*ctx).buffer + bufIdx, p, len);
+            memcpy(CryptoSha256_bufferMut(ctx) + bufIdx, p, len);
             return;
         }
-        memcpy((*ctx).buffer + bufIdx, p, needed);
-        Crypto_sha256Transform(ctx, (*ctx).buffer);
+        memcpy(CryptoSha256_bufferMut(ctx) + bufIdx, p, needed);
+        Crypto_sha256Transform(ctx, CryptoSha256_bufferMut(ctx));
         p += needed;
         len -= needed;
     }
@@ -183,40 +204,40 @@ fn Crypto_sha256Update(CryptoSha256 *ctx, const_any data, bytes len) {
 
     // Store trailing remainder
     if (len > 0) {
-        memcpy((*ctx).buffer, p, len);
+        memcpy(CryptoSha256_bufferMut(ctx), p, len);
     }
 }
 
 fn Crypto_sha256Final(CryptoSha256 *ctx, u8 outDigest[CRYPTO_SHA256_DIGEST_SIZE]) {
     if (ctx == nullptr || outDigest == nullptr) return;
 
-    u64 bitCount = (*ctx).count * 8ULL;
-    bytes bufIdx = (bytes) ((*ctx).count & 0x3F);
+    u64 bitCount = CryptoSha256_count(ctx) * 8ULL;
+    bytes bufIdx = (bytes) (CryptoSha256_count(ctx) & 0x3F);
 
     // Append 0x80 bit
-    (*ctx).buffer[bufIdx++] = 0x80;
+    CryptoSha256_bufferMut(ctx)[bufIdx++] = 0x80;
 
     if (bufIdx > 56) {
         // Not enough room for 8-byte length in this block
-        memset((*ctx).buffer + bufIdx, 0, 64 - bufIdx);
-        Crypto_sha256Transform(ctx, (*ctx).buffer);
-        memset((*ctx).buffer, 0, 56);
+        memset(CryptoSha256_bufferMut(ctx) + bufIdx, 0, 64 - bufIdx);
+        Crypto_sha256Transform(ctx, CryptoSha256_bufferMut(ctx));
+        memset(CryptoSha256_bufferMut(ctx), 0, 56);
     } else {
-        memset((*ctx).buffer + bufIdx, 0, 56 - bufIdx);
+        memset(CryptoSha256_bufferMut(ctx) + bufIdx, 0, 56 - bufIdx);
     }
 
     // Append 64-bit big-endian bit length
     for (i32 i = 7; i >= 0; i--) {
-        (*ctx).buffer[56 + (7 - i)] = (u8) ((bitCount >> (i * 8)) & 0xFF);
+        CryptoSha256_bufferMut(ctx)[56 + (7 - i)] = (u8) ((bitCount >> (i * 8)) & 0xFF);
     }
-    Crypto_sha256Transform(ctx, (*ctx).buffer);
+    Crypto_sha256Transform(ctx, CryptoSha256_bufferMut(ctx));
 
     // Output big-endian digest
     for (i32 i = 0; i < 8; i++) {
-        outDigest[i * 4]     = (u8) (((*ctx).state[i] >> 24) & 0xFF);
-        outDigest[i * 4 + 1] = (u8) (((*ctx).state[i] >> 16) & 0xFF);
-        outDigest[i * 4 + 2] = (u8) (((*ctx).state[i] >> 8) & 0xFF);
-        outDigest[i * 4 + 3] = (u8) (((*ctx).state[i]) & 0xFF);
+        outDigest[i * 4]     = (u8) ((CryptoSha256_stateMut(ctx)[i] >> 24) & 0xFF);
+        outDigest[i * 4 + 1] = (u8) ((CryptoSha256_stateMut(ctx)[i] >> 16) & 0xFF);
+        outDigest[i * 4 + 2] = (u8) ((CryptoSha256_stateMut(ctx)[i] >> 8) & 0xFF);
+        outDigest[i * 4 + 3] = (u8) ((CryptoSha256_stateMut(ctx)[i]) & 0xFF);
     }
 }
 
@@ -290,18 +311,18 @@ fn Crypto_rngInit(CryptoRng *rng, u64 seed) {
     if (rng == nullptr) return;
     if (seed == 0) seed = 0x853c49e6748fea9bULL;
     u64 sm = seed;
-    (*rng).s[0] = splitmix64(&sm);
-    (*rng).s[1] = splitmix64(&sm);
+    CryptoRng_sMut(rng)[0] = splitmix64(&sm);
+    CryptoRng_sMut(rng)[1] = splitmix64(&sm);
 }
 
 u64 Crypto_rngNextU64(CryptoRng *rng) {
     if (rng == nullptr) return 0;
-    u64 s1 = (*rng).s[0];
-    const u64 s0 = (*rng).s[1];
-    (*rng).s[0] = s0;
+    u64 s1 = CryptoRng_sMut(rng)[0];
+    const u64 s0 = CryptoRng_sMut(rng)[1];
+    CryptoRng_sMut(rng)[0] = s0;
     s1 ^= s1 << 23;
-    (*rng).s[1] = s1 ^ s0 ^ (s1 >> 18) ^ (s0 >> 5);
-    return (*rng).s[1] + s0;
+    CryptoRng_sMut(rng)[1] = s1 ^ s0 ^ (s1 >> 18) ^ (s0 >> 5);
+    return CryptoRng_sMut(rng)[1] + s0;
 }
 
 fn Crypto_rngBytes(CryptoRng *rng, any dest, bytes len) {

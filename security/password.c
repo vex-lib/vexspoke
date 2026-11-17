@@ -30,6 +30,58 @@
  * reject through THROW with the output untouched; no allocation; no logging.
  * ======================================================================== */
 
+
+;;GETTER
+static inline u32 PasswordVerifier_code(const PasswordVerifier *s) { return (*s).code; }
+;;GETTER
+static inline u32 *PasswordVerifier_codeMut(PasswordVerifier *s) { return &(*s).code; }
+;;SETTER
+static inline fn PasswordVerifier_setCode(PasswordVerifier *s, u32 v) { (*s).code = v; }
+;;GETTER
+static inline u8 *PasswordVerifier_hashMut(PasswordVerifier *s) { return (*s).hash; }
+;;GETTER
+static inline const u8 *PasswordVerifier_hash(const PasswordVerifier *s) { return (*s).hash; }
+;;GETTER
+static inline u32 PasswordVerifier_hashLength(const PasswordVerifier *s) { return (*s).hashLength; }
+;;GETTER
+static inline u32 *PasswordVerifier_hashLengthMut(PasswordVerifier *s) { return &(*s).hashLength; }
+;;SETTER
+static inline fn PasswordVerifier_setHashLength(PasswordVerifier *s, u32 v) { (*s).hashLength = v; }
+;;GETTER
+static inline u32 PasswordVerifier_iterations(const PasswordVerifier *s) { return (*s).iterations; }
+;;GETTER
+static inline u32 *PasswordVerifier_iterationsMut(PasswordVerifier *s) { return &(*s).iterations; }
+;;SETTER
+static inline fn PasswordVerifier_setIterations(PasswordVerifier *s, u32 v) { (*s).iterations = v; }
+;;GETTER
+static inline u32 PasswordVerifier_kdf(const PasswordVerifier *s) { return (*s).kdf; }
+;;GETTER
+static inline u32 *PasswordVerifier_kdfMut(PasswordVerifier *s) { return &(*s).kdf; }
+;;SETTER
+static inline fn PasswordVerifier_setKdf(PasswordVerifier *s, u32 v) { (*s).kdf = v; }
+;;GETTER
+static inline u32 PasswordVerifier_lanes(const PasswordVerifier *s) { return (*s).lanes; }
+;;GETTER
+static inline u32 *PasswordVerifier_lanesMut(PasswordVerifier *s) { return &(*s).lanes; }
+;;SETTER
+static inline fn PasswordVerifier_setLanes(PasswordVerifier *s, u32 v) { (*s).lanes = v; }
+;;GETTER
+static inline u32 PasswordVerifier_memoryKiB(const PasswordVerifier *s) { return (*s).memoryKiB; }
+;;GETTER
+static inline u32 *PasswordVerifier_memoryKiBMut(PasswordVerifier *s) { return &(*s).memoryKiB; }
+;;SETTER
+static inline fn PasswordVerifier_setMemoryKiB(PasswordVerifier *s, u32 v) { (*s).memoryKiB = v; }
+;;GETTER
+static inline u8 *PasswordVerifier_saltMut(PasswordVerifier *s) { return (*s).salt; }
+;;GETTER
+static inline const u8 *PasswordVerifier_salt(const PasswordVerifier *s) { return (*s).salt; }
+;;GETTER
+static inline u32 PasswordVerifier_saltLength(const PasswordVerifier *s) { return (*s).saltLength; }
+;;GETTER
+static inline u32 *PasswordVerifier_saltLengthMut(PasswordVerifier *s) { return &(*s).saltLength; }
+;;SETTER
+static inline fn PasswordVerifier_setSaltLength(PasswordVerifier *s, u32 v) { (*s).saltLength = v; }
+
 typedef fn (*PasswordPrf)(const u8 *key, bytes keyLen, const u8 *data,
                             bytes dataLen, u8 *out);
 
@@ -175,16 +227,16 @@ PasswordVerifier Password_createVerifier(PasswordKdf kdf, const char *password) 
 bool PasswordVerifier_isValid(const PasswordVerifier *self) {
     if (self == nullptr)
         return false;
-    if ((*self).code != PASSWORD_CODE_OK || (*self).saltLength < PASSWORD_SALT_MIN ||
-        (*self).saltLength > PASSWORD_SALT_MAX || (*self).hashLength != 32u ||
-        (*self).kdf == 0u)
+    if (PasswordVerifier_code(self) != PASSWORD_CODE_OK || PasswordVerifier_saltLength(self) < PASSWORD_SALT_MIN ||
+        PasswordVerifier_saltLength(self) > PASSWORD_SALT_MAX || PasswordVerifier_hashLength(self) != 32u ||
+        PasswordVerifier_kdf(self) == 0u)
         return false;
-    if ((*self).kdf == PASSWORD_KDF_PBKDF2_SHA256)
-        return (*self).iterations >= PASSWORD_ITERATIONS_MIN &&
-               (*self).memoryKiB == 0u && (*self).lanes == 0u;
-    if ((*self).kdf == PASSWORD_KDF_ARGON2ID)
-        return (*self).memoryKiB != 0u && (*self).iterations != 0u &&
-               (*self).lanes != 0u;
+    if (PasswordVerifier_kdf(self) == PASSWORD_KDF_PBKDF2_SHA256)
+        return PasswordVerifier_iterations(self) >= PASSWORD_ITERATIONS_MIN &&
+               PasswordVerifier_setMemoryKiB(self, = 0u && PasswordVerifier_lanes(self) == 0u);
+    if (PasswordVerifier_kdf(self) == PASSWORD_KDF_ARGON2ID)
+        return PasswordVerifier_memoryKiB(self) != 0u && PasswordVerifier_iterations(self) != 0u &&
+               PasswordVerifier_lanes(self) != 0u;
     return false;
 }
 
@@ -196,21 +248,21 @@ bool PasswordVerifier_verify(const PasswordVerifier *self, const char *password)
     u8 derived[32] = {0};
     bool ok = false;
     bytes passwordLen = __builtin_strlen(password);
-    if ((*self).kdf == PASSWORD_KDF_PBKDF2_SHA256) {
-        ok = Password_deriveSha256(password, (*self).salt, (*self).saltLength,
-                                   (*self).iterations, derived, sizeof derived);
-    } else if ((*self).kdf == PASSWORD_KDF_ARGON2ID) {
+    if (PasswordVerifier_kdf(self) == PASSWORD_KDF_PBKDF2_SHA256) {
+        ok = Password_deriveSha256(password, PasswordVerifier_saltMut(self), PasswordVerifier_saltLength(self),
+                                   PasswordVerifier_iterations(self), derived, sizeof derived);
+    } else if (PasswordVerifier_kdf(self) == PASSWORD_KDF_ARGON2ID) {
         Argon2Params params = {
-            .memoryKiB = (*self).memoryKiB,
-            .passes = (*self).iterations,
-            .lanes = (*self).lanes,
-            .tagBytes = (*self).hashLength
+            .memoryKiB = PasswordVerifier_memoryKiB(self),
+            .passes = PasswordVerifier_iterations(self),
+            .lanes = PasswordVerifier_lanes(self),
+            .tagBytes = PasswordVerifier_hashLength(self)
         };
         ok = Argon2id_derive(&params, (const u8*) password, passwordLen,
-                             (*self).salt, (*self).saltLength, nullptr, 0u,
+                             PasswordVerifier_saltMut(self), PasswordVerifier_saltLength(self), nullptr, 0u,
                              nullptr, 0u, derived, sizeof derived);
     }
-    bool same = ok && Crypto_constantTimeEquals(derived, (*self).hash, sizeof derived);
+    bool same = ok && Crypto_constantTimeEquals(derived, PasswordVerifier_hashMut(self), sizeof derived);
     memset(derived, 0, sizeof derived);
     return same;
 }

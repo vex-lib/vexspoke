@@ -35,6 +35,36 @@
  * no allocation; the state is zeroed on final.
  * ======================================================================== */
 
+
+;;GETTER
+static inline u8 *Poly1305_bufferMut(Poly1305 *s) { return (*s).buffer; }
+;;GETTER
+static inline const u8 *Poly1305_buffer(const Poly1305 *s) { return (*s).buffer; }
+;;GETTER
+static inline bool Poly1305_final(const Poly1305 *s) { return (*s).final; }
+;;GETTER
+static inline bool *Poly1305_finalMut(Poly1305 *s) { return &(*s).final; }
+;;SETTER
+static inline fn Poly1305_setFinal(Poly1305 *s, bool v) { (*s).final = v; }
+;;GETTER
+static inline u32 *Poly1305_hMut(Poly1305 *s) { return (*s).h; }
+;;GETTER
+static inline const u32 *Poly1305_h(const Poly1305 *s) { return (*s).h; }
+;;GETTER
+static inline bytes Poly1305_leftover(const Poly1305 *s) { return (*s).leftover; }
+;;GETTER
+static inline bytes *Poly1305_leftoverMut(Poly1305 *s) { return &(*s).leftover; }
+;;SETTER
+static inline fn Poly1305_setLeftover(Poly1305 *s, bytes v) { (*s).leftover = v; }
+;;GETTER
+static inline u32 *Poly1305_padMut(Poly1305 *s) { return (*s).pad; }
+;;GETTER
+static inline const u32 *Poly1305_pad(const Poly1305 *s) { return (*s).pad; }
+;;GETTER
+static inline u32 *Poly1305_rMut(Poly1305 *s) { return (*s).r; }
+;;GETTER
+static inline const u32 *Poly1305_r(const Poly1305 *s) { return (*s).r; }
+
 static u32 load32le(const u8 *p) {
     return (u32) p[0] | ((u32) p[1] << 8) |
            ((u32) p[2] << 16) | ((u32) p[3] << 24);
@@ -53,22 +83,22 @@ fn Poly1305_init(Poly1305 *self, const u8 key[POLY1305_KEY_SIZE]) {
         return;
     }
     memset(self, 0, sizeof *self);
-    (*self).r[0] = load32le(key) & 0x3ffffffu;
-    (*self).r[1] = (load32le(key + 3) >> 2) & 0x3ffff03u;
-    (*self).r[2] = (load32le(key + 6) >> 4) & 0x3ffc0ffu;
-    (*self).r[3] = (load32le(key + 9) >> 6) & 0x3f03fffu;
-    (*self).r[4] = (load32le(key + 12) >> 8) & 0x00fffffu;
+    Poly1305_rMut(self)[0] = load32le(key) & 0x3ffffffu;
+    Poly1305_rMut(self)[1] = (load32le(key + 3) >> 2) & 0x3ffff03u;
+    Poly1305_rMut(self)[2] = (load32le(key + 6) >> 4) & 0x3ffc0ffu;
+    Poly1305_rMut(self)[3] = (load32le(key + 9) >> 6) & 0x3f03fffu;
+    Poly1305_rMut(self)[4] = (load32le(key + 12) >> 8) & 0x00fffffu;
     for (u32 i = 0; i < 4u; ++i)
-        (*self).pad[i] = load32le(key + 16u + 4u * i);
+        Poly1305_padMut(self)[i] = load32le(key + 16u + 4u * i);
 }
 
 static fn blocks(Poly1305 *self, const u8 *m, bytes bytes) {
-    u32 r0 = (*self).r[0], r1 = (*self).r[1], r2 = (*self).r[2];
-    u32 r3 = (*self).r[3], r4 = (*self).r[4];
+    u32 r0 = Poly1305_rMut(self)[0], r1 = Poly1305_rMut(self)[1], r2 = Poly1305_rMut(self)[2];
+    u32 r3 = Poly1305_rMut(self)[3], r4 = Poly1305_rMut(self)[4];
     u32 s1 = r1 * 5u, s2 = r2 * 5u, s3 = r3 * 5u, s4 = r4 * 5u;
-    u32 h0 = (*self).h[0], h1 = (*self).h[1], h2 = (*self).h[2];
-    u32 h3 = (*self).h[3], h4 = (*self).h[4];
-    u32 hibit = (*self).final ? 0u : (1u << 24);
+    u32 h0 = Poly1305_hMut(self)[0], h1 = Poly1305_hMut(self)[1], h2 = Poly1305_hMut(self)[2];
+    u32 h3 = Poly1305_hMut(self)[3], h4 = Poly1305_hMut(self)[4];
+    u32 hibit = Poly1305_final(self) ? 0u : (1u << 24);
 
     while (bytes >= POLY1305_BLOCK_SIZE) {
         h0 += load32le(m) & 0x3ffffffu;
@@ -101,11 +131,11 @@ static fn blocks(Poly1305 *self, const u8 *m, bytes bytes) {
         bytes -= POLY1305_BLOCK_SIZE;
     }
 
-    (*self).h[0] = h0;
-    (*self).h[1] = h1;
-    (*self).h[2] = h2;
-    (*self).h[3] = h3;
-    (*self).h[4] = h4;
+    Poly1305_hMut(self)[0] = h0;
+    Poly1305_hMut(self)[1] = h1;
+    Poly1305_hMut(self)[2] = h2;
+    Poly1305_hMut(self)[3] = h3;
+    Poly1305_hMut(self)[4] = h4;
 }
 
 fn Poly1305_update(Poly1305 *self, const u8 *data, bytes len) {
@@ -117,18 +147,18 @@ fn Poly1305_update(Poly1305 *self, const u8 *data, bytes len) {
         THROW("Poly1305_update: null data with a nonzero length");
         return;
     }
-    if ((*self).leftover > 0u) {
-        bytes want = POLY1305_BLOCK_SIZE - (*self).leftover;
+    if (Poly1305_leftover(self) > 0u) {
+        bytes want = POLY1305_BLOCK_SIZE - Poly1305_leftover(self);
         if (want > len)
             want = len;
-        memcpy((*self).buffer + (*self).leftover, data, want);
+        memcpy(Poly1305_bufferMut(self) + Poly1305_leftover(self), data, want);
         data += want;
         len -= want;
-        (*self).leftover += want;
-        if ((*self).leftover < POLY1305_BLOCK_SIZE)
+        Poly1305_setLeftover(self, Poly1305_leftover(self) + (want));
+        if (Poly1305_leftover(self) < POLY1305_BLOCK_SIZE)
             return;
-        blocks(self, (*self).buffer, POLY1305_BLOCK_SIZE);
-        (*self).leftover = 0u;
+        blocks(self, Poly1305_bufferMut(self), POLY1305_BLOCK_SIZE);
+        Poly1305_setLeftover(self, 0u);
     }
     if (len >= POLY1305_BLOCK_SIZE) {
         bytes whole = len & ~(bytes) (POLY1305_BLOCK_SIZE - 1u);
@@ -137,8 +167,8 @@ fn Poly1305_update(Poly1305 *self, const u8 *data, bytes len) {
         len -= whole;
     }
     if (len > 0u) {
-        memcpy((*self).buffer + (*self).leftover, data, len);
-        (*self).leftover += len;
+        memcpy(Poly1305_bufferMut(self) + Poly1305_leftover(self), data, len);
+        Poly1305_setLeftover(self, Poly1305_leftover(self) + (len));
     }
 }
 
@@ -147,16 +177,16 @@ bool Poly1305_final(Poly1305 *self, u8 tag[POLY1305_TAG_SIZE]) {
         THROW("Poly1305_final: null state or tag");
         return false;
     }
-    if ((*self).leftover > 0u) {
-        (*self).buffer[(*self).leftover] = 1u;
-        for (bytes i = (*self).leftover + 1u; i < POLY1305_BLOCK_SIZE; ++i)
-            (*self).buffer[i] = 0u;
-        (*self).final = true;
-        blocks(self, (*self).buffer, POLY1305_BLOCK_SIZE);
+    if (Poly1305_leftover(self) > 0u) {
+        Poly1305_bufferMut(self)[Poly1305_leftover(self)] = 1u;
+        for (bytes i = Poly1305_leftover(self) + 1u; i < POLY1305_BLOCK_SIZE; ++i)
+            Poly1305_bufferMut(self)[i] = 0u;
+        Poly1305_setFinal(self, true);
+        blocks(self, Poly1305_bufferMut(self), POLY1305_BLOCK_SIZE);
     }
 
-    u32 h0 = (*self).h[0], h1 = (*self).h[1], h2 = (*self).h[2];
-    u32 h3 = (*self).h[3], h4 = (*self).h[4];
+    u32 h0 = Poly1305_hMut(self)[0], h1 = Poly1305_hMut(self)[1], h2 = Poly1305_hMut(self)[2];
+    u32 h3 = Poly1305_hMut(self)[3], h4 = Poly1305_hMut(self)[4];
     u32 c;
     c = h1 >> 26; h1 &= 0x3ffffffu;
     h2 += c; c = h2 >> 26; h2 &= 0x3ffffffu;
@@ -185,10 +215,10 @@ bool Poly1305_final(Poly1305 *self, u8 tag[POLY1305_TAG_SIZE]) {
     h2 = ((h2 >> 12) | (h3 << 14)) & 0xffffffffu;
     h3 = ((h3 >> 18) | (h4 << 8)) & 0xffffffffu;
 
-    u64 f = (u64) h0 + (*self).pad[0]; h0 = (u32) f;
-    f = (u64) h1 + (*self).pad[1] + (f >> 32); h1 = (u32) f;
-    f = (u64) h2 + (*self).pad[2] + (f >> 32); h2 = (u32) f;
-    f = (u64) h3 + (*self).pad[3] + (f >> 32); h3 = (u32) f;
+    u64 f = (u64) h0 + Poly1305_padMut(self)[0]; h0 = (u32) f;
+    f = (u64) h1 + Poly1305_padMut(self)[1] + (f >> 32); h1 = (u32) f;
+    f = (u64) h2 + Poly1305_padMut(self)[2] + (f >> 32); h2 = (u32) f;
+    f = (u64) h3 + Poly1305_padMut(self)[3] + (f >> 32); h3 = (u32) f;
 
     store32le(tag, h0);
     store32le(tag + 4, h1);

@@ -22,6 +22,28 @@
  * no allocation, no logging.
  * ======================================================================== */
 
+
+;;GETTER
+static inline u8 *CryptoSha1_blockMut(CryptoSha1 *s) { return (*s).block; }
+;;GETTER
+static inline const u8 *CryptoSha1_block(const CryptoSha1 *s) { return (*s).block; }
+;;GETTER
+static inline u32 *CryptoSha1_stateMut(CryptoSha1 *s) { return (*s).state; }
+;;GETTER
+static inline const u32 *CryptoSha1_state(const CryptoSha1 *s) { return (*s).state; }
+;;GETTER
+static inline u64 CryptoSha1_total(const CryptoSha1 *s) { return (*s).total; }
+;;GETTER
+static inline u64 *CryptoSha1_totalMut(CryptoSha1 *s) { return &(*s).total; }
+;;SETTER
+static inline fn CryptoSha1_setTotal(CryptoSha1 *s, u64 v) { (*s).total = v; }
+;;GETTER
+static inline bytes CryptoSha1_used(const CryptoSha1 *s) { return (*s).used; }
+;;GETTER
+static inline bytes *CryptoSha1_usedMut(CryptoSha1 *s) { return &(*s).used; }
+;;SETTER
+static inline fn CryptoSha1_setUsed(CryptoSha1 *s, bytes v) { (*s).used = v; }
+
 static u32 rotr(u32 v, u32 bits) { return (v >> bits) | (v << (32u - bits)); }
 
 static fn sha1Compress(CryptoSha1 *ctx, const u8 *block) {
@@ -31,8 +53,8 @@ static fn sha1Compress(CryptoSha1 *ctx, const u8 *block) {
                ((u32) block[i * 4 + 2] << 8) | (u32) block[i * 4 + 3];
     for (u32 i = 16u; i < 80u; ++i)
         w[i] = rotr(w[i - 3] ^ w[i - 8] ^ w[i - 14] ^ w[i - 16], 31u);
-    u32 a = (*ctx).state[0], b = (*ctx).state[1], c = (*ctx).state[2];
-    u32 d = (*ctx).state[3], e = (*ctx).state[4];
+    u32 a = CryptoSha1_stateMut(ctx)[0], b = CryptoSha1_stateMut(ctx)[1], c = CryptoSha1_stateMut(ctx)[2];
+    u32 d = CryptoSha1_stateMut(ctx)[3], e = CryptoSha1_stateMut(ctx)[4];
     for (u32 i = 0; i < 80u; ++i) {
         u32 f = 0, k = 0;
         if (i < 20u) {
@@ -55,11 +77,11 @@ static fn sha1Compress(CryptoSha1 *ctx, const u8 *block) {
         b = a;
         a = temp;
     }
-    (*ctx).state[0] += a;
-    (*ctx).state[1] += b;
-    (*ctx).state[2] += c;
-    (*ctx).state[3] += d;
-    (*ctx).state[4] += e;
+    CryptoSha1_stateMut(ctx)[0] += a;
+    CryptoSha1_stateMut(ctx)[1] += b;
+    CryptoSha1_stateMut(ctx)[2] += c;
+    CryptoSha1_stateMut(ctx)[3] += d;
+    CryptoSha1_stateMut(ctx)[4] += e;
 }
 
 fn Crypto_sha1Init(CryptoSha1 *ctx) {
@@ -67,13 +89,13 @@ fn Crypto_sha1Init(CryptoSha1 *ctx) {
         THROW("Crypto_sha1Init: null context");
         return;
     }
-    (*ctx).state[0] = 0x67452301u;
-    (*ctx).state[1] = 0xEFCDAB89u;
-    (*ctx).state[2] = 0x98BADCFEu;
-    (*ctx).state[3] = 0x10325476u;
-    (*ctx).state[4] = 0xC3D2E1F0u;
-    (*ctx).total = 0u;
-    (*ctx).used = 0u;
+    CryptoSha1_stateMut(ctx)[0] = 0x67452301u;
+    CryptoSha1_stateMut(ctx)[1] = 0xEFCDAB89u;
+    CryptoSha1_stateMut(ctx)[2] = 0x98BADCFEu;
+    CryptoSha1_stateMut(ctx)[3] = 0x10325476u;
+    CryptoSha1_stateMut(ctx)[4] = 0xC3D2E1F0u;
+    CryptoSha1_setTotal(ctx, 0u);
+    CryptoSha1_setUsed(ctx, 0u);
 }
 
 fn Crypto_sha1Update(CryptoSha1 *ctx, const_any data, bytes len) {
@@ -82,18 +104,18 @@ fn Crypto_sha1Update(CryptoSha1 *ctx, const_any data, bytes len) {
         return;
     }
     const u8 *input = (const u8*) data;
-    (*ctx).total += len;
+    CryptoSha1_setTotal(ctx, CryptoSha1_total(ctx) + (len));
     while (len > 0u) {
-        bytes room = CRYPTO_SHA1_BLOCK_SIZE - (*ctx).used;
+        bytes room = CRYPTO_SHA1_BLOCK_SIZE - CryptoSha1_used(ctx);
         bytes take = len < room ? len : room;
         for (bytes i = 0; i < take; ++i)
-            (*ctx).block[(*ctx).used + i] = input[i];
-        (*ctx).used += take;
+            CryptoSha1_blockMut(ctx)[CryptoSha1_used(ctx) + i] = input[i];
+        CryptoSha1_setUsed(ctx, CryptoSha1_used(ctx) + (take));
         input += take;
         len -= take;
-        if ((*ctx).used == CRYPTO_SHA1_BLOCK_SIZE) {
-            sha1Compress(ctx, (*ctx).block);
-            (*ctx).used = 0u;
+        if (CryptoSha1_used(ctx) == CRYPTO_SHA1_BLOCK_SIZE) {
+            sha1Compress(ctx, CryptoSha1_blockMut(ctx));
+            CryptoSha1_setUsed(ctx, 0u);
         }
     }
 }
@@ -103,26 +125,26 @@ fn Crypto_sha1Final(CryptoSha1 *ctx, u8 outDigest[CRYPTO_SHA1_DIGEST_SIZE]) {
         THROW("Crypto_sha1Final: null argument");
         return;
     }
-    u64 bits = (*ctx).total * 8u;
+    u64 bits = CryptoSha1_total(ctx) * 8u;
     u8 pad = 0x80u;
     Crypto_sha1Update(ctx, &pad, 1u);
     u8 zero = 0u;
-    while ((*ctx).used != CRYPTO_SHA1_BLOCK_SIZE - 8u)
+    while (CryptoSha1_used(ctx) != CRYPTO_SHA1_BLOCK_SIZE - 8u)
         Crypto_sha1Update(ctx, &zero, 1u);
     u8 lengthBytes[8];
     for (u32 i = 0; i < 8u; ++i)
         lengthBytes[i] = (u8) (bits >> (56u - i * 8u));
     Crypto_sha1Update(ctx, lengthBytes, 8u);
     for (u32 i = 0; i < 5u; ++i) {
-        outDigest[i * 4]     = (u8) ((*ctx).state[i] >> 24);
-        outDigest[i * 4 + 1] = (u8) ((*ctx).state[i] >> 16);
-        outDigest[i * 4 + 2] = (u8) ((*ctx).state[i] >> 8);
-        outDigest[i * 4 + 3] = (u8) (*ctx).state[i];
+        outDigest[i * 4]     = (u8) (CryptoSha1_stateMut(ctx)[i] >> 24);
+        outDigest[i * 4 + 1] = (u8) (CryptoSha1_stateMut(ctx)[i] >> 16);
+        outDigest[i * 4 + 2] = (u8) (CryptoSha1_stateMut(ctx)[i] >> 8);
+        outDigest[i * 4 + 3] = (u8) CryptoSha1_stateMut(ctx)[i];
     }
     for (u32 i = 0; i < 5u; ++i)
-        (*ctx).state[i] = 0u;
+        CryptoSha1_stateMut(ctx)[i] = 0u;
     for (u32 i = 0; i < CRYPTO_SHA1_BLOCK_SIZE; ++i)
-        (*ctx).block[i] = 0u;
+        CryptoSha1_blockMut(ctx)[i] = 0u;
 }
 
 fn Crypto_sha1(const_any data, bytes len, u8 outDigest[CRYPTO_SHA1_DIGEST_SIZE]) {
