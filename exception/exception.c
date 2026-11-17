@@ -36,6 +36,50 @@
  * site/file strings are borrowed. stderr formatting is cold and synchronous.
  * ======================================================================== */
 
+
+;;GETTER
+static inline ExceptionCategory Exception_category(const Exception *s) { return (*s).category; }
+;;GETTER
+static inline ExceptionCategory *Exception_categoryMut(Exception *s) { return &(*s).category; }
+;;SETTER
+static inline fn Exception_setCategory(Exception *s, ExceptionCategory v) { (*s).category = v; }
+;;GETTER
+static inline char * Exception_details(const Exception *s) { return (*s).details; }
+;;GETTER
+static inline char * *Exception_detailsMut(Exception *s) { return &(*s).details; }
+;;SETTER
+static inline fn Exception_setDetails(Exception *s, char * v) { (*s).details = v; }
+;;GETTER
+static inline const char * Exception_file(const Exception *s) { return (*s).file; }
+;;GETTER
+static inline const char * *Exception_fileMut(Exception *s) { return &(*s).file; }
+;;SETTER
+static inline fn Exception_setFile(Exception *s, const char * v) { (*s).file = v; }
+;;GETTER
+static inline i32 Exception_line(const Exception *s) { return (*s).line; }
+;;GETTER
+static inline i32 *Exception_lineMut(Exception *s) { return &(*s).line; }
+;;SETTER
+static inline fn Exception_setLine(Exception *s, i32 v) { (*s).line = v; }
+;;GETTER
+static inline char * Exception_message(const Exception *s) { return (*s).message; }
+;;GETTER
+static inline char * *Exception_messageMut(Exception *s) { return &(*s).message; }
+;;SETTER
+static inline fn Exception_setMessage(Exception *s, char * v) { (*s).message = v; }
+;;GETTER
+static inline const char * Exception_site(const Exception *s) { return (*s).site; }
+;;GETTER
+static inline const char * *Exception_siteMut(Exception *s) { return &(*s).site; }
+;;SETTER
+static inline fn Exception_setSite(Exception *s, const char * v) { (*s).site = v; }
+;;GETTER
+static inline u64 Exception_type(const Exception *s) { return (*s).type; }
+;;GETTER
+static inline u64 *Exception_typeMut(Exception *s) { return &(*s).type; }
+;;SETTER
+static inline fn Exception_setType(Exception *s, u64 v) { (*s).type = v; }
+
 // Returns the stable display name for a category, or the unknown-category name.
 const char *Exception_categoryName(ExceptionCategory category) {
     switch (category) {
@@ -58,13 +102,13 @@ static fn exceptionInitializeV(Exception *self,
                                  i32 line,
                                  const char *fmt,
                                  va_list args) {
-    (*self).type = TYPE_EXCEPTION_SINGLETON;
-    (*self).category = category;
-    (*self).site = (site != nullptr) ? site : "UnknownSite";
-    (*self).file = (file != nullptr) ? file : "UnknownFile";
-    (*self).line = line;
-    (*self).message = nullptr;
-    (*self).details = nullptr;
+    Exception_setType(self, TYPE_EXCEPTION_SINGLETON);
+    Exception_setCategory(self, category);
+    Exception_setSite(self, (site != nullptr) ? site : "UnknownSite");
+    Exception_setFile(self, (file != nullptr) ? file : "UnknownFile");
+    Exception_setLine(self, line);
+    Exception_setMessage(self, nullptr);
+    Exception_setDetails(self, nullptr);
 
     if (fmt != nullptr) {
         va_list copy;
@@ -76,7 +120,7 @@ static fn exceptionInitializeV(Exception *self,
             char *buf = (char*) malloc((bytes)needed + 1);
             if (buf != nullptr) {
                 vsnprintf(buf, (bytes)needed + 1, fmt, args);
-                (*self).message = buf;
+                Exception_setMessage(self, buf);
             }
         }
     }
@@ -153,10 +197,10 @@ fn Exception_setDetailsV(Exception *self, const char *fmt, va_list args) {
     char *buf = (char*) malloc((bytes)needed + 1);
     if (buf != nullptr) {
         vsnprintf(buf, (bytes)needed + 1, fmt, args);
-        if ((*self).details != nullptr) {
-            free((*self).details);
+        if (Exception_details(self) != nullptr) {
+            free(Exception_details(self));
         }
-        (*self).details = buf;
+        Exception_setDetails(self, buf);
     }
 }
 
@@ -172,13 +216,13 @@ fn Exception_setDetails(Exception *self, const char *fmt, ...) {
 fn Exception_free(Exception *self) {
     if (self == nullptr) return;
 
-    if ((*self).message != nullptr) {
-        free((*self).message);
-        (*self).message = nullptr;
+    if (Exception_message(self) != nullptr) {
+        free(Exception_message(self));
+        Exception_setMessage(self, nullptr);
     }
-    if ((*self).details != nullptr) {
-        free((*self).details);
-        (*self).details = nullptr;
+    if (Exception_details(self) != nullptr) {
+        free(Exception_details(self));
+        Exception_setDetails(self, nullptr);
     }
 }
 
@@ -188,17 +232,17 @@ fn Exception_print(const Exception *self) {
 
     fprintf(stderr, "\n================================================================================\n");
     fprintf(stderr, "RUNTIME EXCEPTION: [%s] at %s\n",
-            Exception_categoryName((*self).category),
-            (*self).site ? (*self).site : "unknown");
+            Exception_categoryName(Exception_category(self)),
+            Exception_site(self) ? Exception_site(self) : "unknown");
     fprintf(stderr, "Location: %s:%d\n",
-            (*self).file ? (*self).file : "unknown",
-            (*self).line);
+            Exception_file(self) ? Exception_file(self) : "unknown",
+            Exception_line(self));
     fprintf(stderr, "--------------------------------------------------------------------------------\n");
-    if ((*self).message != nullptr && (*self).message[0] != '\0') {
-        fprintf(stderr, "Reason / Probable Causes:\n  %s\n", (*self).message);
+    if (Exception_message(self) != nullptr && Exception_message(self)[0] != '\0') {
+        fprintf(stderr, "Reason / Probable Causes:\n  %s\n", Exception_message(self));
     }
-    if ((*self).details != nullptr && (*self).details[0] != '\0') {
-        fprintf(stderr, "Variable Dump / Context Diagnostics:\n  %s\n", (*self).details);
+    if (Exception_details(self) != nullptr && Exception_details(self)[0] != '\0') {
+        fprintf(stderr, "Variable Dump / Context Diagnostics:\n  %s\n", Exception_details(self));
     }
     fprintf(stderr, "================================================================================\n\n");
     fflush(stderr);
