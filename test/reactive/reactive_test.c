@@ -51,9 +51,9 @@ static fn onChangedB(Reactive *r, pointer o, pointer n, any ud) { (discard) r; (
 typedef struct SetterArg { Reactive *r; u64 n; } SetterArg;
 // Writes a sequence from a worker thread; observer delivery is left to the owner drain.
 static any setterLoop(any arg) {
-    SetterArg *a = (SetterArg*) arg;
-    for (u64 i = 1; i <= (*a).n; i++)
-        Reactive_set((*a).r, i);
+    SetterArg a = *(SetterArg*) arg;
+    for (u64 i = 1; i <= a.n; i++)
+        Reactive_set(a.r, i);
     return nullptr;
 }
 

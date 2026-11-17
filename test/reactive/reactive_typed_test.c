@@ -73,8 +73,8 @@ static fn testEmbedFirst() {
     ReactiveInt *h = ReactiveInt(7);
     CHECK(h != nullptr);
     if (h) {
-        CHECK((pointer) h == (pointer) &(*h).base);
-        CHECK(Reactive_isActive(&(*h).base) == true);
+        CHECK((pointer) h == (pointer) (Reactive*) h);
+        CHECK(Reactive_isActive((Reactive*) h) == true);
         ReactiveInt_free(h);
     }
 }
@@ -88,11 +88,11 @@ static fn testInt() {
         return;
     CHECK(ReactiveInt_get(h) == 10);
 
-    Reactive_addOnChanged(&(*h).base, onChangedInt, nullptr);
-    Reactive_addOnSet(&(*h).base, onSetInt, nullptr);
+    Reactive_addOnChanged((Reactive*) h, onChangedInt, nullptr);
+    Reactive_addOnSet((Reactive*) h, onSetInt, nullptr);
 
     ReactiveInt_set(h, 20);
-    CHECK(Reactive_drain(&(*h).base) == true);
+    CHECK(Reactive_drain((Reactive*) h) == true);
     CHECK(g_changed == 1 && g_old == 10 && g_new == 20);
     CHECK(g_sets == 1);
     CHECK(ReactiveInt_get(h) == 20);
@@ -101,16 +101,16 @@ static fn testInt() {
     ReactiveInt_set(h, 21);
     ReactiveInt_set(h, 22);
     ReactiveInt_set(h, 23);
-    CHECK(Reactive_drain(&(*h).base) == true);
+    CHECK(Reactive_drain((Reactive*) h) == true);
     CHECK(g_changed == 2 && g_old == 20 && g_new == 23);
     CHECK(g_sets == 2);
 
     // No write -> no fire.
-    CHECK(Reactive_drain(&(*h).base) == false);
+    CHECK(Reactive_drain((Reactive*) h) == false);
 
     // Out-of-band: a raw engine write to the word IS the value -> detected.
-    Reactive_set(&(*h).base, (pointer) (u32) 99);
-    CHECK(Reactive_drain(&(*h).base) == true);
+    Reactive_set((Reactive*) h, (pointer) (u32) 99);
+    CHECK(Reactive_drain((Reactive*) h) == true);
     CHECK(g_changed == 3 && g_new == 99);
     CHECK(ReactiveInt_get(h) == 99);
 
@@ -151,7 +151,7 @@ static fn testf64() {
     u64 negBits = 0u;
     memcpy(&negBits, &negZero, sizeof(negBits));
     Reactivef64_set(d, negZero);
-    CHECK((u64) Reactive_get(&(*d).base) == negBits);
+    CHECK((u64) Reactive_get((Reactive*) d) == negBits);
     CHECK(Reactivef64_get(d) == 0.0);
 
     // NaN round-trips (a numerically unequal value must still survive).
@@ -176,15 +176,15 @@ static fn testString() {
     CHECK(ReactiveString_get(s) == a);
 
     g_changed = 0;
-    Reactive_addOnChanged(&(*s).base, onChangedInt, nullptr); // counts only
+    Reactive_addOnChanged((Reactive*) s, onChangedInt, nullptr); // counts only
     ReactiveString_set(s, b);
-    CHECK(Reactive_drain(&(*s).base) == true);
+    CHECK(Reactive_drain((Reactive*) s) == true);
     CHECK(g_changed == 1);
     CHECK(ReactiveString_get(s) == b);
 
     // Same pointer again -> onSet fires (a batch happened) but NOT onChanged.
     ReactiveString_set(s, b);
-    CHECK(Reactive_drain(&(*s).base) == true);
+    CHECK(Reactive_drain((Reactive*) s) == true);
     CHECK(g_changed == 1); // unchanged: no onChanged on a same-value write
 
     ReactiveString_free(s);
@@ -211,7 +211,7 @@ static fn testObjectAndProbable() {
     if (position) {
         CHECK(Reactive_addOnChanged(position, onObjectChanged));
         Reactive_set(position, &next);
-        CHECK(Reactive_drain(&(*position).base));
+        CHECK(Reactive_drain((Reactive*) position));
         CHECK(g_objectValue == &next && Reactive_get(position) == &next);
         CHECK(Reactive_removeOnChanged(position, onObjectChanged));
         ReactiveVec3_free(position);
@@ -225,7 +225,7 @@ static fn testObjectAndProbable() {
     if (reward) {
         CHECK(ReactiveProbableInt_addOnChanged(reward, onProbableChanged));
         ReactiveProbableInt_set(reward, 40, 1.0f);
-        CHECK(Reactive_drain(&(*reward).base));
+        CHECK(Reactive_drain((Reactive*) reward));
         CHECK(ReactiveProbableInt_get(reward) == 40);
         CHECK(ReactiveProbableInt_getChance(reward) == 1.0f);
         CHECK(g_probableValue == 40);
