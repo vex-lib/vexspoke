@@ -72,6 +72,51 @@
  */
 
 
+
+;;GETTER
+static inline pointer Probable_object(const Probable *s) { return (*s).object; }
+;;GETTER
+static inline pointer *Probable_objectMut(Probable *s) { return &(*s).object; }
+;;SETTER
+static inline fn Probable_setObject(Probable *s, pointer v) { (*s).object = v; }
+;;GETTER
+static inline u32 Probable_total(const Probable *s) { return (*s).total; }
+;;GETTER
+static inline u32 *Probable_totalMut(Probable *s) { return &(*s).total; }
+;;SETTER
+static inline fn Probable_setTotal(Probable *s, u32 v) { (*s).total = v; }
+;;GETTER
+static inline u32 Probable_weight(const Probable *s) { return (*s).weight; }
+;;GETTER
+static inline u32 *Probable_weightMut(Probable *s) { return &(*s).weight; }
+;;SETTER
+static inline fn Probable_setWeight(Probable *s, u32 v) { (*s).weight = v; }
+
+;;GETTER
+static inline u32 Random_counter(const Random *s) { return (*s).counter; }
+;;GETTER
+static inline u32 *Random_counterMut(Random *s) { return &(*s).counter; }
+;;SETTER
+static inline fn Random_setCounter(Random *s, u32 v) { (*s).counter = v; }
+;;GETTER
+static inline RandomEngine Random_engine(const Random *s) { return (*s).engine; }
+;;GETTER
+static inline RandomEngine *Random_engineMut(Random *s) { return &(*s).engine; }
+;;SETTER
+static inline fn Random_setEngine(Random *s, RandomEngine v) { (*s).engine = v; }
+;;GETTER
+static inline u64 Random_inc(const Random *s) { return (*s).inc; }
+;;GETTER
+static inline u64 *Random_incMut(Random *s) { return &(*s).inc; }
+;;SETTER
+static inline fn Random_setInc(Random *s, u64 v) { (*s).inc = v; }
+;;GETTER
+static inline u64 Random_seed(const Random *s) { return (*s).seed; }
+;;GETTER
+static inline u64 *Random_seedMut(Random *s) { return &(*s).seed; }
+;;SETTER
+static inline fn Random_setSeed(Random *s, u64 v) { (*s).seed = v; }
+
 // random.c — Random port (Legacy: util/Random.java).
 
 static const u64 GOLDEN_RATIO_64 = 0x9e3779b97f4a7c15ull;
@@ -99,30 +144,30 @@ static u64 systemSeed() {
 // --- Engines: one step yields one uniform uint64 ---
 
 static u64 murmurStep(Random *r) {
-    u64 mixed = (*r).seed ^ ((u64)(*r).counter * GOLDEN_RATIO_64);
+    u64 mixed = Random_seed(r) ^ ((u64)Random_counter(r) * GOLDEN_RATIO_64);
     u64 result = Hash_murmur3Mix64(mixed);
-    (*r).seed = result;
-    (*r).counter++;
+    Random_setSeed(r, result);
+    Random_setCounter(r, Random_counter(r) + 1u);
     return result;
 }
 
 static u64 xorshift64StarStep(Random *r) {
-    u64 x = (*r).seed;
+    u64 x = Random_seed(r);
     x ^= x << 13;
     x ^= x >> 7;
     x ^= x << 17;
-    (*r).seed = x;
+    Random_setSeed(r, x);
     return x * 0x2545F4914F6CDD1DULL;
 }
 
 static u64 pcg64Step(Random *r) {
-    __uint128_t state = ((__uint128_t)(*r).seed << 64) | (__uint128_t)(*r).inc;
+    __uint128_t state = ((__uint128_t)Random_seed(r) << 64) | (__uint128_t)Random_inc(r);
     __uint128_t old = state;
     state = old * PCG64_MULT + PCG64_INC;
     u64 xored = (u64)((old >> 64) ^ old);
     u32 rot = (u32)(old >> 122);
-    (*r).seed = (u64)(state >> 64);
-    (*r).inc = (u64) state;
+    Random_setSeed(r, (u64)(state >> 64));
+    Random_setInc(r, (u64) state);
     return (xored >> rot) | (xored << ((64u - rot) & 63u));
 }
 
@@ -134,21 +179,21 @@ static RandomEngine pickEngine(u64 seed) {
 }
 
 static fn initState(Random *r, u64 seed, RandomEngine engine) {
-    (*r).engine = engine;
-    (*r).counter = 0;
-    (*r).inc = 0;
+    Random_setEngine(r, engine);
+    Random_setCounter(r, 0);
+    Random_setInc(r, 0);
     switch (engine) {
         case RANDOM_ENGINE_XORSHIFT:
             // 0 is xorshift's fixed point; remap it to a nonzero constant.
-            (*r).seed = (seed != 0) ? seed : 0x9E3779B97F4A7C15ULL;
+            Random_setSeed(r, (seed != 0) ? seed : 0x9E3779B97F4A7C15ULL);
             break;
         case RANDOM_ENGINE_PCG:
-            (*r).seed = seed;
-            (*r).inc = seed;
+            Random_setSeed(r, seed);
+            Random_setInc(r, seed);
             break;
         case RANDOM_ENGINE_MURMUR:
         default:
-            (*r).seed = seed;
+            Random_setSeed(r, seed);
             break;
     }
 }
@@ -176,7 +221,7 @@ fn Random_free(Random *r) {
 }
 
 RandomEngine Random_engine(const Random *r) {
-    return r ? (*r).engine : RANDOM_ENGINE_MURMUR;
+    return r ? Random_engine(r) : RANDOM_ENGINE_MURMUR;
 }
 
 Random *Random_system() {
@@ -187,7 +232,7 @@ Random *Random_system() {
 
 u64 Random_nextLong(Random *r) {
     if (!r) return 0;
-    switch ((*r).engine) {
+    switch (Random_engine(r)) {
         case RANDOM_ENGINE_XORSHIFT: return xorshift64StarStep(r);
         case RANDOM_ENGINE_PCG:      return pcg64Step(r);
         case RANDOM_ENGINE_MURMUR:
@@ -227,8 +272,8 @@ bool Random_getWeight(Random *r, u32 weight, u32 total) {
 
 pointer Random_sample(Random *r, const Probable *probable) {
     if (!probable) return 0;
-    if (Random_getWeight(r, (*probable).weight, (*probable).total))
-        return (*probable).object;
+    if (Random_getWeight(r, Probable_weight(probable), Probable_total(probable)))
+        return Probable_object(probable);
     return 0;
 }
 
