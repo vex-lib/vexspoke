@@ -123,6 +123,46 @@
  */
 
 
+
+;;GETTER
+static inline fn  (*MouseHandler_onMouseDown(const MouseHandler *s))(any self, i32 mouseEvent, u64 exactNanos) { return (*s).onMouseDown; }
+;;SETTER
+static inline fn MouseHandler_setOnMouseDown(MouseHandler *s, fn  (*v)(any self, i32 mouseEvent, u64 exactNanos)) { (*s).onMouseDown = v; }
+;;GETTER
+static inline fn  (*MouseHandler_onMouseDrag(const MouseHandler *s))(any self, i32 mouseEvent, d64 x, d64 y) { return (*s).onMouseDrag; }
+;;SETTER
+static inline fn MouseHandler_setOnMouseDrag(MouseHandler *s, fn  (*v)(any self, i32 mouseEvent, d64 x, d64 y)) { (*s).onMouseDrag = v; }
+;;GETTER
+static inline fn  (*MouseHandler_onMouseMove(const MouseHandler *s))(any self, d64 x, d64 y) { return (*s).onMouseMove; }
+;;SETTER
+static inline fn MouseHandler_setOnMouseMove(MouseHandler *s, fn  (*v)(any self, d64 x, d64 y)) { (*s).onMouseMove = v; }
+;;GETTER
+static inline fn  (*MouseHandler_onMouseMoveDelta(const MouseHandler *s))(any self, d64 dx, d64 dy) { return (*s).onMouseMoveDelta; }
+;;SETTER
+static inline fn MouseHandler_setOnMouseMoveDelta(MouseHandler *s, fn  (*v)(any self, d64 dx, d64 dy)) { (*s).onMouseMoveDelta = v; }
+;;GETTER
+static inline fn  (*MouseHandler_onMouseRepeat(const MouseHandler *s))(any self, i32 mouseEvent, u64 exactNanos) { return (*s).onMouseRepeat; }
+;;SETTER
+static inline fn MouseHandler_setOnMouseRepeat(MouseHandler *s, fn  (*v)(any self, i32 mouseEvent, u64 exactNanos)) { (*s).onMouseRepeat = v; }
+;;GETTER
+static inline fn  (*MouseHandler_onMouseScroll(const MouseHandler *s))(any self, d64 dx, d64 dy) { return (*s).onMouseScroll; }
+;;SETTER
+static inline fn MouseHandler_setOnMouseScroll(MouseHandler *s, fn  (*v)(any self, d64 dx, d64 dy)) { (*s).onMouseScroll = v; }
+;;GETTER
+static inline fn  (*MouseHandler_onMouseUp(const MouseHandler *s))(any self, i32 mouseEvent, u64 exactNanos) { return (*s).onMouseUp; }
+;;SETTER
+static inline fn MouseHandler_setOnMouseUp(MouseHandler *s, fn  (*v)(any self, i32 mouseEvent, u64 exactNanos)) { (*s).onMouseUp = v; }
+;;GETTER
+static inline fn  (*MouseHandler_onMouseZoom(const MouseHandler *s))(any self, d64 magnification) { return (*s).onMouseZoom; }
+;;SETTER
+static inline fn MouseHandler_setOnMouseZoom(MouseHandler *s, fn  (*v)(any self, d64 magnification)) { (*s).onMouseZoom = v; }
+;;GETTER
+static inline any MouseHandler_self(const MouseHandler *s) { return (*s).self; }
+;;GETTER
+static inline any *MouseHandler_selfMut(MouseHandler *s) { return &(*s).self; }
+;;SETTER
+static inline fn MouseHandler_setSelf(MouseHandler *s, any v) { (*s).self = v; }
+
 #define BUTTON_COUNT 16
 ;;INTENTION("fixed BUTTON_COUNT: the mouse-button domain is a hardware enum (0..15), not a workload ceiling")
 
@@ -149,6 +189,50 @@ typedef struct {
     u8 pad[2];            // alignment padding
 } ButtonSlot;
 
+;;GETTER
+static inline u64 ButtonSlot_lastHoldDuration(const ButtonSlot *s) { return (*s).lastHoldDuration; }
+;;GETTER
+static inline u64 *ButtonSlot_lastHoldDurationMut(ButtonSlot *s) { return &(*s).lastHoldDuration; }
+;;SETTER
+static inline fn ButtonSlot_setLastHoldDuration(ButtonSlot *s, u64 v) { (*s).lastHoldDuration = v; }
+;;GETTER
+static inline u64 ButtonSlot_lastReleaseTime(const ButtonSlot *s) { return (*s).lastReleaseTime; }
+;;GETTER
+static inline u64 *ButtonSlot_lastReleaseTimeMut(ButtonSlot *s) { return &(*s).lastReleaseTime; }
+;;SETTER
+static inline fn ButtonSlot_setLastReleaseTime(ButtonSlot *s, u64 v) { (*s).lastReleaseTime = v; }
+;;GETTER
+static inline u8 ButtonSlot_lastTapMods(const ButtonSlot *s) { return (*s).lastTapMods; }
+;;GETTER
+static inline u8 *ButtonSlot_lastTapModsMut(ButtonSlot *s) { return &(*s).lastTapMods; }
+;;SETTER
+static inline fn ButtonSlot_setLastTapMods(ButtonSlot *s, u8 v) { (*s).lastTapMods = v; }
+;;GETTER
+static inline u8 ButtonSlot_longPressFired(const ButtonSlot *s) { return (*s).longPressFired; }
+;;GETTER
+static inline u8 *ButtonSlot_longPressFiredMut(ButtonSlot *s) { return &(*s).longPressFired; }
+;;SETTER
+static inline fn ButtonSlot_setLongPressFired(ButtonSlot *s, u8 v) { (*s).longPressFired = v; }
+;;GETTER
+static inline u64 ButtonSlot_pendingUntil(const ButtonSlot *s) { return (*s).pendingUntil; }
+;;GETTER
+static inline u64 *ButtonSlot_pendingUntilMut(ButtonSlot *s) { return &(*s).pendingUntil; }
+;;SETTER
+static inline fn ButtonSlot_setPendingUntil(ButtonSlot *s, u64 v) { (*s).pendingUntil = v; }
+;;GETTER
+static inline u64 ButtonSlot_pressTime(const ButtonSlot *s) { return (*s).pressTime; }
+;;GETTER
+static inline u64 *ButtonSlot_pressTimeMut(ButtonSlot *s) { return &(*s).pressTime; }
+;;SETTER
+static inline fn ButtonSlot_setPressTime(ButtonSlot *s, u64 v) { (*s).pressTime = v; }
+;;GETTER
+static inline i32 ButtonSlot_taps(const ButtonSlot *s) { return (*s).taps; }
+;;GETTER
+static inline i32 *ButtonSlot_tapsMut(ButtonSlot *s) { return &(*s).taps; }
+;;SETTER
+static inline fn ButtonSlot_setTaps(ButtonSlot *s, i32 v) { (*s).taps = v; }
+
+
 _Static_assert(sizeof(ButtonSlot) == 40, "button slot must stay 40 Bytes");
 
 static ButtonSlot s_slots[BUTTON_COUNT];
@@ -168,6 +252,32 @@ typedef struct WinRow {
     i32 count;
     i32 cap;
 } WinRow;
+
+;;GETTER
+static inline i32 WinRow_cap(const WinRow *s) { return (*s).cap; }
+;;GETTER
+static inline i32 *WinRow_capMut(WinRow *s) { return &(*s).cap; }
+;;SETTER
+static inline fn WinRow_setCap(WinRow *s, i32 v) { (*s).cap = v; }
+;;GETTER
+static inline i32 WinRow_count(const WinRow *s) { return (*s).count; }
+;;GETTER
+static inline i32 *WinRow_countMut(WinRow *s) { return &(*s).count; }
+;;SETTER
+static inline fn WinRow_setCount(WinRow *s, i32 v) { (*s).count = v; }
+;;GETTER
+static inline const MouseHandler ** WinRow_items(const WinRow *s) { return (*s).items; }
+;;GETTER
+static inline const MouseHandler ** *WinRow_itemsMut(WinRow *s) { return &(*s).items; }
+;;SETTER
+static inline fn WinRow_setItems(WinRow *s, const MouseHandler ** v) { (*s).items = v; }
+;;GETTER
+static inline u32 WinRow_windowId(const WinRow *s) { return (*s).windowId; }
+;;GETTER
+static inline u32 *WinRow_windowIdMut(WinRow *s) { return &(*s).windowId; }
+;;SETTER
+static inline fn WinRow_setWindowId(WinRow *s, u32 v) { (*s).windowId = v; }
+
 
 static const MouseHandler **s_listeners = nullptr;  // global listener segment
 static i32 s_listenerCount = 0;
@@ -256,23 +366,23 @@ fn Mouse_attachWindow(u32 windowId, const MouseHandler *listener) {
     if (row == nullptr) {
         if (!growRows(s_rowCount + 1)) return;
         row = &s_rows[s_rowCount++];
-        (*row).windowId = windowId;
-        (*row).items = nullptr;
-        (*row).count = 0;
-        (*row).cap = 0;
+        WinRow_setWindowId(row, windowId);
+        WinRow_setItems(row, nullptr);
+        WinRow_setCount(row, 0);
+        WinRow_setCap(row, 0);
     }
-    if (!growSegment(&(*row).items, &(*row).cap, (*row).count + 1)) return;
-    (*row).items[(*row).count++] = listener;
+    if (!growSegment(WinRow_itemsMut(row), WinRow_capMut(row), WinRow_count(row) + 1)) return;
+    WinRow_items(row)[(*WinRow_countMut(row))++] = listener;
 }
 
 bool Mouse_detachWindow(u32 windowId, const MouseHandler *listener) {
     if (listener == nullptr || windowId == 0) return false;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return false;
-    for (i32 i = 0; i < (*row).count; i++) {
-        if ((*row).items[i] == listener) {
-            (*row).count--;
-            (*row).items[i] = (*row).items[(*row).count];
+    for (i32 i = 0; i < WinRow_count(row); i++) {
+        if (WinRow_items(row)[i] == listener) {
+            WinRow_setCount(row, WinRow_count(row) - 1u);
+            WinRow_items(row)[i] = WinRow_items(row)[WinRow_count(row)];
             return true;
         }
     }
@@ -283,7 +393,7 @@ fn Mouse_detachWindowAll(u32 windowId) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row != nullptr)
-        (*row).count = 0;
+        WinRow_setCount(row, 0);
 }
 
 static i32 modifierMask() {
@@ -308,7 +418,7 @@ fn Mouse_pushButtonEvent(u32 windowId, i32 button, i32 action, u64 tapWindowNano
     u64 now = NanoTime_now();
 
     if (action == KEY_ACTION_DOWN) {
-        if ((*slot).pressTime != 0) { // OS repeat
+        if (ButtonSlot_pressTime(slot) != 0) { // OS repeat
             InputEvent ev = { .packed = (epochMicros() << 18)
                                        | (((u64)modifierMask() & 0xF) << 14)
                                        | (((u64)button & 0xFFF) << 2)
@@ -317,24 +427,24 @@ fn Mouse_pushButtonEvent(u32 windowId, i32 button, i32 action, u64 tapWindowNano
             RingBuffer_push(&s_queue, &ev);
             return;
         }
-        u64 lastRelease = (*slot).lastReleaseTime;
+        u64 lastRelease = ButtonSlot_lastReleaseTime(slot);
         // A modifier-state change since the last press breaks the sequence:
         // different modifiers => a fresh click, never an upgrade to d64.
         u8 modsNow = (u8)(modifierMask() & 0xF);
         if (lastRelease != 0 && (now - lastRelease) < tapWindowNanos
-            && (*slot).lastTapMods == modsNow)
-            (*slot).taps++;
+            && ButtonSlot_lastTapMods(slot) == modsNow)
+            ButtonSlot_setTaps(slot, ButtonSlot_taps(slot) + 1u);
         else
-            (*slot).taps = 1;
-        (*slot).lastTapMods = modsNow;
-        (*slot).pendingUntil = now + tapWindowNanos;
-        (*slot).pressTime = now;
+            ButtonSlot_setTaps(slot, 1);
+        ButtonSlot_setLastTapMods(slot, modsNow);
+        ButtonSlot_setPendingUntil(slot, now + tapWindowNanos);
+        ButtonSlot_setPressTime(slot, now);
     } else if (action == KEY_ACTION_UP) {
-        if ((*slot).pressTime != 0)
-            (*slot).lastHoldDuration = now - (*slot).pressTime;
-        (*slot).lastReleaseTime = now;
-        (*slot).pressTime = 0;
-        (*slot).longPressFired = 0; // release clears the one-shot hold latch
+        if (ButtonSlot_pressTime(slot) != 0)
+            ButtonSlot_setLastHoldDuration(slot, now - ButtonSlot_pressTime(slot));
+        ButtonSlot_setLastReleaseTime(slot, now);
+        ButtonSlot_setPressTime(slot, 0);
+        ButtonSlot_setLongPressFired(slot, 0); // release clears the one-shot hold latch
     }
 
     InputEvent ev = { .packed = (epochMicros() << 18)
@@ -422,17 +532,17 @@ static fn deliverMotion(u32 windowId, i32 action8, i32 button,
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return;
-    for (i32 i = 0; i < (*row).count; i++) {
-        const MouseHandler *l = (*row).items[i];
-        any self = (*l).self;
-        if (action8 == 5 && (*l).onMouseMove)
-            (*l).onMouseMove(self, a, b);
-        else if (action8 == 9 && (*l).onMouseMoveDelta)
-            (*l).onMouseMoveDelta(self, a, b);
-        else if (action8 == 6 && (*l).onMouseScroll)
-            (*l).onMouseScroll(self, a, b);
-        else if (action8 == 7 && (*l).onMouseDrag)
-            (*l).onMouseDrag(self, button, a, b);
+    for (i32 i = 0; i < WinRow_count(row); i++) {
+        const MouseHandler *l = WinRow_items(row)[i];
+        any self = MouseHandler_self(l);
+        if (action8 == 5 && MouseHandler_onMouseMove(l))
+            MouseHandler_onMouseMove(l)(self, a, b);
+        else if (action8 == 9 && MouseHandler_onMouseMoveDelta(l))
+            MouseHandler_onMouseMoveDelta(l)(self, a, b);
+        else if (action8 == 6 && MouseHandler_onMouseScroll(l))
+            MouseHandler_onMouseScroll(l)(self, a, b);
+        else if (action8 == 7 && MouseHandler_onMouseDrag(l))
+            MouseHandler_onMouseDrag(l)(self, button, a, b);
     }
 }
 
@@ -441,10 +551,10 @@ static fn deliverZoom(u32 windowId, d64 magnification) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return;
-    for (i32 i = 0; i < (*row).count; i++) {
-        const MouseHandler *l = (*row).items[i];
-        if ((*l).onMouseZoom)
-            (*l).onMouseZoom((*l).self, magnification);
+    for (i32 i = 0; i < WinRow_count(row); i++) {
+        const MouseHandler *l = WinRow_items(row)[i];
+        if (MouseHandler_onMouseZoom(l))
+            MouseHandler_onMouseZoom(l)(MouseHandler_self(l), magnification);
     }
 }
 
@@ -453,15 +563,15 @@ static fn deliverButton(u32 windowId, i32 action, i32 mouseEvent, u64 exactNanos
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return;
-    for (i32 i = 0; i < (*row).count; i++) {
-        const MouseHandler *l = (*row).items[i];
-        any self = (*l).self;
-        if (action == KEY_ACTION_DOWN && (*l).onMouseDown)
-            (*l).onMouseDown(self, mouseEvent, exactNanos);
-        else if (action == KEY_ACTION_UP && (*l).onMouseUp)
-            (*l).onMouseUp(self, mouseEvent, exactNanos);
-        else if (action == KEY_ACTION_REPEAT && (*l).onMouseRepeat)
-            (*l).onMouseRepeat(self, mouseEvent, exactNanos);
+    for (i32 i = 0; i < WinRow_count(row); i++) {
+        const MouseHandler *l = WinRow_items(row)[i];
+        any self = MouseHandler_self(l);
+        if (action == KEY_ACTION_DOWN && MouseHandler_onMouseDown(l))
+            MouseHandler_onMouseDown(l)(self, mouseEvent, exactNanos);
+        else if (action == KEY_ACTION_UP && MouseHandler_onMouseUp(l))
+            MouseHandler_onMouseUp(l)(self, mouseEvent, exactNanos);
+        else if (action == KEY_ACTION_REPEAT && MouseHandler_onMouseRepeat(l))
+            MouseHandler_onMouseRepeat(l)(self, mouseEvent, exactNanos);
     }
 }
 
@@ -480,8 +590,8 @@ fn Mouse_dispatchEvents() {
                 s_posX = coordA(packed);
                 s_posY = coordB(packed);
                 for (i32 i = 0; i < s_listenerCount; i++)
-                    if ((*s_listeners[i]).onMouseMove)
-                        (*s_listeners[i]).onMouseMove((*s_listeners[i]).self, s_posX, s_posY);
+                    if (MouseHandler_onMouseMove(s_listeners[i]))
+                        MouseHandler_onMouseMove(s_listeners[i])(MouseHandler_self(s_listeners[i]), s_posX, s_posY);
                 if (ev.windowId == FOCUS_BROADCAST) {
                     for (i32 r = 0; r < s_rowCount; r++)
                         deliverMotion(s_rows[r].windowId, 5, 0, s_posX, s_posY);
@@ -492,8 +602,8 @@ fn Mouse_dispatchEvents() {
                 d64 dx = coordA(packed);
                 d64 dy = coordB(packed);
                 for (i32 i = 0; i < s_listenerCount; i++)
-                    if ((*s_listeners[i]).onMouseMoveDelta)
-                        (*s_listeners[i]).onMouseMoveDelta((*s_listeners[i]).self, dx, dy);
+                    if (MouseHandler_onMouseMoveDelta(s_listeners[i]))
+                        MouseHandler_onMouseMoveDelta(s_listeners[i])(MouseHandler_self(s_listeners[i]), dx, dy);
                 if (ev.windowId == FOCUS_BROADCAST) {
                     for (i32 r = 0; r < s_rowCount; r++)
                         deliverMotion(s_rows[r].windowId, 9, 0, dx, dy);
@@ -506,8 +616,8 @@ fn Mouse_dispatchEvents() {
                 memcpy(&f, &bits, sizeof(f));
                 d64 mag = (d64)f;
                 for (i32 i = 0; i < s_listenerCount; i++)
-                    if ((*s_listeners[i]).onMouseZoom)
-                        (*s_listeners[i]).onMouseZoom((*s_listeners[i]).self, mag);
+                    if (MouseHandler_onMouseZoom(s_listeners[i]))
+                        MouseHandler_onMouseZoom(s_listeners[i])(MouseHandler_self(s_listeners[i]), mag);
                 if (ev.windowId == FOCUS_BROADCAST) {
                     for (i32 r = 0; r < s_rowCount; r++)
                         deliverZoom(s_rows[r].windowId, mag);
@@ -521,8 +631,8 @@ fn Mouse_dispatchEvents() {
             d64 dx = coordA(packed) / 100.0;
             d64 dy = coordB(packed) / 100.0;
             for (i32 i = 0; i < s_listenerCount; i++)
-                if ((*s_listeners[i]).onMouseScroll)
-                    (*s_listeners[i]).onMouseScroll((*s_listeners[i]).self, dx, dy);
+                if (MouseHandler_onMouseScroll(s_listeners[i]))
+                    MouseHandler_onMouseScroll(s_listeners[i])(MouseHandler_self(s_listeners[i]), dx, dy);
             if (ev.windowId == FOCUS_BROADCAST) {
                 for (i32 r = 0; r < s_rowCount; r++)
                     deliverMotion(s_rows[r].windowId, 6, 0, dx, dy);
@@ -538,8 +648,8 @@ fn Mouse_dispatchEvents() {
             s_posY = coordB(packed);
             i32 button = marker;
             for (i32 i = 0; i < s_listenerCount; i++)
-                if ((*s_listeners[i]).onMouseDrag)
-                    (*s_listeners[i]).onMouseDrag((*s_listeners[i]).self, button, s_posX, s_posY);
+                if (MouseHandler_onMouseDrag(s_listeners[i]))
+                    MouseHandler_onMouseDrag(s_listeners[i])(MouseHandler_self(s_listeners[i]), button, s_posX, s_posY);
             if (ev.windowId == FOCUS_BROADCAST) {
                 for (i32 r = 0; r < s_rowCount; r++)
                     deliverMotion(s_rows[r].windowId, 7, button, s_posX, s_posY);
@@ -564,13 +674,13 @@ fn Mouse_dispatchEvents() {
         i32 mouseEvent = button | mappedMods;
 
         for (i32 i = 0; i < s_listenerCount; i++) {
-            any self = (*s_listeners[i]).self;
-            if (action == KEY_ACTION_DOWN && (*s_listeners[i]).onMouseDown)
-                (*s_listeners[i]).onMouseDown(self, mouseEvent, exactNanos);
-            else if (action == KEY_ACTION_UP && (*s_listeners[i]).onMouseUp)
-                (*s_listeners[i]).onMouseUp(self, mouseEvent, exactNanos);
-            else if (action == KEY_ACTION_REPEAT && (*s_listeners[i]).onMouseRepeat)
-                (*s_listeners[i]).onMouseRepeat(self, mouseEvent, exactNanos);
+            any self = MouseHandler_self(s_listeners[i]);
+            if (action == KEY_ACTION_DOWN && MouseHandler_onMouseDown(s_listeners[i]))
+                MouseHandler_onMouseDown(s_listeners[i])(self, mouseEvent, exactNanos);
+            else if (action == KEY_ACTION_UP && MouseHandler_onMouseUp(s_listeners[i]))
+                MouseHandler_onMouseUp(s_listeners[i])(self, mouseEvent, exactNanos);
+            else if (action == KEY_ACTION_REPEAT && MouseHandler_onMouseRepeat(s_listeners[i]))
+                MouseHandler_onMouseRepeat(s_listeners[i])(self, mouseEvent, exactNanos);
         }
         if (ev.windowId == FOCUS_BROADCAST) {
             for (i32 r = 0; r < s_rowCount; r++)
@@ -619,13 +729,13 @@ fn Mouse_resetTaps(i32 button) {
 MouseTapPhase Mouse_tapPhase(i32 button) {
     if (button < 0 || button >= BUTTON_COUNT) return MOUSE_TAP_NONE;
     const ButtonSlot *slot = &s_slots[button];
-    if ((*slot).taps == 0)
+    if (ButtonSlot_taps(slot) == 0)
         return MOUSE_TAP_NONE;
-    if (NanoTime_now() < (*slot).pendingUntil)
+    if (NanoTime_now() < ButtonSlot_pendingUntil(slot))
         return MOUSE_TAP_PENDING;
-    if ((*slot).taps >= 3)
+    if (ButtonSlot_taps(slot) >= 3)
         return MOUSE_TAP_TRIPLE;
-    if ((*slot).taps == 2)
+    if (ButtonSlot_taps(slot) == 2)
         return MOUSE_TAP_f64;
     return MOUSE_TAP_SINGLE;
 }

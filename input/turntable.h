@@ -42,9 +42,11 @@ static inline TurntableEvent TurntableEvent_3(u8 deckIndex, bool platterTouched,
         .angularDeltaRad = angularDeltaRadians };
 }
 #define TurntableEvent(...) CONSTRUCTOR_DISPATCH(TurntableEvent, __VA_ARGS__)
+;;SETTER
 static inline fn TurntableEvent_setPlatterTouched(TurntableEvent *event, bool touched) {
     if (event) (*event).platterTouched = touched;
 }
+;;SETTER
 static inline fn TurntableEvent_setAngularDelta(TurntableEvent *event, f32 radians) {
     if (event) (*event).angularDeltaRad = radians;
 }

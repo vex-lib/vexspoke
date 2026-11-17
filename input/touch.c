@@ -99,6 +99,30 @@
  */
 
 
+
+;;GETTER
+static inline fn  (*TouchHandler_onTouchCancel(const TouchHandler *s))(any self, i32 touchId, u64 exactNanos) { return (*s).onTouchCancel; }
+;;SETTER
+static inline fn TouchHandler_setOnTouchCancel(TouchHandler *s, fn  (*v)(any self, i32 touchId, u64 exactNanos)) { (*s).onTouchCancel = v; }
+;;GETTER
+static inline fn  (*TouchHandler_onTouchDown(const TouchHandler *s))(any self, i32 touchId, d64 x, d64 y, d64 pressure, u64 exactNanos) { return (*s).onTouchDown; }
+;;SETTER
+static inline fn TouchHandler_setOnTouchDown(TouchHandler *s, fn  (*v)(any self, i32 touchId, d64 x, d64 y, d64 pressure, u64 exactNanos)) { (*s).onTouchDown = v; }
+;;GETTER
+static inline fn  (*TouchHandler_onTouchMove(const TouchHandler *s))(any self, i32 touchId, d64 x, d64 y, d64 pressure, u64 exactNanos) { return (*s).onTouchMove; }
+;;SETTER
+static inline fn TouchHandler_setOnTouchMove(TouchHandler *s, fn  (*v)(any self, i32 touchId, d64 x, d64 y, d64 pressure, u64 exactNanos)) { (*s).onTouchMove = v; }
+;;GETTER
+static inline fn  (*TouchHandler_onTouchUp(const TouchHandler *s))(any self, i32 touchId, d64 x, d64 y, d64 pressure, u64 exactNanos) { return (*s).onTouchUp; }
+;;SETTER
+static inline fn TouchHandler_setOnTouchUp(TouchHandler *s, fn  (*v)(any self, i32 touchId, d64 x, d64 y, d64 pressure, u64 exactNanos)) { (*s).onTouchUp = v; }
+;;GETTER
+static inline any TouchHandler_self(const TouchHandler *s) { return (*s).self; }
+;;GETTER
+static inline any *TouchHandler_selfMut(TouchHandler *s) { return &(*s).self; }
+;;SETTER
+static inline fn TouchHandler_setSelf(TouchHandler *s, any v) { (*s).self = v; }
+
 #define QUEUE_CAPACITY 1024
 ;;INTENTION("fixed input ring: a bounded hot-path sync budget; MPMC ring growth is a separate follow-up per the Dynamic Scalability & Anti-Hardcoding Law")
 
@@ -119,6 +143,38 @@ typedef struct {
     i32 action;
 } TouchSlot;
 
+;;GETTER
+static inline i32 TouchSlot_action(const TouchSlot *s) { return (*s).action; }
+;;GETTER
+static inline i32 *TouchSlot_actionMut(TouchSlot *s) { return &(*s).action; }
+;;SETTER
+static inline fn TouchSlot_setAction(TouchSlot *s, i32 v) { (*s).action = v; }
+;;GETTER
+static inline u64 TouchSlot_lastHoldDuration(const TouchSlot *s) { return (*s).lastHoldDuration; }
+;;GETTER
+static inline u64 *TouchSlot_lastHoldDurationMut(TouchSlot *s) { return &(*s).lastHoldDuration; }
+;;SETTER
+static inline fn TouchSlot_setLastHoldDuration(TouchSlot *s, u64 v) { (*s).lastHoldDuration = v; }
+;;GETTER
+static inline u64 TouchSlot_lastReleaseTime(const TouchSlot *s) { return (*s).lastReleaseTime; }
+;;GETTER
+static inline u64 *TouchSlot_lastReleaseTimeMut(TouchSlot *s) { return &(*s).lastReleaseTime; }
+;;SETTER
+static inline fn TouchSlot_setLastReleaseTime(TouchSlot *s, u64 v) { (*s).lastReleaseTime = v; }
+;;GETTER
+static inline u64 TouchSlot_pressTime(const TouchSlot *s) { return (*s).pressTime; }
+;;GETTER
+static inline u64 *TouchSlot_pressTimeMut(TouchSlot *s) { return &(*s).pressTime; }
+;;SETTER
+static inline fn TouchSlot_setPressTime(TouchSlot *s, u64 v) { (*s).pressTime = v; }
+;;GETTER
+static inline i32 TouchSlot_taps(const TouchSlot *s) { return (*s).taps; }
+;;GETTER
+static inline i32 *TouchSlot_tapsMut(TouchSlot *s) { return &(*s).taps; }
+;;SETTER
+static inline fn TouchSlot_setTaps(TouchSlot *s, i32 v) { (*s).taps = v; }
+
+
 _Static_assert(sizeof(TouchSlot) == 32, "touch slot must stay 32 Bytes");
 
 typedef struct {
@@ -127,6 +183,26 @@ typedef struct {
     d64 pressure;
     u64 pad;
 } TouchPos;
+
+;;GETTER
+static inline d64 TouchPos_pressure(const TouchPos *s) { return (*s).pressure; }
+;;GETTER
+static inline d64 *TouchPos_pressureMut(TouchPos *s) { return &(*s).pressure; }
+;;SETTER
+static inline fn TouchPos_setPressure(TouchPos *s, d64 v) { (*s).pressure = v; }
+;;GETTER
+static inline d64 TouchPos_x(const TouchPos *s) { return (*s).x; }
+;;GETTER
+static inline d64 *TouchPos_xMut(TouchPos *s) { return &(*s).x; }
+;;SETTER
+static inline fn TouchPos_setX(TouchPos *s, d64 v) { (*s).x = v; }
+;;GETTER
+static inline d64 TouchPos_y(const TouchPos *s) { return (*s).y; }
+;;GETTER
+static inline d64 *TouchPos_yMut(TouchPos *s) { return &(*s).y; }
+;;SETTER
+static inline fn TouchPos_setY(TouchPos *s, d64 v) { (*s).y = v; }
+
 
 _Static_assert(sizeof(TouchPos) == 32, "touch pos must stay 32 Bytes");
 
@@ -147,6 +223,32 @@ typedef struct WinRow {
     i32 count;
     i32 cap;
 } WinRow;
+
+;;GETTER
+static inline i32 WinRow_cap(const WinRow *s) { return (*s).cap; }
+;;GETTER
+static inline i32 *WinRow_capMut(WinRow *s) { return &(*s).cap; }
+;;SETTER
+static inline fn WinRow_setCap(WinRow *s, i32 v) { (*s).cap = v; }
+;;GETTER
+static inline i32 WinRow_count(const WinRow *s) { return (*s).count; }
+;;GETTER
+static inline i32 *WinRow_countMut(WinRow *s) { return &(*s).count; }
+;;SETTER
+static inline fn WinRow_setCount(WinRow *s, i32 v) { (*s).count = v; }
+;;GETTER
+static inline const TouchHandler ** WinRow_items(const WinRow *s) { return (*s).items; }
+;;GETTER
+static inline const TouchHandler ** *WinRow_itemsMut(WinRow *s) { return &(*s).items; }
+;;SETTER
+static inline fn WinRow_setItems(WinRow *s, const TouchHandler ** v) { (*s).items = v; }
+;;GETTER
+static inline u32 WinRow_windowId(const WinRow *s) { return (*s).windowId; }
+;;GETTER
+static inline u32 *WinRow_windowIdMut(WinRow *s) { return &(*s).windowId; }
+;;SETTER
+static inline fn WinRow_setWindowId(WinRow *s, u32 v) { (*s).windowId = v; }
+
 
 static const TouchHandler **s_listeners = nullptr;  // global listener segment
 static i32 s_listenerCount = 0;
@@ -236,23 +338,23 @@ fn Touch_attachWindow(u32 windowId, const TouchHandler *listener) {
     if (row == nullptr) {
         if (!growRows(s_rowCount + 1)) return;
         row = &s_rows[s_rowCount++];
-        (*row).windowId = windowId;
-        (*row).items = nullptr;
-        (*row).count = 0;
-        (*row).cap = 0;
+        WinRow_setWindowId(row, windowId);
+        WinRow_setItems(row, nullptr);
+        WinRow_setCount(row, 0);
+        WinRow_setCap(row, 0);
     }
-    if (!growSegment(&(*row).items, &(*row).cap, (*row).count + 1)) return;
-    (*row).items[(*row).count++] = listener;
+    if (!growSegment(WinRow_itemsMut(row), WinRow_capMut(row), WinRow_count(row) + 1)) return;
+    WinRow_items(row)[(*WinRow_countMut(row))++] = listener;
 }
 
 bool Touch_detachWindow(u32 windowId, const TouchHandler *listener) {
     if (listener == nullptr || windowId == 0) return false;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return false;
-    for (i32 i = 0; i < (*row).count; i++) {
-        if ((*row).items[i] == listener) {
-            (*row).count--;
-            (*row).items[i] = (*row).items[(*row).count];
+    for (i32 i = 0; i < WinRow_count(row); i++) {
+        if (WinRow_items(row)[i] == listener) {
+            WinRow_setCount(row, WinRow_count(row) - 1u);
+            WinRow_items(row)[i] = WinRow_items(row)[WinRow_count(row)];
             return true;
         }
     }
@@ -263,7 +365,7 @@ fn Touch_detachWindowAll(u32 windowId) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row != nullptr)
-        (*row).count = 0;
+        WinRow_setCount(row, 0);
 }
 
 fn Touch_pushTouchEvent(u32 windowId, i32 touchId, i32 action, d64 x, d64 y,
@@ -276,26 +378,26 @@ fn Touch_pushTouchEvent(u32 windowId, i32 touchId, i32 action, d64 x, d64 y,
     TouchPos *pos = &s_pos[touchId];
     u64 now = NanoTime_now();
 
-    (*pos).x = x;
-    (*pos).y = y;
-    (*pos).pressure = pressure;
+    TouchPos_setX(pos, x);
+    TouchPos_setY(pos, y);
+    TouchPos_setPressure(pos, pressure);
 
     if (action == TOUCH_DOWN) {
-        u64 lastRelease = (*slot).lastReleaseTime;
+        u64 lastRelease = TouchSlot_lastReleaseTime(slot);
         if (lastRelease != 0 && (now - lastRelease) < holdThresholdNanos)
-            (*slot).taps++;
+            TouchSlot_setTaps(slot, TouchSlot_taps(slot) + 1u);
         else
-            (*slot).taps = 1;
-        (*slot).pressTime = now;
+            TouchSlot_setTaps(slot, 1);
+        TouchSlot_setPressTime(slot, now);
     } else if (action == TOUCH_UP) {
-        if ((*slot).pressTime != 0)
-            (*slot).lastHoldDuration = now - (*slot).pressTime;
-        (*slot).lastReleaseTime = now;
-        (*slot).pressTime = 0;
+        if (TouchSlot_pressTime(slot) != 0)
+            TouchSlot_setLastHoldDuration(slot, now - TouchSlot_pressTime(slot));
+        TouchSlot_setLastReleaseTime(slot, now);
+        TouchSlot_setPressTime(slot, 0);
     } else if (action == TOUCH_CANCEL) {
-        (*slot).pressTime = 0;
+        TouchSlot_setPressTime(slot, 0);
     }
-    (*slot).action = action;
+    TouchSlot_setAction(slot, action);
 
     u64 micros = (NanoTime_elapsedNanos() / 1000ULL) & 0x3FFFFFFFFFFFULL;
     InputEvent ev = { .packed = (micros << 18)
@@ -311,17 +413,17 @@ static fn deliverTouch(u32 windowId, i32 action, i32 touchId,
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return;
-    for (i32 i = 0; i < (*row).count; i++) {
-        const TouchHandler *l = (*row).items[i];
-        any self = (*l).self;
-        if (action == TOUCH_DOWN && (*l).onTouchDown)
-            (*l).onTouchDown(self, touchId, x, y, pressure, exactNanos);
-        else if (action == TOUCH_UP && (*l).onTouchUp)
-            (*l).onTouchUp(self, touchId, x, y, pressure, exactNanos);
-        else if (action == TOUCH_MOVE && (*l).onTouchMove)
-            (*l).onTouchMove(self, touchId, x, y, pressure, exactNanos);
-        else if (action == TOUCH_CANCEL && (*l).onTouchCancel)
-            (*l).onTouchCancel(self, touchId, exactNanos);
+    for (i32 i = 0; i < WinRow_count(row); i++) {
+        const TouchHandler *l = WinRow_items(row)[i];
+        any self = TouchHandler_self(l);
+        if (action == TOUCH_DOWN && TouchHandler_onTouchDown(l))
+            TouchHandler_onTouchDown(l)(self, touchId, x, y, pressure, exactNanos);
+        else if (action == TOUCH_UP && TouchHandler_onTouchUp(l))
+            TouchHandler_onTouchUp(l)(self, touchId, x, y, pressure, exactNanos);
+        else if (action == TOUCH_MOVE && TouchHandler_onTouchMove(l))
+            TouchHandler_onTouchMove(l)(self, touchId, x, y, pressure, exactNanos);
+        else if (action == TOUCH_CANCEL && TouchHandler_onTouchCancel(l))
+            TouchHandler_onTouchCancel(l)(self, touchId, exactNanos);
     }
 }
 
@@ -337,20 +439,20 @@ fn Touch_dispatchEvents() {
         i32 action = (i32)(packed & 0x3F);
 
         const TouchPos *pos = &s_pos[touchId];
-        d64 x = (*pos).x;
-        d64 y = (*pos).y;
-        d64 pressure = (*pos).pressure;
+        d64 x = TouchPos_x(pos);
+        d64 y = TouchPos_y(pos);
+        d64 pressure = TouchPos_pressure(pos);
 
         for (i32 i = 0; i < s_listenerCount; i++) {
-            any self = (*s_listeners[i]).self;
-            if (action == TOUCH_DOWN && (*s_listeners[i]).onTouchDown)
-                (*s_listeners[i]).onTouchDown(self, touchId, x, y, pressure, exactNanos);
-            else if (action == TOUCH_UP && (*s_listeners[i]).onTouchUp)
-                (*s_listeners[i]).onTouchUp(self, touchId, x, y, pressure, exactNanos);
-            else if (action == TOUCH_MOVE && (*s_listeners[i]).onTouchMove)
-                (*s_listeners[i]).onTouchMove(self, touchId, x, y, pressure, exactNanos);
-            else if (action == TOUCH_CANCEL && (*s_listeners[i]).onTouchCancel)
-                (*s_listeners[i]).onTouchCancel(self, touchId, exactNanos);
+            any self = TouchHandler_self(s_listeners[i]);
+            if (action == TOUCH_DOWN && TouchHandler_onTouchDown(s_listeners[i]))
+                TouchHandler_onTouchDown(s_listeners[i])(self, touchId, x, y, pressure, exactNanos);
+            else if (action == TOUCH_UP && TouchHandler_onTouchUp(s_listeners[i]))
+                TouchHandler_onTouchUp(s_listeners[i])(self, touchId, x, y, pressure, exactNanos);
+            else if (action == TOUCH_MOVE && TouchHandler_onTouchMove(s_listeners[i]))
+                TouchHandler_onTouchMove(s_listeners[i])(self, touchId, x, y, pressure, exactNanos);
+            else if (action == TOUCH_CANCEL && TouchHandler_onTouchCancel(s_listeners[i]))
+                TouchHandler_onTouchCancel(s_listeners[i])(self, touchId, exactNanos);
         }
         if (ev.windowId == FOCUS_BROADCAST) {
             for (i32 r = 0; r < s_rowCount; r++)

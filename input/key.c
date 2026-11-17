@@ -120,6 +120,30 @@
  */
 
 
+
+;;GETTER
+static inline fn  (*KeyHandler_onCharTyped(const KeyHandler *s))(any self, u32 character) { return (*s).onCharTyped; }
+;;SETTER
+static inline fn KeyHandler_setOnCharTyped(KeyHandler *s, fn  (*v)(any self, u32 character)) { (*s).onCharTyped = v; }
+;;GETTER
+static inline fn  (*KeyHandler_onKeyDown(const KeyHandler *s))(any self, i32 keyEvent, u64 exactNanos) { return (*s).onKeyDown; }
+;;SETTER
+static inline fn KeyHandler_setOnKeyDown(KeyHandler *s, fn  (*v)(any self, i32 keyEvent, u64 exactNanos)) { (*s).onKeyDown = v; }
+;;GETTER
+static inline fn  (*KeyHandler_onKeyRepeat(const KeyHandler *s))(any self, i32 keyEvent, u64 exactNanos) { return (*s).onKeyRepeat; }
+;;SETTER
+static inline fn KeyHandler_setOnKeyRepeat(KeyHandler *s, fn  (*v)(any self, i32 keyEvent, u64 exactNanos)) { (*s).onKeyRepeat = v; }
+;;GETTER
+static inline fn  (*KeyHandler_onKeyUp(const KeyHandler *s))(any self, i32 keyEvent, u64 exactNanos) { return (*s).onKeyUp; }
+;;SETTER
+static inline fn KeyHandler_setOnKeyUp(KeyHandler *s, fn  (*v)(any self, i32 keyEvent, u64 exactNanos)) { (*s).onKeyUp = v; }
+;;GETTER
+static inline any KeyHandler_self(const KeyHandler *s) { return (*s).self; }
+;;GETTER
+static inline any *KeyHandler_selfMut(KeyHandler *s) { return &(*s).self; }
+;;SETTER
+static inline fn KeyHandler_setSelf(KeyHandler *s, any v) { (*s).self = v; }
+
 #define KEY_COUNT 512
 ;;INTENTION("fixed KEY_COUNT: the GLFW-style keycode domain is a hardware enum (0..511), not a workload ceiling")
 
@@ -146,6 +170,50 @@ typedef struct {
     u8 pad[2];            // alignment padding
 } KeySlot;
 
+;;GETTER
+static inline u64 KeySlot_lastHoldDuration(const KeySlot *s) { return (*s).lastHoldDuration; }
+;;GETTER
+static inline u64 *KeySlot_lastHoldDurationMut(KeySlot *s) { return &(*s).lastHoldDuration; }
+;;SETTER
+static inline fn KeySlot_setLastHoldDuration(KeySlot *s, u64 v) { (*s).lastHoldDuration = v; }
+;;GETTER
+static inline u64 KeySlot_lastReleaseTime(const KeySlot *s) { return (*s).lastReleaseTime; }
+;;GETTER
+static inline u64 *KeySlot_lastReleaseTimeMut(KeySlot *s) { return &(*s).lastReleaseTime; }
+;;SETTER
+static inline fn KeySlot_setLastReleaseTime(KeySlot *s, u64 v) { (*s).lastReleaseTime = v; }
+;;GETTER
+static inline u8 KeySlot_lastTapMods(const KeySlot *s) { return (*s).lastTapMods; }
+;;GETTER
+static inline u8 *KeySlot_lastTapModsMut(KeySlot *s) { return &(*s).lastTapMods; }
+;;SETTER
+static inline fn KeySlot_setLastTapMods(KeySlot *s, u8 v) { (*s).lastTapMods = v; }
+;;GETTER
+static inline u8 KeySlot_longPressFired(const KeySlot *s) { return (*s).longPressFired; }
+;;GETTER
+static inline u8 *KeySlot_longPressFiredMut(KeySlot *s) { return &(*s).longPressFired; }
+;;SETTER
+static inline fn KeySlot_setLongPressFired(KeySlot *s, u8 v) { (*s).longPressFired = v; }
+;;GETTER
+static inline u64 KeySlot_pendingUntil(const KeySlot *s) { return (*s).pendingUntil; }
+;;GETTER
+static inline u64 *KeySlot_pendingUntilMut(KeySlot *s) { return &(*s).pendingUntil; }
+;;SETTER
+static inline fn KeySlot_setPendingUntil(KeySlot *s, u64 v) { (*s).pendingUntil = v; }
+;;GETTER
+static inline u64 KeySlot_pressTime(const KeySlot *s) { return (*s).pressTime; }
+;;GETTER
+static inline u64 *KeySlot_pressTimeMut(KeySlot *s) { return &(*s).pressTime; }
+;;SETTER
+static inline fn KeySlot_setPressTime(KeySlot *s, u64 v) { (*s).pressTime = v; }
+;;GETTER
+static inline i32 KeySlot_taps(const KeySlot *s) { return (*s).taps; }
+;;GETTER
+static inline i32 *KeySlot_tapsMut(KeySlot *s) { return &(*s).taps; }
+;;SETTER
+static inline fn KeySlot_setTaps(KeySlot *s, i32 v) { (*s).taps = v; }
+
+
 _Static_assert(sizeof(KeySlot) == 40, "key slot must stay 40 Bytes");
 
 static KeySlot s_slots[KEY_COUNT];
@@ -165,6 +233,32 @@ typedef struct WinRow {
     i32 count;
     i32 cap;
 } WinRow;
+
+;;GETTER
+static inline i32 WinRow_cap(const WinRow *s) { return (*s).cap; }
+;;GETTER
+static inline i32 *WinRow_capMut(WinRow *s) { return &(*s).cap; }
+;;SETTER
+static inline fn WinRow_setCap(WinRow *s, i32 v) { (*s).cap = v; }
+;;GETTER
+static inline i32 WinRow_count(const WinRow *s) { return (*s).count; }
+;;GETTER
+static inline i32 *WinRow_countMut(WinRow *s) { return &(*s).count; }
+;;SETTER
+static inline fn WinRow_setCount(WinRow *s, i32 v) { (*s).count = v; }
+;;GETTER
+static inline const KeyHandler ** WinRow_items(const WinRow *s) { return (*s).items; }
+;;GETTER
+static inline const KeyHandler ** *WinRow_itemsMut(WinRow *s) { return &(*s).items; }
+;;SETTER
+static inline fn WinRow_setItems(WinRow *s, const KeyHandler ** v) { (*s).items = v; }
+;;GETTER
+static inline u32 WinRow_windowId(const WinRow *s) { return (*s).windowId; }
+;;GETTER
+static inline u32 *WinRow_windowIdMut(WinRow *s) { return &(*s).windowId; }
+;;SETTER
+static inline fn WinRow_setWindowId(WinRow *s, u32 v) { (*s).windowId = v; }
+
 
 static const KeyHandler **s_listeners = nullptr;  // global listener segment
 static i32 s_listenerCount = 0;
@@ -311,23 +405,23 @@ fn Key_attachWindow(u32 windowId, const KeyHandler *listener) {
     if (row == nullptr) {
         if (!growRows(s_rowCount + 1)) return;
         row = &s_rows[s_rowCount++];
-        (*row).windowId = windowId;
-        (*row).items = nullptr;
-        (*row).count = 0;
-        (*row).cap = 0;
+        WinRow_setWindowId(row, windowId);
+        WinRow_setItems(row, nullptr);
+        WinRow_setCount(row, 0);
+        WinRow_setCap(row, 0);
     }
-    if (!growSegment(&(*row).items, &(*row).cap, (*row).count + 1)) return;
-    (*row).items[(*row).count++] = listener;
+    if (!growSegment(WinRow_itemsMut(row), WinRow_capMut(row), WinRow_count(row) + 1)) return;
+    WinRow_items(row)[(*WinRow_countMut(row))++] = listener;
 }
 
 bool Key_detachWindow(u32 windowId, const KeyHandler *listener) {
     if (listener == nullptr || windowId == 0) return false;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return false;
-    for (i32 i = 0; i < (*row).count; i++) {
-        if ((*row).items[i] == listener) {
-            (*row).count--;
-            (*row).items[i] = (*row).items[(*row).count];
+    for (i32 i = 0; i < WinRow_count(row); i++) {
+        if (WinRow_items(row)[i] == listener) {
+            WinRow_setCount(row, WinRow_count(row) - 1u);
+            WinRow_items(row)[i] = WinRow_items(row)[WinRow_count(row)];
             return true;
         }
     }
@@ -338,7 +432,7 @@ fn Key_detachWindowAll(u32 windowId) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row != nullptr)
-        (*row).count = 0;
+        WinRow_setCount(row, 0);
 }
 
 // Modifier snapshot from live state, packed into the wire-format nibble.
@@ -365,7 +459,7 @@ fn Key_pushEvent(u32 windowId, i32 keyCode, i32 action, u64 tapWindowNanos) {
     u64 now = NanoTime_now();
 
     if (action == KEY_ACTION_DOWN) {
-        if ((*slot).pressTime != 0) {
+        if (KeySlot_pressTime(slot) != 0) {
             // Already down: OS auto-repeat. Forward as repeat, state untouched.
             InputEvent ev = { .packed = (epochMicros() << 18)
                                        | (((u64)modifierMask() & 0xF) << 14)
@@ -375,24 +469,24 @@ fn Key_pushEvent(u32 windowId, i32 keyCode, i32 action, u64 tapWindowNanos) {
             RingBuffer_push(&s_queue, &ev);
             return;
         }
-        u64 lastRelease = (*slot).lastReleaseTime;
+        u64 lastRelease = KeySlot_lastReleaseTime(slot);
         // A modifier-state change since the last press breaks the sequence:
         // different modifiers => a fresh tap, never an upgrade to d64/triple.
         u8 modsNow = (u8)(modifierMask() & 0xF);
         if (lastRelease != 0 && (now - lastRelease) < tapWindowNanos
-            && (*slot).lastTapMods == modsNow)
-            (*slot).taps++;
+            && KeySlot_lastTapMods(slot) == modsNow)
+            KeySlot_setTaps(slot, KeySlot_taps(slot) + 1u);
         else
-            (*slot).taps = 1;
-        (*slot).lastTapMods = modsNow;
-        (*slot).pendingUntil = now + tapWindowNanos;
-        (*slot).pressTime = now;
+            KeySlot_setTaps(slot, 1);
+        KeySlot_setLastTapMods(slot, modsNow);
+        KeySlot_setPendingUntil(slot, now + tapWindowNanos);
+        KeySlot_setPressTime(slot, now);
     } else if (action == KEY_ACTION_UP) {
-        if ((*slot).pressTime != 0)
-            (*slot).lastHoldDuration = now - (*slot).pressTime;
-        (*slot).lastReleaseTime = now;
-        (*slot).pressTime = 0;
-        (*slot).longPressFired = 0; // release clears the one-shot hold latch
+        if (KeySlot_pressTime(slot) != 0)
+            KeySlot_setLastHoldDuration(slot, now - KeySlot_pressTime(slot));
+        KeySlot_setLastReleaseTime(slot, now);
+        KeySlot_setPressTime(slot, 0);
+        KeySlot_setLongPressFired(slot, 0); // release clears the one-shot hold latch
     }
 
     InputEvent ev = { .packed = (epochMicros() << 18)
@@ -417,15 +511,15 @@ static fn deliverToWindow(u32 windowId, i32 action, i32 keyEvent, u64 exactNanos
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return;
-    for (i32 i = 0; i < (*row).count; i++) {
-        const KeyHandler *l = (*row).items[i];
-        any self = (*l).self;
-        if (action == KEY_ACTION_DOWN && (*l).onKeyDown)
-            (*l).onKeyDown(self, keyEvent, exactNanos);
-        else if (action == KEY_ACTION_UP && (*l).onKeyUp)
-            (*l).onKeyUp(self, keyEvent, exactNanos);
-        else if (action == KEY_ACTION_REPEAT && (*l).onKeyRepeat)
-            (*l).onKeyRepeat(self, keyEvent, exactNanos);
+    for (i32 i = 0; i < WinRow_count(row); i++) {
+        const KeyHandler *l = WinRow_items(row)[i];
+        any self = KeyHandler_self(l);
+        if (action == KEY_ACTION_DOWN && KeyHandler_onKeyDown(l))
+            KeyHandler_onKeyDown(l)(self, keyEvent, exactNanos);
+        else if (action == KEY_ACTION_UP && KeyHandler_onKeyUp(l))
+            KeyHandler_onKeyUp(l)(self, keyEvent, exactNanos);
+        else if (action == KEY_ACTION_REPEAT && KeyHandler_onKeyRepeat(l))
+            KeyHandler_onKeyRepeat(l)(self, keyEvent, exactNanos);
     }
 }
 
@@ -434,10 +528,10 @@ static fn deliverChar(u32 windowId, u32 c) {
     if (windowId == 0) return;
     WinRow *row = rowFor(windowId);
     if (row == nullptr) return;
-    for (i32 i = 0; i < (*row).count; i++) {
-        const KeyHandler *l = (*row).items[i];
-        if ((*l).onCharTyped)
-            (*l).onCharTyped((*l).self, c);
+    for (i32 i = 0; i < WinRow_count(row); i++) {
+        const KeyHandler *l = WinRow_items(row)[i];
+        if (KeyHandler_onCharTyped(l))
+            KeyHandler_onCharTyped(l)(KeyHandler_self(l), c);
     }
 }
 
@@ -454,8 +548,8 @@ fn Key_dispatchEvents() {
         if (action == 3) { // char event
             u32 c = (u32)((packed >> 2) & 0xFFFF);
             for (i32 i = 0; i < s_listenerCount; i++)
-                if ((*s_listeners[i]).onCharTyped)
-                    (*s_listeners[i]).onCharTyped((*s_listeners[i]).self, c);
+                if (KeyHandler_onCharTyped(s_listeners[i]))
+                    KeyHandler_onCharTyped(s_listeners[i])(KeyHandler_self(s_listeners[i]), c);
             if (ev.windowId == FOCUS_BROADCAST) {
                 for (i32 r = 0; r < s_rowCount; r++)
                     deliverChar(s_rows[r].windowId, c);
@@ -478,13 +572,13 @@ fn Key_dispatchEvents() {
         // Global taps hear everything; window listeners only their own
         // window (or broadcast).
         for (i32 i = 0; i < s_listenerCount; i++) {
-            any self = (*s_listeners[i]).self;
-            if (action == KEY_ACTION_DOWN && (*s_listeners[i]).onKeyDown)
-                (*s_listeners[i]).onKeyDown(self, keyEvent, exactNanos);
-            else if (action == KEY_ACTION_UP && (*s_listeners[i]).onKeyUp)
-                (*s_listeners[i]).onKeyUp(self, keyEvent, exactNanos);
-            else if (action == KEY_ACTION_REPEAT && (*s_listeners[i]).onKeyRepeat)
-                (*s_listeners[i]).onKeyRepeat(self, keyEvent, exactNanos);
+            any self = KeyHandler_self(s_listeners[i]);
+            if (action == KEY_ACTION_DOWN && KeyHandler_onKeyDown(s_listeners[i]))
+                KeyHandler_onKeyDown(s_listeners[i])(self, keyEvent, exactNanos);
+            else if (action == KEY_ACTION_UP && KeyHandler_onKeyUp(s_listeners[i]))
+                KeyHandler_onKeyUp(s_listeners[i])(self, keyEvent, exactNanos);
+            else if (action == KEY_ACTION_REPEAT && KeyHandler_onKeyRepeat(s_listeners[i]))
+                KeyHandler_onKeyRepeat(s_listeners[i])(self, keyEvent, exactNanos);
         }
         if (ev.windowId == FOCUS_BROADCAST) {
             for (i32 r = 0; r < s_rowCount; r++)
@@ -543,13 +637,13 @@ fn Key_resetTaps(i32 keyCode) {
 KeyTapPhase Key_tapPhase(i32 keyCode) {
     if (keyCode < 0 || keyCode >= KEY_COUNT) return KEY_TAP_NONE;
     const KeySlot *slot = &s_slots[keyCode];
-    if ((*slot).taps == 0)
+    if (KeySlot_taps(slot) == 0)
         return KEY_TAP_NONE;
-    if (NanoTime_now() < (*slot).pendingUntil)
+    if (NanoTime_now() < KeySlot_pendingUntil(slot))
         return KEY_TAP_PENDING;
-    if ((*slot).taps >= 3)
+    if (KeySlot_taps(slot) >= 3)
         return KEY_TAP_TRIPLE;
-    if ((*slot).taps == 2)
+    if (KeySlot_taps(slot) == 2)
         return KEY_TAP_f64;
     return KEY_TAP_SINGLE;
 }

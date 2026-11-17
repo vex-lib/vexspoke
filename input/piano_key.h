@@ -41,12 +41,15 @@ static inline PianoKeyEvent PianoKeyEvent_3(u8 note, bool isDown, f32 velocity) 
     return (PianoKeyEvent) { .note = note, .isDown = isDown, .velocity = velocity };
 }
 #define PianoKeyEvent(...) CONSTRUCTOR_DISPATCH(PianoKeyEvent, __VA_ARGS__)
+;;SETTER
 static inline fn PianoKeyEvent_setNote(PianoKeyEvent *event, u8 note) {
     if (event) (*event).note = note;
 }
+;;SETTER
 static inline fn PianoKeyEvent_setDown(PianoKeyEvent *event, bool isDown) {
     if (event) (*event).isDown = isDown;
 }
+;;SETTER
 static inline fn PianoKeyEvent_setVelocity(PianoKeyEvent *event, f32 velocity) {
     if (event) (*event).velocity = velocity;
 }

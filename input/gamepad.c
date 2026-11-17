@@ -49,6 +49,14 @@
  * ============================================================================
  */
 
+
+;;GETTER
+static inline u32 GamepadState_buttons(const GamepadState *s) { return (*s).buttons; }
+;;GETTER
+static inline u32 *GamepadState_buttonsMut(GamepadState *s) { return &(*s).buttons; }
+;;SETTER
+static inline fn GamepadState_setButtons(GamepadState *s, u32 v) { (*s).buttons = v; }
+
 GamepadState GamepadState_0() {
     GamepadState state;
     memset(&state, 0, sizeof state);
@@ -58,7 +66,7 @@ GamepadState GamepadState_0() {
 
 bool GamepadState_isDown(const GamepadState *state, u32 buttonMask) {
     if (state == nullptr) return false;
-    return ((*state).buttons & buttonMask) == buttonMask;
+    return (GamepadState_buttons(state) & buttonMask) == buttonMask;
 }
 
 vec2f Gamepad_applyCircularDeadzone(vec2f rawStick, f32 deadzone) {

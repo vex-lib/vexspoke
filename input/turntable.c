@@ -51,6 +51,54 @@
  * ============================================================================
  */
 
+
+;;GETTER
+static inline f32 TurntableState_cuePositionSeconds(const TurntableState *s) { return (*s).cuePositionSeconds; }
+;;GETTER
+static inline f32 *TurntableState_cuePositionSecondsMut(TurntableState *s) { return &(*s).cuePositionSeconds; }
+;;SETTER
+static inline fn TurntableState_setCuePositionSeconds(TurntableState *s, f32 v) { (*s).cuePositionSeconds = v; }
+;;GETTER
+static inline f32 TurntableState_currentAngularVelocityRadPerSec(const TurntableState *s) { return (*s).currentAngularVelocityRadPerSec; }
+;;GETTER
+static inline f32 *TurntableState_currentAngularVelocityRadPerSecMut(TurntableState *s) { return &(*s).currentAngularVelocityRadPerSec; }
+;;SETTER
+static inline fn TurntableState_setCurrentAngularVelocityRadPerSec(TurntableState *s, f32 v) { (*s).currentAngularVelocityRadPerSec = v; }
+;;GETTER
+static inline f32 *TurntableState_hotCuesMut(TurntableState *s) { return (*s).hotCues; }
+;;GETTER
+static inline const f32 *TurntableState_hotCues(const TurntableState *s) { return (*s).hotCues; }
+;;GETTER
+static inline bool TurntableState_isPlaying(const TurntableState *s) { return (*s).isPlaying; }
+;;GETTER
+static inline bool *TurntableState_isPlayingMut(TurntableState *s) { return &(*s).isPlaying; }
+;;SETTER
+static inline fn TurntableState_setIsPlaying(TurntableState *s, bool v) { (*s).isPlaying = v; }
+;;GETTER
+static inline f32 TurntableState_pitchFader(const TurntableState *s) { return (*s).pitchFader; }
+;;GETTER
+static inline f32 *TurntableState_pitchFaderMut(TurntableState *s) { return &(*s).pitchFader; }
+;;SETTER
+static inline fn TurntableState_setPitchFader(TurntableState *s, f32 v) { (*s).pitchFader = v; }
+;;GETTER
+static inline bool TurntableState_platterTouched(const TurntableState *s) { return (*s).platterTouched; }
+;;GETTER
+static inline bool *TurntableState_platterTouchedMut(TurntableState *s) { return &(*s).platterTouched; }
+;;SETTER
+static inline fn TurntableState_setPlatterTouched(TurntableState *s, bool v) { (*s).platterTouched = v; }
+;;GETTER
+static inline f32 TurntableState_playheadSeconds(const TurntableState *s) { return (*s).playheadSeconds; }
+;;GETTER
+static inline f32 *TurntableState_playheadSecondsMut(TurntableState *s) { return &(*s).playheadSeconds; }
+;;SETTER
+static inline fn TurntableState_setPlayheadSeconds(TurntableState *s, f32 v) { (*s).playheadSeconds = v; }
+;;GETTER
+static inline TurntableRpm TurntableState_targetRpm(const TurntableState *s) { return (*s).targetRpm; }
+;;GETTER
+static inline TurntableRpm *TurntableState_targetRpmMut(TurntableState *s) { return &(*s).targetRpm; }
+;;SETTER
+static inline fn TurntableState_setTargetRpm(TurntableState *s, TurntableRpm v) { (*s).targetRpm = v; }
+
 TurntableState TurntableState_1(u8 deckIndex) {
     TurntableState state;
     memset(&state, 0, sizeof state);
@@ -71,77 +119,77 @@ TurntableState TurntableState_1(u8 deckIndex) {
 fn TurntableState_processEvent(TurntableState *state, TurntableEvent event) {
     if (state == nullptr) return;
 
-    (*state).platterTouched = event.platterTouched;
-    (*state).pitchFader = event.pitchFader;
+    TurntableState_setPlatterTouched(state, event.platterTouched);
+    TurntableState_setPitchFader(state, event.pitchFader);
 
     if (event.playPausePressed) {
-        (*state).isPlaying = !(*state).isPlaying;
+        TurntableState_setIsPlaying(state, !TurntableState_isPlaying(state));
     }
 
     if (event.cuePressed) {
-        if (!(*state).isPlaying) {
+        if (!TurntableState_isPlaying(state)) {
             // Set cue point at current playhead
-            (*state).cuePositionSeconds = (*state).playheadSeconds;
+            TurntableState_setCuePositionSeconds(state, TurntableState_playheadSeconds(state));
         } else {
             // Jump back to cue point and pause
-            (*state).playheadSeconds = (*state).cuePositionSeconds;
-            (*state).isPlaying = false;
+            TurntableState_setPlayheadSeconds(state, TurntableState_cuePositionSeconds(state));
+            TurntableState_setIsPlaying(state, false);
         }
     }
 
     if (event.hotCueIndex >= 1 && event.hotCueIndex <= 8) {
         i32 idx = (i32) event.hotCueIndex - 1;
-        if ((*state).hotCues[idx] < 0.0f) {
+        if (TurntableState_hotCuesMut(state)[idx] < 0.0f) {
             // Unset: save current position
-            (*state).hotCues[idx] = (*state).playheadSeconds;
+            TurntableState_hotCuesMut(state)[idx] = TurntableState_playheadSeconds(state);
         } else {
             // Jump to saved hot cue
-            (*state).playheadSeconds = (*state).hotCues[idx];
+            TurntableState_setPlayheadSeconds(state, TurntableState_hotCuesMut(state)[idx]);
         }
     }
 
     if (event.platterTouched) {
         // Direct scratch delta overrides natural motor velocity
         // e.g. 1 revolution = 2*PI radians. Time delta ~16ms (60fps)
-        (*state).currentAngularVelocityRadPerSec = event.angularDeltaRad / 0.01667f;
+        TurntableState_setCurrentAngularVelocityRadPerSec(state, event.angularDeltaRad / 0.01667f);
         // 33.33 RPM = 0.5555 rev/sec = ~3.4906 rad/sec
-        f32 speedRatio = (*state).currentAngularVelocityRadPerSec / 3.49066f;
-        (*state).playheadSeconds += speedRatio * 0.01667f;
+        f32 speedRatio = TurntableState_currentAngularVelocityRadPerSec(state) / 3.49066f;
+        TurntableState_setPlayheadSeconds(state, TurntableState_playheadSeconds(state) + (speedRatio * 0.01667f));
     } else if (event.rimTouched) {
         // Nudge pitch momentarily
-        (*state).playheadSeconds += (event.angularDeltaRad / 3.49066f);
+        TurntableState_setPlayheadSeconds(state, TurntableState_playheadSeconds(state) + ((event.angularDeltaRad / 3.49066f)));
     }
 }
 
 fn TurntableState_tick(TurntableState *state, f32 deltaSeconds) {
     if (state == nullptr || deltaSeconds <= 0.0f) return;
 
-    if (!(*state).platterTouched && (*state).isPlaying) {
+    if (!TurntableState_platterTouched(state) && TurntableState_isPlaying(state)) {
         // Base nominal velocity
-        f32 baseRpm = ((*state).targetRpm == TURNTABLE_RPM_45) ? 45.0f : 33.333f;
+        f32 baseRpm = (TurntableState_targetRpm(state) == TURNTABLE_RPM_45) ? 45.0f : 33.333f;
         f32 baseRadPerSec = baseRpm * (2.0f * 3.14159265f / 60.0f);
 
         // Pitch scale: 0.0 = 100%, +0.08 = 108% (8% pitch range standard)
-        f32 pitchMultiplier = 1.0f + ((*state).pitchFader * 0.08f);
+        f32 pitchMultiplier = 1.0f + (TurntableState_pitchFader(state) * 0.08f);
         f32 targetVelocity = baseRadPerSec * pitchMultiplier;
 
         // Smooth motor inertia acceleration
-        f32 diff = targetVelocity - (*state).currentAngularVelocityRadPerSec;
-        (*state).currentAngularVelocityRadPerSec += diff * (deltaSeconds * 8.0f);
+        f32 diff = targetVelocity - TurntableState_currentAngularVelocityRadPerSec(state);
+        TurntableState_setCurrentAngularVelocityRadPerSec(state, TurntableState_currentAngularVelocityRadPerSec(state) + (diff * (deltaSeconds * 8.0f)));
 
         // Advance playhead
-        f32 speedRatio = (*state).currentAngularVelocityRadPerSec / baseRadPerSec;
-        (*state).playheadSeconds += speedRatio * deltaSeconds;
-    } else if (!(*state).isPlaying && !(*state).platterTouched) {
+        f32 speedRatio = TurntableState_currentAngularVelocityRadPerSec(state) / baseRadPerSec;
+        TurntableState_setPlayheadSeconds(state, TurntableState_playheadSeconds(state) + (speedRatio * deltaSeconds));
+    } else if (!TurntableState_isPlaying(state) && !TurntableState_platterTouched(state)) {
         // Motor deceleration friction
-        (*state).currentAngularVelocityRadPerSec *= powf(0.05f, deltaSeconds);
-        if (fabsf((*state).currentAngularVelocityRadPerSec) < 0.01f) {
-            (*state).currentAngularVelocityRadPerSec = 0.0f;
+        TurntableState_currentAngularVelocityRadPerSec(state) *= powf(0.05f, deltaSeconds);
+        if (fabsf(TurntableState_currentAngularVelocityRadPerSec(state)) < 0.01f) {
+            TurntableState_setCurrentAngularVelocityRadPerSec(state, 0.0f);
         }
     }
 
-    if ((*state).playheadSeconds < 0.0f) {
-        (*state).playheadSeconds = 0.0f;
+    if (TurntableState_playheadSeconds(state) < 0.0f) {
+        TurntableState_setPlayheadSeconds(state, 0.0f);
     }
 }
 
