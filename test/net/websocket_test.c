@@ -357,18 +357,32 @@ typedef struct PeerContext {
     i32 readFd;
 } PeerContext;
 
+;;GETTER
+static inline pid_t PeerContext_pid(const PeerContext *s) { return (*s).pid; }
+;;GETTER
+static inline pid_t *PeerContext_pidMut(PeerContext *s) { return &(*s).pid; }
+;;SETTER
+static inline fn PeerContext_setPid(PeerContext *s, pid_t v) { (*s).pid = v; }
+;;GETTER
+static inline i32 PeerContext_readFd(const PeerContext *s) { return (*s).readFd; }
+;;GETTER
+static inline i32 *PeerContext_readFdMut(PeerContext *s) { return &(*s).readFd; }
+;;SETTER
+static inline fn PeerContext_setReadFd(PeerContext *s, i32 v) { (*s).readFd = v; }
+
+
 static bool peerStart(PeerContext *context, Scenario scenario, char *url, bytes urlCap) {
     i32 fds[2];
     if (pipe(fds) != 0)
         return false;
-    (*context).readFd = fds[0];
-    (*context).pid = fork();
-    if ((*context).pid == 0) {
+    PeerContext_setReadFd(context, fds[0]);
+    PeerContext_setPid(context, fork());
+    if (PeerContext_pid(context) == 0) {
         close(fds[0]);
         _exit(peerRun(scenario, fds[1]));
     }
     close(fds[1]);
-    if ((*context).pid < 0)
+    if (PeerContext_pid(context) < 0)
         return false;
     i32 port = 0;
     ssize_t got = read(fds[0], &port, sizeof(port));
@@ -380,9 +394,9 @@ static bool peerStart(PeerContext *context, Scenario scenario, char *url, bytes 
 
 /** Reap the peer and return its exit status, or -1 when it did not exit. */
 static i32 peerFinish(PeerContext *context) {
-    close((*context).readFd);
+    close(PeerContext_readFd(context));
     i32 status = 0;
-    if (waitpid((*context).pid, &status, 0) != (*context).pid)
+    if (waitpid(PeerContext_pid(context), &status, 0) != PeerContext_pid(context))
         return -1;
     return WIFEXITED(status) ? WEXITSTATUS(status) : -1;
 }
