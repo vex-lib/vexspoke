@@ -58,20 +58,69 @@
  * ============================================================================
  */
 
+
+;;GETTER
+static inline u32 Field_flags(const Field *s) { return (*s).flags; }
+;;GETTER
+static inline u32 *Field_flagsMut(Field *s) { return &(*s).flags; }
+;;SETTER
+static inline fn Field_setFlags(Field *s, u32 v) { (*s).flags = v; }
+;;GETTER
+static inline u32 Field_offset(const Field *s) { return (*s).offset; }
+;;GETTER
+static inline u32 *Field_offsetMut(Field *s) { return &(*s).offset; }
+;;SETTER
+static inline fn Field_setOffset(Field *s, u32 v) { (*s).offset = v; }
+;;GETTER
+static inline u32 Field_pad(const Field *s) { return (*s).pad; }
+;;GETTER
+static inline u32 *Field_padMut(Field *s) { return &(*s).pad; }
+;;SETTER
+static inline fn Field_setPad(Field *s, u32 v) { (*s).pad = v; }
+;;GETTER
+static inline FieldSetFn Field_set(const Field *s) { return (*s).set; }
+;;GETTER
+static inline FieldSetFn *Field_mutSet(Field *s) { return &(*s).set; }
+;;SETTER
+static inline fn Field_setSet(Field *s, FieldSetFn v) { (*s).set = v; }
+;;GETTER
+static inline u32 Field_size(const Field *s) { return (*s).size; }
+;;GETTER
+static inline u32 *Field_sizeMut(Field *s) { return &(*s).size; }
+;;SETTER
+static inline fn Field_setSize(Field *s, u32 v) { (*s).size = v; }
+;;GETTER
+static inline u64 Field_typeId(const Field *s) { return (*s).typeId; }
+;;GETTER
+static inline u64 *Field_typeIdMut(Field *s) { return &(*s).typeId; }
+;;SETTER
+static inline fn Field_setTypeId(Field *s, u64 v) { (*s).typeId = v; }
+;;GETTER
+static inline Variable Field_variable(const Field *s) { return (*s).variable; }
+;;GETTER
+static inline Variable *Field_variableMut(Field *s) { return &(*s).variable; }
+;;SETTER
+static inline fn Field_setVariable(Field *s, Variable v) { (*s).variable = v; }
+
+;;GETTER
+static inline char *Variable_nameMut(Variable *s) { return (*s).name; }
+;;GETTER
+static inline const char *Variable_name(const Variable *s) { return (*s).name; }
+
 // CONSTRUCTORS
 
 bool Field_init(Field *self, const char *name, VariableReadFn read, FieldSetFn set, any target) {
     if (self == nullptr)
         return false;
-    Variable *variable = &(*self).variable;
+    Variable *variable = Field_variableMut(self);
     if (!Variable_init(variable, name, read, target))
         return false;
-    (*self).set = set;
-    (*self).typeId = 0u;
-    (*self).offset = 0u;
-    (*self).size = 0u;
-    (*self).flags = REFLECT_FIELD_NONE;
-    (*self).pad = 0u;
+    Field_setSet(self, set);
+    Field_setTypeId(self, 0u);
+    Field_setOffset(self, 0u);
+    Field_setSize(self, 0u);
+    Field_setFlags(self, REFLECT_FIELD_NONE);
+    Field_setPad(self, 0u);
     return true;
 }
 
@@ -128,20 +177,20 @@ bool Field_check(const Field *self, u64 typeId) {
 Variable *Field_getVariable(Field *self) {
     if (self == nullptr)
         return nullptr;
-    return &(*self).variable;
+    return Field_variableMut(self);
 }
 
 any Field_read(Field *self, any receiver) {
     if (self == nullptr)
         return nullptr;
-    Variable *variable = &(*self).variable;
+    Variable *variable = Field_variableMut(self);
     return Variable_read(variable, receiver);
 }
 
 fn Field_write(Field *self, any receiver, any value) {
-    if (self == nullptr || (*self).set == nullptr)
+    if (self == nullptr || Field_set(self) == nullptr)
         return;
-    (*self).set(receiver, value);
+    Field_set(self)(receiver, value);
 }
 
 // SETTERS
@@ -149,27 +198,27 @@ fn Field_write(Field *self, any receiver, any value) {
 bool Field_setName(Field *self, const char *name) {
     if (self == nullptr)
         return false;
-    Variable *variable = &(*self).variable;
+    Variable *variable = Field_variableMut(self);
     return Variable_setName(variable, name);
 }
 
 fn Field_setRead(Field *self, VariableReadFn read) {
     if (self == nullptr)
         return;
-    Variable *variable = &(*self).variable;
+    Variable *variable = Field_variableMut(self);
     Variable_setRead(variable, read);
 }
 
 fn Field_setSet(Field *self, FieldSetFn set) {
     if (self == nullptr)
         return;
-    (*self).set = set;
+    Field_setSet(self, set);
 }
 
 fn Field_setTarget(Field *self, any target) {
     if (self == nullptr)
         return;
-    Variable *variable = &(*self).variable;
+    Variable *variable = Field_variableMut(self);
     Variable_setTarget(variable, target);
 }
 
@@ -178,27 +227,27 @@ fn Field_setTarget(Field *self, any target) {
 const char *Field_getName(const Field *self) {
     if (self == nullptr)
         return nullptr;
-    const Variable *variable = &(*self).variable;
+    const Variable *variable = Field_variableMut(self);
     return Variable_getName(variable);
 }
 
 VariableReadFn Field_getRead(const Field *self) {
     if (self == nullptr)
         return nullptr;
-    const Variable *variable = &(*self).variable;
+    const Variable *variable = Field_variableMut(self);
     return Variable_getRead(variable);
 }
 
 FieldSetFn Field_getSet(const Field *self) {
     if (self == nullptr)
         return nullptr;
-    return (*self).set;
+    return Field_set(self);
 }
 
 any Field_getTarget(const Field *self) {
     if (self == nullptr)
         return nullptr;
-    const Variable *variable = &(*self).variable;
+    const Variable *variable = Field_variableMut(self);
     return Variable_getTarget(variable);
 }
 
@@ -207,52 +256,52 @@ any Field_getTarget(const Field *self) {
 fn Field_setTypeId(Field *self, u64 typeId) {
     if (self == nullptr)
         return;
-    (*self).typeId = typeId;
-    if ((*self).size == 0u && typeId != 0u)
-        (*self).size = (u32) Stride_get((u32) Type_class(typeId));
+    Field_setTypeId(self, typeId);
+    if (Field_size(self) == 0u && typeId != 0u)
+        Field_setSize(self, (u32) Stride_get((u32) Type_class(typeId)));
 }
 
 u64 Field_getTypeId(const Field *self) {
-    return self ? (*self).typeId : 0u;
+    return self ? Field_typeId(self) : 0u;
 }
 
 fn Field_setOffset(Field *self, u32 offset) {
     if (self != nullptr)
-        (*self).offset = offset;
+        Field_setOffset(self, offset);
 }
 
 u32 Field_getOffset(const Field *self) {
-    return self ? (*self).offset : 0u;
+    return self ? Field_offset(self) : 0u;
 }
 
 fn Field_setSize(Field *self, u32 size) {
     if (self != nullptr)
-        (*self).size = size;
+        Field_setSize(self, size);
 }
 
 u32 Field_getSize(const Field *self) {
-    return self ? (*self).size : 0u;
+    return self ? Field_size(self) : 0u;
 }
 
 fn Field_setFlags(Field *self, u32 flags) {
     if (self != nullptr)
-        (*self).flags = flags;
+        Field_setFlags(self, flags);
 }
 
 u32 Field_getFlags(const Field *self) {
-    return self ? (*self).flags : REFLECT_FIELD_NONE;
+    return self ? Field_flags(self) : REFLECT_FIELD_NONE;
 }
 
 bool Field_isNullable(const Field *self) {
-    return self != nullptr && ((*self).flags & REFLECT_FIELD_NULLABLE) != 0u;
+    return self != nullptr && (Field_flags(self) & REFLECT_FIELD_NULLABLE) != 0u;
 }
 
 bool Field_isKey(const Field *self) {
-    return self != nullptr && ((*self).flags & REFLECT_FIELD_KEY) != 0u;
+    return self != nullptr && (Field_flags(self) & REFLECT_FIELD_KEY) != 0u;
 }
 
 bool Field_isIndexed(const Field *self) {
-    return self != nullptr && ((*self).flags & REFLECT_FIELD_INDEXED) != 0u;
+    return self != nullptr && (Field_flags(self) & REFLECT_FIELD_INDEXED) != 0u;
 }
 
 // STRING PROJECTIONS (the toString Law)
@@ -266,8 +315,8 @@ fn Field_toString(const Field *self, char *dest, bytes cap, bool *outTruncated) 
         snprintf(dest, cap, "nullptr");
         return;
     }
-    const Variable *variable = &(*self).variable;
-    i32 written = snprintf(dest, cap, "Field(%s)", (*variable).name[0] == '\0' ? "?" : (*variable).name);
+    const Variable *variable = Field_variableMut(self);
+    i32 written = snprintf(dest, cap, "Field(%s)", Variable_nameMut(variable)[0] == '\0' ? "?" : Variable_nameMut(variable));
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
@@ -283,15 +332,15 @@ fn Field_toStringStruct(const Field *self, char *dest, bytes cap, bool *outTrunc
         snprintf(dest, cap, "nullptr");
         return;
     }
-    const Variable *variable = &(*self).variable;
+    const Variable *variable = Field_variableMut(self);
     char inner[96];
     bool innerTruncated = false;
     Variable_toString(variable, inner, sizeof(inner), &innerTruncated);
     i32 written = snprintf(dest, cap,
                            "Field { variable=%s, set=0x%llx, typeId=0x%llx, offset=%u, size=%u, flags=0x%x }",
-                           inner, (u64) (pointer) (*self).set,
-                           (u64) (*self).typeId, (*self).offset,
-                           (*self).size, (*self).flags);
+                           inner, (u64) (pointer) Field_set(self),
+                           (u64) Field_typeId(self), Field_offset(self),
+                           Field_size(self), Field_flags(self));
     if (written < 0 || (bytes) written >= cap || innerTruncated) {
         if (outTruncated)
             *outTruncated = true;

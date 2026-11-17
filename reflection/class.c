@@ -54,13 +54,43 @@
  * ============================================================================
  */
 
+
+;;GETTER
+static inline ClassConstructFn Class_construct(const Class *s) { return (*s).construct; }
+;;GETTER
+static inline ClassConstructFn *Class_constructMut(Class *s) { return &(*s).construct; }
+;;SETTER
+static inline fn Class_setConstruct(Class *s, ClassConstructFn v) { (*s).construct = v; }
+;;GETTER
+static inline Struct * Class_layout(const Class *s) { return (*s).layout; }
+;;GETTER
+static inline Struct * *Class_layoutMut(Class *s) { return &(*s).layout; }
+;;SETTER
+static inline fn Class_setLayout(Class *s, Struct * v) { (*s).layout = v; }
+;;GETTER
+static inline u32 Class_methodCount(const Class *s) { return (*s).methodCount; }
+;;GETTER
+static inline u32 *Class_methodCountMut(Class *s) { return &(*s).methodCount; }
+;;SETTER
+static inline fn Class_setMethodCount(Class *s, u32 v) { (*s).methodCount = v; }
+;;GETTER
+static inline ChunkedList * Class_methods(const Class *s) { return (*s).methods; }
+;;GETTER
+static inline ChunkedList * *Class_methodsMut(Class *s) { return &(*s).methods; }
+;;SETTER
+static inline fn Class_setMethods(Class *s, ChunkedList * v) { (*s).methods = v; }
+;;GETTER
+static inline char *Class_nameMut(Class *s) { return (*s).name; }
+;;GETTER
+static inline const char *Class_name(const Class *s) { return (*s).name; }
+
 static bool ensureMethods(Class *self) {
-    if ((*self).methods)
+    if (Class_methods(self))
         return true;
     ChunkedList *methods = ChunkedList(ID_REFLECT_METHOD, (u32) sizeof(Method), CHUNKED_LIST_TWO_LAYER_DEFAULT);
     if (!methods)
         return false;
-    (*self).methods = methods;
+    Class_setMethods(self, methods);
     return true;
 }
 
@@ -73,9 +103,9 @@ bool Class_init(Class *self, const char *name, Struct *layout, ClassConstructFn 
     if (!VariableSlot_foldName(name, folded))
         return false;
     memset(self, 0, sizeof(*self));
-    memcpy((*self).name, folded, strlen(folded) + 1);
-    (*self).construct = construct;
-    (*self).layout = layout;
+    memcpy(Class_nameMut(self), folded, strlen(folded) + 1);
+    Class_setConstruct(self, construct);
+    Class_setLayout(self, layout);
     return ensureMethods(self);
 }
 
@@ -113,8 +143,8 @@ Class *Class_3(const char *name, Struct *layout, ClassConstructFn construct) {
 fn Class_free(Class *self) {
     if (self == nullptr)
         return;
-    if ((*self).methods)
-        ChunkedList_free((*self).methods);
+    if (Class_methods(self))
+        ChunkedList_free(Class_methods(self));
     Memory_free(self);
 }
 
@@ -133,37 +163,37 @@ bool Class_check(const Class *self, u64 typeId) {
 }
 
 any Class_construct(Class *self, any arg) {
-    if (self == nullptr || (*self).construct == nullptr)
+    if (self == nullptr || Class_construct(self) == nullptr)
         return nullptr;
-    return (*self).construct(arg);
+    return Class_construct(self)(arg);
 }
 
 u32 Class_addMethod(Class *self, const Method *method) {
-    if (self == nullptr || method == nullptr || (*self).methods == nullptr)
+    if (self == nullptr || method == nullptr || Class_methods(self) == nullptr)
         return REFLECT_CLASS_METHOD_NONE;
-    Method *row = (Method*) ChunkedList_addSlot((*self).methods);
+    Method *row = (Method*) ChunkedList_addSlot(Class_methods(self));
     if (row == nullptr)
         return REFLECT_CLASS_METHOD_NONE;
     memcpy(row, method, sizeof(Method));
-    u32 index = ChunkedList_size((*self).methods) - 1u;
-    (*self).methodCount = index + 1u;
+    u32 index = ChunkedList_size(Class_methods(self)) - 1u;
+    Class_setMethodCount(self, index + 1u);
     return index;
 }
 
 Method *Class_getMethod(const Class *self, u32 index) {
-    if (self == nullptr || (*self).methods == nullptr)
+    if (self == nullptr || Class_methods(self) == nullptr)
         return nullptr;
-    if (index >= (*self).methodCount)
+    if (index >= Class_methodCount(self))
         return nullptr;
-    return (Method*) ChunkedList_slot((*self).methods, index);
+    return (Method*) ChunkedList_slot(Class_methods(self), index);
 }
 
 fn Class_forEachMethod(Class *self, ClassMethodVisitFn fn, any userdata) {
-    if (self == nullptr || fn == nullptr || (*self).methods == nullptr)
+    if (self == nullptr || fn == nullptr || Class_methods(self) == nullptr)
         return;
-    u32 n = (*self).methodCount;
+    u32 n = Class_methodCount(self);
     for (u32 i = 0u; i < n; i++) {
-        Method *row = (Method*) ChunkedList_slot((*self).methods, i);
+        Method *row = (Method*) ChunkedList_slot(Class_methods(self), i);
         if (row)
             fn(row, i, userdata);
     }
@@ -177,21 +207,21 @@ bool Class_setName(Class *self, const char *name) {
     char folded[REFLECT_CLASS_NAME_BYTES];
     if (!VariableSlot_foldName(name, folded))
         return false;
-    memset((*self).name, 0, sizeof((*self).name));
-    memcpy((*self).name, folded, strlen(folded) + 1);
+    memset(Class_nameMut(self), 0, sizeof ((Class){0}).name);
+    memcpy(Class_nameMut(self), folded, strlen(folded) + 1);
     return true;
 }
 
 fn Class_setLayout(Class *self, Struct *layout) {
     if (self == nullptr)
         return;
-    (*self).layout = layout;
+    Class_setLayout(self, layout);
 }
 
 fn Class_setConstruct(Class *self, ClassConstructFn construct) {
     if (self == nullptr)
         return;
-    (*self).construct = construct;
+    Class_setConstruct(self, construct);
 }
 
 // GETTERS
@@ -199,21 +229,21 @@ fn Class_setConstruct(Class *self, ClassConstructFn construct) {
 Struct *Class_getLayout(const Class *self) {
     if (self == nullptr)
         return nullptr;
-    return (*self).layout;
+    return Class_layout(self);
 }
 
 ClassConstructFn Class_getConstruct(const Class *self) {
     if (self == nullptr)
         return nullptr;
-    return (*self).construct;
+    return Class_construct(self);
 }
 
 const char *Class_getName(const Class *self) {
-    return self ? (*self).name : nullptr;
+    return self ? Class_nameMut(self) : nullptr;
 }
 
 u32 Class_methodCount(const Class *self) {
-    return self ? (*self).methodCount : 0u;
+    return self ? Class_methodCount(self) : 0u;
 }
 
 // STRING PROJECTIONS (the toString Law)
@@ -228,7 +258,7 @@ fn Class_toString(const Class *self, char *dest, bytes cap, bool *outTruncated) 
         return;
     }
     i32 written = snprintf(dest, cap, "Class(%s, methods=%u)",
-                           (*self).name[0] == '\0' ? "?" : (*self).name, (*self).methodCount);
+                           Class_nameMut(self)[0] == '\0' ? "?" : Class_nameMut(self), Class_methodCount(self));
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
@@ -245,11 +275,11 @@ fn Class_toStringStruct(const Class *self, char *dest, bytes cap, bool *outTrunc
         return;
     }
     i32 written = snprintf(dest, cap, "Class { name=\"%s\", construct=0x%llx, layout=0x%llx, methods=0x%llx, methodCount=%u }",
-                           (*self).name,
-                           (u64) (pointer) (*self).construct,
-                           (u64) (pointer) (*self).layout,
-                           (u64) (pointer) (*self).methods,
-                           (*self).methodCount);
+                           Class_nameMut(self),
+                           (u64) (pointer) Class_construct(self),
+                           (u64) (pointer) Class_layout(self),
+                           (u64) (pointer) Class_methods(self),
+                           Class_methodCount(self));
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;

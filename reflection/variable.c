@@ -49,6 +49,24 @@
  * ============================================================================
  */
 
+
+;;GETTER
+static inline char *Variable_nameMut(Variable *s) { return (*s).name; }
+;;GETTER
+static inline const char *Variable_name(const Variable *s) { return (*s).name; }
+;;GETTER
+static inline VariableReadFn Variable_read(const Variable *s) { return (*s).read; }
+;;GETTER
+static inline VariableReadFn *Variable_readMut(Variable *s) { return &(*s).read; }
+;;SETTER
+static inline fn Variable_setRead(Variable *s, VariableReadFn v) { (*s).read = v; }
+;;GETTER
+static inline any Variable_target(const Variable *s) { return (*s).target; }
+;;GETTER
+static inline any *Variable_targetMut(Variable *s) { return &(*s).target; }
+;;SETTER
+static inline fn Variable_setTarget(Variable *s, any v) { (*s).target = v; }
+
 // CONSTRUCTORS
 
 bool Variable_init(Variable *self, const char *name, VariableReadFn read, any target) {
@@ -58,9 +76,9 @@ bool Variable_init(Variable *self, const char *name, VariableReadFn read, any ta
     if (!VariableSlot_foldName(name, folded))
         return false;
     memset(self, 0, sizeof(*self));
-    memcpy((*self).name, folded, strlen(folded) + 1);
-    (*self).read = read;
-    (*self).target = target;
+    memcpy(Variable_nameMut(self), folded, strlen(folded) + 1);
+    Variable_setRead(self, read);
+    Variable_setTarget(self, target);
     return true;
 }
 
@@ -111,9 +129,9 @@ bool Variable_check(const Variable *self, u64 typeId) {
 }
 
 any Variable_read(Variable *self, any arg) {
-    if (self == nullptr || (*self).read == nullptr)
+    if (self == nullptr || Variable_read(self) == nullptr)
         return nullptr;
-    return (*self).read(arg);
+    return Variable_read(self)(arg);
 }
 
 // SETTERS
@@ -124,39 +142,39 @@ bool Variable_setName(Variable *self, const char *name) {
     char folded[REFLECT_VARIABLE_NAME_BYTES];
     if (!VariableSlot_foldName(name, folded))
         return false;
-    memset((*self).name, 0, sizeof((*self).name));
-    memcpy((*self).name, folded, strlen(folded) + 1);
+    memset(Variable_nameMut(self), 0, sizeof ((Variable){0}).name);
+    memcpy(Variable_nameMut(self), folded, strlen(folded) + 1);
     return true;
 }
 
 fn Variable_setRead(Variable *self, VariableReadFn read) {
     if (self == nullptr)
         return;
-    (*self).read = read;
+    Variable_setRead(self, read);
 }
 
 fn Variable_setTarget(Variable *self, any target) {
     if (self == nullptr)
         return;
-    (*self).target = target;
+    Variable_setTarget(self, target);
 }
 
 // GETTERS
 
 const char *Variable_getName(const Variable *self) {
-    return self ? (*self).name : nullptr;
+    return self ? Variable_nameMut(self) : nullptr;
 }
 
 VariableReadFn Variable_getRead(const Variable *self) {
     if (self == nullptr)
         return nullptr;
-    return (*self).read;
+    return Variable_read(self);
 }
 
 any Variable_getTarget(const Variable *self) {
     if (self == nullptr)
         return nullptr;
-    return (*self).target;
+    return Variable_target(self);
 }
 
 // STRING PROJECTIONS (the toString Law)
@@ -170,7 +188,7 @@ fn Variable_toString(const Variable *self, char *dest, bytes cap, bool *outTrunc
         snprintf(dest, cap, "nullptr");
         return;
     }
-    i32 written = snprintf(dest, cap, "Variable(%s)", (*self).name[0] == '\0' ? "?" : (*self).name);
+    i32 written = snprintf(dest, cap, "Variable(%s)", Variable_nameMut(self)[0] == '\0' ? "?" : Variable_nameMut(self));
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
@@ -187,9 +205,9 @@ fn Variable_toStringStruct(const Variable *self, char *dest, bytes cap, bool *ou
         return;
     }
     i32 written = snprintf(dest, cap, "Variable { name=\"%s\", read=0x%llx, target=0x%llx }",
-                           (*self).name,
-                           (u64) (pointer) (*self).read,
-                           (u64) (pointer) (*self).target);
+                           Variable_nameMut(self),
+                           (u64) (pointer) Variable_read(self),
+                           (u64) (pointer) Variable_target(self));
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;

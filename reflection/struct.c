@@ -50,13 +50,37 @@
  * ============================================================================
  */
 
+
+;;GETTER
+static inline u32 Struct_count(const Struct *s) { return (*s).count; }
+;;GETTER
+static inline u32 *Struct_countMut(Struct *s) { return &(*s).count; }
+;;SETTER
+static inline fn Struct_setCount(Struct *s, u32 v) { (*s).count = v; }
+;;GETTER
+static inline ChunkedList * Struct_fields(const Struct *s) { return (*s).fields; }
+;;GETTER
+static inline ChunkedList * *Struct_fieldsMut(Struct *s) { return &(*s).fields; }
+;;SETTER
+static inline fn Struct_setFields(Struct *s, ChunkedList * v) { (*s).fields = v; }
+;;GETTER
+static inline char *Struct_nameMut(Struct *s) { return (*s).name; }
+;;GETTER
+static inline const char *Struct_name(const Struct *s) { return (*s).name; }
+;;GETTER
+static inline u32 Struct_size(const Struct *s) { return (*s).size; }
+;;GETTER
+static inline u32 *Struct_sizeMut(Struct *s) { return &(*s).size; }
+;;SETTER
+static inline fn Struct_setSize(Struct *s, u32 v) { (*s).size = v; }
+
 static bool ensureFields(Struct *self) {
-    if ((*self).fields)
+    if (Struct_fields(self))
         return true;
     ChunkedList *fields = ChunkedList(ID_REFLECT_FIELD, (u32) sizeof(Field), CHUNKED_LIST_TWO_LAYER_DEFAULT);
     if (!fields)
         return false;
-    (*self).fields = fields;
+    Struct_setFields(self, fields);
     return true;
 }
 
@@ -69,7 +93,7 @@ bool Struct_init(Struct *self, const char *name) {
     if (!VariableSlot_foldName(name, folded))
         return false;
     memset(self, 0, sizeof(*self));
-    memcpy((*self).name, folded, strlen(folded) + 1);
+    memcpy(Struct_nameMut(self), folded, strlen(folded) + 1);
     return ensureFields(self);
 }
 
@@ -99,8 +123,8 @@ Struct *Struct_1(const char *name) {
 fn Struct_free(Struct *self) {
     if (self == nullptr)
         return;
-    if ((*self).fields)
-        ChunkedList_free((*self).fields);
+    if (Struct_fields(self))
+        ChunkedList_free(Struct_fields(self));
     Memory_free(self);
 }
 
@@ -119,31 +143,31 @@ bool Struct_check(const Struct *self, u64 typeId) {
 }
 
 u32 Struct_add(Struct *self, const Field *field) {
-    if (self == nullptr || field == nullptr || (*self).fields == nullptr)
+    if (self == nullptr || field == nullptr || Struct_fields(self) == nullptr)
         return REFLECT_STRUCT_INDEX_NONE;
-    Field *row = (Field*) ChunkedList_addSlot((*self).fields);
+    Field *row = (Field*) ChunkedList_addSlot(Struct_fields(self));
     if (row == nullptr)
         return REFLECT_STRUCT_INDEX_NONE;
     memcpy(row, field, sizeof(Field));
-    u32 index = ChunkedList_size((*self).fields) - 1u;
-    (*self).count = index + 1u;
+    u32 index = ChunkedList_size(Struct_fields(self)) - 1u;
+    Struct_setCount(self, index + 1u);
     return index;
 }
 
 Field *Struct_get(const Struct *self, u32 index) {
-    if (self == nullptr || (*self).fields == nullptr)
+    if (self == nullptr || Struct_fields(self) == nullptr)
         return nullptr;
-    if (index >= (*self).count)
+    if (index >= Struct_count(self))
         return nullptr;
-    return (Field*) ChunkedList_slot((*self).fields, index);
+    return (Field*) ChunkedList_slot(Struct_fields(self), index);
 }
 
 fn Struct_forEach(Struct *self, StructVisitFn fn, any userdata) {
-    if (self == nullptr || fn == nullptr || (*self).fields == nullptr)
+    if (self == nullptr || fn == nullptr || Struct_fields(self) == nullptr)
         return;
-    u32 n = (*self).count;
+    u32 n = Struct_count(self);
     for (u32 i = 0u; i < n; i++) {
-        Field *row = (Field*) ChunkedList_slot((*self).fields, i);
+        Field *row = (Field*) ChunkedList_slot(Struct_fields(self), i);
         if (row)
             fn(row, i, userdata);
     }
@@ -157,34 +181,34 @@ bool Struct_setName(Struct *self, const char *name) {
     char folded[REFLECT_STRUCT_NAME_BYTES];
     if (!VariableSlot_foldName(name, folded))
         return false;
-    memset((*self).name, 0, sizeof((*self).name));
-    memcpy((*self).name, folded, strlen(folded) + 1);
+    memset(Struct_nameMut(self), 0, sizeof ((Struct){0}).name);
+    memcpy(Struct_nameMut(self), folded, strlen(folded) + 1);
     return true;
 }
 
 fn Struct_setSize(Struct *self, u32 size) {
     if (self != nullptr)
-        (*self).size = size;
+        Struct_setSize(self, size);
 }
 
 // GETTERS
 
 const char *Struct_getName(const Struct *self) {
-    return self ? (*self).name : nullptr;
+    return self ? Struct_nameMut(self) : nullptr;
 }
 
 u32 Struct_count(const Struct *self) {
-    return self ? (*self).count : 0u;
+    return self ? Struct_count(self) : 0u;
 }
 
 u32 Struct_getSize(const Struct *self) {
-    return self ? (*self).size : 0u;
+    return self ? Struct_size(self) : 0u;
 }
 
 bool Struct_isEmpty(const Struct *self) {
     if (self == nullptr)
         return true;
-    return (*self).count == 0u;
+    return Struct_count(self) == 0u;
 }
 
 // STRING PROJECTIONS (the toString Law)
@@ -199,7 +223,7 @@ fn Struct_toString(const Struct *self, char *dest, bytes cap, bool *outTruncated
         return;
     }
     i32 written = snprintf(dest, cap, "Struct(%s, fields=%u)",
-                           (*self).name[0] == '\0' ? "?" : (*self).name, (*self).count);
+                           Struct_nameMut(self)[0] == '\0' ? "?" : Struct_nameMut(self), Struct_count(self));
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
@@ -216,8 +240,8 @@ fn Struct_toStringStruct(const Struct *self, char *dest, bytes cap, bool *outTru
         return;
     }
     i32 written = snprintf(dest, cap, "Struct { name=\"%s\", count=%u, size=%u, fields=0x%llx }",
-                           (*self).name, (*self).count, (*self).size,
-                           (u64) (pointer) (*self).fields);
+                           Struct_nameMut(self), Struct_count(self), Struct_size(self),
+                           (u64) (pointer) Struct_fields(self));
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
