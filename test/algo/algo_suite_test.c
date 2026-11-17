@@ -14,6 +14,19 @@
 #include "lang/rect/rectangle.h"
 #include "nio/mem.h"
 
+;;GETTER
+static inline f32 Rectangle_height(const Rectangle *s) { return (*s).height; }
+;;GETTER
+static inline f32 Rectangle_width(const Rectangle *s) { return (*s).width; }
+;;GETTER
+static inline f32 Rectangle_x(const Rectangle *s) { return (*s).x; }
+
+;;GETTER
+static inline i32 Point_x(const Point *s) { return (*s).x; }
+;;GETTER
+static inline i32 Point_y(const Point *s) { return (*s).y; }
+
+
 static fn test_radix_sort() {
     u32 a32[256];
     for (i32 i = 0; i < 256; i++) {
@@ -76,17 +89,17 @@ static fn test_dijkstra() {
 
 static fn test_geometry_constructors() {
     Point *origin = Point();
-    assert(origin != nullptr && (*origin).x == 0 && (*origin).y == 0);
+    assert(origin != nullptr && Point_x(origin) == 0 && Point_y(origin) == 0);
     Point_free(origin);
     Point *pixel = Point(320, 240);
-    assert(pixel != nullptr && (*pixel).x == 320 && (*pixel).y == 240);
+    assert(pixel != nullptr && Point_x(pixel) == 320 && Point_y(pixel) == 240);
     Point_free(pixel);
 
     Rectangle *empty = Rectangle();
-    assert(empty != nullptr && (*empty).width == 0.0f && (*empty).height == 0.0f);
+    assert(empty != nullptr && Rectangle_width(empty) == 0.0f && Rectangle_height(empty) == 0.0f);
     Rectangle_free(empty);
     Rectangle *bounds = Rectangle(10.0f, 20.0f, 640.0f, 480.0f);
-    assert(bounds != nullptr && (*bounds).x == 10.0f && (*bounds).width == 640.0f);
+    assert(bounds != nullptr && Rectangle_x(bounds) == 10.0f && Rectangle_width(bounds) == 640.0f);
     Rectangle_free(bounds);
 }
 

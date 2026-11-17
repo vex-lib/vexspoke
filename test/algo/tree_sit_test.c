@@ -23,6 +23,38 @@
 static i32 g_failures = 0;
 
 #define CHECK(cond)                                                        \
+
+;;GETTER
+static inline u32 TreeSitNode_child_count(const TreeSitNode *s) { return (*s).child_count; }
+;;GETTER
+static inline u32 *TreeSitNode_child_countMut(TreeSitNode *s) { return &(*s).child_count; }
+;;SETTER
+static inline fn TreeSitNode_setChild_count(TreeSitNode *s, u32 v) { (*s).child_count = v; }
+;;GETTER
+static inline i32 TreeSitNode_first_child(const TreeSitNode *s) { return (*s).first_child; }
+;;GETTER
+static inline i32 *TreeSitNode_first_childMut(TreeSitNode *s) { return &(*s).first_child; }
+;;SETTER
+static inline fn TreeSitNode_setFirst_child(TreeSitNode *s, i32 v) { (*s).first_child = v; }
+;;GETTER
+static inline i32 TreeSitNode_next_sibling(const TreeSitNode *s) { return (*s).next_sibling; }
+;;GETTER
+static inline i32 *TreeSitNode_next_siblingMut(TreeSitNode *s) { return &(*s).next_sibling; }
+;;SETTER
+static inline fn TreeSitNode_setNext_sibling(TreeSitNode *s, i32 v) { (*s).next_sibling = v; }
+;;GETTER
+static inline i32 TreeSitNode_parent(const TreeSitNode *s) { return (*s).parent; }
+;;GETTER
+static inline i32 *TreeSitNode_parentMut(TreeSitNode *s) { return &(*s).parent; }
+;;SETTER
+static inline fn TreeSitNode_setParent(TreeSitNode *s, i32 v) { (*s).parent = v; }
+;;GETTER
+static inline i32 TreeSitNode_prev_sibling(const TreeSitNode *s) { return (*s).prev_sibling; }
+;;GETTER
+static inline i32 *TreeSitNode_prev_siblingMut(TreeSitNode *s) { return &(*s).prev_sibling; }
+;;SETTER
+static inline fn TreeSitNode_setPrev_sibling(TreeSitNode *s, i32 v) { (*s).prev_sibling = v; }
+
     do {                                                                   \
         if (!(cond)) {                                                     \
             printf("FAIL %s:%d %s\n", __FILE__, __LINE__, #cond);          \
@@ -37,16 +69,38 @@ typedef struct Trace {
     i32     stop_after;
 } Trace;
 
+;;GETTER
+static inline bytes Trace_count(const Trace *s) { return (*s).count; }
+;;GETTER
+static inline bytes *Trace_countMut(Trace *s) { return &(*s).count; }
+;;SETTER
+static inline fn Trace_setCount(Trace *s, bytes v) { (*s).count = v; }
+;;GETTER
+static inline i32 *Trace_depthsMut(Trace *s) { return (*s).depths; }
+;;GETTER
+static inline const i32 *Trace_depths(const Trace *s) { return (*s).depths; }
+;;GETTER
+static inline i32 *Trace_idsMut(Trace *s) { return (*s).ids; }
+;;GETTER
+static inline const i32 *Trace_ids(const Trace *s) { return (*s).ids; }
+;;GETTER
+static inline i32 Trace_stop_after(const Trace *s) { return (*s).stop_after; }
+;;GETTER
+static inline i32 *Trace_stop_afterMut(Trace *s) { return &(*s).stop_after; }
+;;SETTER
+static inline fn Trace_setStop_after(Trace *s, i32 v) { (*s).stop_after = v; }
+
+
 /** Records visited node indices and depths into the test's bounded observation buffer. */
 static bool record(const TreeSitTree *tree, i32 node_idx, i32 depth, any user_data) {
     (discard) tree;
     Trace *t = (Trace*) user_data;
-    if ((*t).count < 64) {
-        (*t).ids[(*t).count] = node_idx;
-        (*t).depths[(*t).count] = depth;
+    if (Trace_count(t) < 64) {
+        Trace_idsMut(t)[Trace_count(t)] = node_idx;
+        Trace_depthsMut(t)[Trace_count(t)] = depth;
     }
-    (*t).count++;
-    if ((*t).stop_after > 0 && (i32) (*t).count >= (*t).stop_after)
+    Trace_setCount(t, Trace_count(t) + 1u);
+    if (Trace_stop_after(t) > 0 && (i32) Trace_count(t) >= Trace_stop_after(t))
         return false;
     return true;
 }
@@ -107,22 +161,22 @@ static fn test_linking() {
     TreeSitNode *g = &t.nodes[4];
 
     CHECK(t.root == 0);
-    CHECK((*root).child_count == 3);
-    CHECK((*root).first_child == 1);
-    CHECK((*a).next_sibling == 2);
-    CHECK((*b).prev_sibling == 1);
-    CHECK((*b).next_sibling == 3);
-    CHECK((*c).prev_sibling == 2);
-    CHECK((*c).next_sibling == -1);
-    CHECK((*a).child_count == 1);
-    CHECK((*a).first_child == 4);
-    CHECK((*g).parent == 1);
-    CHECK((*g).child_count == 0);
+    CHECK(TreeSitNode_child_count(root) == 3);
+    CHECK(TreeSitNode_first_child(root) == 1);
+    CHECK(TreeSitNode_next_sibling(a) == 2);
+    CHECK(TreeSitNode_prev_sibling(b) == 1);
+    CHECK(TreeSitNode_next_sibling(b) == 3);
+    CHECK(TreeSitNode_prev_sibling(c) == 2);
+    CHECK(TreeSitNode_next_sibling(c) == -1);
+    CHECK(TreeSitNode_child_count(a) == 1);
+    CHECK(TreeSitNode_first_child(a) == 4);
+    CHECK(TreeSitNode_parent(g) == 1);
+    CHECK(TreeSitNode_child_count(g) == 0);
 
     // A second root request does not replace the root or link anything.
     CHECK(TreeSitTree_add_node(-1, 9, "orphan", span(200, 210), &t) == 5);
     CHECK(t.root == 0);
-    CHECK((*root).child_count == 3);
+    CHECK(TreeSitNode_child_count(root) == 3);
     CHECK(TreeSitTree_count_kind(&t, 9) == 1);
 
     // An out-of-range parent (>= new index) leaves the node unlinked; walking

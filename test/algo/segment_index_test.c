@@ -31,6 +31,26 @@ static i32 g_fail = 0;
 static i32 g_checks = 0;
 
 #define CHECK(cond)                                                       \
+
+;;GETTER
+static inline char *SegmentEntry_nameMut(SegmentEntry *s) { return (*s).name; }
+;;GETTER
+static inline const char *SegmentEntry_name(const SegmentEntry *s) { return (*s).name; }
+
+;;GETTER
+static inline ChunkedList * SegmentIndex_entries(const SegmentIndex *s) { return (*s).entries; }
+;;GETTER
+static inline ChunkedList * *SegmentIndex_entriesMut(SegmentIndex *s) { return &(*s).entries; }
+;;SETTER
+static inline fn SegmentIndex_setEntries(SegmentIndex *s, ChunkedList * v) { (*s).entries = v; }
+
+;;GETTER
+static inline u32 SegmentMatch_entry(const SegmentMatch *s) { return (*s).entry; }
+;;GETTER
+static inline u32 *SegmentMatch_entryMut(SegmentMatch *s) { return &(*s).entry; }
+;;SETTER
+static inline fn SegmentMatch_setEntry(SegmentMatch *s, u32 v) { (*s).entry = v; }
+
     do {                                                                  \
         g_checks++;                                                       \
         if (!(cond)) {                                                    \
@@ -42,8 +62,8 @@ static i32 g_checks = 0;
 // Fetch the name of the entry a match points at (via the index's entry row).
 /** Resolves a match's stored field index to its fixture name for readable assertions. */
 static const char *matchName(const SegmentIndex *index, const SegmentMatch *m) {
-    const SegmentEntry *e = (const SegmentEntry*) ChunkedList_slot((*index).entries, (*m).entry);
-    return e ? (*e).name : "";
+    const SegmentEntry *e = (const SegmentEntry*) ChunkedList_slot(SegmentIndex_entries(index), SegmentMatch_entry(m));
+    return e ? SegmentEntry_nameMut(e) : "";
 }
 
 /** Adds the deterministic field fixture used by segment matching scenarios. */
