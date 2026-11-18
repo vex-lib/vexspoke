@@ -155,5 +155,5 @@ fn RegexCharClass_negate(RegexCharClass *cls) {
 }
 
 bool RegexCharClass_test(const RegexCharClass *cls, u8 byte) {
-    return (RegexCharClass_bitsMut(cls)[byte >> 3] & (u8)(1u << (byte & 7u))) != 0;
+    return (RegexCharClass_bits(cls)[byte >> 3] & (u8)(1u << (byte & 7u))) != 0;
 }

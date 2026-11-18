@@ -77,27 +77,17 @@
 
 ;;GETTER
 static inline u32 RegexNodeList_capacity(const RegexNodeList *s) { return (*s).capacity; }
-;;GETTER
-static inline u32 *RegexNodeList_capacityMut(RegexNodeList *s) { return &(*s).capacity; }
 ;;SETTER
 static inline fn RegexNodeList_setCapacity(RegexNodeList *s, u32 v) { (*s).capacity = v; }
 ;;GETTER
 static inline u32 RegexNodeList_count(const RegexNodeList *s) { return (*s).count; }
 ;;GETTER
 static inline u32 *RegexNodeList_countMut(RegexNodeList *s) { return &(*s).count; }
-;;SETTER
-static inline fn RegexNodeList_setCount(RegexNodeList *s, u32 v) { (*s).count = v; }
 ;;GETTER
 static inline RegexNode * RegexNodeList_nodes(const RegexNodeList *s) { return (*s).nodes; }
-;;GETTER
-static inline RegexNode * *RegexNodeList_nodesMut(RegexNodeList *s) { return &(*s).nodes; }
 ;;SETTER
 static inline fn RegexNodeList_setNodes(RegexNodeList *s, RegexNode * v) { (*s).nodes = v; }
 
-;;GETTER
-static inline u8 RegexNode_kind(const RegexNode *s) { return (*s).kind; }
-;;GETTER
-static inline u8 *RegexNode_kindMut(RegexNode *s) { return &(*s).kind; }
 ;;SETTER
 static inline fn RegexNode_setKind(RegexNode *s, u8 v) { (*s).kind = v; }
 
@@ -133,7 +123,7 @@ RegexNodeList RegexNodeList_0() {
 u32 RegexNodeList_add(RegexNodeList *list, u8 kind) {
     if (!growToOneMore(list))
         return REGEX_NODE_NONE;
-    RegexNode *node = &RegexNodeList_nodesMut(list)[RegexNodeList_count(list)];
+    RegexNode *node = &RegexNodeList_nodes(list)[RegexNodeList_count(list)];
     memset(node, 0, sizeof(RegexNode));
     RegexNode_setKind(node, kind);
     return (*RegexNodeList_countMut(list))++;
@@ -142,13 +132,13 @@ u32 RegexNodeList_add(RegexNodeList *list, u8 kind) {
 RegexNode *RegexNodeList_get(RegexNodeList *list, u32 index) {
     if (index >= RegexNodeList_count(list))
         return nullptr;
-    return &RegexNodeList_nodesMut(list)[index];
+    return &RegexNodeList_nodes(list)[index];
 }
 
 const RegexNode *RegexNodeList_at(const RegexNodeList *list, u32 index) {
     if (index >= RegexNodeList_count(list))
         return nullptr;
-    return &RegexNodeList_nodesMut(list)[index];
+    return &RegexNodeList_nodes(list)[index];
 }
 
 fn RegexNodeList_free(RegexNodeList *list) {

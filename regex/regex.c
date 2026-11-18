@@ -95,50 +95,35 @@
 
 
 ;;GETTER
-static inline bytes RegexSpan_end(const RegexSpan *s) { return (*s).end; }
-;;GETTER
-static inline bytes *RegexSpan_endMut(RegexSpan *s) { return &(*s).end; }
+static inline const RegexInst *RegexProgram_insts(const RegexProgram *s) { return (*s).insts; }
+
 ;;SETTER
 static inline fn RegexSpan_setEnd(RegexSpan *s, bytes v) { (*s).end = v; }
-;;GETTER
-static inline bytes RegexSpan_start(const RegexSpan *s) { return (*s).start; }
-;;GETTER
-static inline bytes *RegexSpan_startMut(RegexSpan *s) { return &(*s).start; }
 ;;SETTER
 static inline fn RegexSpan_setStart(RegexSpan *s, bytes v) { (*s).start = v; }
 
 ;;GETTER
-static inline u32 Regex_classCount(const Regex *s) { return (*s).classCount; }
-;;GETTER
-static inline u32 *Regex_classCountMut(Regex *s) { return &(*s).classCount; }
+static inline u32 Regex_classCountRaw(const Regex *s) { return (*s).classCount; }
 ;;SETTER
 static inline fn Regex_setClassCount(Regex *s, u32 v) { (*s).classCount = v; }
 ;;GETTER
 static inline RegexCharClass * Regex_classes(const Regex *s) { return (*s).classes; }
-;;GETTER
-static inline RegexCharClass * *Regex_classesMut(Regex *s) { return &(*s).classes; }
 ;;SETTER
 static inline fn Regex_setClasses(Regex *s, RegexCharClass * v) { (*s).classes = v; }
 ;;GETTER
-static inline u32 Regex_flags(const Regex *s) { return (*s).flags; }
-;;GETTER
-static inline u32 *Regex_flagsMut(Regex *s) { return &(*s).flags; }
+static inline u32 Regex_flagsRaw(const Regex *s) { return (*s).flags; }
 ;;SETTER
 static inline fn Regex_setFlags(Regex *s, u32 v) { (*s).flags = v; }
 ;;GETTER
-static inline u32 Regex_groupCount(const Regex *s) { return (*s).groupCount; }
-;;GETTER
-static inline u32 *Regex_groupCountMut(Regex *s) { return &(*s).groupCount; }
+static inline u32 Regex_groupCountRaw(const Regex *s) { return (*s).groupCount; }
 ;;SETTER
 static inline fn Regex_setGroupCount(Regex *s, u32 v) { (*s).groupCount = v; }
 ;;GETTER
-static inline char * Regex_pattern(const Regex *s) { return (*s).pattern; }
-;;GETTER
-static inline char * *Regex_patternMut(Regex *s) { return &(*s).pattern; }
+static inline char * Regex_patternRaw(const Regex *s) { return (*s).pattern; }
 ;;SETTER
 static inline fn Regex_setPattern(Regex *s, char * v) { (*s).pattern = v; }
 ;;GETTER
-static inline RegexProgram Regex_program(const Regex *s) { return (*s).program; }
+static inline const RegexProgram *Regex_programPtr(const Regex *s) { return &(*s).program; }
 ;;GETTER
 static inline RegexProgram *Regex_programMut(Regex *s) { return &(*s).program; }
 ;;SETTER
@@ -154,25 +139,11 @@ typedef struct RegexText {
 ;;GETTER
 static inline bytes RegexText_cap(const RegexText *s) { return (*s).cap; }
 ;;GETTER
-static inline bytes *RegexText_capMut(RegexText *s) { return &(*s).cap; }
-;;SETTER
-static inline fn RegexText_setCap(RegexText *s, bytes v) { (*s).cap = v; }
-;;GETTER
 static inline char * RegexText_dest(const RegexText *s) { return (*s).dest; }
-;;GETTER
-static inline char * *RegexText_destMut(RegexText *s) { return &(*s).dest; }
-;;SETTER
-static inline fn RegexText_setDest(RegexText *s, char * v) { (*s).dest = v; }
-;;GETTER
-static inline bool RegexText_truncated(const RegexText *s) { return (*s).truncated; }
-;;GETTER
-static inline bool *RegexText_truncatedMut(RegexText *s) { return &(*s).truncated; }
 ;;SETTER
 static inline fn RegexText_setTruncated(RegexText *s, bool v) { (*s).truncated = v; }
 ;;GETTER
 static inline bytes RegexText_used(const RegexText *s) { return (*s).used; }
-;;GETTER
-static inline bytes *RegexText_usedMut(RegexText *s) { return &(*s).used; }
 ;;SETTER
 static inline fn RegexText_setUsed(RegexText *s, bytes v) { (*s).used = v; }
 
@@ -192,7 +163,7 @@ static bool runSearch(const Regex *regex, const char *subject, bytes length,
                       bytes *outGroupCount, bool *outTruncated) {
     if (!regex || !subject)
         return false;
-    RegexVm vm = RegexVm(Regex_programMut(regex), Regex_groupCount(regex));
+    RegexVm vm = RegexVm(Regex_programPtr(regex), Regex_groupCount(regex));
     if (vm.best == nullptr)
         return false;
     RegexOptions options = regexOptions(Regex_flags(regex));
@@ -302,12 +273,12 @@ Regex *Regex_2(const char *pattern, u32 flags) {
 
     bytes length = strlen(pattern);
     Regex_setPattern(regex, (char*) Memory_alloc(TYPE_REGEX, length + 1u));
-    if (!Regex_pattern(regex)) {
+    if (!Regex_patternRaw(regex)) {
         THROW("regex compile: out of memory");
         Memory_free(regex);
         return nullptr;
     }
-    memcpy(Regex_pattern(regex), pattern, length + 1u);
+    memcpy(Regex_patternRaw(regex), pattern, length + 1u);
 
     if (!compilePattern(regex, pattern, length)) {
         Regex_free(regex);
@@ -326,39 +297,39 @@ fn Regex_free(Regex *regex) {
     RegexProgram_free(Regex_programMut(regex));
     if (Regex_classes(regex))
         Memory_free(Regex_classes(regex));
-    if (Regex_pattern(regex))
-        Memory_free(Regex_pattern(regex));
+    if (Regex_patternRaw(regex))
+        Memory_free(Regex_patternRaw(regex));
     Memory_free(regex);
 }
 
 const char *Regex_pattern(const Regex *regex) {
     if (!regex)
         return "";
-    return Regex_pattern(regex);
+    return Regex_patternRaw(regex);
 }
 
 u32 Regex_flags(const Regex *regex) {
     if (!regex)
         return 0;
-    return Regex_flags(regex);
+    return Regex_flagsRaw(regex);
 }
 
 u32 Regex_groupCount(const Regex *regex) {
     if (!regex)
         return 0;
-    return Regex_groupCount(regex);
+    return Regex_groupCountRaw(regex);
 }
 
 u32 Regex_instCount(const Regex *regex) {
     if (!regex)
         return 0;
-    return RegexProgram_count(Regex_programMut(regex));
+    return RegexProgram_count(Regex_programPtr(regex));
 }
 
 u32 Regex_classCount(const Regex *regex) {
     if (!regex)
         return 0;
-    return Regex_classCount(regex);
+    return Regex_classCountRaw(regex);
 }
 
 bool Regex_isMatch(const Regex *regex, const char *subject) {
@@ -444,8 +415,8 @@ bool Regex_toStringStruct(const Regex *regex, char *dest, bytes cap, bool *outTr
     textPrintf(&text, ", instCount=%u", Regex_instCount(regex));
     textPrintf(&text, ", classCount=%u", Regex_classCount(regex));
     textAppend(&text, ", program=");
-    RegexProgram program = Regex_program(regex);
-    textPrintf(&text, "%s", program.insts ? "set" : "null");
+    const RegexProgram *program = Regex_programPtr(regex);
+    textPrintf(&text, "%s", RegexProgram_insts(program) ? "set" : "null");
     textAppend(&text, ", classes=");
     textPrintf(&text, "%s", Regex_classes(regex) ? "set" : "null");
     textAppend(&text, " }");

@@ -92,53 +92,23 @@
  */
 
 
-;;GETTER
-static inline u32 RegexNode_a(const RegexNode *s) { return (*s).a; }
-;;GETTER
-static inline u32 *RegexNode_aMut(RegexNode *s) { return &(*s).a; }
 ;;SETTER
 static inline fn RegexNode_setA(RegexNode *s, u32 v) { (*s).a = v; }
-;;GETTER
-static inline u32 RegexNode_b(const RegexNode *s) { return (*s).b; }
-;;GETTER
-static inline u32 *RegexNode_bMut(RegexNode *s) { return &(*s).b; }
 ;;SETTER
 static inline fn RegexNode_setB(RegexNode *s, u32 v) { (*s).b = v; }
-;;GETTER
-static inline u8 RegexNode_byte(const RegexNode *s) { return (*s).byte; }
-;;GETTER
-static inline u8 *RegexNode_byteMut(RegexNode *s) { return &(*s).byte; }
 ;;SETTER
 static inline fn RegexNode_setByte(RegexNode *s, u8 v) { (*s).byte = v; }
-;;GETTER
-static inline u32 RegexNode_clsIndex(const RegexNode *s) { return (*s).clsIndex; }
-;;GETTER
-static inline u32 *RegexNode_clsIndexMut(RegexNode *s) { return &(*s).clsIndex; }
 ;;SETTER
 static inline fn RegexNode_setClsIndex(RegexNode *s, u32 v) { (*s).clsIndex = v; }
-;;GETTER
-static inline u32 RegexNode_group(const RegexNode *s) { return (*s).group; }
-;;GETTER
-static inline u32 *RegexNode_groupMut(RegexNode *s) { return &(*s).group; }
 ;;SETTER
 static inline fn RegexNode_setGroup(RegexNode *s, u32 v) { (*s).group = v; }
-;;GETTER
-static inline u32 RegexNode_repMax(const RegexNode *s) { return (*s).repMax; }
-;;GETTER
-static inline u32 *RegexNode_repMaxMut(RegexNode *s) { return &(*s).repMax; }
 ;;SETTER
 static inline fn RegexNode_setRepMax(RegexNode *s, u32 v) { (*s).repMax = v; }
-;;GETTER
-static inline u32 RegexNode_repMin(const RegexNode *s) { return (*s).repMin; }
-;;GETTER
-static inline u32 *RegexNode_repMinMut(RegexNode *s) { return &(*s).repMin; }
 ;;SETTER
 static inline fn RegexNode_setRepMin(RegexNode *s, u32 v) { (*s).repMin = v; }
 
 ;;GETTER
 static inline u32 RegexParser_classCapacity(const RegexParser *s) { return (*s).classCapacity; }
-;;GETTER
-static inline u32 *RegexParser_classCapacityMut(RegexParser *s) { return &(*s).classCapacity; }
 ;;SETTER
 static inline fn RegexParser_setClassCapacity(RegexParser *s, u32 v) { (*s).classCapacity = v; }
 ;;GETTER
@@ -149,58 +119,34 @@ static inline u32 *RegexParser_classCountMut(RegexParser *s) { return &(*s).clas
 static inline fn RegexParser_setClassCount(RegexParser *s, u32 v) { (*s).classCount = v; }
 ;;GETTER
 static inline RegexCharClass * RegexParser_classes(const RegexParser *s) { return (*s).classes; }
-;;GETTER
-static inline RegexCharClass * *RegexParser_classesMut(RegexParser *s) { return &(*s).classes; }
 ;;SETTER
 static inline fn RegexParser_setClasses(RegexParser *s, RegexCharClass * v) { (*s).classes = v; }
 ;;GETTER
 static inline u32 RegexParser_depth(const RegexParser *s) { return (*s).depth; }
-;;GETTER
-static inline u32 *RegexParser_depthMut(RegexParser *s) { return &(*s).depth; }
 ;;SETTER
 static inline fn RegexParser_setDepth(RegexParser *s, u32 v) { (*s).depth = v; }
 ;;GETTER
-static inline const char * RegexParser_error(const RegexParser *s) { return (*s).error; }
-;;GETTER
-static inline const char * *RegexParser_errorMut(RegexParser *s) { return &(*s).error; }
+static inline const char * RegexParser_errorRaw(const RegexParser *s) { return (*s).error; }
 ;;SETTER
 static inline fn RegexParser_setError(RegexParser *s, const char * v) { (*s).error = v; }
 ;;GETTER
 static inline bool RegexParser_failed(const RegexParser *s) { return (*s).failed; }
-;;GETTER
-static inline bool *RegexParser_failedMut(RegexParser *s) { return &(*s).failed; }
 ;;SETTER
 static inline fn RegexParser_setFailed(RegexParser *s, bool v) { (*s).failed = v; }
 ;;GETTER
-static inline u32 RegexParser_groupCount(const RegexParser *s) { return (*s).groupCount; }
+static inline u32 RegexParser_groupCountRaw(const RegexParser *s) { return (*s).groupCount; }
 ;;GETTER
 static inline u32 *RegexParser_groupCountMut(RegexParser *s) { return &(*s).groupCount; }
-;;SETTER
-static inline fn RegexParser_setGroupCount(RegexParser *s, u32 v) { (*s).groupCount = v; }
 ;;GETTER
 static inline bool RegexParser_ignoreCase(const RegexParser *s) { return (*s).ignoreCase; }
 ;;GETTER
-static inline bool *RegexParser_ignoreCaseMut(RegexParser *s) { return &(*s).ignoreCase; }
-;;SETTER
-static inline fn RegexParser_setIgnoreCase(RegexParser *s, bool v) { (*s).ignoreCase = v; }
-;;GETTER
 static inline bytes RegexParser_length(const RegexParser *s) { return (*s).length; }
 ;;GETTER
-static inline bytes *RegexParser_lengthMut(RegexParser *s) { return &(*s).length; }
-;;SETTER
-static inline fn RegexParser_setLength(RegexParser *s, bytes v) { (*s).length = v; }
-;;GETTER
-static inline RegexNodeList RegexParser_nodes(const RegexParser *s) { return (*s).nodes; }
+static inline RegexNodeList RegexParser_nodesRaw(const RegexParser *s) { return (*s).nodes; }
 ;;GETTER
 static inline RegexNodeList *RegexParser_nodesMut(RegexParser *s) { return &(*s).nodes; }
-;;SETTER
-static inline fn RegexParser_setNodes(RegexParser *s, RegexNodeList v) { (*s).nodes = v; }
 ;;GETTER
 static inline const char * RegexParser_pattern(const RegexParser *s) { return (*s).pattern; }
-;;GETTER
-static inline const char * *RegexParser_patternMut(RegexParser *s) { return &(*s).pattern; }
-;;SETTER
-static inline fn RegexParser_setPattern(RegexParser *s, const char * v) { (*s).pattern = v; }
 ;;GETTER
 static inline bytes RegexParser_pos(const RegexParser *s) { return (*s).pos; }
 ;;GETTER
@@ -229,7 +175,7 @@ static fn parserFail(RegexParser *parser, const char *message) {
 
 // Appends a zeroed AST node under the node ceiling.
 static u32 parserNode(RegexParser *parser, u8 kind) {
-    RegexNodeList nodes = RegexParser_nodes(parser);
+    RegexNodeList nodes = RegexParser_nodesRaw(parser);
     if (nodes.count >= REGEX_MAX_NODES) {
         parserFail(parser, "pattern too complex (node ceiling)");
         return REGEX_NODE_NONE;
@@ -260,7 +206,7 @@ static u32 parserAddClass(RegexParser *parser) {
         RegexParser_setClassCapacity(parser, next);
     }
     u32 index = (*RegexParser_classCountMut(parser))++;
-    RegexCharClass_clear(&RegexParser_classesMut(parser)[index]);
+    RegexCharClass_clear(&RegexParser_classes(parser)[index]);
     return index;
 }
 
@@ -364,7 +310,7 @@ static u32 parseClass(RegexParser *parser) {
     u32 index = parserAddClass(parser);
     if (index == UINT32_MAX)
         return UINT32_MAX;
-    RegexCharClass *cls = &RegexParser_classesMut(parser)[index];
+    RegexCharClass *cls = &RegexParser_classes(parser)[index];
     bool insensitive = RegexParser_ignoreCase(parser);
     bool first = true;
     bool closed = false;
@@ -463,7 +409,7 @@ static u32 parseAtom(RegexParser *parser) {
             u32 index = parserAddClass(parser);
             if (index == UINT32_MAX)
                 return REGEX_NODE_NONE;
-            RegexCharClass_addPredefined(&RegexParser_classesMut(parser)[index],
+            RegexCharClass_addPredefined(&RegexParser_classes(parser)[index],
                                          RegexParser_pattern(parser)[RegexParser_pos(parser)]);
             RegexParser_setPos(parser, RegexParser_pos(parser) + 1u);
             u32 node = parserNode(parser, REGEX_NODE_CLASS);
@@ -689,7 +635,7 @@ bool RegexParser_ok(const RegexParser *parser) {
 }
 
 const char *RegexParser_error(const RegexParser *parser) {
-    return RegexParser_error(parser);
+    return RegexParser_errorRaw(parser);
 }
 
 RegexNodeList *RegexParser_nodes(RegexParser *parser) {
@@ -697,7 +643,7 @@ RegexNodeList *RegexParser_nodes(RegexParser *parser) {
 }
 
 u32 RegexParser_groupCount(const RegexParser *parser) {
-    return RegexParser_groupCount(parser);
+    return RegexParser_groupCountRaw(parser);
 }
 
 RegexCharClass *RegexParser_releaseClasses(RegexParser *parser, u32 *outCount) {

@@ -99,110 +99,68 @@
 ;;GETTER
 static inline u32 RegexInst_a(const RegexInst *s) { return (*s).a; }
 ;;GETTER
-static inline u32 *RegexInst_aMut(RegexInst *s) { return &(*s).a; }
-;;SETTER
-static inline fn RegexInst_setA(RegexInst *s, u32 v) { (*s).a = v; }
-;;GETTER
 static inline u8 RegexInst_byte(const RegexInst *s) { return (*s).byte; }
 ;;GETTER
-static inline u8 *RegexInst_byteMut(RegexInst *s) { return &(*s).byte; }
-;;SETTER
-static inline fn RegexInst_setByte(RegexInst *s, u8 v) { (*s).byte = v; }
-;;GETTER
 static inline u8 RegexInst_op(const RegexInst *s) { return (*s).op; }
-;;GETTER
-static inline u8 *RegexInst_opMut(RegexInst *s) { return &(*s).op; }
-;;SETTER
-static inline fn RegexInst_setOp(RegexInst *s, u8 v) { (*s).op = v; }
 
 ;;GETTER
 static inline bytes * RegexVm_best(const RegexVm *s) { return (*s).best; }
-;;GETTER
-static inline bytes * *RegexVm_bestMut(RegexVm *s) { return &(*s).best; }
 ;;SETTER
 static inline fn RegexVm_setBest(RegexVm *s, bytes * v) { (*s).best = v; }
 ;;GETTER
 static inline u32 RegexVm_capRowCount(const RegexVm *s) { return (*s).capRowCount; }
-;;GETTER
-static inline u32 *RegexVm_capRowCountMut(RegexVm *s) { return &(*s).capRowCount; }
 ;;SETTER
 static inline fn RegexVm_setCapRowCount(RegexVm *s, u32 v) { (*s).capRowCount = v; }
 ;;GETTER
 static inline u32 RegexVm_capStride(const RegexVm *s) { return (*s).capStride; }
-;;GETTER
-static inline u32 *RegexVm_capStrideMut(RegexVm *s) { return &(*s).capStride; }
 ;;SETTER
 static inline fn RegexVm_setCapStride(RegexVm *s, u32 v) { (*s).capStride = v; }
 ;;GETTER
 static inline bytes * RegexVm_caps(const RegexVm *s) { return (*s).caps; }
 ;;GETTER
 static inline bytes * *RegexVm_capsMut(RegexVm *s) { return &(*s).caps; }
-;;SETTER
-static inline fn RegexVm_setCaps(RegexVm *s, bytes * v) { (*s).caps = v; }
 ;;GETTER
 static inline u32 * RegexVm_clistCap(const RegexVm *s) { return (*s).clistCap; }
-;;GETTER
-static inline u32 * *RegexVm_clistCapMut(RegexVm *s) { return &(*s).clistCap; }
 ;;SETTER
 static inline fn RegexVm_setClistCap(RegexVm *s, u32 * v) { (*s).clistCap = v; }
 ;;GETTER
 static inline u32 * RegexVm_clistPc(const RegexVm *s) { return (*s).clistPc; }
-;;GETTER
-static inline u32 * *RegexVm_clistPcMut(RegexVm *s) { return &(*s).clistPc; }
 ;;SETTER
 static inline fn RegexVm_setClistPc(RegexVm *s, u32 * v) { (*s).clistPc = v; }
 ;;GETTER
 static inline u32 * RegexVm_clistSeen(const RegexVm *s) { return (*s).clistSeen; }
-;;GETTER
-static inline u32 * *RegexVm_clistSeenMut(RegexVm *s) { return &(*s).clistSeen; }
 ;;SETTER
 static inline fn RegexVm_setClistSeen(RegexVm *s, u32 * v) { (*s).clistSeen = v; }
 ;;GETTER
 static inline u32 * RegexVm_nlistCap(const RegexVm *s) { return (*s).nlistCap; }
-;;GETTER
-static inline u32 * *RegexVm_nlistCapMut(RegexVm *s) { return &(*s).nlistCap; }
 ;;SETTER
 static inline fn RegexVm_setNlistCap(RegexVm *s, u32 * v) { (*s).nlistCap = v; }
 ;;GETTER
 static inline u32 * RegexVm_nlistPc(const RegexVm *s) { return (*s).nlistPc; }
-;;GETTER
-static inline u32 * *RegexVm_nlistPcMut(RegexVm *s) { return &(*s).nlistPc; }
 ;;SETTER
 static inline fn RegexVm_setNlistPc(RegexVm *s, u32 * v) { (*s).nlistPc = v; }
 ;;GETTER
 static inline u32 * RegexVm_nlistSeen(const RegexVm *s) { return (*s).nlistSeen; }
-;;GETTER
-static inline u32 * *RegexVm_nlistSeenMut(RegexVm *s) { return &(*s).nlistSeen; }
 ;;SETTER
 static inline fn RegexVm_setNlistSeen(RegexVm *s, u32 * v) { (*s).nlistSeen = v; }
 ;;GETTER
 static inline const RegexProgram * RegexVm_program(const RegexVm *s) { return (*s).program; }
-;;GETTER
-static inline const RegexProgram * *RegexVm_programMut(RegexVm *s) { return &(*s).program; }
 ;;SETTER
 static inline fn RegexVm_setProgram(RegexVm *s, const RegexProgram * v) { (*s).program = v; }
 ;;GETTER
 static inline bytes * RegexVm_seed(const RegexVm *s) { return (*s).seed; }
-;;GETTER
-static inline bytes * *RegexVm_seedMut(RegexVm *s) { return &(*s).seed; }
 ;;SETTER
 static inline fn RegexVm_setSeed(RegexVm *s, bytes * v) { (*s).seed = v; }
 ;;GETTER
 static inline RegexTask * RegexVm_stack(const RegexVm *s) { return (*s).stack; }
 ;;GETTER
 static inline RegexTask * *RegexVm_stackMut(RegexVm *s) { return &(*s).stack; }
-;;SETTER
-static inline fn RegexVm_setStack(RegexVm *s, RegexTask * v) { (*s).stack = v; }
 ;;GETTER
 static inline u32 RegexVm_stackCapacity(const RegexVm *s) { return (*s).stackCapacity; }
-;;GETTER
-static inline u32 *RegexVm_stackCapacityMut(RegexVm *s) { return &(*s).stackCapacity; }
 ;;SETTER
 static inline fn RegexVm_setStackCapacity(RegexVm *s, u32 v) { (*s).stackCapacity = v; }
 ;;GETTER
 static inline bytes * RegexVm_work(const RegexVm *s) { return (*s).work; }
-;;GETTER
-static inline bytes * *RegexVm_workMut(RegexVm *s) { return &(*s).work; }
 ;;SETTER
 static inline fn RegexVm_setWork(RegexVm *s, bytes * v) { (*s).work = v; }
 
@@ -227,33 +185,15 @@ typedef struct RegexList {
 ;;GETTER
 static inline u32 * RegexList_cap(const RegexList *s) { return (*s).cap; }
 ;;GETTER
-static inline u32 * *RegexList_capMut(RegexList *s) { return &(*s).cap; }
-;;SETTER
-static inline fn RegexList_setCap(RegexList *s, u32 * v) { (*s).cap = v; }
-;;GETTER
 static inline u32 RegexList_capBase(const RegexList *s) { return (*s).capBase; }
 ;;GETTER
-static inline u32 *RegexList_capBaseMut(RegexList *s) { return &(*s).capBase; }
-;;SETTER
-static inline fn RegexList_setCapBase(RegexList *s, u32 v) { (*s).capBase = v; }
-;;GETTER
 static inline u32 RegexList_count(const RegexList *s) { return (*s).count; }
-;;GETTER
-static inline u32 *RegexList_countMut(RegexList *s) { return &(*s).count; }
 ;;SETTER
 static inline fn RegexList_setCount(RegexList *s, u32 v) { (*s).count = v; }
 ;;GETTER
 static inline u32 * RegexList_pc(const RegexList *s) { return (*s).pc; }
 ;;GETTER
-static inline u32 * *RegexList_pcMut(RegexList *s) { return &(*s).pc; }
-;;SETTER
-static inline fn RegexList_setPc(RegexList *s, u32 * v) { (*s).pc = v; }
-;;GETTER
 static inline u32 * RegexList_seen(const RegexList *s) { return (*s).seen; }
-;;GETTER
-static inline u32 * *RegexList_seenMut(RegexList *s) { return &(*s).seen; }
-;;SETTER
-static inline fn RegexList_setSeen(RegexList *s, u32 * v) { (*s).seen = v; }
 
 
 // Adds a capture row from the head of this list's region.
