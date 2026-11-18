@@ -24,11 +24,11 @@
 // are the surface under test.
 
 #include "vex.h"
+#include "re.h"
 #include <stdio.h>
 
 #include "generic/generic.h"
 #include "oop/vexspoke_type.h"
-#include "primitive/buffer.h"
 
 static i32 g_failures = 0;
 
