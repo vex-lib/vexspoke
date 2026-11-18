@@ -36,10 +36,6 @@ typedef struct StableItem {
 
 ;;GETTER
 static inline u32 StableItem_key(const StableItem *s) { return (*s).key; }
-;;GETTER
-static inline u32 *StableItem_keyMut(StableItem *s) { return &(*s).key; }
-;;SETTER
-static inline fn StableItem_setKey(StableItem *s, u32 v) { (*s).key = v; }
 
 
 static i32 compareStableItem(const_any left, const_any right) {

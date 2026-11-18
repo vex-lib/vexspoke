@@ -22,39 +22,18 @@
 
 static i32 g_failures = 0;
 
-#define CHECK(cond)                                                        \
-
 ;;GETTER
 static inline u32 TreeSitNode_child_count(const TreeSitNode *s) { return (*s).child_count; }
 ;;GETTER
-static inline u32 *TreeSitNode_child_countMut(TreeSitNode *s) { return &(*s).child_count; }
-;;SETTER
-static inline fn TreeSitNode_setChild_count(TreeSitNode *s, u32 v) { (*s).child_count = v; }
-;;GETTER
 static inline i32 TreeSitNode_first_child(const TreeSitNode *s) { return (*s).first_child; }
-;;GETTER
-static inline i32 *TreeSitNode_first_childMut(TreeSitNode *s) { return &(*s).first_child; }
-;;SETTER
-static inline fn TreeSitNode_setFirst_child(TreeSitNode *s, i32 v) { (*s).first_child = v; }
 ;;GETTER
 static inline i32 TreeSitNode_next_sibling(const TreeSitNode *s) { return (*s).next_sibling; }
 ;;GETTER
-static inline i32 *TreeSitNode_next_siblingMut(TreeSitNode *s) { return &(*s).next_sibling; }
-;;SETTER
-static inline fn TreeSitNode_setNext_sibling(TreeSitNode *s, i32 v) { (*s).next_sibling = v; }
-;;GETTER
 static inline i32 TreeSitNode_parent(const TreeSitNode *s) { return (*s).parent; }
 ;;GETTER
-static inline i32 *TreeSitNode_parentMut(TreeSitNode *s) { return &(*s).parent; }
-;;SETTER
-static inline fn TreeSitNode_setParent(TreeSitNode *s, i32 v) { (*s).parent = v; }
-;;GETTER
 static inline i32 TreeSitNode_prev_sibling(const TreeSitNode *s) { return (*s).prev_sibling; }
-;;GETTER
-static inline i32 *TreeSitNode_prev_siblingMut(TreeSitNode *s) { return &(*s).prev_sibling; }
-;;SETTER
-static inline fn TreeSitNode_setPrev_sibling(TreeSitNode *s, i32 v) { (*s).prev_sibling = v; }
 
+#define CHECK(cond)                                                        \
     do {                                                                   \
         if (!(cond)) {                                                     \
             printf("FAIL %s:%d %s\n", __FILE__, __LINE__, #cond);          \
@@ -71,24 +50,14 @@ typedef struct Trace {
 
 ;;GETTER
 static inline bytes Trace_count(const Trace *s) { return (*s).count; }
-;;GETTER
-static inline bytes *Trace_countMut(Trace *s) { return &(*s).count; }
 ;;SETTER
 static inline fn Trace_setCount(Trace *s, bytes v) { (*s).count = v; }
 ;;GETTER
 static inline i32 *Trace_depthsMut(Trace *s) { return (*s).depths; }
 ;;GETTER
-static inline const i32 *Trace_depths(const Trace *s) { return (*s).depths; }
-;;GETTER
 static inline i32 *Trace_idsMut(Trace *s) { return (*s).ids; }
 ;;GETTER
-static inline const i32 *Trace_ids(const Trace *s) { return (*s).ids; }
-;;GETTER
 static inline i32 Trace_stop_after(const Trace *s) { return (*s).stop_after; }
-;;GETTER
-static inline i32 *Trace_stop_afterMut(Trace *s) { return &(*s).stop_after; }
-;;SETTER
-static inline fn Trace_setStop_after(Trace *s, i32 v) { (*s).stop_after = v; }
 
 
 /** Records visited node indices and depths into the test's bounded observation buffer. */
@@ -181,7 +150,7 @@ static fn test_linking() {
 
     // An out-of-range parent (>= new index) leaves the node unlinked; walking
     // never reaches it.
-    CHECK(TreeSitTree_add_node(99, 8, "f32ing", span(0, 5), &t) == 6);
+    CHECK(TreeSitTree_add_node(99, 8, "floating", span(0, 5), &t) == 6);
 
     Trace tr = { 0 };
     CHECK(TreeSitTree_walk_preorder(&t, record, &tr));

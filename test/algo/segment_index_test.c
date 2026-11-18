@@ -30,27 +30,16 @@
 static i32 g_fail = 0;
 static i32 g_checks = 0;
 
-#define CHECK(cond)                                                       \
-
-;;GETTER
-static inline char *SegmentEntry_nameMut(SegmentEntry *s) { return (*s).name; }
 ;;GETTER
 static inline const char *SegmentEntry_name(const SegmentEntry *s) { return (*s).name; }
 
 ;;GETTER
 static inline ChunkedList * SegmentIndex_entries(const SegmentIndex *s) { return (*s).entries; }
-;;GETTER
-static inline ChunkedList * *SegmentIndex_entriesMut(SegmentIndex *s) { return &(*s).entries; }
-;;SETTER
-static inline fn SegmentIndex_setEntries(SegmentIndex *s, ChunkedList * v) { (*s).entries = v; }
 
 ;;GETTER
 static inline u32 SegmentMatch_entry(const SegmentMatch *s) { return (*s).entry; }
-;;GETTER
-static inline u32 *SegmentMatch_entryMut(SegmentMatch *s) { return &(*s).entry; }
-;;SETTER
-static inline fn SegmentMatch_setEntry(SegmentMatch *s, u32 v) { (*s).entry = v; }
 
+#define CHECK(cond)                                                       \
     do {                                                                  \
         g_checks++;                                                       \
         if (!(cond)) {                                                    \
@@ -63,15 +52,15 @@ static inline fn SegmentMatch_setEntry(SegmentMatch *s, u32 v) { (*s).entry = v;
 /** Resolves a match's stored field index to its fixture name for readable assertions. */
 static const char *matchName(const SegmentIndex *index, const SegmentMatch *m) {
     const SegmentEntry *e = (const SegmentEntry*) ChunkedList_slot(SegmentIndex_entries(index), SegmentMatch_entry(m));
-    return e ? SegmentEntry_nameMut(e) : "";
+    return e ? SegmentEntry_name(e) : "";
 }
 
 /** Adds the deterministic field fixture used by segment matching scenarios. */
 static fn seed(SegmentIndex *index) {
-    SegmentIndex_add(index, "a.b.sh.c", 1u);
-    SegmentIndex_add(index, "b.sh.c", 2u);
-    SegmentIndex_add(index, "x.b.sh.c", 3u);
-    SegmentIndex_add(index, "b.sh.c.d", 4u);
+    SegmentIndex_add(index, "a.b.c", 1u);
+    SegmentIndex_add(index, "b.c", 2u);
+    SegmentIndex_add(index, "x.b.c", 3u);
+    SegmentIndex_add(index, "b.c.d", 4u);
     SegmentIndex_add(index, "position.x", 5u);
     SegmentIndex_add(index, "position.z", 6u);
     SegmentIndex_add(index, "vector.x", 7u);
@@ -85,22 +74,22 @@ static fn testSplitter() {
 
     CHECK(SegmentIndex_segmentCount("health") == 1u);
     CHECK(SegmentIndex_segmentCount("character.position") == 2u);
-    CHECK(SegmentIndex_segmentCount("a.b.sh.c.d") == 4u);
+    CHECK(SegmentIndex_segmentCount("a.b.c.d") == 4u);
     CHECK(SegmentIndex_segmentCount(nullptr) == 0u);
     CHECK(SegmentIndex_segmentCount("") == 0u);
     CHECK(SegmentIndex_segmentCount(".") == 0u);
     CHECK(SegmentIndex_segmentCount("a.") == 0u);
     CHECK(SegmentIndex_segmentCount(".a") == 0u);
-    CHECK(SegmentIndex_segmentCount("a..b.sh") == 0u);
+    CHECK(SegmentIndex_segmentCount("a..b") == 0u);
     CHECK(SegmentIndex_segmentCount("abcdefghijklmnopqrstuvwx") == 0u); // 24
     CHECK(SegmentIndex_segmentCount("abcdefghijklmnopqrstuvw") == 1u);  // 23
 
     char out[SEGMENT_NAME_BYTES];
-    CHECK(SegmentIndex_segment("a.b.sh.c", 0u, out, sizeof(out)) == 1 && strcmp(out, "a") == 0);
-    CHECK(SegmentIndex_segment("a.b.sh.c", 2u, out, sizeof(out)) == 1 && strcmp(out, "c") == 0);
+    CHECK(SegmentIndex_segment("a.b.c", 0u, out, sizeof(out)) == 1 && strcmp(out, "a") == 0);
+    CHECK(SegmentIndex_segment("a.b.c", 2u, out, sizeof(out)) == 1 && strcmp(out, "c") == 0);
     CHECK(SegmentIndex_segment("panel.fill", 1u, out, sizeof(out)) == 4 && strcmp(out, "fill") == 0);
-    CHECK(SegmentIndex_segment("a.b.sh.c", 3u, out, sizeof(out)) == -1);
-    CHECK(SegmentIndex_segment("a.b.sh.c", 0u, out, 0u) == -1);
+    CHECK(SegmentIndex_segment("a.b.c", 3u, out, sizeof(out)) == -1);
+    CHECK(SegmentIndex_segment("a.b.c", 0u, out, 0u) == -1);
     CHECK(SegmentIndex_segment(nullptr, 0u, out, sizeof(out)) == -1);
 }
 
@@ -145,37 +134,37 @@ static fn testRanking() {
     SegmentMatch out[8];
     bool truncated = true;
 
-    // "b.sh.c": exact "b.sh.c"; suffix "a.b.sh.c","x.b.sh.c" (start 1, len 5, lex); contains "b.sh.c.d".
-    bytes n = SegmentIndex_query(index, "b.sh.c", out, 8u, &truncated);
+    // "b.c": exact "b.c"; suffix "a.b.c","x.b.c" (start 1, len 5, lex); contains "b.c.d".
+    bytes n = SegmentIndex_query(index, "b.c", out, 8u, &truncated);
     CHECK(n == 4u && truncated == false);
-    CHECK(strcmp(matchName(index, &out[0]), "b.sh.c") == 0 && out[0].tier == SEGMENT_MATCH_EXACT);
-    CHECK(strcmp(matchName(index, &out[1]), "a.b.sh.c") == 0 && out[1].tier == SEGMENT_MATCH_SUFFIX);
-    CHECK(strcmp(matchName(index, &out[2]), "x.b.sh.c") == 0 && out[2].tier == SEGMENT_MATCH_SUFFIX);
-    CHECK(strcmp(matchName(index, &out[3]), "b.sh.c.d") == 0 && out[3].tier == SEGMENT_MATCH_CONTAINS);
+    CHECK(strcmp(matchName(index, &out[0]), "b.c") == 0 && out[0].tier == SEGMENT_MATCH_EXACT);
+    CHECK(strcmp(matchName(index, &out[1]), "a.b.c") == 0 && out[1].tier == SEGMENT_MATCH_SUFFIX);
+    CHECK(strcmp(matchName(index, &out[2]), "x.b.c") == 0 && out[2].tier == SEGMENT_MATCH_SUFFIX);
+    CHECK(strcmp(matchName(index, &out[3]), "b.c.d") == 0 && out[3].tier == SEGMENT_MATCH_CONTAINS);
 
-    // "c": suffix "b.sh.c"(start1), then start2 tie broken by lex ("a.b.sh.c" < "x.b.sh.c"), then contains.
+    // "c": suffix "b.c"(start1), then start2 tie broken by lex ("a.b.c" < "x.b.c"), then contains.
     n = SegmentIndex_query(index, "c", out, 8u, &truncated);
     CHECK(n == 4u);
-    CHECK(strcmp(matchName(index, &out[0]), "b.sh.c") == 0);
-    CHECK(strcmp(matchName(index, &out[1]), "a.b.sh.c") == 0);
-    CHECK(strcmp(matchName(index, &out[2]), "x.b.sh.c") == 0);
-    CHECK(strcmp(matchName(index, &out[3]), "b.sh.c.d") == 0);
+    CHECK(strcmp(matchName(index, &out[0]), "b.c") == 0);
+    CHECK(strcmp(matchName(index, &out[1]), "a.b.c") == 0);
+    CHECK(strcmp(matchName(index, &out[2]), "x.b.c") == 0);
+    CHECK(strcmp(matchName(index, &out[3]), "b.c.d") == 0);
 
-    // "x" is broad: suffix hits first ("vector.x" before "position.x"), then "x.b.sh.c".
+    // "x" is broad: suffix hits first ("vector.x" before "position.x"), then "x.b.c".
     n = SegmentIndex_query(index, "x", out, 8u, &truncated);
     CHECK(n == 3u);
     CHECK(strcmp(matchName(index, &out[0]), "vector.x") == 0);
     CHECK(strcmp(matchName(index, &out[1]), "position.x") == 0);
-    CHECK(strcmp(matchName(index, &out[2]), "x.b.sh.c") == 0);
+    CHECK(strcmp(matchName(index, &out[2]), "x.b.c") == 0);
 
     // Exact multi-segment.
     n = SegmentIndex_query(index, "position.x", out, 8u, &truncated);
     CHECK(n == 1u && strcmp(matchName(index, &out[0]), "position.x") == 0 && out[0].tier == SEGMENT_MATCH_EXACT);
 
     // Contiguous middle.
-    n = SegmentIndex_query(index, "b.sh.c", out, 8u, &truncated);
+    n = SegmentIndex_query(index, "b.c", out, 8u, &truncated);
     CHECK(n == 4u);
-    CHECK(out[3].start == 0u); // "b.sh.c.d" begins at 0
+    CHECK(out[3].start == 0u); // "b.c.d" begins at 0
 
     // Folding: uppercase query resolves.
     n = SegmentIndex_query(index, "POSITION.X", out, 8u, &truncated);
@@ -185,19 +174,19 @@ static fn testRanking() {
     CHECK(SegmentIndex_query(index, "nope", out, 8u, &truncated) == 0u);
     CHECK(SegmentIndex_query(index, "position.nope", out, 8u, &truncated) == 0u);
     CHECK(SegmentIndex_query(index, "", out, 8u, &truncated) == 0u);
-    CHECK(SegmentIndex_query(index, "a..b.sh", out, 8u, &truncated) == 0u);
+    CHECK(SegmentIndex_query(index, "a..b", out, 8u, &truncated) == 0u);
 
     // Truncation: keep the best cap, report the true total.
-    n = SegmentIndex_query(index, "b.sh.c", out, 2u, &truncated);
+    n = SegmentIndex_query(index, "b.c", out, 2u, &truncated);
     CHECK(n == 4u && truncated == true);
-    CHECK(strcmp(matchName(index, &out[0]), "b.sh.c") == 0);
-    CHECK(strcmp(matchName(index, &out[1]), "a.b.sh.c") == 0);
+    CHECK(strcmp(matchName(index, &out[0]), "b.c") == 0);
+    CHECK(strcmp(matchName(index, &out[1]), "a.b.c") == 0);
 
     // Null-safety.
-    CHECK(SegmentIndex_query(nullptr, "b.sh.c", out, 8u, &truncated) == 0u);
+    CHECK(SegmentIndex_query(nullptr, "b.c", out, 8u, &truncated) == 0u);
     CHECK(SegmentIndex_query(index, nullptr, out, 8u, &truncated) == 0u);
-    CHECK(SegmentIndex_query(index, "b.sh.c", nullptr, 8u, &truncated) == 0u);
-    CHECK(SegmentIndex_query(index, "b.sh.c", out, 0u, &truncated) == 0u);
+    CHECK(SegmentIndex_query(index, "b.c", nullptr, 8u, &truncated) == 0u);
+    CHECK(SegmentIndex_query(index, "b.c", out, 0u, &truncated) == 0u);
 
     SegmentIndex_free(index);
 }
