@@ -65,34 +65,22 @@
 
 
 
-;;GETTER
-static inline u64 Clock_baseRealMillis(const Clock *s) { return (*s).baseRealMillis; }
-;;GETTER
-static inline u64 *Clock_baseRealMillisMut(Clock *s) { return &(*s).baseRealMillis; }
 ;;SETTER
 static inline fn Clock_setBaseRealMillis(Clock *s, u64 v) { (*s).baseRealMillis = v; }
 ;;GETTER
 static inline u64 Clock_lastTickRealMillis(const Clock *s) { return (*s).lastTickRealMillis; }
-;;GETTER
-static inline u64 *Clock_lastTickRealMillisMut(Clock *s) { return &(*s).lastTickRealMillis; }
 ;;SETTER
 static inline fn Clock_setLastTickRealMillis(Clock *s, u64 v) { (*s).lastTickRealMillis = v; }
 ;;GETTER
-static inline bool Clock_paused(const Clock *s) { return (*s).paused; }
-;;GETTER
-static inline bool *Clock_pausedMut(Clock *s) { return &(*s).paused; }
+static inline bool Clock_pausedRaw(const Clock *s) { return (*s).paused; }
 ;;SETTER
-static inline fn Clock_setPaused(Clock *s, bool v) { (*s).paused = v; }
+static inline fn Clock_setPausedRaw(Clock *s, bool v) { (*s).paused = v; }
 ;;GETTER
-static inline d64 Clock_timeScale(const Clock *s) { return (*s).timeScale; }
-;;GETTER
-static inline d64 *Clock_timeScaleMut(Clock *s) { return &(*s).timeScale; }
+static inline d64 Clock_timeScaleRaw(const Clock *s) { return (*s).timeScale; }
 ;;SETTER
-static inline fn Clock_setTimeScale(Clock *s, d64 v) { (*s).timeScale = v; }
+static inline fn Clock_setTimeScaleRaw(Clock *s, d64 v) { (*s).timeScale = v; }
 ;;GETTER
-static inline u64 Clock_virtualTimeMillis(const Clock *s) { return (*s).virtualTimeMillis; }
-;;GETTER
-static inline u64 *Clock_virtualTimeMillisMut(Clock *s) { return &(*s).virtualTimeMillis; }
+static inline u64 Clock_virtualTimeMillisRaw(const Clock *s) { return (*s).virtualTimeMillis; }
 ;;SETTER
 static inline fn Clock_setVirtualTimeMillis(Clock *s, u64 v) { (*s).virtualTimeMillis = v; }
 
@@ -129,35 +117,35 @@ fn Clock_tick(Clock *clock) {
     u64 elapsedReal = now - lastReal;
     Clock_setLastTickRealMillis(clock, now);
 
-    if (!Clock_paused(clock))
-        Clock_setVirtualTimeMillis(clock, Clock_virtualTimeMillis(clock) + ((u64)((d64)elapsedReal * Clock_timeScale(clock))));
+    if (!Clock_pausedRaw(clock))
+        Clock_setVirtualTimeMillis(clock, Clock_virtualTimeMillisRaw(clock) + ((u64)((d64)elapsedReal * Clock_timeScaleRaw(clock))));
 }
 
 // Sets the multiplier applied to elapsed real time on subsequent ticks.
 fn Clock_setTimeScale(Clock *clock, d64 scale) {
-    Clock_setTimeScale(clock, scale);
+    Clock_setTimeScaleRaw(clock, scale);
 }
 
 
 
 // Returns the configured elapsed-time multiplier.
 d64 Clock_timeScale(const Clock *clock) {
-    return Clock_timeScale(clock);
+    return Clock_timeScaleRaw(clock);
 }
 
 // Enables or disables virtual-time accrual while ticks continue updating the real anchor.
 fn Clock_setPaused(Clock *clock, bool paused) {
-    Clock_setPaused(clock, paused);
+    Clock_setPausedRaw(clock, paused);
 }
 
 // Reports whether virtual-time accrual is paused.
 bool Clock_isPaused(const Clock *clock) {
-    return Clock_paused(clock);
+    return Clock_pausedRaw(clock);
 }
 
 // Returns accumulated scaled virtual time in milliseconds.
 u64 Clock_virtualTimeMillis(const Clock *clock) {
-    return Clock_virtualTimeMillis(clock);
+    return Clock_virtualTimeMillisRaw(clock);
 }
 
 // Reanchors real readings and clears accumulated virtual time.
