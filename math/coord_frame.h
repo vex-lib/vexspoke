@@ -55,4 +55,8 @@ bool CoordFrame_isValid(u32 frame);
 // Human-readable name for diagnostics.
 const char *CoordFrame_name(CoordFrame frame);
 
+// Transfer a 3D vector from one coordinate frame to another via canonical spatial axes.
+vec3f CoordFrame_transferVec3f(CoordFrame from, CoordFrame to, vec3f v);
+vec3d CoordFrame_transferVec3d(CoordFrame from, CoordFrame to, vec3d v);
+
 #endif

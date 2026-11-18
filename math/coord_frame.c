@@ -134,3 +134,33 @@ const char *CoordFrame_name(CoordFrame frame) {
     }
     return s_names[frame];
 }
+
+vec3f CoordFrame_transferVec3f(CoordFrame from, CoordFrame to, vec3f v) {
+    if (from == to) return v;
+    CoordBasis bf = CoordFrame_getBasis(from);
+    CoordBasis bt = CoordFrame_getBasis(to);
+    f32 semantic[3] = { 0.0f, 0.0f, 0.0f };
+    for (u32 i = 0; i < 3; i++) {
+        semantic[bf.axis[i]] = v.data[i] * (f32) bf.sign[i];
+    }
+    return vec3f_3(
+        semantic[bt.axis[0]] * (f32) bt.sign[0],
+        semantic[bt.axis[1]] * (f32) bt.sign[1],
+        semantic[bt.axis[2]] * (f32) bt.sign[2]
+    );
+}
+
+vec3d CoordFrame_transferVec3d(CoordFrame from, CoordFrame to, vec3d v) {
+    if (from == to) return v;
+    CoordBasis bf = CoordFrame_getBasis(from);
+    CoordBasis bt = CoordFrame_getBasis(to);
+    d64 semantic[3] = { 0.0, 0.0, 0.0 };
+    for (u32 i = 0; i < 3; i++) {
+        semantic[bf.axis[i]] = v.data[i] * (d64) bf.sign[i];
+    }
+    return vec3d_3(
+        semantic[bt.axis[0]] * (d64) bt.sign[0],
+        semantic[bt.axis[1]] * (d64) bt.sign[1],
+        semantic[bt.axis[2]] * (d64) bt.sign[2]
+    );
+}
