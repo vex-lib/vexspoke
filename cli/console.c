@@ -1,6 +1,6 @@
 #include "vex.h"
+#include "re.h"
 #include "cli/console.h"
-#include "primitive/vex-string.h"
 #include <stdio.h>
 
 ;;DEFINITION
