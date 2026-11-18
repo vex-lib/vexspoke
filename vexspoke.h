@@ -32,7 +32,6 @@
 #include "net/net.h"
 #include "objects/objects.h"
 #include "oop/oop.h"
-#include "primitive/primitive.h"
 #include "regex/regex.h"
 #include "search/search.h"
 #include "security/security.h"
