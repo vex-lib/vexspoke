@@ -15,36 +15,19 @@
 
 static i32 g_failures = 0;
 
-#define CHECK(cond)                                                        \
-
 ;;GETTER
 static inline BespokeState Bespoke_graphicsState(const Bespoke *s) { return (*s).graphicsState; }
-;;GETTER
-static inline BespokeState *Bespoke_graphicsStateMut(Bespoke *s) { return &(*s).graphicsState; }
-;;SETTER
-static inline fn Bespoke_setGraphicsState(Bespoke *s, BespokeState v) { (*s).graphicsState = v; }
 
 ;;GETTER
 static inline const char * HttpExchange_body(const HttpExchange *s) { return (*s).body; }
 ;;GETTER
-static inline const char * *HttpExchange_bodyMut(HttpExchange *s) { return &(*s).body; }
-;;SETTER
-static inline fn HttpExchange_setBody(HttpExchange *s, const char * v) { (*s).body = v; }
-;;GETTER
 static inline bytes HttpExchange_bodyLen(const HttpExchange *s) { return (*s).bodyLen; }
-;;GETTER
-static inline bytes *HttpExchange_bodyLenMut(HttpExchange *s) { return &(*s).bodyLen; }
-;;SETTER
-static inline fn HttpExchange_setBodyLen(HttpExchange *s, bytes v) { (*s).bodyLen = v; }
-;;GETTER
-static inline char *HttpExchange_methodMut(HttpExchange *s) { return (*s).method; }
 ;;GETTER
 static inline const char *HttpExchange_method(const HttpExchange *s) { return (*s).method; }
 ;;GETTER
-static inline char *HttpExchange_pathMut(HttpExchange *s) { return (*s).path; }
-;;GETTER
 static inline const char *HttpExchange_path(const HttpExchange *s) { return (*s).path; }
 
+#define CHECK(cond)                                                        \
     do {                                                                   \
         if (!(cond)) {                                                     \
             printf("FAIL %s:%d %s\n", __FILE__, __LINE__, #cond);          \
@@ -53,16 +36,16 @@ static inline const char *HttpExchange_path(const HttpExchange *s) { return (*s)
     } while (0)
 
 static const char CANNED_JSON[] =
-    "{\"name\":\"anti\",\"n\":42,\"pi\":3.5,\"quote\":\"a\\\"b.sh\\nline\","
+    "{\"name\":\"anti\",\"n\":42,\"pi\":3.5,\"quote\":\"a\\\"b\\nline\","
     "\"tags\":[\"x\",\"y\"],\"nested\":{\"ok\":true}}";
 
 static fn handler(const HttpExchange *ex, i32 fd, any ud) {
     (discard) ud;
-    if (strcmp(HttpExchange_pathMut(ex), "/hello") == 0 && strcmp(HttpExchange_methodMut(ex), "GET") == 0) {
+    if (strcmp(HttpExchange_path(ex), "/hello") == 0 && strcmp(HttpExchange_method(ex), "GET") == 0) {
         Http_respond(fd, 200, "text/plain", "hello from anti", 15);
-    } else if (strcmp(HttpExchange_pathMut(ex), "/json") == 0 && strcmp(HttpExchange_methodMut(ex), "GET") == 0) {
+    } else if (strcmp(HttpExchange_path(ex), "/json") == 0 && strcmp(HttpExchange_method(ex), "GET") == 0) {
         Http_respond(fd, 200, "application/json", CANNED_JSON, strlen(CANNED_JSON));
-    } else if (strcmp(HttpExchange_pathMut(ex), "/echo") == 0 && strcmp(HttpExchange_methodMut(ex), "POST") == 0) {
+    } else if (strcmp(HttpExchange_path(ex), "/echo") == 0 && strcmp(HttpExchange_method(ex), "POST") == 0) {
         Http_respond(fd, 201, "text/plain", HttpExchange_body(ex) ? HttpExchange_body(ex) : "", HttpExchange_bodyLen(ex));
     } else {
         Http_respond(fd, 404, "text/plain", "nope", 4);
@@ -102,8 +85,8 @@ i32 main(i32 argc, char **argv) {
     CHECK(strcmp(buf, "Bearer tok123") == 0);
 
     // --- JSON writer escaping ---
-    Json_writeString(buf, sizeof(buf), "a\"b.sh\nc");
-    CHECK(strcmp(buf, "\"a\\\"b.sh\\nc\"") == 0);
+    Json_writeString(buf, sizeof(buf), "a\"b\nc");
+    CHECK(strcmp(buf, "\"a\\\"b\\nc\"") == 0);
 
     // --- Server up ---
     HttpServer server;
@@ -153,7 +136,7 @@ i32 main(i32 argc, char **argv) {
     // Escaped string forced the scratch-decode path.
     JsonRef quote = Json_member(&doc, root, "quote");
     const char *q = Json_string(&doc, quote, &len);
-    CHECK(len == 8 && strncmp(q, "a\"b.sh\nline", 8) == 0);
+    CHECK(len == 8 && strncmp(q, "a\"b\nline", 8) == 0);
 
     JsonRef tags = Json_member(&doc, root, "tags");
     CHECK(Json_type(&doc, tags) == JSON_ARRAY && Json_count(&doc, tags) == 2);

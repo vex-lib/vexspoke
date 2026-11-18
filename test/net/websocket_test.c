@@ -359,14 +359,10 @@ typedef struct PeerContext {
 
 ;;GETTER
 static inline pid_t PeerContext_pid(const PeerContext *s) { return (*s).pid; }
-;;GETTER
-static inline pid_t *PeerContext_pidMut(PeerContext *s) { return &(*s).pid; }
 ;;SETTER
 static inline fn PeerContext_setPid(PeerContext *s, pid_t v) { (*s).pid = v; }
 ;;GETTER
 static inline i32 PeerContext_readFd(const PeerContext *s) { return (*s).readFd; }
-;;GETTER
-static inline i32 *PeerContext_readFdMut(PeerContext *s) { return &(*s).readFd; }
 ;;SETTER
 static inline fn PeerContext_setReadFd(PeerContext *s, i32 v) { (*s).readFd = v; }
 
