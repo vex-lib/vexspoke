@@ -54,27 +54,11 @@
 ;;GETTER
 static inline i64 Loop_frame_ms(const Loop *s) { return (*s).frame_ms; }
 ;;GETTER
-static inline i64 *Loop_frame_msMut(Loop *s) { return &(*s).frame_ms; }
-;;SETTER
-static inline fn Loop_setFrame_ms(Loop *s, i64 v) { (*s).frame_ms = v; }
-;;GETTER
-static inline _Atomic bool Loop_running(const Loop *s) { return (*s).running; }
-;;GETTER
-static inline _Atomic bool *Loop_runningMut(Loop *s) { return &(*s).running; }
-;;SETTER
-static inline fn Loop_setRunning(Loop *s, _Atomic bool v) { (*s).running = v; }
+static inline atomic_bool *Loop_runningMut(Loop *s) { return &(*s).running; }
 ;;GETTER
 static inline TickFn Loop_tick(const Loop *s) { return (*s).tick; }
 ;;GETTER
-static inline TickFn *Loop_tickMut(Loop *s) { return &(*s).tick; }
-;;SETTER
-static inline fn Loop_setTick(Loop *s, TickFn v) { (*s).tick = v; }
-;;GETTER
 static inline any Loop_userdata(const Loop *s) { return (*s).userdata; }
-;;GETTER
-static inline any *Loop_userdataMut(Loop *s) { return &(*s).userdata; }
-;;SETTER
-static inline fn Loop_setUserdata(Loop *s, any v) { (*s).userdata = v; }
 
 static i64 nowMs() {
     struct timespec ts;
