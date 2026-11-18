@@ -55,15 +55,7 @@
 ;;GETTER
 static inline bytes Str_cap(const Str *s) { return (*s).cap; }
 ;;GETTER
-static inline bytes *Str_capMut(Str *s) { return &(*s).cap; }
-;;SETTER
-static inline fn Str_setCap(Str *s, bytes v) { (*s).cap = v; }
-;;GETTER
 static inline char * Str_dest(const Str *s) { return (*s).dest; }
-;;GETTER
-static inline char * *Str_destMut(Str *s) { return &(*s).dest; }
-;;SETTER
-static inline fn Str_setDest(Str *s, char * v) { (*s).dest = v; }
 ;;GETTER
 static inline bytes Str_len(const Str *s) { return (*s).len; }
 ;;GETTER
@@ -72,8 +64,6 @@ static inline bytes *Str_lenMut(Str *s) { return &(*s).len; }
 static inline fn Str_setLen(Str *s, bytes v) { (*s).len = v; }
 ;;GETTER
 static inline bool Str_truncated(const Str *s) { return (*s).truncated; }
-;;GETTER
-static inline bool *Str_truncatedMut(Str *s) { return &(*s).truncated; }
 ;;SETTER
 static inline fn Str_setTruncated(Str *s, bool v) { (*s).truncated = v; }
 

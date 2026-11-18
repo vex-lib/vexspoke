@@ -66,15 +66,7 @@
 ;;GETTER
 static inline i32 Point_x(const Point *s) { return (*s).x; }
 ;;GETTER
-static inline i32 *Point_xMut(Point *s) { return &(*s).x; }
-;;SETTER
-static inline fn Point_setX(Point *s, i32 v) { (*s).x = v; }
-;;GETTER
 static inline i32 Point_y(const Point *s) { return (*s).y; }
-;;GETTER
-static inline i32 *Point_yMut(Point *s) { return &(*s).y; }
-;;SETTER
-static inline fn Point_setY(Point *s, i32 v) { (*s).y = v; }
 
 // CONSTRUCTORS
 Point *Point_0() {
@@ -98,7 +90,9 @@ fn Point_free(Point *p) {
 }
 
 // SETTERS
+;;SETTER
 fn Point_setX(Point *p, i32 x) { if (p) (*p).x = x; }
+;;SETTER
 fn Point_setY(Point *p, i32 y) { if (p) (*p).y = y; }
 fn Point_set(Point *p, i32 x, i32 y) {
     if (!p) return;
