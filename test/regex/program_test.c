@@ -14,70 +14,29 @@
 
 static i32 g_failures = 0;
 
-#define CHECK(cond)                                                        \
-
-;;GETTER
-static inline u32 RegexNode_a(const RegexNode *s) { return (*s).a; }
-;;GETTER
-static inline u32 *RegexNode_aMut(RegexNode *s) { return &(*s).a; }
 ;;SETTER
 static inline fn RegexNode_setA(RegexNode *s, u32 v) { (*s).a = v; }
-;;GETTER
-static inline u32 RegexNode_b(const RegexNode *s) { return (*s).b; }
-;;GETTER
-static inline u32 *RegexNode_bMut(RegexNode *s) { return &(*s).b; }
 ;;SETTER
 static inline fn RegexNode_setB(RegexNode *s, u32 v) { (*s).b = v; }
-;;GETTER
-static inline u8 RegexNode_byte(const RegexNode *s) { return (*s).byte; }
-;;GETTER
-static inline u8 *RegexNode_byteMut(RegexNode *s) { return &(*s).byte; }
 ;;SETTER
 static inline fn RegexNode_setByte(RegexNode *s, u8 v) { (*s).byte = v; }
-;;GETTER
-static inline u32 RegexNode_group(const RegexNode *s) { return (*s).group; }
-;;GETTER
-static inline u32 *RegexNode_groupMut(RegexNode *s) { return &(*s).group; }
 ;;SETTER
 static inline fn RegexNode_setGroup(RegexNode *s, u32 v) { (*s).group = v; }
-;;GETTER
-static inline u32 RegexNode_repMax(const RegexNode *s) { return (*s).repMax; }
-;;GETTER
-static inline u32 *RegexNode_repMaxMut(RegexNode *s) { return &(*s).repMax; }
 ;;SETTER
 static inline fn RegexNode_setRepMax(RegexNode *s, u32 v) { (*s).repMax = v; }
-;;GETTER
-static inline u32 RegexNode_repMin(const RegexNode *s) { return (*s).repMin; }
-;;GETTER
-static inline u32 *RegexNode_repMinMut(RegexNode *s) { return &(*s).repMin; }
 ;;SETTER
 static inline fn RegexNode_setRepMin(RegexNode *s, u32 v) { (*s).repMin = v; }
 
 ;;GETTER
 static inline u32 RegexInst_a(const RegexInst *s) { return (*s).a; }
 ;;GETTER
-static inline u32 *RegexInst_aMut(RegexInst *s) { return &(*s).a; }
-;;SETTER
-static inline fn RegexInst_setA(RegexInst *s, u32 v) { (*s).a = v; }
-;;GETTER
 static inline u32 RegexInst_b(const RegexInst *s) { return (*s).b; }
-;;GETTER
-static inline u32 *RegexInst_bMut(RegexInst *s) { return &(*s).b; }
-;;SETTER
-static inline fn RegexInst_setB(RegexInst *s, u32 v) { (*s).b = v; }
 ;;GETTER
 static inline u8 RegexInst_byte(const RegexInst *s) { return (*s).byte; }
 ;;GETTER
-static inline u8 *RegexInst_byteMut(RegexInst *s) { return &(*s).byte; }
-;;SETTER
-static inline fn RegexInst_setByte(RegexInst *s, u8 v) { (*s).byte = v; }
-;;GETTER
 static inline u8 RegexInst_op(const RegexInst *s) { return (*s).op; }
-;;GETTER
-static inline u8 *RegexInst_opMut(RegexInst *s) { return &(*s).op; }
-;;SETTER
-static inline fn RegexInst_setOp(RegexInst *s, u8 v) { (*s).op = v; }
 
+#define CHECK(cond)                                                        \
     do {                                                                   \
         if (!(cond)) {                                                     \
             printf("FAIL %s:%d %s\n", __FILE__, __LINE__, #cond);          \
