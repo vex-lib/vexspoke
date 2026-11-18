@@ -102,26 +102,14 @@
 
 ;;GETTER
 static inline fn  (*TouchHandler_onTouchCancel(const TouchHandler *s))(any self, i32 touchId, u64 exactNanos) { return (*s).onTouchCancel; }
-;;SETTER
-static inline fn TouchHandler_setOnTouchCancel(TouchHandler *s, fn  (*v)(any self, i32 touchId, u64 exactNanos)) { (*s).onTouchCancel = v; }
 ;;GETTER
 static inline fn  (*TouchHandler_onTouchDown(const TouchHandler *s))(any self, i32 touchId, d64 x, d64 y, d64 pressure, u64 exactNanos) { return (*s).onTouchDown; }
-;;SETTER
-static inline fn TouchHandler_setOnTouchDown(TouchHandler *s, fn  (*v)(any self, i32 touchId, d64 x, d64 y, d64 pressure, u64 exactNanos)) { (*s).onTouchDown = v; }
 ;;GETTER
 static inline fn  (*TouchHandler_onTouchMove(const TouchHandler *s))(any self, i32 touchId, d64 x, d64 y, d64 pressure, u64 exactNanos) { return (*s).onTouchMove; }
-;;SETTER
-static inline fn TouchHandler_setOnTouchMove(TouchHandler *s, fn  (*v)(any self, i32 touchId, d64 x, d64 y, d64 pressure, u64 exactNanos)) { (*s).onTouchMove = v; }
 ;;GETTER
 static inline fn  (*TouchHandler_onTouchUp(const TouchHandler *s))(any self, i32 touchId, d64 x, d64 y, d64 pressure, u64 exactNanos) { return (*s).onTouchUp; }
-;;SETTER
-static inline fn TouchHandler_setOnTouchUp(TouchHandler *s, fn  (*v)(any self, i32 touchId, d64 x, d64 y, d64 pressure, u64 exactNanos)) { (*s).onTouchUp = v; }
 ;;GETTER
 static inline any TouchHandler_self(const TouchHandler *s) { return (*s).self; }
-;;GETTER
-static inline any *TouchHandler_selfMut(TouchHandler *s) { return &(*s).self; }
-;;SETTER
-static inline fn TouchHandler_setSelf(TouchHandler *s, any v) { (*s).self = v; }
 
 #define QUEUE_CAPACITY 1024
 ;;INTENTION("fixed input ring: a bounded hot-path sync budget; MPMC ring growth is a separate follow-up per the Dynamic Scalability & Anti-Hardcoding Law")
@@ -143,34 +131,20 @@ typedef struct {
     i32 action;
 } TouchSlot;
 
-;;GETTER
-static inline i32 TouchSlot_action(const TouchSlot *s) { return (*s).action; }
-;;GETTER
-static inline i32 *TouchSlot_actionMut(TouchSlot *s) { return &(*s).action; }
 ;;SETTER
 static inline fn TouchSlot_setAction(TouchSlot *s, i32 v) { (*s).action = v; }
-;;GETTER
-static inline u64 TouchSlot_lastHoldDuration(const TouchSlot *s) { return (*s).lastHoldDuration; }
-;;GETTER
-static inline u64 *TouchSlot_lastHoldDurationMut(TouchSlot *s) { return &(*s).lastHoldDuration; }
 ;;SETTER
 static inline fn TouchSlot_setLastHoldDuration(TouchSlot *s, u64 v) { (*s).lastHoldDuration = v; }
 ;;GETTER
 static inline u64 TouchSlot_lastReleaseTime(const TouchSlot *s) { return (*s).lastReleaseTime; }
-;;GETTER
-static inline u64 *TouchSlot_lastReleaseTimeMut(TouchSlot *s) { return &(*s).lastReleaseTime; }
 ;;SETTER
 static inline fn TouchSlot_setLastReleaseTime(TouchSlot *s, u64 v) { (*s).lastReleaseTime = v; }
 ;;GETTER
 static inline u64 TouchSlot_pressTime(const TouchSlot *s) { return (*s).pressTime; }
-;;GETTER
-static inline u64 *TouchSlot_pressTimeMut(TouchSlot *s) { return &(*s).pressTime; }
 ;;SETTER
 static inline fn TouchSlot_setPressTime(TouchSlot *s, u64 v) { (*s).pressTime = v; }
 ;;GETTER
 static inline i32 TouchSlot_taps(const TouchSlot *s) { return (*s).taps; }
-;;GETTER
-static inline i32 *TouchSlot_tapsMut(TouchSlot *s) { return &(*s).taps; }
 ;;SETTER
 static inline fn TouchSlot_setTaps(TouchSlot *s, i32 v) { (*s).taps = v; }
 
@@ -186,20 +160,14 @@ typedef struct {
 
 ;;GETTER
 static inline d64 TouchPos_pressure(const TouchPos *s) { return (*s).pressure; }
-;;GETTER
-static inline d64 *TouchPos_pressureMut(TouchPos *s) { return &(*s).pressure; }
 ;;SETTER
 static inline fn TouchPos_setPressure(TouchPos *s, d64 v) { (*s).pressure = v; }
 ;;GETTER
 static inline d64 TouchPos_x(const TouchPos *s) { return (*s).x; }
-;;GETTER
-static inline d64 *TouchPos_xMut(TouchPos *s) { return &(*s).x; }
 ;;SETTER
 static inline fn TouchPos_setX(TouchPos *s, d64 v) { (*s).x = v; }
 ;;GETTER
 static inline d64 TouchPos_y(const TouchPos *s) { return (*s).y; }
-;;GETTER
-static inline d64 *TouchPos_yMut(TouchPos *s) { return &(*s).y; }
 ;;SETTER
 static inline fn TouchPos_setY(TouchPos *s, d64 v) { (*s).y = v; }
 
@@ -225,8 +193,6 @@ typedef struct WinRow {
 } WinRow;
 
 ;;GETTER
-static inline i32 WinRow_cap(const WinRow *s) { return (*s).cap; }
-;;GETTER
 static inline i32 *WinRow_capMut(WinRow *s) { return &(*s).cap; }
 ;;SETTER
 static inline fn WinRow_setCap(WinRow *s, i32 v) { (*s).cap = v; }
@@ -242,10 +208,6 @@ static inline const TouchHandler ** WinRow_items(const WinRow *s) { return (*s).
 static inline const TouchHandler ** *WinRow_itemsMut(WinRow *s) { return &(*s).items; }
 ;;SETTER
 static inline fn WinRow_setItems(WinRow *s, const TouchHandler ** v) { (*s).items = v; }
-;;GETTER
-static inline u32 WinRow_windowId(const WinRow *s) { return (*s).windowId; }
-;;GETTER
-static inline u32 *WinRow_windowIdMut(WinRow *s) { return &(*s).windowId; }
 ;;SETTER
 static inline fn WinRow_setWindowId(WinRow *s, u32 v) { (*s).windowId = v; }
 

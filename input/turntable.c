@@ -54,50 +54,32 @@
 
 ;;GETTER
 static inline f32 TurntableState_cuePositionSeconds(const TurntableState *s) { return (*s).cuePositionSeconds; }
-;;GETTER
-static inline f32 *TurntableState_cuePositionSecondsMut(TurntableState *s) { return &(*s).cuePositionSeconds; }
 ;;SETTER
 static inline fn TurntableState_setCuePositionSeconds(TurntableState *s, f32 v) { (*s).cuePositionSeconds = v; }
 ;;GETTER
 static inline f32 TurntableState_currentAngularVelocityRadPerSec(const TurntableState *s) { return (*s).currentAngularVelocityRadPerSec; }
-;;GETTER
-static inline f32 *TurntableState_currentAngularVelocityRadPerSecMut(TurntableState *s) { return &(*s).currentAngularVelocityRadPerSec; }
 ;;SETTER
 static inline fn TurntableState_setCurrentAngularVelocityRadPerSec(TurntableState *s, f32 v) { (*s).currentAngularVelocityRadPerSec = v; }
 ;;GETTER
 static inline f32 *TurntableState_hotCuesMut(TurntableState *s) { return (*s).hotCues; }
 ;;GETTER
-static inline const f32 *TurntableState_hotCues(const TurntableState *s) { return (*s).hotCues; }
-;;GETTER
 static inline bool TurntableState_isPlaying(const TurntableState *s) { return (*s).isPlaying; }
-;;GETTER
-static inline bool *TurntableState_isPlayingMut(TurntableState *s) { return &(*s).isPlaying; }
 ;;SETTER
 static inline fn TurntableState_setIsPlaying(TurntableState *s, bool v) { (*s).isPlaying = v; }
 ;;GETTER
 static inline f32 TurntableState_pitchFader(const TurntableState *s) { return (*s).pitchFader; }
-;;GETTER
-static inline f32 *TurntableState_pitchFaderMut(TurntableState *s) { return &(*s).pitchFader; }
 ;;SETTER
 static inline fn TurntableState_setPitchFader(TurntableState *s, f32 v) { (*s).pitchFader = v; }
 ;;GETTER
 static inline bool TurntableState_platterTouched(const TurntableState *s) { return (*s).platterTouched; }
-;;GETTER
-static inline bool *TurntableState_platterTouchedMut(TurntableState *s) { return &(*s).platterTouched; }
 ;;SETTER
 static inline fn TurntableState_setPlatterTouched(TurntableState *s, bool v) { (*s).platterTouched = v; }
 ;;GETTER
 static inline f32 TurntableState_playheadSeconds(const TurntableState *s) { return (*s).playheadSeconds; }
-;;GETTER
-static inline f32 *TurntableState_playheadSecondsMut(TurntableState *s) { return &(*s).playheadSeconds; }
 ;;SETTER
 static inline fn TurntableState_setPlayheadSeconds(TurntableState *s, f32 v) { (*s).playheadSeconds = v; }
 ;;GETTER
 static inline TurntableRpm TurntableState_targetRpm(const TurntableState *s) { return (*s).targetRpm; }
-;;GETTER
-static inline TurntableRpm *TurntableState_targetRpmMut(TurntableState *s) { return &(*s).targetRpm; }
-;;SETTER
-static inline fn TurntableState_setTargetRpm(TurntableState *s, TurntableRpm v) { (*s).targetRpm = v; }
 
 TurntableState TurntableState_1(u8 deckIndex) {
     TurntableState state;
@@ -182,7 +164,7 @@ fn TurntableState_tick(TurntableState *state, f32 deltaSeconds) {
         TurntableState_setPlayheadSeconds(state, TurntableState_playheadSeconds(state) + (speedRatio * deltaSeconds));
     } else if (!TurntableState_isPlaying(state) && !TurntableState_platterTouched(state)) {
         // Motor deceleration friction
-        TurntableState_currentAngularVelocityRadPerSec(state) *= powf(0.05f, deltaSeconds);
+        TurntableState_setCurrentAngularVelocityRadPerSec(state, TurntableState_currentAngularVelocityRadPerSec(state) * powf(0.05f, deltaSeconds));
         if (fabsf(TurntableState_currentAngularVelocityRadPerSec(state)) < 0.01f) {
             TurntableState_setCurrentAngularVelocityRadPerSec(state, 0.0f);
         }

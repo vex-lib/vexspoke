@@ -84,58 +84,34 @@
 ;;GETTER
 static inline i64 KeyBinding_combo(const KeyBinding *s) { return (*s).combo; }
 ;;GETTER
-static inline i64 *KeyBinding_comboMut(KeyBinding *s) { return &(*s).combo; }
-;;SETTER
-static inline fn KeyBinding_setCombo(KeyBinding *s, i64 v) { (*s).combo = v; }
-;;GETTER
 static inline KeyBindingFn KeyBinding_fn(const KeyBinding *s) { return (*s).fn; }
 ;;GETTER
-static inline KeyBindingFn *KeyBinding_fnMut(KeyBinding *s) { return &(*s).fn; }
-;;SETTER
-static inline fn KeyBinding_setFn(KeyBinding *s, KeyBindingFn v) { (*s).fn = v; }
-;;GETTER
 static inline any KeyBinding_userdata(const KeyBinding *s) { return (*s).userdata; }
-;;GETTER
-static inline any *KeyBinding_userdataMut(KeyBinding *s) { return &(*s).userdata; }
-;;SETTER
-static inline fn KeyBinding_setUserdata(KeyBinding *s, any v) { (*s).userdata = v; }
 
 ;;GETTER
 static inline any KeyMap_arena(const KeyMap *s) { return (*s).arena; }
-;;GETTER
-static inline any *KeyMap_arenaMut(KeyMap *s) { return &(*s).arena; }
 ;;SETTER
 static inline fn KeyMap_setArena(KeyMap *s, any v) { (*s).arena = v; }
 ;;GETTER
 static inline KeyBinding * KeyMap_bindings(const KeyMap *s) { return (*s).bindings; }
-;;GETTER
-static inline KeyBinding * *KeyMap_bindingsMut(KeyMap *s) { return &(*s).bindings; }
 ;;SETTER
 static inline fn KeyMap_setBindings(KeyMap *s, KeyBinding * v) { (*s).bindings = v; }
 ;;GETTER
 static inline u32 KeyMap_capacity(const KeyMap *s) { return (*s).capacity; }
-;;GETTER
-static inline u32 *KeyMap_capacityMut(KeyMap *s) { return &(*s).capacity; }
 ;;SETTER
 static inline fn KeyMap_setCapacity(KeyMap *s, u32 v) { (*s).capacity = v; }
 ;;GETTER
-static inline u32 KeyMap_count(const KeyMap *s) { return (*s).count; }
-;;GETTER
-static inline u32 *KeyMap_countMut(KeyMap *s) { return &(*s).count; }
+static inline u32 KeyMap_countRaw(const KeyMap *s) { return (*s).count; }
 ;;SETTER
 static inline fn KeyMap_setCount(KeyMap *s, u32 v) { (*s).count = v; }
 ;;GETTER
 static inline u64 KeyMap_longPressNanos(const KeyMap *s) { return (*s).longPressNanos; }
-;;GETTER
-static inline u64 *KeyMap_longPressNanosMut(KeyMap *s) { return &(*s).longPressNanos; }
 ;;SETTER
-static inline fn KeyMap_setLongPressNanos(KeyMap *s, u64 v) { (*s).longPressNanos = v; }
+static inline fn KeyMap_setLongPressNanosRaw(KeyMap *s, u64 v) { (*s).longPressNanos = v; }
 ;;GETTER
 static inline bool KeyMap_multiTapEnabled(const KeyMap *s) { return (*s).multiTapEnabled; }
-;;GETTER
-static inline bool *KeyMap_multiTapEnabledMut(KeyMap *s) { return &(*s).multiTapEnabled; }
 ;;SETTER
-static inline fn KeyMap_setMultiTapEnabled(KeyMap *s, bool v) { (*s).multiTapEnabled = v; }
+static inline fn KeyMap_setMultiTapEnabledRaw(KeyMap *s, bool v) { (*s).multiTapEnabled = v; }
 
 // ── Gesture resolution (KeyMap_resolve) ───────────────────
 // Multi-tap recognition is windowed (settle-based): taps are OFFERED while the
@@ -386,7 +362,7 @@ bool KeyMap_resolve(const KeyMap *map, i64 *outCombo)
     i64 bestKm = -1;
 
     for (u32 i = 0; i < KeyMap_count(map); i++) {
-        const KeyBinding *b = &KeyMap_bindingsMut(map)[i];
+        const KeyBinding *b = &KeyMap_bindings(map)[i];
         if (KeyBinding_fn(b) == nullptr)
             continue;
 
@@ -413,7 +389,7 @@ bool KeyMap_resolve(const KeyMap *map, i64 *outCombo)
     // losing modifier-space is expired; gesture-kind upgrades (a settled
     // d64 against a TAP binding) are preserved by phase semantics.
     for (u32 i = 0; i < KeyMap_count(map); i++) {
-        const KeyBinding *b = &KeyMap_bindingsMut(map)[i];
+        const KeyBinding *b = &KeyMap_bindings(map)[i];
         if (KeyBinding_fn(b) == nullptr)
             continue;
         if (!gestureMatches(map, KeyBinding_combo(b)))
@@ -499,14 +475,14 @@ fn KeyMap_setMultiTapEnabled(KeyMap *map, bool enabled)
 {
     if (map == nullptr)
         return;
-    KeyMap_setMultiTapEnabled(map, enabled);
+    KeyMap_setMultiTapEnabledRaw(map, enabled);
 }
 
 fn KeyMap_setLongPressNanos(KeyMap *map, u64 nanos)
 {
     if (map == nullptr)
         return;
-    KeyMap_setLongPressNanos(map, nanos);
+    KeyMap_setLongPressNanosRaw(map, nanos);
 }
 
 
@@ -521,7 +497,7 @@ const KeyBinding *KeyMap_match(const KeyMap *map, i64 liveCombo)
 
     for (u32 i = 0; i < KeyMap_count(map); i++) {
         if (KeyMap_bindings(map)[i].combo == liveCombo)
-            return &KeyMap_bindingsMut(map)[i];
+            return &KeyMap_bindings(map)[i];
     }
     return nullptr;
 }
@@ -530,7 +506,7 @@ u32 KeyMap_count(const KeyMap *map)
 {
     if (map == nullptr)
         return 0;
-    return KeyMap_count(map);
+    return KeyMap_countRaw(map);
 }
 
 bool KeyMap_isEmpty(const KeyMap *map)

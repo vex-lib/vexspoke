@@ -123,26 +123,14 @@
 
 ;;GETTER
 static inline fn  (*KeyHandler_onCharTyped(const KeyHandler *s))(any self, u32 character) { return (*s).onCharTyped; }
-;;SETTER
-static inline fn KeyHandler_setOnCharTyped(KeyHandler *s, fn  (*v)(any self, u32 character)) { (*s).onCharTyped = v; }
 ;;GETTER
 static inline fn  (*KeyHandler_onKeyDown(const KeyHandler *s))(any self, i32 keyEvent, u64 exactNanos) { return (*s).onKeyDown; }
-;;SETTER
-static inline fn KeyHandler_setOnKeyDown(KeyHandler *s, fn  (*v)(any self, i32 keyEvent, u64 exactNanos)) { (*s).onKeyDown = v; }
 ;;GETTER
 static inline fn  (*KeyHandler_onKeyRepeat(const KeyHandler *s))(any self, i32 keyEvent, u64 exactNanos) { return (*s).onKeyRepeat; }
-;;SETTER
-static inline fn KeyHandler_setOnKeyRepeat(KeyHandler *s, fn  (*v)(any self, i32 keyEvent, u64 exactNanos)) { (*s).onKeyRepeat = v; }
 ;;GETTER
 static inline fn  (*KeyHandler_onKeyUp(const KeyHandler *s))(any self, i32 keyEvent, u64 exactNanos) { return (*s).onKeyUp; }
-;;SETTER
-static inline fn KeyHandler_setOnKeyUp(KeyHandler *s, fn  (*v)(any self, i32 keyEvent, u64 exactNanos)) { (*s).onKeyUp = v; }
 ;;GETTER
 static inline any KeyHandler_self(const KeyHandler *s) { return (*s).self; }
-;;GETTER
-static inline any *KeyHandler_selfMut(KeyHandler *s) { return &(*s).self; }
-;;SETTER
-static inline fn KeyHandler_setSelf(KeyHandler *s, any v) { (*s).self = v; }
 
 #define KEY_COUNT 512
 ;;INTENTION("fixed KEY_COUNT: the GLFW-style keycode domain is a hardware enum (0..511), not a workload ceiling")
@@ -170,46 +158,28 @@ typedef struct {
     u8 pad[2];            // alignment padding
 } KeySlot;
 
-;;GETTER
-static inline u64 KeySlot_lastHoldDuration(const KeySlot *s) { return (*s).lastHoldDuration; }
-;;GETTER
-static inline u64 *KeySlot_lastHoldDurationMut(KeySlot *s) { return &(*s).lastHoldDuration; }
 ;;SETTER
 static inline fn KeySlot_setLastHoldDuration(KeySlot *s, u64 v) { (*s).lastHoldDuration = v; }
 ;;GETTER
 static inline u64 KeySlot_lastReleaseTime(const KeySlot *s) { return (*s).lastReleaseTime; }
-;;GETTER
-static inline u64 *KeySlot_lastReleaseTimeMut(KeySlot *s) { return &(*s).lastReleaseTime; }
 ;;SETTER
 static inline fn KeySlot_setLastReleaseTime(KeySlot *s, u64 v) { (*s).lastReleaseTime = v; }
 ;;GETTER
 static inline u8 KeySlot_lastTapMods(const KeySlot *s) { return (*s).lastTapMods; }
-;;GETTER
-static inline u8 *KeySlot_lastTapModsMut(KeySlot *s) { return &(*s).lastTapMods; }
 ;;SETTER
 static inline fn KeySlot_setLastTapMods(KeySlot *s, u8 v) { (*s).lastTapMods = v; }
-;;GETTER
-static inline u8 KeySlot_longPressFired(const KeySlot *s) { return (*s).longPressFired; }
-;;GETTER
-static inline u8 *KeySlot_longPressFiredMut(KeySlot *s) { return &(*s).longPressFired; }
 ;;SETTER
 static inline fn KeySlot_setLongPressFired(KeySlot *s, u8 v) { (*s).longPressFired = v; }
 ;;GETTER
 static inline u64 KeySlot_pendingUntil(const KeySlot *s) { return (*s).pendingUntil; }
-;;GETTER
-static inline u64 *KeySlot_pendingUntilMut(KeySlot *s) { return &(*s).pendingUntil; }
 ;;SETTER
 static inline fn KeySlot_setPendingUntil(KeySlot *s, u64 v) { (*s).pendingUntil = v; }
 ;;GETTER
 static inline u64 KeySlot_pressTime(const KeySlot *s) { return (*s).pressTime; }
-;;GETTER
-static inline u64 *KeySlot_pressTimeMut(KeySlot *s) { return &(*s).pressTime; }
 ;;SETTER
 static inline fn KeySlot_setPressTime(KeySlot *s, u64 v) { (*s).pressTime = v; }
 ;;GETTER
 static inline i32 KeySlot_taps(const KeySlot *s) { return (*s).taps; }
-;;GETTER
-static inline i32 *KeySlot_tapsMut(KeySlot *s) { return &(*s).taps; }
 ;;SETTER
 static inline fn KeySlot_setTaps(KeySlot *s, i32 v) { (*s).taps = v; }
 
@@ -235,8 +205,6 @@ typedef struct WinRow {
 } WinRow;
 
 ;;GETTER
-static inline i32 WinRow_cap(const WinRow *s) { return (*s).cap; }
-;;GETTER
 static inline i32 *WinRow_capMut(WinRow *s) { return &(*s).cap; }
 ;;SETTER
 static inline fn WinRow_setCap(WinRow *s, i32 v) { (*s).cap = v; }
@@ -252,10 +220,6 @@ static inline const KeyHandler ** WinRow_items(const WinRow *s) { return (*s).it
 static inline const KeyHandler ** *WinRow_itemsMut(WinRow *s) { return &(*s).items; }
 ;;SETTER
 static inline fn WinRow_setItems(WinRow *s, const KeyHandler ** v) { (*s).items = v; }
-;;GETTER
-static inline u32 WinRow_windowId(const WinRow *s) { return (*s).windowId; }
-;;GETTER
-static inline u32 *WinRow_windowIdMut(WinRow *s) { return &(*s).windowId; }
 ;;SETTER
 static inline fn WinRow_setWindowId(WinRow *s, u32 v) { (*s).windowId = v; }
 

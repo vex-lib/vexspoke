@@ -64,20 +64,12 @@
 
 ;;GETTER
 static inline u32 PianoState_activeNotesCount(const PianoState *s) { return (*s).activeNotesCount; }
-;;GETTER
-static inline u32 *PianoState_activeNotesCountMut(PianoState *s) { return &(*s).activeNotesCount; }
 ;;SETTER
 static inline fn PianoState_setActiveNotesCount(PianoState *s, u32 v) { (*s).activeNotesCount = v; }
-;;GETTER
-static inline f32 PianoState_pitchBend(const PianoState *s) { return (*s).pitchBend; }
-;;GETTER
-static inline f32 *PianoState_pitchBendMut(PianoState *s) { return &(*s).pitchBend; }
 ;;SETTER
 static inline fn PianoState_setPitchBend(PianoState *s, f32 v) { (*s).pitchBend = v; }
 ;;GETTER
 static inline f32 *PianoState_pressuresMut(PianoState *s) { return (*s).pressures; }
-;;GETTER
-static inline const f32 *PianoState_pressures(const PianoState *s) { return (*s).pressures; }
 ;;GETTER
 static inline f32 *PianoState_velocitiesMut(PianoState *s) { return (*s).velocities; }
 ;;GETTER
@@ -145,10 +137,10 @@ fn PianoState_processEvent(PianoState *state, PianoKeyEvent event) {
 
 bool PianoState_isNoteOn(const PianoState *state, u8 note) {
     if (state == nullptr || note >= PIANO_MAX_NOTES) return false;
-    return PianoState_velocitiesMut(state)[note] > 0.0f;
+    return PianoState_velocities(state)[note] > 0.0f;
 }
 
 f32 PianoState_noteVelocity(const PianoState *state, u8 note) {
     if (state == nullptr || note >= PIANO_MAX_NOTES) return 0.0f;
-    return PianoState_velocitiesMut(state)[note];
+    return PianoState_velocities(state)[note];
 }

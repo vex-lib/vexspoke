@@ -126,42 +126,22 @@
 
 ;;GETTER
 static inline fn  (*MouseHandler_onMouseDown(const MouseHandler *s))(any self, i32 mouseEvent, u64 exactNanos) { return (*s).onMouseDown; }
-;;SETTER
-static inline fn MouseHandler_setOnMouseDown(MouseHandler *s, fn  (*v)(any self, i32 mouseEvent, u64 exactNanos)) { (*s).onMouseDown = v; }
 ;;GETTER
 static inline fn  (*MouseHandler_onMouseDrag(const MouseHandler *s))(any self, i32 mouseEvent, d64 x, d64 y) { return (*s).onMouseDrag; }
-;;SETTER
-static inline fn MouseHandler_setOnMouseDrag(MouseHandler *s, fn  (*v)(any self, i32 mouseEvent, d64 x, d64 y)) { (*s).onMouseDrag = v; }
 ;;GETTER
 static inline fn  (*MouseHandler_onMouseMove(const MouseHandler *s))(any self, d64 x, d64 y) { return (*s).onMouseMove; }
-;;SETTER
-static inline fn MouseHandler_setOnMouseMove(MouseHandler *s, fn  (*v)(any self, d64 x, d64 y)) { (*s).onMouseMove = v; }
 ;;GETTER
 static inline fn  (*MouseHandler_onMouseMoveDelta(const MouseHandler *s))(any self, d64 dx, d64 dy) { return (*s).onMouseMoveDelta; }
-;;SETTER
-static inline fn MouseHandler_setOnMouseMoveDelta(MouseHandler *s, fn  (*v)(any self, d64 dx, d64 dy)) { (*s).onMouseMoveDelta = v; }
 ;;GETTER
 static inline fn  (*MouseHandler_onMouseRepeat(const MouseHandler *s))(any self, i32 mouseEvent, u64 exactNanos) { return (*s).onMouseRepeat; }
-;;SETTER
-static inline fn MouseHandler_setOnMouseRepeat(MouseHandler *s, fn  (*v)(any self, i32 mouseEvent, u64 exactNanos)) { (*s).onMouseRepeat = v; }
 ;;GETTER
 static inline fn  (*MouseHandler_onMouseScroll(const MouseHandler *s))(any self, d64 dx, d64 dy) { return (*s).onMouseScroll; }
-;;SETTER
-static inline fn MouseHandler_setOnMouseScroll(MouseHandler *s, fn  (*v)(any self, d64 dx, d64 dy)) { (*s).onMouseScroll = v; }
 ;;GETTER
 static inline fn  (*MouseHandler_onMouseUp(const MouseHandler *s))(any self, i32 mouseEvent, u64 exactNanos) { return (*s).onMouseUp; }
-;;SETTER
-static inline fn MouseHandler_setOnMouseUp(MouseHandler *s, fn  (*v)(any self, i32 mouseEvent, u64 exactNanos)) { (*s).onMouseUp = v; }
 ;;GETTER
 static inline fn  (*MouseHandler_onMouseZoom(const MouseHandler *s))(any self, d64 magnification) { return (*s).onMouseZoom; }
-;;SETTER
-static inline fn MouseHandler_setOnMouseZoom(MouseHandler *s, fn  (*v)(any self, d64 magnification)) { (*s).onMouseZoom = v; }
 ;;GETTER
 static inline any MouseHandler_self(const MouseHandler *s) { return (*s).self; }
-;;GETTER
-static inline any *MouseHandler_selfMut(MouseHandler *s) { return &(*s).self; }
-;;SETTER
-static inline fn MouseHandler_setSelf(MouseHandler *s, any v) { (*s).self = v; }
 
 #define BUTTON_COUNT 16
 ;;INTENTION("fixed BUTTON_COUNT: the mouse-button domain is a hardware enum (0..15), not a workload ceiling")
@@ -189,46 +169,28 @@ typedef struct {
     u8 pad[2];            // alignment padding
 } ButtonSlot;
 
-;;GETTER
-static inline u64 ButtonSlot_lastHoldDuration(const ButtonSlot *s) { return (*s).lastHoldDuration; }
-;;GETTER
-static inline u64 *ButtonSlot_lastHoldDurationMut(ButtonSlot *s) { return &(*s).lastHoldDuration; }
 ;;SETTER
 static inline fn ButtonSlot_setLastHoldDuration(ButtonSlot *s, u64 v) { (*s).lastHoldDuration = v; }
 ;;GETTER
 static inline u64 ButtonSlot_lastReleaseTime(const ButtonSlot *s) { return (*s).lastReleaseTime; }
-;;GETTER
-static inline u64 *ButtonSlot_lastReleaseTimeMut(ButtonSlot *s) { return &(*s).lastReleaseTime; }
 ;;SETTER
 static inline fn ButtonSlot_setLastReleaseTime(ButtonSlot *s, u64 v) { (*s).lastReleaseTime = v; }
 ;;GETTER
 static inline u8 ButtonSlot_lastTapMods(const ButtonSlot *s) { return (*s).lastTapMods; }
-;;GETTER
-static inline u8 *ButtonSlot_lastTapModsMut(ButtonSlot *s) { return &(*s).lastTapMods; }
 ;;SETTER
 static inline fn ButtonSlot_setLastTapMods(ButtonSlot *s, u8 v) { (*s).lastTapMods = v; }
-;;GETTER
-static inline u8 ButtonSlot_longPressFired(const ButtonSlot *s) { return (*s).longPressFired; }
-;;GETTER
-static inline u8 *ButtonSlot_longPressFiredMut(ButtonSlot *s) { return &(*s).longPressFired; }
 ;;SETTER
 static inline fn ButtonSlot_setLongPressFired(ButtonSlot *s, u8 v) { (*s).longPressFired = v; }
 ;;GETTER
 static inline u64 ButtonSlot_pendingUntil(const ButtonSlot *s) { return (*s).pendingUntil; }
-;;GETTER
-static inline u64 *ButtonSlot_pendingUntilMut(ButtonSlot *s) { return &(*s).pendingUntil; }
 ;;SETTER
 static inline fn ButtonSlot_setPendingUntil(ButtonSlot *s, u64 v) { (*s).pendingUntil = v; }
 ;;GETTER
 static inline u64 ButtonSlot_pressTime(const ButtonSlot *s) { return (*s).pressTime; }
-;;GETTER
-static inline u64 *ButtonSlot_pressTimeMut(ButtonSlot *s) { return &(*s).pressTime; }
 ;;SETTER
 static inline fn ButtonSlot_setPressTime(ButtonSlot *s, u64 v) { (*s).pressTime = v; }
 ;;GETTER
 static inline i32 ButtonSlot_taps(const ButtonSlot *s) { return (*s).taps; }
-;;GETTER
-static inline i32 *ButtonSlot_tapsMut(ButtonSlot *s) { return &(*s).taps; }
 ;;SETTER
 static inline fn ButtonSlot_setTaps(ButtonSlot *s, i32 v) { (*s).taps = v; }
 
@@ -254,8 +216,6 @@ typedef struct WinRow {
 } WinRow;
 
 ;;GETTER
-static inline i32 WinRow_cap(const WinRow *s) { return (*s).cap; }
-;;GETTER
 static inline i32 *WinRow_capMut(WinRow *s) { return &(*s).cap; }
 ;;SETTER
 static inline fn WinRow_setCap(WinRow *s, i32 v) { (*s).cap = v; }
@@ -271,10 +231,6 @@ static inline const MouseHandler ** WinRow_items(const WinRow *s) { return (*s).
 static inline const MouseHandler ** *WinRow_itemsMut(WinRow *s) { return &(*s).items; }
 ;;SETTER
 static inline fn WinRow_setItems(WinRow *s, const MouseHandler ** v) { (*s).items = v; }
-;;GETTER
-static inline u32 WinRow_windowId(const WinRow *s) { return (*s).windowId; }
-;;GETTER
-static inline u32 *WinRow_windowIdMut(WinRow *s) { return &(*s).windowId; }
 ;;SETTER
 static inline fn WinRow_setWindowId(WinRow *s, u32 v) { (*s).windowId = v; }
 

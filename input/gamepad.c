@@ -52,10 +52,6 @@
 
 ;;GETTER
 static inline u32 GamepadState_buttons(const GamepadState *s) { return (*s).buttons; }
-;;GETTER
-static inline u32 *GamepadState_buttonsMut(GamepadState *s) { return &(*s).buttons; }
-;;SETTER
-static inline fn GamepadState_setButtons(GamepadState *s, u32 v) { (*s).buttons = v; }
 
 GamepadState GamepadState_0() {
     GamepadState state;
