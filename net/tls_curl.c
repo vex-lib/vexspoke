@@ -35,16 +35,8 @@
 
 
 
-;;GETTER
-static inline i32 TlsConn_backend(const TlsConn *s) { return (*s).backend; }
-;;GETTER
-static inline i32 *TlsConn_backendMut(TlsConn *s) { return &(*s).backend; }
 ;;SETTER
 static inline fn TlsConn_setBackend(TlsConn *s, i32 v) { (*s).backend = v; }
-;;GETTER
-static inline any TlsConn_opaque(const TlsConn *s) { return (*s).opaque; }
-;;GETTER
-static inline any *TlsConn_opaqueMut(TlsConn *s) { return &(*s).opaque; }
 ;;SETTER
 static inline fn TlsConn_setOpaque(TlsConn *s, any v) { (*s).opaque = v; }
 

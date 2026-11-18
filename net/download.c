@@ -49,26 +49,12 @@ extern char **environ;
 
 ;;GETTER
 static inline char * DownloadResponse_data(const DownloadResponse *s) { return (*s).data; }
-;;GETTER
-static inline char * *DownloadResponse_dataMut(DownloadResponse *s) { return &(*s).data; }
 ;;SETTER
 static inline fn DownloadResponse_setData(DownloadResponse *s, char * v) { (*s).data = v; }
-;;GETTER
-static inline i32 DownloadResponse_exit_code(const DownloadResponse *s) { return (*s).exit_code; }
-;;GETTER
-static inline i32 *DownloadResponse_exit_codeMut(DownloadResponse *s) { return &(*s).exit_code; }
 ;;SETTER
 static inline fn DownloadResponse_setExit_code(DownloadResponse *s, i32 v) { (*s).exit_code = v; }
-;;GETTER
-static inline u32 DownloadResponse_http_status(const DownloadResponse *s) { return (*s).http_status; }
-;;GETTER
-static inline u32 *DownloadResponse_http_statusMut(DownloadResponse *s) { return &(*s).http_status; }
 ;;SETTER
 static inline fn DownloadResponse_setHttp_status(DownloadResponse *s, u32 v) { (*s).http_status = v; }
-;;GETTER
-static inline bytes DownloadResponse_size(const DownloadResponse *s) { return (*s).size; }
-;;GETTER
-static inline bytes *DownloadResponse_sizeMut(DownloadResponse *s) { return &(*s).size; }
 ;;SETTER
 static inline fn DownloadResponse_setSize(DownloadResponse *s, bytes v) { (*s).size = v; }
 

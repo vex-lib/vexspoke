@@ -77,32 +77,22 @@
 
 ;;GETTER
 static inline bool FrameInbox_cancelled(const FrameInbox *s) { return (*s).cancelled; }
-;;GETTER
-static inline bool *FrameInbox_cancelledMut(FrameInbox *s) { return &(*s).cancelled; }
 ;;SETTER
-static inline fn FrameInbox_setCancelled(FrameInbox *s, bool v) { (*s).cancelled = v; }
+static inline fn FrameInbox_setCancelledRaw(FrameInbox *s, bool v) { (*s).cancelled = v; }
 ;;GETTER
 static inline u8 *FrameInbox_rxBufMut(FrameInbox *s) { return (*s).rxBuf; }
 ;;GETTER
-static inline const u8 *FrameInbox_rxBuf(const FrameInbox *s) { return (*s).rxBuf; }
-;;GETTER
 static inline u32 FrameInbox_rxLen(const FrameInbox *s) { return (*s).rxLen; }
-;;GETTER
-static inline u32 *FrameInbox_rxLenMut(FrameInbox *s) { return &(*s).rxLen; }
 ;;SETTER
 static inline fn FrameInbox_setRxLen(FrameInbox *s, u32 v) { (*s).rxLen = v; }
 ;;GETTER
 static inline FrameInboxState FrameInbox_state(const FrameInbox *s) { return (*s).state; }
-;;GETTER
-static inline FrameInboxState *FrameInbox_stateMut(FrameInbox *s) { return &(*s).state; }
 ;;SETTER
-static inline fn FrameInbox_setState(FrameInbox *s, FrameInboxState v) { (*s).state = v; }
+static inline fn FrameInbox_setStateRaw(FrameInbox *s, FrameInboxState v) { (*s).state = v; }
 ;;GETTER
 static inline u64 FrameInbox_timeoutNs(const FrameInbox *s) { return (*s).timeoutNs; }
-;;GETTER
-static inline u64 *FrameInbox_timeoutNsMut(FrameInbox *s) { return &(*s).timeoutNs; }
 ;;SETTER
-static inline fn FrameInbox_setTimeoutNs(FrameInbox *s, u64 v) { (*s).timeoutNs = v; }
+static inline fn FrameInbox_setTimeoutNsRaw(FrameInbox *s, u64 v) { (*s).timeoutNs = v; }
 
 // net/frame_inbox.c — legacy FrameInbox API for a caller-fed bounded frame inbox; never blocks
 // past FRAME_INBOX_POLL_MAX_NS and never touches a socket or a thread.
@@ -127,12 +117,12 @@ static FrameInbox *frameInboxCreate(u64 timeoutNs) {
     FrameInbox *self = (FrameInbox*) Memory_alloc(TYPE_FRAME_INBOX_SINGLETON, sizeof(FrameInbox));
     if (!self)
         return nullptr;
-    FrameInbox_setState(self, FRAME_INBOX_IDLE);
+    FrameInbox_setStateRaw(self, FRAME_INBOX_IDLE);
     FrameInbox_setRxLen(self, 0);
     if (timeoutNs > FRAME_INBOX_POLL_MAX_NS)
         timeoutNs = FRAME_INBOX_POLL_MAX_NS;
-    FrameInbox_setTimeoutNs(self, timeoutNs);
-    FrameInbox_setCancelled(self, false);
+    FrameInbox_setTimeoutNsRaw(self, timeoutNs);
+    FrameInbox_setCancelledRaw(self, false);
     return self;
 }
 
@@ -204,7 +194,7 @@ bool FrameInbox_poll(FrameInbox *self, u64 timeoutNs, u8 *dest,
 fn FrameInbox_cancel(FrameInbox *self) {
     if (!self)
         return;
-    FrameInbox_setCancelled(self, true);
+    FrameInbox_setCancelledRaw(self, true);
 }
 
 /** Discard all pending receive bytes without changing connection or cancellation state. */
@@ -219,7 +209,7 @@ fn FrameInbox_clear(FrameInbox *self) {
 fn FrameInbox_setState(FrameInbox *self, FrameInboxState state) {
     if (!self)
         return;
-    FrameInbox_setState(self, state);
+    FrameInbox_setStateRaw(self, state);
 }
 
 /** Set the default poll timeout, clamped to the maximum permitted interval. */
@@ -228,14 +218,14 @@ fn FrameInbox_setTimeoutNs(FrameInbox *self, u64 timeoutNs) {
         return;
     if (timeoutNs > FRAME_INBOX_POLL_MAX_NS)
         timeoutNs = FRAME_INBOX_POLL_MAX_NS;
-    FrameInbox_setTimeoutNs(self, timeoutNs);
+    FrameInbox_setTimeoutNsRaw(self, timeoutNs);
 }
 
 /** Set or clear the poll cancellation flag. */
 fn FrameInbox_setCancelled(FrameInbox *self, bool cancelled) {
     if (!self)
         return;
-    FrameInbox_setCancelled(self, cancelled);
+    FrameInbox_setCancelledRaw(self, cancelled);
 }
 
 // GETTERS

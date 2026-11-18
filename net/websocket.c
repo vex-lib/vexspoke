@@ -131,99 +131,69 @@
 
 
 ;;GETTER
-static inline u16 WebSocket_closeCode(const WebSocket *s) { return (*s).closeCode; }
-;;GETTER
-static inline u16 *WebSocket_closeCodeMut(WebSocket *s) { return &(*s).closeCode; }
+static inline u16 WebSocket_closeCodeRaw(const WebSocket *s) { return (*s).closeCode; }
 ;;SETTER
 static inline fn WebSocket_setCloseCode(WebSocket *s, u16 v) { (*s).closeCode = v; }
 ;;GETTER
 static inline char *WebSocket_closeReasonMut(WebSocket *s) { return (*s).closeReason; }
 ;;GETTER
-static inline const char *WebSocket_closeReason(const WebSocket *s) { return (*s).closeReason; }
+static inline const char *WebSocket_closeReasonRaw(const WebSocket *s) { return (*s).closeReason; }
 ;;GETTER
 static inline bool WebSocket_closeReasonTruncated(const WebSocket *s) { return (*s).closeReasonTruncated; }
-;;GETTER
-static inline bool *WebSocket_closeReasonTruncatedMut(WebSocket *s) { return &(*s).closeReasonTruncated; }
 ;;SETTER
 static inline fn WebSocket_setCloseReasonTruncated(WebSocket *s, bool v) { (*s).closeReasonTruncated = v; }
 ;;GETTER
 static inline u8 *WebSocket_controlMut(WebSocket *s) { return (*s).control; }
 ;;GETTER
-static inline const u8 *WebSocket_control(const WebSocket *s) { return (*s).control; }
-;;GETTER
 static inline char *WebSocket_errorMut(WebSocket *s) { return (*s).error; }
 ;;GETTER
-static inline const char *WebSocket_error(const WebSocket *s) { return (*s).error; }
+static inline const char *WebSocket_errorRaw(const WebSocket *s) { return (*s).error; }
 ;;GETTER
 static inline i32 WebSocket_fd(const WebSocket *s) { return (*s).fd; }
-;;GETTER
-static inline i32 *WebSocket_fdMut(WebSocket *s) { return &(*s).fd; }
 ;;SETTER
 static inline fn WebSocket_setFd(WebSocket *s, i32 v) { (*s).fd = v; }
 ;;GETTER
-static inline u64 WebSocket_framesIn(const WebSocket *s) { return (*s).framesIn; }
-;;GETTER
-static inline u64 *WebSocket_framesInMut(WebSocket *s) { return &(*s).framesIn; }
+static inline u64 WebSocket_framesInRaw(const WebSocket *s) { return (*s).framesIn; }
 ;;SETTER
 static inline fn WebSocket_setFramesIn(WebSocket *s, u64 v) { (*s).framesIn = v; }
 ;;GETTER
-static inline u64 WebSocket_framesOut(const WebSocket *s) { return (*s).framesOut; }
-;;GETTER
-static inline u64 *WebSocket_framesOutMut(WebSocket *s) { return &(*s).framesOut; }
+static inline u64 WebSocket_framesOutRaw(const WebSocket *s) { return (*s).framesOut; }
 ;;SETTER
 static inline fn WebSocket_setFramesOut(WebSocket *s, u64 v) { (*s).framesOut = v; }
 ;;GETTER
-static inline bytes WebSocket_maxMessageBytes(const WebSocket *s) { return (*s).maxMessageBytes; }
-;;GETTER
-static inline bytes *WebSocket_maxMessageBytesMut(WebSocket *s) { return &(*s).maxMessageBytes; }
+static inline bytes WebSocket_maxMessageBytesRaw(const WebSocket *s) { return (*s).maxMessageBytes; }
 ;;SETTER
 static inline fn WebSocket_setMaxMessageBytes(WebSocket *s, bytes v) { (*s).maxMessageBytes = v; }
 ;;GETTER
 static inline u8 * WebSocket_message(const WebSocket *s) { return (*s).message; }
-;;GETTER
-static inline u8 * *WebSocket_messageMut(WebSocket *s) { return &(*s).message; }
 ;;SETTER
 static inline fn WebSocket_setMessage(WebSocket *s, u8 * v) { (*s).message = v; }
 ;;GETTER
 static inline bytes WebSocket_messageCap(const WebSocket *s) { return (*s).messageCap; }
-;;GETTER
-static inline bytes *WebSocket_messageCapMut(WebSocket *s) { return &(*s).messageCap; }
 ;;SETTER
 static inline fn WebSocket_setMessageCap(WebSocket *s, bytes v) { (*s).messageCap = v; }
 ;;GETTER
 static inline bytes WebSocket_messageLength(const WebSocket *s) { return (*s).messageLength; }
-;;GETTER
-static inline bytes *WebSocket_messageLengthMut(WebSocket *s) { return &(*s).messageLength; }
 ;;SETTER
 static inline fn WebSocket_setMessageLength(WebSocket *s, bytes v) { (*s).messageLength = v; }
 ;;GETTER
 static inline u32 WebSocket_messageOpcode(const WebSocket *s) { return (*s).messageOpcode; }
-;;GETTER
-static inline u32 *WebSocket_messageOpcodeMut(WebSocket *s) { return &(*s).messageOpcode; }
 ;;SETTER
 static inline fn WebSocket_setMessageOpcode(WebSocket *s, u32 v) { (*s).messageOpcode = v; }
 ;;GETTER
-static inline u64 WebSocket_pongsSent(const WebSocket *s) { return (*s).pongsSent; }
-;;GETTER
-static inline u64 *WebSocket_pongsSentMut(WebSocket *s) { return &(*s).pongsSent; }
+static inline u64 WebSocket_pongsSentRaw(const WebSocket *s) { return (*s).pongsSent; }
 ;;SETTER
 static inline fn WebSocket_setPongsSent(WebSocket *s, u64 v) { (*s).pongsSent = v; }
 ;;GETTER
-static inline WebSocketState WebSocket_state(const WebSocket *s) { return (*s).state; }
-;;GETTER
-static inline WebSocketState *WebSocket_stateMut(WebSocket *s) { return &(*s).state; }
+static inline WebSocketState WebSocket_stateRaw(const WebSocket *s) { return (*s).state; }
 ;;SETTER
 static inline fn WebSocket_setState(WebSocket *s, WebSocketState v) { (*s).state = v; }
 ;;GETTER
 static inline u32 WebSocket_timeoutMs(const WebSocket *s) { return (*s).timeoutMs; }
-;;GETTER
-static inline u32 *WebSocket_timeoutMsMut(WebSocket *s) { return &(*s).timeoutMs; }
 ;;SETTER
 static inline fn WebSocket_setTimeoutMs(WebSocket *s, u32 v) { (*s).timeoutMs = v; }
 ;;GETTER
 static inline TlsConn * WebSocket_tls(const WebSocket *s) { return (*s).tls; }
-;;GETTER
-static inline TlsConn * *WebSocket_tlsMut(WebSocket *s) { return &(*s).tls; }
 ;;SETTER
 static inline fn WebSocket_setTls(WebSocket *s, TlsConn * v) { (*s).tls = v; }
 
@@ -246,14 +216,8 @@ static inline char *WsTarget_pathMut(WsTarget *s) { return (*s).path; }
 static inline const char *WsTarget_path(const WsTarget *s) { return (*s).path; }
 ;;GETTER
 static inline i32 WsTarget_port(const WsTarget *s) { return (*s).port; }
-;;GETTER
-static inline i32 *WsTarget_portMut(WsTarget *s) { return &(*s).port; }
 ;;SETTER
 static inline fn WsTarget_setPort(WsTarget *s, i32 v) { (*s).port = v; }
-;;GETTER
-static inline bool WsTarget_secure(const WsTarget *s) { return (*s).secure; }
-;;GETTER
-static inline bool *WsTarget_secureMut(WsTarget *s) { return &(*s).secure; }
 ;;SETTER
 static inline fn WsTarget_setSecure(WsTarget *s, bool v) { (*s).secure = v; }
 
@@ -288,7 +252,7 @@ static i32 wsConnect(const WsTarget *target, u32 timeoutMs) {
     char service[8];
     snprintf(service, sizeof(service), "%d", WsTarget_port(target));
     struct addrinfo *resolved = nullptr;
-    if (getaddrinfo(WsTarget_hostMut(target), service, &hints, &resolved) != 0 ||
+    if (getaddrinfo(WsTarget_host(target), service, &hints, &resolved) != 0 ||
         resolved == nullptr)
         return -1;
 
@@ -865,7 +829,7 @@ static bool wsHandshake(WebSocket *self, const WsTarget *target) {
         "Sec-WebSocket-Key: %s\r\n"
         "Sec-WebSocket-Version: 13\r\n"
         "\r\n",
-        WsTarget_pathMut(target), WsTarget_hostMut(target), WsTarget_port(target), key);
+        WsTarget_path(target), WsTarget_host(target), WsTarget_port(target), key);
     if (written < 0 || (bytes) written >= sizeof(request)) {
         THROW("WebSocket_open: handshake request does not fit");
         wsFail(self, "handshake request does not fit");
@@ -938,8 +902,8 @@ bool WebSocket_open(WebSocket *self, const char *url, WebSocketConfig config) {
     }
     WebSocket_close(self);
     WebSocket_setTimeoutMs(self, config.timeoutMs == 0u ? 5000u : config.timeoutMs);
-    (*WebSocket_maxMessageBytesMut(self)) = config.maxMessageBytes == 0u
-        ? WS_MESSAGE_BYTES_DEFAULT : config.maxMessageBytes;
+    WebSocket_setMaxMessageBytes(self, config.maxMessageBytes == 0u
+        ? WS_MESSAGE_BYTES_DEFAULT : config.maxMessageBytes);
     WebSocket_errorMut(self)[0] = '\0';
     WebSocket_closeReasonMut(self)[0] = '\0';
     WebSocket_setCloseReasonTruncated(self, false);
@@ -1146,7 +1110,7 @@ bool WebSocket_writeClose(WebSocket *self, u16 code, const char *reason) {
 
 /** The connection state, or CLOSED for a null client. */
 WebSocketState WebSocket_state(const WebSocket *self) {
-    return self == nullptr ? WEBSOCKET_CLOSED : WebSocket_state(self);
+    return self == nullptr ? WEBSOCKET_CLOSED : WebSocket_stateRaw(self);
 }
 
 /** True only while the handshake is accepted and no close has been seen. */
@@ -1156,37 +1120,37 @@ bool WebSocket_isOpen(const WebSocket *self) {
 
 /** The bounded last-failure text, or "" when there is none. */
 const char *WebSocket_lastError(const WebSocket *self) {
-    return self == nullptr ? "" : WebSocket_errorMut(self);
+    return self == nullptr ? "" : WebSocket_errorRaw(self);
 }
 
 /** The finalized close code, or 1005 when the peer sent none. */
 u16 WebSocket_closeCode(const WebSocket *self) {
-    return self == nullptr ? 1005u : WebSocket_closeCode(self);
+    return self == nullptr ? 1005u : WebSocket_closeCodeRaw(self);
 }
 
 /** The bounded close reason text, or "" when there is none. */
 const char *WebSocket_closeReason(const WebSocket *self) {
-    return self == nullptr ? "" : WebSocket_closeReasonMut(self);
+    return self == nullptr ? "" : WebSocket_closeReasonRaw(self);
 }
 
 /** The reassembly cap in force, or zero for a null client. */
 bytes WebSocket_maxMessageBytes(const WebSocket *self) {
-    return self == nullptr ? 0u : WebSocket_maxMessageBytes(self);
+    return self == nullptr ? 0u : WebSocket_maxMessageBytesRaw(self);
 }
 
 /** Complete frames decoded since open. */
 u64 WebSocket_framesIn(const WebSocket *self) {
-    return self == nullptr ? 0u : WebSocket_framesIn(self);
+    return self == nullptr ? 0u : WebSocket_framesInRaw(self);
 }
 
 /** Complete frames encoded and sent since open. */
 u64 WebSocket_framesOut(const WebSocket *self) {
-    return self == nullptr ? 0u : WebSocket_framesOut(self);
+    return self == nullptr ? 0u : WebSocket_framesOutRaw(self);
 }
 
 /** Automatic pong replies sent since open. */
 u64 WebSocket_pongsSent(const WebSocket *self) {
-    return self == nullptr ? 0u : WebSocket_pongsSent(self);
+    return self == nullptr ? 0u : WebSocket_pongsSentRaw(self);
 }
 
 // STRING PROJECTIONS (the toString Law)

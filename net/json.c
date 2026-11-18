@@ -94,8 +94,6 @@
 
 ;;GETTER
 static inline u32 JsonDoc_nodeCap(const JsonDoc *s) { return (*s).nodeCap; }
-;;GETTER
-static inline u32 *JsonDoc_nodeCapMut(JsonDoc *s) { return &(*s).nodeCap; }
 ;;SETTER
 static inline fn JsonDoc_setNodeCap(JsonDoc *s, u32 v) { (*s).nodeCap = v; }
 ;;GETTER
@@ -106,90 +104,54 @@ static inline u32 *JsonDoc_nodeCountMut(JsonDoc *s) { return &(*s).nodeCount; }
 static inline fn JsonDoc_setNodeCount(JsonDoc *s, u32 v) { (*s).nodeCount = v; }
 ;;GETTER
 static inline JsonNode * JsonDoc_nodes(const JsonDoc *s) { return (*s).nodes; }
-;;GETTER
-static inline JsonNode * *JsonDoc_nodesMut(JsonDoc *s) { return &(*s).nodes; }
 ;;SETTER
 static inline fn JsonDoc_setNodes(JsonDoc *s, JsonNode * v) { (*s).nodes = v; }
 ;;GETTER
 static inline bool JsonDoc_ok(const JsonDoc *s) { return (*s).ok; }
-;;GETTER
-static inline bool *JsonDoc_okMut(JsonDoc *s) { return &(*s).ok; }
 ;;SETTER
 static inline fn JsonDoc_setOk(JsonDoc *s, bool v) { (*s).ok = v; }
 ;;GETTER
 static inline JsonRef JsonDoc_root(const JsonDoc *s) { return (*s).root; }
-;;GETTER
-static inline JsonRef *JsonDoc_rootMut(JsonDoc *s) { return &(*s).root; }
 ;;SETTER
 static inline fn JsonDoc_setRoot(JsonDoc *s, JsonRef v) { (*s).root = v; }
 ;;GETTER
 static inline char * JsonDoc_scratch(const JsonDoc *s) { return (*s).scratch; }
-;;GETTER
-static inline char * *JsonDoc_scratchMut(JsonDoc *s) { return &(*s).scratch; }
 ;;SETTER
 static inline fn JsonDoc_setScratch(JsonDoc *s, char * v) { (*s).scratch = v; }
 ;;GETTER
 static inline u32 JsonDoc_scratchCap(const JsonDoc *s) { return (*s).scratchCap; }
-;;GETTER
-static inline u32 *JsonDoc_scratchCapMut(JsonDoc *s) { return &(*s).scratchCap; }
 ;;SETTER
 static inline fn JsonDoc_setScratchCap(JsonDoc *s, u32 v) { (*s).scratchCap = v; }
 ;;GETTER
 static inline u32 JsonDoc_scratchUsed(const JsonDoc *s) { return (*s).scratchUsed; }
-;;GETTER
-static inline u32 *JsonDoc_scratchUsedMut(JsonDoc *s) { return &(*s).scratchUsed; }
 ;;SETTER
 static inline fn JsonDoc_setScratchUsed(JsonDoc *s, u32 v) { (*s).scratchUsed = v; }
 ;;GETTER
 static inline const char * JsonDoc_src(const JsonDoc *s) { return (*s).src; }
-;;GETTER
-static inline const char * *JsonDoc_srcMut(JsonDoc *s) { return &(*s).src; }
 ;;SETTER
 static inline fn JsonDoc_setSrc(JsonDoc *s, const char * v) { (*s).src = v; }
 
-;;GETTER
-static inline JsonRef JsonNode_child(const JsonNode *s) { return (*s).child; }
-;;GETTER
-static inline JsonRef *JsonNode_childMut(JsonNode *s) { return &(*s).child; }
 ;;SETTER
 static inline fn JsonNode_setChild(JsonNode *s, JsonRef v) { (*s).child = v; }
-;;GETTER
-static inline JsonRef JsonNode_next(const JsonNode *s) { return (*s).next; }
-;;GETTER
-static inline JsonRef *JsonNode_nextMut(JsonNode *s) { return &(*s).next; }
 ;;SETTER
 static inline fn JsonNode_setNext(JsonNode *s, JsonRef v) { (*s).next = v; }
 
 ;;GETTER
 static inline bytes JsonWriter_cap(const JsonWriter *s) { return (*s).cap; }
 ;;GETTER
-static inline bytes *JsonWriter_capMut(JsonWriter *s) { return &(*s).cap; }
-;;SETTER
-static inline fn JsonWriter_setCap(JsonWriter *s, bytes v) { (*s).cap = v; }
-;;GETTER
 static inline i32 JsonWriter_depth(const JsonWriter *s) { return (*s).depth; }
-;;GETTER
-static inline i32 *JsonWriter_depthMut(JsonWriter *s) { return &(*s).depth; }
 ;;SETTER
 static inline fn JsonWriter_setDepth(JsonWriter *s, i32 v) { (*s).depth = v; }
 ;;GETTER
 static inline bool *JsonWriter_needCommaMut(JsonWriter *s) { return (*s).needComma; }
 ;;GETTER
-static inline const bool *JsonWriter_needComma(const JsonWriter *s) { return (*s).needComma; }
-;;GETTER
-static inline bool JsonWriter_ok(const JsonWriter *s) { return (*s).ok; }
-;;GETTER
-static inline bool *JsonWriter_okMut(JsonWriter *s) { return &(*s).ok; }
+static inline bool JsonWriter_okRaw(const JsonWriter *s) { return (*s).ok; }
 ;;SETTER
 static inline fn JsonWriter_setOk(JsonWriter *s, bool v) { (*s).ok = v; }
 ;;GETTER
 static inline char * JsonWriter_out(const JsonWriter *s) { return (*s).out; }
 ;;GETTER
-static inline char * *JsonWriter_outMut(JsonWriter *s) { return &(*s).out; }
-;;SETTER
-static inline fn JsonWriter_setOut(JsonWriter *s, char * v) { (*s).out = v; }
-;;GETTER
-static inline bytes JsonWriter_used(const JsonWriter *s) { return (*s).used; }
+static inline bytes JsonWriter_usedRaw(const JsonWriter *s) { return (*s).used; }
 ;;GETTER
 static inline bytes *JsonWriter_usedMut(JsonWriter *s) { return &(*s).used; }
 ;;SETTER
@@ -203,13 +165,7 @@ typedef struct Parser {
 ;;GETTER
 static inline JsonDoc * Parser_doc(const Parser *s) { return (*s).doc; }
 ;;GETTER
-static inline JsonDoc * *Parser_docMut(Parser *s) { return &(*s).doc; }
-;;SETTER
-static inline fn Parser_setDoc(Parser *s, JsonDoc * v) { (*s).doc = v; }
-;;GETTER
 static inline const char * Parser_p(const Parser *s) { return (*s).p; }
-;;GETTER
-static inline const char * *Parser_pMut(Parser *s) { return &(*s).p; }
 ;;SETTER
 static inline fn Parser_setP(Parser *s, const char * v) { (*s).p = v; }
 
@@ -217,7 +173,7 @@ static inline fn Parser_setP(Parser *s, const char * v) { (*s).p = v; }
 static JsonRef allocNode(Parser *ps) {
     JsonDoc *d = Parser_doc(ps);
     if (JsonDoc_nodeCount(d) >= JsonDoc_nodeCap(d)) return -1;
-    JsonNode *n = &JsonDoc_nodesMut(d)[JsonDoc_nodeCount(d)];
+    JsonNode *n = &JsonDoc_nodes(d)[JsonDoc_nodeCount(d)];
     memset(n, 0, sizeof(*n));
     // Zero is a VALID ref (the root); terminals must be none-refs.
     JsonNode_setChild(n, -1);
@@ -354,7 +310,7 @@ static bool parseObject(Parser *ps, JsonRef *out, i32 depth) {
         JsonDoc_nodes(d)[member].offset = kOff;
         JsonDoc_nodes(d)[member].length = kLen;
         JsonDoc_nodes(d)[member].inScratch = kScratch;
-        if (!parseValue(ps, &JsonDoc_nodesMut(d)[member].child, depth + 1)) return fail(d);
+        if (!parseValue(ps, &JsonDoc_nodes(d)[member].child, depth + 1)) return fail(d);
 
         if (tail < 0) JsonDoc_nodes(d)[obj].child = member;
         else JsonDoc_nodes(d)[tail].next = member;
@@ -383,7 +339,7 @@ static bool parseArray(Parser *ps, JsonRef *out, i32 depth) {
     while (true) {
         JsonRef element = allocNode(ps);
         if (element < 0) return fail(d);
-        if (!parseValue(ps, &JsonDoc_nodesMut(d)[element].child, depth + 1)) return fail(d);
+        if (!parseValue(ps, &JsonDoc_nodes(d)[element].child, depth + 1)) return fail(d);
 
         if (tail < 0) JsonDoc_nodes(d)[arr].child = element;
         else JsonDoc_nodes(d)[tail].next = element;
@@ -768,13 +724,13 @@ JsonWriter JsonWriter_2(char *out, bytes cap) {
 bool JsonWriter_ok(const JsonWriter *w) {
     if (!w)
         return false;
-    return JsonWriter_ok(w);
+    return JsonWriter_okRaw(w);
 }
 
 bytes JsonWriter_used(const JsonWriter *w) {
     if (!w)
         return 0;
-    return JsonWriter_used(w);
+    return JsonWriter_usedRaw(w);
 }
 
 static bool writerValueOpen(JsonWriter *w) {

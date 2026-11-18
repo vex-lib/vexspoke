@@ -105,127 +105,59 @@
 ;;GETTER
 static inline const char * HttpRequest_body(const HttpRequest *s) { return (*s).body; }
 ;;GETTER
-static inline const char * *HttpRequest_bodyMut(HttpRequest *s) { return &(*s).body; }
-;;SETTER
-static inline fn HttpRequest_setBody(HttpRequest *s, const char * v) { (*s).body = v; }
-;;GETTER
 static inline bytes HttpRequest_bodyLen(const HttpRequest *s) { return (*s).bodyLen; }
-;;GETTER
-static inline bytes *HttpRequest_bodyLenMut(HttpRequest *s) { return &(*s).bodyLen; }
-;;SETTER
-static inline fn HttpRequest_setBodyLen(HttpRequest *s, bytes v) { (*s).bodyLen = v; }
 ;;GETTER
 static inline u32 HttpRequest_headerCount(const HttpRequest *s) { return (*s).headerCount; }
 ;;GETTER
-static inline u32 *HttpRequest_headerCountMut(HttpRequest *s) { return &(*s).headerCount; }
-;;SETTER
-static inline fn HttpRequest_setHeaderCount(HttpRequest *s, u32 v) { (*s).headerCount = v; }
-;;GETTER
 static inline const HttpHeader * HttpRequest_headers(const HttpRequest *s) { return (*s).headers; }
-;;GETTER
-static inline const HttpHeader * *HttpRequest_headersMut(HttpRequest *s) { return &(*s).headers; }
-;;SETTER
-static inline fn HttpRequest_setHeaders(HttpRequest *s, const HttpHeader * v) { (*s).headers = v; }
 ;;GETTER
 static inline const char * HttpRequest_host(const HttpRequest *s) { return (*s).host; }
 ;;GETTER
-static inline const char * *HttpRequest_hostMut(HttpRequest *s) { return &(*s).host; }
-;;SETTER
-static inline fn HttpRequest_setHost(HttpRequest *s, const char * v) { (*s).host = v; }
-;;GETTER
 static inline const char * HttpRequest_method(const HttpRequest *s) { return (*s).method; }
-;;GETTER
-static inline const char * *HttpRequest_methodMut(HttpRequest *s) { return &(*s).method; }
-;;SETTER
-static inline fn HttpRequest_setMethod(HttpRequest *s, const char * v) { (*s).method = v; }
 ;;GETTER
 static inline const char * HttpRequest_path(const HttpRequest *s) { return (*s).path; }
 ;;GETTER
-static inline const char * *HttpRequest_pathMut(HttpRequest *s) { return &(*s).path; }
-;;SETTER
-static inline fn HttpRequest_setPath(HttpRequest *s, const char * v) { (*s).path = v; }
-;;GETTER
 static inline i32 HttpRequest_port(const HttpRequest *s) { return (*s).port; }
-;;GETTER
-static inline i32 *HttpRequest_portMut(HttpRequest *s) { return &(*s).port; }
-;;SETTER
-static inline fn HttpRequest_setPort(HttpRequest *s, i32 v) { (*s).port = v; }
 ;;GETTER
 static inline const char * HttpRequest_scheme(const HttpRequest *s) { return (*s).scheme; }
 ;;GETTER
-static inline const char * *HttpRequest_schemeMut(HttpRequest *s) { return &(*s).scheme; }
-;;SETTER
-static inline fn HttpRequest_setScheme(HttpRequest *s, const char * v) { (*s).scheme = v; }
-;;GETTER
 static inline u32 HttpRequest_timeoutMs(const HttpRequest *s) { return (*s).timeoutMs; }
-;;GETTER
-static inline u32 *HttpRequest_timeoutMsMut(HttpRequest *s) { return &(*s).timeoutMs; }
-;;SETTER
-static inline fn HttpRequest_setTimeoutMs(HttpRequest *s, u32 v) { (*s).timeoutMs = v; }
 
 ;;GETTER
 static inline char * HttpResponse_body(const HttpResponse *s) { return (*s).body; }
-;;GETTER
-static inline char * *HttpResponse_bodyMut(HttpResponse *s) { return &(*s).body; }
 ;;SETTER
 static inline fn HttpResponse_setBody(HttpResponse *s, char * v) { (*s).body = v; }
 ;;GETTER
 static inline bytes HttpResponse_bodyCap(const HttpResponse *s) { return (*s).bodyCap; }
-;;GETTER
-static inline bytes *HttpResponse_bodyCapMut(HttpResponse *s) { return &(*s).bodyCap; }
 ;;SETTER
 static inline fn HttpResponse_setBodyCap(HttpResponse *s, bytes v) { (*s).bodyCap = v; }
-;;GETTER
-static inline bytes HttpResponse_bodyLen(const HttpResponse *s) { return (*s).bodyLen; }
-;;GETTER
-static inline bytes *HttpResponse_bodyLenMut(HttpResponse *s) { return &(*s).bodyLen; }
 ;;SETTER
 static inline fn HttpResponse_setBodyLen(HttpResponse *s, bytes v) { (*s).bodyLen = v; }
 ;;GETTER
 static inline char *HttpResponse_contentTypeMut(HttpResponse *s) { return (*s).contentType; }
-;;GETTER
-static inline const char *HttpResponse_contentType(const HttpResponse *s) { return (*s).contentType; }
-;;GETTER
-static inline bool HttpResponse_ok(const HttpResponse *s) { return (*s).ok; }
-;;GETTER
-static inline bool *HttpResponse_okMut(HttpResponse *s) { return &(*s).ok; }
 ;;SETTER
 static inline fn HttpResponse_setOk(HttpResponse *s, bool v) { (*s).ok = v; }
-;;GETTER
-static inline i32 HttpResponse_status(const HttpResponse *s) { return (*s).status; }
-;;GETTER
-static inline i32 *HttpResponse_statusMut(HttpResponse *s) { return &(*s).status; }
 ;;SETTER
 static inline fn HttpResponse_setStatus(HttpResponse *s, i32 v) { (*s).status = v; }
 
 ;;GETTER
 static inline HttpHandler HttpServer_handler(const HttpServer *s) { return (*s).handler; }
-;;GETTER
-static inline HttpHandler *HttpServer_handlerMut(HttpServer *s) { return &(*s).handler; }
 ;;SETTER
 static inline fn HttpServer_setHandler(HttpServer *s, HttpHandler v) { (*s).handler = v; }
 ;;GETTER
 static inline i32 HttpServer_listenFd(const HttpServer *s) { return (*s).listenFd; }
-;;GETTER
-static inline i32 *HttpServer_listenFdMut(HttpServer *s) { return &(*s).listenFd; }
 ;;SETTER
 static inline fn HttpServer_setListenFd(HttpServer *s, i32 v) { (*s).listenFd = v; }
 ;;GETTER
-static inline volatile bool HttpServer_running(const HttpServer *s) { return (*s).running; }
-;;GETTER
-static inline volatile bool *HttpServer_runningMut(HttpServer *s) { return &(*s).running; }
+static inline bool HttpServer_running(const HttpServer *s) { return (*s).running; }
 ;;SETTER
 static inline fn HttpServer_setRunning(HttpServer *s, volatile bool v) { (*s).running = v; }
 ;;GETTER
 static inline pthread_t HttpServer_thread(const HttpServer *s) { return (*s).thread; }
 ;;GETTER
 static inline pthread_t *HttpServer_threadMut(HttpServer *s) { return &(*s).thread; }
-;;SETTER
-static inline fn HttpServer_setThread(HttpServer *s, pthread_t v) { (*s).thread = v; }
 ;;GETTER
 static inline any HttpServer_userdata(const HttpServer *s) { return (*s).userdata; }
-;;GETTER
-static inline any *HttpServer_userdataMut(HttpServer *s) { return &(*s).userdata; }
 ;;SETTER
 static inline fn HttpServer_setUserdata(HttpServer *s, any v) { (*s).userdata = v; }
 
