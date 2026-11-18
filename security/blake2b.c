@@ -43,25 +43,15 @@
 ;;GETTER
 static inline u8 *Blake2b_bufMut(Blake2b *s) { return (*s).buf; }
 ;;GETTER
-static inline const u8 *Blake2b_buf(const Blake2b *s) { return (*s).buf; }
-;;GETTER
 static inline u64 *Blake2b_hMut(Blake2b *s) { return (*s).h; }
 ;;GETTER
-static inline const u64 *Blake2b_h(const Blake2b *s) { return (*s).h; }
-;;GETTER
 static inline bytes Blake2b_outlen(const Blake2b *s) { return (*s).outlen; }
-;;GETTER
-static inline bytes *Blake2b_outlenMut(Blake2b *s) { return &(*s).outlen; }
 ;;SETTER
 static inline fn Blake2b_setOutlen(Blake2b *s, bytes v) { (*s).outlen = v; }
 ;;GETTER
 static inline u64 *Blake2b_tMut(Blake2b *s) { return (*s).t; }
 ;;GETTER
-static inline const u64 *Blake2b_t(const Blake2b *s) { return (*s).t; }
-;;GETTER
 static inline bytes Blake2b_used(const Blake2b *s) { return (*s).used; }
-;;GETTER
-static inline bytes *Blake2b_usedMut(Blake2b *s) { return &(*s).used; }
 ;;SETTER
 static inline fn Blake2b_setUsed(Blake2b *s, bytes v) { (*s).used = v; }
 

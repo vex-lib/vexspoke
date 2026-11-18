@@ -67,22 +67,14 @@
 ;;GETTER
 static inline u8 *CryptoSha256_bufferMut(CryptoSha256 *s) { return (*s).buffer; }
 ;;GETTER
-static inline const u8 *CryptoSha256_buffer(const CryptoSha256 *s) { return (*s).buffer; }
-;;GETTER
 static inline u64 CryptoSha256_count(const CryptoSha256 *s) { return (*s).count; }
-;;GETTER
-static inline u64 *CryptoSha256_countMut(CryptoSha256 *s) { return &(*s).count; }
 ;;SETTER
 static inline fn CryptoSha256_setCount(CryptoSha256 *s, u64 v) { (*s).count = v; }
 ;;GETTER
 static inline u32 *CryptoSha256_stateMut(CryptoSha256 *s) { return (*s).state; }
-;;GETTER
-static inline const u32 *CryptoSha256_state(const CryptoSha256 *s) { return (*s).state; }
 
 ;;GETTER
 static inline u64 *CryptoRng_sMut(CryptoRng *s) { return (*s).s; }
-;;GETTER
-static inline const u64 *CryptoRng_s(const CryptoRng *s) { return (*s).s; }
 
 // ============================================================================
 // SHA-256 (NIST FIPS 180-4) Implementation

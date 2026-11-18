@@ -48,27 +48,11 @@
 ;;GETTER
 static inline u32 Argon2Params_lanes(const Argon2Params *s) { return (*s).lanes; }
 ;;GETTER
-static inline u32 *Argon2Params_lanesMut(Argon2Params *s) { return &(*s).lanes; }
-;;SETTER
-static inline fn Argon2Params_setLanes(Argon2Params *s, u32 v) { (*s).lanes = v; }
-;;GETTER
 static inline u32 Argon2Params_memoryKiB(const Argon2Params *s) { return (*s).memoryKiB; }
-;;GETTER
-static inline u32 *Argon2Params_memoryKiBMut(Argon2Params *s) { return &(*s).memoryKiB; }
-;;SETTER
-static inline fn Argon2Params_setMemoryKiB(Argon2Params *s, u32 v) { (*s).memoryKiB = v; }
 ;;GETTER
 static inline u32 Argon2Params_passes(const Argon2Params *s) { return (*s).passes; }
 ;;GETTER
-static inline u32 *Argon2Params_passesMut(Argon2Params *s) { return &(*s).passes; }
-;;SETTER
-static inline fn Argon2Params_setPasses(Argon2Params *s, u32 v) { (*s).passes = v; }
-;;GETTER
 static inline u32 Argon2Params_tagBytes(const Argon2Params *s) { return (*s).tagBytes; }
-;;GETTER
-static inline u32 *Argon2Params_tagBytesMut(Argon2Params *s) { return &(*s).tagBytes; }
-;;SETTER
-static inline fn Argon2Params_setTagBytes(Argon2Params *s, u32 v) { (*s).tagBytes = v; }
 
 #define ARGON2_ADDRESSES_IN_BLOCK 128u
 #define ARGON2_BLOCK_WORDS        128u
@@ -87,45 +71,17 @@ typedef struct Argon2Instance {
 ;;GETTER
 static inline u32 Argon2Instance_laneLength(const Argon2Instance *s) { return (*s).laneLength; }
 ;;GETTER
-static inline u32 *Argon2Instance_laneLengthMut(Argon2Instance *s) { return &(*s).laneLength; }
-;;SETTER
-static inline fn Argon2Instance_setLaneLength(Argon2Instance *s, u32 v) { (*s).laneLength = v; }
-;;GETTER
 static inline u32 Argon2Instance_lanes(const Argon2Instance *s) { return (*s).lanes; }
-;;GETTER
-static inline u32 *Argon2Instance_lanesMut(Argon2Instance *s) { return &(*s).lanes; }
-;;SETTER
-static inline fn Argon2Instance_setLanes(Argon2Instance *s, u32 v) { (*s).lanes = v; }
 ;;GETTER
 static inline u64 * Argon2Instance_memory(const Argon2Instance *s) { return (*s).memory; }
 ;;GETTER
-static inline u64 * *Argon2Instance_memoryMut(Argon2Instance *s) { return &(*s).memory; }
-;;SETTER
-static inline fn Argon2Instance_setMemory(Argon2Instance *s, u64 * v) { (*s).memory = v; }
-;;GETTER
 static inline u32 Argon2Instance_memoryBlocks(const Argon2Instance *s) { return (*s).memoryBlocks; }
-;;GETTER
-static inline u32 *Argon2Instance_memoryBlocksMut(Argon2Instance *s) { return &(*s).memoryBlocks; }
-;;SETTER
-static inline fn Argon2Instance_setMemoryBlocks(Argon2Instance *s, u32 v) { (*s).memoryBlocks = v; }
 ;;GETTER
 static inline u32 Argon2Instance_passes(const Argon2Instance *s) { return (*s).passes; }
 ;;GETTER
-static inline u32 *Argon2Instance_passesMut(Argon2Instance *s) { return &(*s).passes; }
-;;SETTER
-static inline fn Argon2Instance_setPasses(Argon2Instance *s, u32 v) { (*s).passes = v; }
-;;GETTER
 static inline u32 Argon2Instance_segmentLength(const Argon2Instance *s) { return (*s).segmentLength; }
 ;;GETTER
-static inline u32 *Argon2Instance_segmentLengthMut(Argon2Instance *s) { return &(*s).segmentLength; }
-;;SETTER
-static inline fn Argon2Instance_setSegmentLength(Argon2Instance *s, u32 v) { (*s).segmentLength = v; }
-;;GETTER
 static inline u32 Argon2Instance_type(const Argon2Instance *s) { return (*s).type; }
-;;GETTER
-static inline u32 *Argon2Instance_typeMut(Argon2Instance *s) { return &(*s).type; }
-;;SETTER
-static inline fn Argon2Instance_setType(Argon2Instance *s, u32 v) { (*s).type = v; }
 
 
 static fn storeLE32(u8 *p, u32 v) {

@@ -39,31 +39,19 @@
 ;;GETTER
 static inline u8 *Poly1305_bufferMut(Poly1305 *s) { return (*s).buffer; }
 ;;GETTER
-static inline const u8 *Poly1305_buffer(const Poly1305 *s) { return (*s).buffer; }
-;;GETTER
-static inline bool Poly1305_final(const Poly1305 *s) { return (*s).final; }
-;;GETTER
-static inline bool *Poly1305_finalMut(Poly1305 *s) { return &(*s).final; }
+static inline bool Poly1305_finalRaw(const Poly1305 *s) { return (*s).final; }
 ;;SETTER
 static inline fn Poly1305_setFinal(Poly1305 *s, bool v) { (*s).final = v; }
 ;;GETTER
 static inline u32 *Poly1305_hMut(Poly1305 *s) { return (*s).h; }
 ;;GETTER
-static inline const u32 *Poly1305_h(const Poly1305 *s) { return (*s).h; }
-;;GETTER
 static inline bytes Poly1305_leftover(const Poly1305 *s) { return (*s).leftover; }
-;;GETTER
-static inline bytes *Poly1305_leftoverMut(Poly1305 *s) { return &(*s).leftover; }
 ;;SETTER
 static inline fn Poly1305_setLeftover(Poly1305 *s, bytes v) { (*s).leftover = v; }
 ;;GETTER
 static inline u32 *Poly1305_padMut(Poly1305 *s) { return (*s).pad; }
 ;;GETTER
-static inline const u32 *Poly1305_pad(const Poly1305 *s) { return (*s).pad; }
-;;GETTER
 static inline u32 *Poly1305_rMut(Poly1305 *s) { return (*s).r; }
-;;GETTER
-static inline const u32 *Poly1305_r(const Poly1305 *s) { return (*s).r; }
 
 static u32 load32le(const u8 *p) {
     return (u32) p[0] | ((u32) p[1] << 8) |
@@ -98,7 +86,7 @@ static fn blocks(Poly1305 *self, const u8 *m, bytes bytes) {
     u32 s1 = r1 * 5u, s2 = r2 * 5u, s3 = r3 * 5u, s4 = r4 * 5u;
     u32 h0 = Poly1305_hMut(self)[0], h1 = Poly1305_hMut(self)[1], h2 = Poly1305_hMut(self)[2];
     u32 h3 = Poly1305_hMut(self)[3], h4 = Poly1305_hMut(self)[4];
-    u32 hibit = Poly1305_final(self) ? 0u : (1u << 24);
+    u32 hibit = Poly1305_finalRaw(self) ? 0u : (1u << 24);
 
     while (bytes >= POLY1305_BLOCK_SIZE) {
         h0 += load32le(m) & 0x3ffffffu;

@@ -26,21 +26,13 @@
 ;;GETTER
 static inline u8 *CryptoSha1_blockMut(CryptoSha1 *s) { return (*s).block; }
 ;;GETTER
-static inline const u8 *CryptoSha1_block(const CryptoSha1 *s) { return (*s).block; }
-;;GETTER
 static inline u32 *CryptoSha1_stateMut(CryptoSha1 *s) { return (*s).state; }
 ;;GETTER
-static inline const u32 *CryptoSha1_state(const CryptoSha1 *s) { return (*s).state; }
-;;GETTER
 static inline u64 CryptoSha1_total(const CryptoSha1 *s) { return (*s).total; }
-;;GETTER
-static inline u64 *CryptoSha1_totalMut(CryptoSha1 *s) { return &(*s).total; }
 ;;SETTER
 static inline fn CryptoSha1_setTotal(CryptoSha1 *s, u64 v) { (*s).total = v; }
 ;;GETTER
 static inline bytes CryptoSha1_used(const CryptoSha1 *s) { return (*s).used; }
-;;GETTER
-static inline bytes *CryptoSha1_usedMut(CryptoSha1 *s) { return &(*s).used; }
 ;;SETTER
 static inline fn CryptoSha1_setUsed(CryptoSha1 *s, bytes v) { (*s).used = v; }
 
