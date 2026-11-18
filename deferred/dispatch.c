@@ -34,71 +34,45 @@
 
 ;;GETTER
 static inline any DispatchItem_context(const DispatchItem *s) { return (*s).context; }
-;;GETTER
-static inline any *DispatchItem_contextMut(DispatchItem *s) { return &(*s).context; }
 ;;SETTER
 static inline fn DispatchItem_setContext(DispatchItem *s, any v) { (*s).context = v; }
 ;;GETTER
 static inline DispatchFn DispatchItem_fn(const DispatchItem *s) { return (*s).fn; }
-;;GETTER
-static inline DispatchFn *DispatchItem_fnMut(DispatchItem *s) { return &(*s).fn; }
 ;;SETTER
 static inline fn DispatchItem_setFn(DispatchItem *s, DispatchFn v) { (*s).fn = v; }
 
 ;;GETTER
 static inline DispatchItem * Dispatch_batch(const Dispatch *s) { return (*s).batch; }
-;;GETTER
-static inline DispatchItem * *Dispatch_batchMut(Dispatch *s) { return &(*s).batch; }
 ;;SETTER
 static inline fn Dispatch_setBatch(Dispatch *s, DispatchItem * v) { (*s).batch = v; }
 ;;GETTER
 static inline bytes Dispatch_batchCap(const Dispatch *s) { return (*s).batchCap; }
-;;GETTER
-static inline bytes *Dispatch_batchCapMut(Dispatch *s) { return &(*s).batchCap; }
 ;;SETTER
 static inline fn Dispatch_setBatchCap(Dispatch *s, bytes v) { (*s).batchCap = v; }
 ;;GETTER
 static inline bytes Dispatch_cap(const Dispatch *s) { return (*s).cap; }
-;;GETTER
-static inline bytes *Dispatch_capMut(Dispatch *s) { return &(*s).cap; }
 ;;SETTER
 static inline fn Dispatch_setCap(Dispatch *s, bytes v) { (*s).cap = v; }
 ;;GETTER
 static inline bytes Dispatch_count(const Dispatch *s) { return (*s).count; }
-;;GETTER
-static inline bytes *Dispatch_countMut(Dispatch *s) { return &(*s).count; }
 ;;SETTER
 static inline fn Dispatch_setCount(Dispatch *s, bytes v) { (*s).count = v; }
 ;;GETTER
-static inline _Atomic u64 Dispatch_drainedCount(const Dispatch *s) { return (*s).drainedCount; }
+static inline const _Atomic u64 *Dispatch_drainedCountPtr(const Dispatch *s) { return &(*s).drainedCount; }
 ;;GETTER
 static inline _Atomic u64 *Dispatch_drainedCountMut(Dispatch *s) { return &(*s).drainedCount; }
-;;SETTER
-static inline fn Dispatch_setDrainedCount(Dispatch *s, _Atomic u64 v) { (*s).drainedCount = v; }
-;;GETTER
-static inline atomic_bool Dispatch_draining(const Dispatch *s) { return (*s).draining; }
 ;;GETTER
 static inline atomic_bool *Dispatch_drainingMut(Dispatch *s) { return &(*s).draining; }
-;;SETTER
-static inline fn Dispatch_setDraining(Dispatch *s, atomic_bool v) { (*s).draining = v; }
 ;;GETTER
 static inline DispatchItem * Dispatch_items(const Dispatch *s) { return (*s).items; }
-;;GETTER
-static inline DispatchItem * *Dispatch_itemsMut(Dispatch *s) { return &(*s).items; }
 ;;SETTER
 static inline fn Dispatch_setItems(Dispatch *s, DispatchItem * v) { (*s).items = v; }
 ;;GETTER
-static inline SpinLock Dispatch_lock(const Dispatch *s) { return (*s).lock; }
-;;GETTER
 static inline SpinLock *Dispatch_lockMut(Dispatch *s) { return &(*s).lock; }
-;;SETTER
-static inline fn Dispatch_setLock(Dispatch *s, SpinLock v) { (*s).lock = v; }
 ;;GETTER
-static inline atomic_size_t Dispatch_pendingCount(const Dispatch *s) { return (*s).pendingCount; }
+static inline const atomic_size_t *Dispatch_pendingCountPtr(const Dispatch *s) { return &(*s).pendingCount; }
 ;;GETTER
 static inline atomic_size_t *Dispatch_pendingCountMut(Dispatch *s) { return &(*s).pendingCount; }
-;;SETTER
-static inline fn Dispatch_setPendingCount(Dispatch *s, atomic_size_t v) { (*s).pendingCount = v; }
 
 Dispatch *Dispatch_0() {
     Dispatch *self = (Dispatch*) calloc(1, sizeof(Dispatch));
@@ -130,7 +104,7 @@ bool Dispatch_post(Dispatch *self, DispatchFn fn, any context) {
         Dispatch_setItems(self, items);
         Dispatch_setCap(self, cap);
     }
-    DispatchItem *item = &Dispatch_itemsMut(self)[Dispatch_count(self)];
+    DispatchItem *item = &Dispatch_items(self)[Dispatch_count(self)];
     DispatchItem_setFn(item, fn);
     DispatchItem_setContext(item, context);
     Dispatch_setCount(self, Dispatch_count(self) + 1u);
@@ -163,7 +137,7 @@ bool Dispatch_drain(Dispatch *self) {
     }
     SpinLock_unlock(Dispatch_lockMut(self));
     for (bytes i = 0; i < n; i++) {
-        DispatchItem *item = &Dispatch_batchMut(self)[i];
+        DispatchItem *item = &Dispatch_batch(self)[i];
         DispatchItem_fn(item)(DispatchItem_context(item));
         atomic_fetch_add_explicit(Dispatch_drainedCountMut(self), 1, memory_order_relaxed);
     }
@@ -185,9 +159,9 @@ bool Dispatch_free(Dispatch *self) {
 }
 
 bytes Dispatch_pending(const Dispatch *self) {
-    return self ? atomic_load_explicit(Dispatch_pendingCountMut(self), memory_order_relaxed) : 0;
+    return self ? atomic_load_explicit(Dispatch_pendingCountPtr(self), memory_order_relaxed) : 0;
 }
 
 u64 Dispatch_getDrainedCount(const Dispatch *self) {
-    return self ? atomic_load_explicit(Dispatch_drainedCountMut(self), memory_order_relaxed) : 0;
+    return self ? atomic_load_explicit(Dispatch_drainedCountPtr(self), memory_order_relaxed) : 0;
 }
