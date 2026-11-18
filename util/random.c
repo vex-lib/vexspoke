@@ -74,46 +74,26 @@
 
 
 ;;GETTER
-static inline pointer Probable_object(const Probable *s) { return (*s).object; }
+static inline pointer Probable_objectRaw(const Probable *s) { return (*s).object; }
 ;;GETTER
-static inline pointer *Probable_objectMut(Probable *s) { return &(*s).object; }
-;;SETTER
-static inline fn Probable_setObject(Probable *s, pointer v) { (*s).object = v; }
+static inline u32 Probable_totalRaw(const Probable *s) { return (*s).total; }
 ;;GETTER
-static inline u32 Probable_total(const Probable *s) { return (*s).total; }
-;;GETTER
-static inline u32 *Probable_totalMut(Probable *s) { return &(*s).total; }
-;;SETTER
-static inline fn Probable_setTotal(Probable *s, u32 v) { (*s).total = v; }
-;;GETTER
-static inline u32 Probable_weight(const Probable *s) { return (*s).weight; }
-;;GETTER
-static inline u32 *Probable_weightMut(Probable *s) { return &(*s).weight; }
-;;SETTER
-static inline fn Probable_setWeight(Probable *s, u32 v) { (*s).weight = v; }
+static inline u32 Probable_weightRaw(const Probable *s) { return (*s).weight; }
 
 ;;GETTER
 static inline u32 Random_counter(const Random *s) { return (*s).counter; }
-;;GETTER
-static inline u32 *Random_counterMut(Random *s) { return &(*s).counter; }
 ;;SETTER
 static inline fn Random_setCounter(Random *s, u32 v) { (*s).counter = v; }
 ;;GETTER
-static inline RandomEngine Random_engine(const Random *s) { return (*s).engine; }
-;;GETTER
-static inline RandomEngine *Random_engineMut(Random *s) { return &(*s).engine; }
+static inline RandomEngine Random_engineRaw(const Random *s) { return (*s).engine; }
 ;;SETTER
 static inline fn Random_setEngine(Random *s, RandomEngine v) { (*s).engine = v; }
 ;;GETTER
 static inline u64 Random_inc(const Random *s) { return (*s).inc; }
-;;GETTER
-static inline u64 *Random_incMut(Random *s) { return &(*s).inc; }
 ;;SETTER
 static inline fn Random_setInc(Random *s, u64 v) { (*s).inc = v; }
 ;;GETTER
 static inline u64 Random_seed(const Random *s) { return (*s).seed; }
-;;GETTER
-static inline u64 *Random_seedMut(Random *s) { return &(*s).seed; }
 ;;SETTER
 static inline fn Random_setSeed(Random *s, u64 v) { (*s).seed = v; }
 
@@ -221,7 +201,7 @@ fn Random_free(Random *r) {
 }
 
 RandomEngine Random_engine(const Random *r) {
-    return r ? Random_engine(r) : RANDOM_ENGINE_MURMUR;
+    return r ? Random_engineRaw(r) : RANDOM_ENGINE_MURMUR;
 }
 
 Random *Random_system() {
@@ -272,8 +252,8 @@ bool Random_getWeight(Random *r, u32 weight, u32 total) {
 
 pointer Random_sample(Random *r, const Probable *probable) {
     if (!probable) return 0;
-    if (Random_getWeight(r, Probable_weight(probable), Probable_total(probable)))
-        return Probable_object(probable);
+    if (Random_getWeight(r, Probable_weightRaw(probable), Probable_totalRaw(probable)))
+        return Probable_objectRaw(probable);
     return 0;
 }
 
