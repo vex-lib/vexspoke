@@ -87,73 +87,53 @@
 
 ;;GETTER
 static inline OctreeAABB OctreeNode_bounds(const OctreeNode *s) { return (*s).bounds; }
-;;GETTER
-static inline OctreeAABB *OctreeNode_boundsMut(OctreeNode *s) { return &(*s).bounds; }
 ;;SETTER
 static inline fn OctreeNode_setBounds(OctreeNode *s, OctreeAABB v) { (*s).bounds = v; }
 ;;GETTER
 static inline struct OctreeNode * *OctreeNode_childrenMut(OctreeNode *s) { return (*s).children; }
 ;;GETTER
-static inline const struct OctreeNode * *OctreeNode_children(const OctreeNode *s) { return (*s).children; }
+static inline struct OctreeNode *const *OctreeNode_children(const OctreeNode *s) { return (*s).children; }
 ;;GETTER
 static inline bool OctreeNode_isLeaf(const OctreeNode *s) { return (*s).isLeaf; }
-;;GETTER
-static inline bool *OctreeNode_isLeafMut(OctreeNode *s) { return &(*s).isLeaf; }
 ;;SETTER
 static inline fn OctreeNode_setIsLeaf(OctreeNode *s, bool v) { (*s).isLeaf = v; }
 ;;GETTER
 static inline u32 OctreeNode_itemCapacity(const OctreeNode *s) { return (*s).itemCapacity; }
-;;GETTER
-static inline u32 *OctreeNode_itemCapacityMut(OctreeNode *s) { return &(*s).itemCapacity; }
 ;;SETTER
 static inline fn OctreeNode_setItemCapacity(OctreeNode *s, u32 v) { (*s).itemCapacity = v; }
 ;;GETTER
 static inline u32 OctreeNode_itemCount(const OctreeNode *s) { return (*s).itemCount; }
-;;GETTER
-static inline u32 *OctreeNode_itemCountMut(OctreeNode *s) { return &(*s).itemCount; }
 ;;SETTER
 static inline fn OctreeNode_setItemCount(OctreeNode *s, u32 v) { (*s).itemCount = v; }
 ;;GETTER
 static inline OctreeItem * OctreeNode_items(const OctreeNode *s) { return (*s).items; }
-;;GETTER
-static inline OctreeItem * *OctreeNode_itemsMut(OctreeNode *s) { return &(*s).items; }
 ;;SETTER
 static inline fn OctreeNode_setItems(OctreeNode *s, OctreeItem * v) { (*s).items = v; }
 
 ;;GETTER
-static inline u64 Octree_exhaustionCount(const Octree *s) { return (*s).exhaustionCount; }
+static inline const u64 *Octree_exhaustionCountPtr(const Octree *s) { return &(*s).exhaustionCount; }
 ;;GETTER
 static inline u64 *Octree_exhaustionCountMut(Octree *s) { return &(*s).exhaustionCount; }
 ;;SETTER
 static inline fn Octree_setExhaustionCount(Octree *s, u64 v) { (*s).exhaustionCount = v; }
-;;GETTER
-static inline bool Octree_exhaustionReported(const Octree *s) { return (*s).exhaustionReported; }
 ;;GETTER
 static inline bool *Octree_exhaustionReportedMut(Octree *s) { return &(*s).exhaustionReported; }
 ;;SETTER
 static inline fn Octree_setExhaustionReported(Octree *s, bool v) { (*s).exhaustionReported = v; }
 ;;GETTER
 static inline u32 Octree_maxDepth(const Octree *s) { return (*s).maxDepth; }
-;;GETTER
-static inline u32 *Octree_maxDepthMut(Octree *s) { return &(*s).maxDepth; }
 ;;SETTER
 static inline fn Octree_setMaxDepth(Octree *s, u32 v) { (*s).maxDepth = v; }
 ;;GETTER
 static inline u32 Octree_maxItemsPerNode(const Octree *s) { return (*s).maxItemsPerNode; }
-;;GETTER
-static inline u32 *Octree_maxItemsPerNodeMut(Octree *s) { return &(*s).maxItemsPerNode; }
 ;;SETTER
 static inline fn Octree_setMaxItemsPerNode(Octree *s, u32 v) { (*s).maxItemsPerNode = v; }
 ;;GETTER
 static inline OctreeNode * Octree_root(const Octree *s) { return (*s).root; }
-;;GETTER
-static inline OctreeNode * *Octree_rootMut(Octree *s) { return &(*s).root; }
 ;;SETTER
 static inline fn Octree_setRoot(Octree *s, OctreeNode * v) { (*s).root = v; }
 ;;GETTER
 static inline bytes Octree_totalItems(const Octree *s) { return (*s).totalItems; }
-;;GETTER
-static inline bytes *Octree_totalItemsMut(Octree *s) { return &(*s).totalItems; }
 ;;SETTER
 static inline fn Octree_setTotalItems(Octree *s, bytes v) { (*s).totalItems = v; }
 
@@ -383,7 +363,7 @@ static bytes OctreeNode_queryRange(const OctreeNode *node, OctreeAABB range, u64
     }
 
     for (i32 i = 0; i < 8 && count < maxCount; i++) {
-        count = OctreeNode_queryRange(OctreeNode_childrenMut(node)[i], range, outPayloads, maxCount, count);
+        count = OctreeNode_queryRange(OctreeNode_children(node)[i], range, outPayloads, maxCount, count);
     }
     return count;
 }
@@ -417,7 +397,7 @@ static bytes OctreeNode_querySphere(const OctreeNode *node, OctreePoint center, 
     }
 
     for (i32 i = 0; i < 8 && count < maxCount; i++) {
-        count = OctreeNode_querySphere(OctreeNode_childrenMut(node)[i], center, radius, outPayloads, maxCount, count);
+        count = OctreeNode_querySphere(OctreeNode_children(node)[i], center, radius, outPayloads, maxCount, count);
     }
     return count;
 }
@@ -436,7 +416,7 @@ bytes Octree_count(const Octree *self) {
 
 ;;TEST
 u64 Octree_exhaustionCount(const Octree *self) {
-    return self ? Struct_exhaustionCount(Octree_exhaustionCountMut(self)) : 0;
+    return self ? Struct_exhaustionCount(Octree_exhaustionCountPtr(self)) : 0;
 }
 
 fn Octree_clear(Octree *self) {

@@ -74,76 +74,40 @@
 
 
 ;;GETTER
-static inline u32 Collection_activeCount(const Collection *s) { return (*s).activeCount; }
-;;GETTER
-static inline u32 *Collection_activeCountMut(Collection *s) { return &(*s).activeCount; }
+static inline u32 Collection_activeCountRaw(const Collection *s) { return (*s).activeCount; }
 ;;SETTER
-static inline fn Collection_setActiveCount(Collection *s, u32 v) { (*s).activeCount = v; }
-;;GETTER
-static inline u32 Collection_capacity(const Collection *s) { return (*s).capacity; }
-;;GETTER
-static inline u32 *Collection_capacityMut(Collection *s) { return &(*s).capacity; }
+static inline fn Collection_setActiveCountRaw(Collection *s, u32 v) { (*s).activeCount = v; }
 ;;SETTER
-static inline fn Collection_setCapacity(Collection *s, u32 v) { (*s).capacity = v; }
+static inline fn Collection_setCapacityRaw(Collection *s, u32 v) { (*s).capacity = v; }
 ;;GETTER
-static inline u8 * Collection_data(const Collection *s) { return (*s).data; }
-;;GETTER
-static inline u8 * *Collection_dataMut(Collection *s) { return &(*s).data; }
+static inline u8 * Collection_dataRaw(const Collection *s) { return (*s).data; }
 ;;SETTER
-static inline fn Collection_setData(Collection *s, u8 * v) { (*s).data = v; }
-;;GETTER
-static inline u32 Collection_elementClass(const Collection *s) { return (*s).elementClass; }
-;;GETTER
-static inline u32 *Collection_elementClassMut(Collection *s) { return &(*s).elementClass; }
+static inline fn Collection_setDataRaw(Collection *s, u8 * v) { (*s).data = v; }
 ;;SETTER
-static inline fn Collection_setElementClass(Collection *s, u32 v) { (*s).elementClass = v; }
-;;GETTER
-static inline u64 Collection_exhaustionCount(const Collection *s) { return (*s).exhaustionCount; }
-;;GETTER
-static inline u64 *Collection_exhaustionCountMut(Collection *s) { return &(*s).exhaustionCount; }
+static inline fn Collection_setElementClassRaw(Collection *s, u32 v) { (*s).elementClass = v; }
 ;;SETTER
-static inline fn Collection_setExhaustionCount(Collection *s, u64 v) { (*s).exhaustionCount = v; }
-;;GETTER
-static inline bool Collection_exhaustionReported(const Collection *s) { return (*s).exhaustionReported; }
-;;GETTER
-static inline bool *Collection_exhaustionReportedMut(Collection *s) { return &(*s).exhaustionReported; }
+static inline fn Collection_setExhaustionCountRaw(Collection *s, u64 v) { (*s).exhaustionCount = v; }
 ;;SETTER
-static inline fn Collection_setExhaustionReported(Collection *s, bool v) { (*s).exhaustionReported = v; }
-;;GETTER
-static inline u32 Collection_head(const Collection *s) { return (*s).head; }
-;;GETTER
-static inline u32 *Collection_headMut(Collection *s) { return &(*s).head; }
+static inline fn Collection_setExhaustionReportedRaw(Collection *s, bool v) { (*s).exhaustionReported = v; }
 ;;SETTER
-static inline fn Collection_setHead(Collection *s, u32 v) { (*s).head = v; }
+static inline fn Collection_setHeadRaw(Collection *s, u32 v) { (*s).head = v; }
 ;;GETTER
-static inline u32 Collection_stride(const Collection *s) { return (*s).stride; }
-;;GETTER
-static inline u32 *Collection_strideMut(Collection *s) { return &(*s).stride; }
+static inline u32 Collection_strideRaw(const Collection *s) { return (*s).stride; }
 ;;SETTER
-static inline fn Collection_setStride(Collection *s, u32 v) { (*s).stride = v; }
-;;GETTER
-static inline u64 Collection_typeId(const Collection *s) { return (*s).typeId; }
-;;GETTER
-static inline u64 *Collection_typeIdMut(Collection *s) { return &(*s).typeId; }
+static inline fn Collection_setStrideRaw(Collection *s, u32 v) { (*s).stride = v; }
 ;;SETTER
-static inline fn Collection_setTypeId(Collection *s, u64 v) { (*s).typeId = v; }
+static inline fn Collection_setTypeIdRaw(Collection *s, u64 v) { (*s).typeId = v; }
 
 ;;GETTER
-static inline Collection SphereArray_collection(const SphereArray *s) { return (*s).collection; }
+static inline const Collection *SphereArray_collectionConst(const SphereArray *s) { return &(*s).collection; }
 ;;GETTER
 static inline Collection *SphereArray_collectionMut(SphereArray *s) { return &(*s).collection; }
-;;SETTER
-static inline fn SphereArray_setCollection(SphereArray *s, Collection v) { (*s).collection = v; }
 ;;GETTER
-static inline i32 SphereArray_diameter(const SphereArray *s) { return (*s).diameter; }
-;;GETTER
-static inline i32 *SphereArray_diameterMut(SphereArray *s) { return &(*s).diameter; }
+static inline i32 SphereArray_diameterRaw(const SphereArray *s) { return (*s).diameter; }
 ;;SETTER
 static inline fn SphereArray_setDiameter(SphereArray *s, i32 v) { (*s).diameter = v; }
 ;;GETTER
-static inline i32 SphereArray_radius(const SphereArray *s) { return (*s).radius; }
-;;GETTER
-static inline i32 *SphereArray_radiusMut(SphereArray *s) { return &(*s).radius; }
+static inline i32 SphereArray_radiusRaw(const SphereArray *s) { return (*s).radius; }
 ;;SETTER
 static inline fn SphereArray_setRadius(SphereArray *s, i32 v) { (*s).radius = v; }
 
@@ -170,14 +134,14 @@ SphereArray *SphereArray_3(i32 radius, u32 elementClass, bytes stride) {
     memset(data, 0, dataBytes);
 
     Collection *coll = SphereArray_collectionMut(self);
-    Collection_setTypeId(coll, TYPE_SPHERE_ARRAY);
-    Collection_setElementClass(coll, elementClass);
-    Collection_setStride(coll, (u32) stride);
-    Collection_setCapacity(coll, (u32) totalVoxels);
-    Collection_setHead(coll, 0);
-    Collection_setExhaustionCount(coll, 0);
-    Collection_setExhaustionReported(coll, false);
-    Collection_setData(coll, data);
+    Collection_setTypeIdRaw(coll, TYPE_SPHERE_ARRAY);
+    Collection_setElementClassRaw(coll, elementClass);
+    Collection_setStrideRaw(coll, (u32) stride);
+    Collection_setCapacityRaw(coll, (u32) totalVoxels);
+    Collection_setHeadRaw(coll, 0);
+    Collection_setExhaustionCountRaw(coll, 0);
+    Collection_setExhaustionReportedRaw(coll, false);
+    Collection_setDataRaw(coll, data);
     SphereArray_setRadius(self, radius);
     SphereArray_setDiameter(self, diameter);
 
@@ -199,7 +163,7 @@ SphereArray *SphereArray_3(i32 radius, u32 elementClass, bytes stride) {
             }
         }
     }
-    Collection_setActiveCount(coll, active);
+    Collection_setActiveCountRaw(coll, active);
 
     return self;
 }
@@ -217,27 +181,27 @@ fn SphereArray_free(SphereArray *self) {
         return;
     }
     Collection *coll = SphereArray_collectionMut(self);
-    if (Collection_data(coll) != nullptr) {
-        Memory_free(Collection_data(coll));
-        Collection_setData(coll, nullptr);
+    if (Collection_dataRaw(coll) != nullptr) {
+        Memory_free(Collection_dataRaw(coll));
+        Collection_setDataRaw(coll, nullptr);
     }
     Memory_free(self);
 }
 
 i32 SphereArray_radius(const SphereArray *self) {
     if (self == nullptr) return 0;
-    return SphereArray_radius(self);
+    return SphereArray_radiusRaw(self);
 }
 
 i32 SphereArray_diameter(const SphereArray *self) {
     if (self == nullptr) return 0;
-    return SphereArray_diameter(self);
+    return SphereArray_diameterRaw(self);
 }
 
 bytes SphereArray_validVoxelCount(const SphereArray *self) {
     if (self == nullptr) return 0;
-    const Collection *coll = SphereArray_collectionMut(self);
-    return (bytes) Collection_activeCount(coll);
+    const Collection *coll = SphereArray_collectionConst(self);
+    return (bytes) Collection_activeCountRaw(coll);
 }
 
 i64 SphereArray_distanceSquaredOffset(i32 dx, i32 dy, i32 dz) {
@@ -287,8 +251,8 @@ u8 *SphereArray_slotGrid(SphereArray *self, i32 gx, i32 gy, i32 gz) {
         return nullptr;
     }
     bytes idx = SphereArray_index(gx, gy, gz, SphereArray_diameter(self));
-    const Collection *coll = SphereArray_collectionMut(self);
-    return Collection_data(coll) + (idx * (bytes) Collection_stride(coll));
+    const Collection *coll = SphereArray_collectionConst(self);
+    return Collection_dataRaw(coll) + (idx * (bytes) Collection_strideRaw(coll));
 }
 
 u8 *SphereArray_slotOffset(SphereArray *self, i32 dx, i32 dy, i32 dz) {
@@ -305,9 +269,9 @@ bool SphereArray_getGrid(any dest, const SphereArray *self, i32 gx, i32 gy, i32 
         return false;
     }
     bytes idx = SphereArray_index(gx, gy, gz, SphereArray_diameter(self));
-    const Collection *coll = SphereArray_collectionMut(self);
-    bytes stride = (bytes) Collection_stride(coll);
-    const u8 *src = Collection_data(coll) + (idx * stride);
+    const Collection *coll = SphereArray_collectionConst(self);
+    bytes stride = (bytes) Collection_strideRaw(coll);
+    const u8 *src = Collection_dataRaw(coll) + (idx * stride);
     memcpy(dest, src, stride);
     return true;
 }
@@ -319,8 +283,8 @@ bool SphereArray_setGrid(SphereArray *self, i32 gx, i32 gy, i32 gz, const_any sr
     }
     bytes idx = SphereArray_index(gx, gy, gz, SphereArray_diameter(self));
     Collection *coll = SphereArray_collectionMut(self);
-    bytes stride = (bytes) Collection_stride(coll);
-    u8 *dest = Collection_data(coll) + (idx * stride);
+    bytes stride = (bytes) Collection_strideRaw(coll);
+    u8 *dest = Collection_dataRaw(coll) + (idx * stride);
     memcpy(dest, src, stride);
     return true;
 }
@@ -346,8 +310,8 @@ fn SphereArray_forEach(const SphereArray *self, SphereArrayVoxelFn callback, any
     i32 r = SphereArray_radius(self);
     i32 d = SphereArray_diameter(self);
     i64 rSq = (i64) r * (i64) r;
-    const Collection *coll = SphereArray_collectionMut(self);
-    bytes stride = (bytes) Collection_stride(coll);
+    const Collection *coll = SphereArray_collectionConst(self);
+    bytes stride = (bytes) Collection_strideRaw(coll);
     for (i32 gz = 0; gz < d; gz++) {
         i32 dz = gz - r;
         i64 dzSq = (i64) dz * (i64) dz;
@@ -359,7 +323,7 @@ fn SphereArray_forEach(const SphereArray *self, SphereArrayVoxelFn callback, any
                 i32 dx = gx - r;
                 if (dyzSq + ((i64) dx * (i64) dx) <= rSq) {
                     bytes idx = SphereArray_index(gx, gy, gz, d);
-                    const u8 *voxel = Collection_data(coll) + (idx * stride);
+                    const u8 *voxel = Collection_dataRaw(coll) + (idx * stride);
                     callback(gx, gy, gz, dx, dy, dz, voxel, userData);
                 }
             }
