@@ -15,27 +15,14 @@
  * per-job delivery count, producer done flag and expected consumer thread.
  * Functions: record, repost, producer, main. No payload ownership transfer.
  */
-#define REQUIRE(condition) do { if (!(condition)) { \
-
 ;;GETTER
 static inline DispatchItem * Dispatch_batch(const Dispatch *s) { return (*s).batch; }
 ;;GETTER
-static inline DispatchItem * *Dispatch_batchMut(Dispatch *s) { return &(*s).batch; }
-;;SETTER
-static inline fn Dispatch_setBatch(Dispatch *s, DispatchItem * v) { (*s).batch = v; }
-;;GETTER
 static inline DispatchItem * Dispatch_items(const Dispatch *s) { return (*s).items; }
 ;;GETTER
-static inline DispatchItem * *Dispatch_itemsMut(Dispatch *s) { return &(*s).items; }
-;;SETTER
-static inline fn Dispatch_setItems(Dispatch *s, DispatchItem * v) { (*s).items = v; }
-;;GETTER
-static inline SpinLock Dispatch_lock(const Dispatch *s) { return (*s).lock; }
-;;GETTER
 static inline SpinLock *Dispatch_lockMut(Dispatch *s) { return &(*s).lock; }
-;;SETTER
-static inline fn Dispatch_setLock(Dispatch *s, SpinLock v) { (*s).lock = v; }
 
+#define REQUIRE(condition) do { if (!(condition)) { \
     fprintf(stderr, "FAIL line %d: %s\n", __LINE__, #condition); exit(1); \
 } } while (0)
 
@@ -50,38 +37,24 @@ typedef struct Job {
 
 ;;GETTER
 static inline pthread_t Job_consumer(const Job *s) { return (*s).consumer; }
-;;GETTER
-static inline pthread_t *Job_consumerMut(Job *s) { return &(*s).consumer; }
 ;;SETTER
 static inline fn Job_setConsumer(Job *s, pthread_t v) { (*s).consumer = v; }
 ;;GETTER
 static inline i32 Job_deliveries(const Job *s) { return (*s).deliveries; }
-;;GETTER
-static inline i32 *Job_deliveriesMut(Job *s) { return &(*s).deliveries; }
 ;;SETTER
 static inline fn Job_setDeliveries(Job *s, i32 v) { (*s).deliveries = v; }
 ;;GETTER
-static inline atomic_bool Job_done(const Job *s) { return (*s).done; }
-;;GETTER
 static inline atomic_bool *Job_doneMut(Job *s) { return &(*s).done; }
-;;SETTER
-static inline fn Job_setDone(Job *s, atomic_bool v) { (*s).done = v; }
 ;;GETTER
 static inline i32 Job_id(const Job *s) { return (*s).id; }
-;;GETTER
-static inline i32 *Job_idMut(Job *s) { return &(*s).id; }
 ;;SETTER
 static inline fn Job_setId(Job *s, i32 v) { (*s).id = v; }
 ;;GETTER
 static inline i32 * Job_next(const Job *s) { return (*s).next; }
-;;GETTER
-static inline i32 * *Job_nextMut(Job *s) { return &(*s).next; }
 ;;SETTER
 static inline fn Job_setNext(Job *s, i32 * v) { (*s).next = v; }
 ;;GETTER
 static inline Dispatch * Job_queue(const Job *s) { return (*s).queue; }
-;;GETTER
-static inline Dispatch * *Job_queueMut(Job *s) { return &(*s).queue; }
 ;;SETTER
 static inline fn Job_setQueue(Job *s, Dispatch * v) { (*s).queue = v; }
 
