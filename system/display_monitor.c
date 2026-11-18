@@ -98,32 +98,22 @@ struct DisplayMonitor {
 static inline i32 DisplayMonitor_currentHeight(const DisplayMonitor *s) { return (*s).currentHeight; }
 ;;GETTER
 static inline i32 *DisplayMonitor_currentHeightMut(DisplayMonitor *s) { return &(*s).currentHeight; }
-;;SETTER
-static inline fn DisplayMonitor_setCurrentHeight(DisplayMonitor *s, i32 v) { (*s).currentHeight = v; }
 ;;GETTER
 static inline i32 DisplayMonitor_currentWidth(const DisplayMonitor *s) { return (*s).currentWidth; }
 ;;GETTER
 static inline i32 *DisplayMonitor_currentWidthMut(DisplayMonitor *s) { return &(*s).currentWidth; }
-;;SETTER
-static inline fn DisplayMonitor_setCurrentWidth(DisplayMonitor *s, i32 v) { (*s).currentWidth = v; }
 ;;GETTER
 static inline f32 DisplayMonitor_dpi(const DisplayMonitor *s) { return (*s).dpi; }
 ;;GETTER
 static inline f32 *DisplayMonitor_dpiMut(DisplayMonitor *s) { return &(*s).dpi; }
-;;SETTER
-static inline fn DisplayMonitor_setDpi(DisplayMonitor *s, f32 v) { (*s).dpi = v; }
 ;;GETTER
 static inline bool DisplayMonitor_hdrSupported(const DisplayMonitor *s) { return (*s).hdrSupported; }
 ;;GETTER
 static inline bool *DisplayMonitor_hdrSupportedMut(DisplayMonitor *s) { return &(*s).hdrSupported; }
-;;SETTER
-static inline fn DisplayMonitor_setHdrSupported(DisplayMonitor *s, bool v) { (*s).hdrSupported = v; }
 ;;GETTER
 static inline u32 DisplayMonitor_id(const DisplayMonitor *s) { return (*s).id; }
 ;;GETTER
 static inline u32 *DisplayMonitor_idMut(DisplayMonitor *s) { return &(*s).id; }
-;;SETTER
-static inline fn DisplayMonitor_setId(DisplayMonitor *s, u32 v) { (*s).id = v; }
 ;;GETTER
 static inline char *DisplayMonitor_nameMut(DisplayMonitor *s) { return (*s).name; }
 ;;GETTER
@@ -132,32 +122,22 @@ static inline const char *DisplayMonitor_name(const DisplayMonitor *s) { return 
 static inline i32 DisplayMonitor_nativeHeight(const DisplayMonitor *s) { return (*s).nativeHeight; }
 ;;GETTER
 static inline i32 *DisplayMonitor_nativeHeightMut(DisplayMonitor *s) { return &(*s).nativeHeight; }
-;;SETTER
-static inline fn DisplayMonitor_setNativeHeight(DisplayMonitor *s, i32 v) { (*s).nativeHeight = v; }
 ;;GETTER
 static inline i32 DisplayMonitor_nativeWidth(const DisplayMonitor *s) { return (*s).nativeWidth; }
 ;;GETTER
 static inline i32 *DisplayMonitor_nativeWidthMut(DisplayMonitor *s) { return &(*s).nativeWidth; }
-;;SETTER
-static inline fn DisplayMonitor_setNativeWidth(DisplayMonitor *s, i32 v) { (*s).nativeWidth = v; }
 ;;GETTER
 static inline i32 DisplayMonitor_pointHeight(const DisplayMonitor *s) { return (*s).pointHeight; }
 ;;GETTER
 static inline i32 *DisplayMonitor_pointHeightMut(DisplayMonitor *s) { return &(*s).pointHeight; }
-;;SETTER
-static inline fn DisplayMonitor_setPointHeight(DisplayMonitor *s, i32 v) { (*s).pointHeight = v; }
 ;;GETTER
 static inline i32 DisplayMonitor_pointWidth(const DisplayMonitor *s) { return (*s).pointWidth; }
 ;;GETTER
 static inline i32 *DisplayMonitor_pointWidthMut(DisplayMonitor *s) { return &(*s).pointWidth; }
-;;SETTER
-static inline fn DisplayMonitor_setPointWidth(DisplayMonitor *s, i32 v) { (*s).pointWidth = v; }
 ;;GETTER
 static inline i32 DisplayMonitor_refreshRate(const DisplayMonitor *s) { return (*s).refreshRate; }
 ;;GETTER
 static inline i32 *DisplayMonitor_refreshRateMut(DisplayMonitor *s) { return &(*s).refreshRate; }
-;;SETTER
-static inline fn DisplayMonitor_setRefreshRate(DisplayMonitor *s, i32 v) { (*s).refreshRate = v; }
 
 
 DisplayMonitor *DisplayMonitor_0() {
@@ -184,7 +164,7 @@ fn DisplayMonitor_setId(DisplayMonitor *m, u32 id) {
 }
 
 const char *DisplayMonitor_getName(const DisplayMonitor *m) {
-    return m ? DisplayMonitor_nameMut(m) : "";
+    return m ? DisplayMonitor_name(m) : "";
 }
 
 fn DisplayMonitor_setName(DisplayMonitor *m, const char *name) {

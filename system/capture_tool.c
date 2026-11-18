@@ -79,39 +79,15 @@
 ;;GETTER
 static inline const char * CaptureSlot_displayName(const CaptureSlot *s) { return (*s).displayName; }
 ;;GETTER
-static inline const char * *CaptureSlot_displayNameMut(CaptureSlot *s) { return &(*s).displayName; }
-;;SETTER
-static inline fn CaptureSlot_setDisplayName(CaptureSlot *s, const char * v) { (*s).displayName = v; }
-;;GETTER
 static inline const char * CaptureSlot_driverDir(const CaptureSlot *s) { return (*s).driverDir; }
-;;GETTER
-static inline const char * *CaptureSlot_driverDirMut(CaptureSlot *s) { return &(*s).driverDir; }
-;;SETTER
-static inline fn CaptureSlot_setDriverDir(CaptureSlot *s, const char * v) { (*s).driverDir = v; }
 ;;GETTER
 static inline CaptureKind CaptureSlot_kind(const CaptureSlot *s) { return (*s).kind; }
 ;;GETTER
-static inline CaptureKind *CaptureSlot_kindMut(CaptureSlot *s) { return &(*s).kind; }
-;;SETTER
-static inline fn CaptureSlot_setKind(CaptureSlot *s, CaptureKind v) { (*s).kind = v; }
-;;GETTER
 static inline const char * CaptureSlot_note(const CaptureSlot *s) { return (*s).note; }
-;;GETTER
-static inline const char * *CaptureSlot_noteMut(CaptureSlot *s) { return &(*s).note; }
-;;SETTER
-static inline fn CaptureSlot_setNote(CaptureSlot *s, const char * v) { (*s).note = v; }
 ;;GETTER
 static inline const char * CaptureSlot_procKey(const CaptureSlot *s) { return (*s).procKey; }
 ;;GETTER
-static inline const char * *CaptureSlot_procKeyMut(CaptureSlot *s) { return &(*s).procKey; }
-;;SETTER
-static inline fn CaptureSlot_setProcKey(CaptureSlot *s, const char * v) { (*s).procKey = v; }
-;;GETTER
 static inline const char * CaptureSlot_slug(const CaptureSlot *s) { return (*s).slug; }
-;;GETTER
-static inline const char * *CaptureSlot_slugMut(CaptureSlot *s) { return &(*s).slug; }
-;;SETTER
-static inline fn CaptureSlot_setSlug(CaptureSlot *s, const char * v) { (*s).slug = v; }
 
 ;;INTENTION("macOS hides other apps' active ScreenCaptureKit sessions by design — no public API reveals 'the system is recording'. This class honestly reports tool liveness (OBS alive => could be capturing); a true privacy-dot signal would need private API and is out of scope")
 ;;INTENTION("drivers (BlackHole/Soundflower) have no process — liveness answers false by contract; isInstalled probes the HAL plugin dir instead")

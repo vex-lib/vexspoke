@@ -78,27 +78,11 @@
 ;;GETTER
 static inline const char * AppSlot_altProcs(const AppSlot *s) { return (*s).altProcs; }
 ;;GETTER
-static inline const char * *AppSlot_altProcsMut(AppSlot *s) { return &(*s).altProcs; }
-;;SETTER
-static inline fn AppSlot_setAltProcs(AppSlot *s, const char * v) { (*s).altProcs = v; }
-;;GETTER
 static inline const char * AppSlot_displayName(const AppSlot *s) { return (*s).displayName; }
-;;GETTER
-static inline const char * *AppSlot_displayNameMut(AppSlot *s) { return &(*s).displayName; }
-;;SETTER
-static inline fn AppSlot_setDisplayName(AppSlot *s, const char * v) { (*s).displayName = v; }
 ;;GETTER
 static inline const char * AppSlot_name(const AppSlot *s) { return (*s).name; }
 ;;GETTER
-static inline const char * *AppSlot_nameMut(AppSlot *s) { return &(*s).name; }
-;;SETTER
-static inline fn AppSlot_setName(AppSlot *s, const char * v) { (*s).name = v; }
-;;GETTER
 static inline const char * AppSlot_note(const AppSlot *s) { return (*s).note; }
-;;GETTER
-static inline const char * *AppSlot_noteMut(AppSlot *s) { return &(*s).note; }
-;;SETTER
-static inline fn AppSlot_setNote(AppSlot *s, const char * v) { (*s).note = v; }
 
 ;;INTENTION("probes are PATH-scan + bundle-scan + libproc liveness (vexspoke R1 owns system probes; api-haven consumes for CLI/MCP — PREFERENCES.md Rule 17)")
 ;;INTENTION("isRunning is a loose basename match by design: enough to answer 'is codex alive'; bundle-id verification is deferred (would need ObjC NSRunningApplication)")
