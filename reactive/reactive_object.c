@@ -54,7 +54,7 @@ static fn vec4_str(const Vec4 *v, char *out, bytes cap) {
 
 static fn rectangle_str(const Rectangle *r, char *out, bytes cap) {
     if (r == nullptr) { snprintf(out, cap, "null"); return; }
-    Rect val = *r;
+    Rectangle val = *r;
             snprintf(out, cap, "(%.3g, %.3g, %.3g, %.3g)", (d64) val.x, (d64) val.y, (d64) val.width, (d64) val.height);
 }
 

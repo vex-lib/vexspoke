@@ -71,28 +71,20 @@
 
 ;;GETTER
 static inline bool Reactive_active(const Reactive *s) { return (*s).active; }
-;;GETTER
-static inline bool *Reactive_activeMut(Reactive *s) { return &(*s).active; }
 ;;SETTER
 static inline fn Reactive_setActive(Reactive *s, bool v) { (*s).active = v; }
 ;;GETTER
 static inline ReactiveDeliverFn Reactive_deliver(const Reactive *s) { return (*s).deliver; }
-;;GETTER
-static inline ReactiveDeliverFn *Reactive_deliverMut(Reactive *s) { return &(*s).deliver; }
 ;;SETTER
 static inline fn Reactive_setDeliver(Reactive *s, ReactiveDeliverFn v) { (*s).deliver = v; }
 ;;GETTER
 static inline bool Reactive_deliverBound(const Reactive *s) { return (*s).deliverBound; }
-;;GETTER
-static inline bool *Reactive_deliverBoundMut(Reactive *s) { return &(*s).deliverBound; }
 ;;SETTER
 static inline fn Reactive_setDeliverBound(Reactive *s, bool v) { (*s).deliverBound = v; }
 ;;GETTER
-static inline _Atomic bool Reactive_dirty(const Reactive *s) { return (*s).dirty; }
+static inline const _Atomic bool *Reactive_dirtyPtr(const Reactive *s) { return &(*s).dirty; }
 ;;GETTER
 static inline _Atomic bool *Reactive_dirtyMut(Reactive *s) { return &(*s).dirty; }
-;;SETTER
-static inline fn Reactive_setDirty(Reactive *s, _Atomic bool v) { (*s).dirty = v; }
 ;;GETTER
 static inline ReactiveObserverList * Reactive_onChanged(const Reactive *s) { return (*s).onChanged; }
 ;;GETTER
@@ -119,22 +111,14 @@ static inline ReactiveObserverList * *Reactive_onSetMut(Reactive *s) { return &(
 static inline fn Reactive_setOnSet(Reactive *s, ReactiveObserverList * v) { (*s).onSet = v; }
 ;;GETTER
 static inline pointer Reactive_shadow(const Reactive *s) { return (*s).shadow; }
-;;GETTER
-static inline pointer *Reactive_shadowMut(Reactive *s) { return &(*s).shadow; }
 ;;SETTER
 static inline fn Reactive_setShadow(Reactive *s, pointer v) { (*s).shadow = v; }
 ;;GETTER
-static inline _Atomic(pointer) Reactive_value(const Reactive *s) { return (*s).value; }
-;;GETTER
 static inline _Atomic(pointer) *Reactive_valueMut(Reactive *s) { return &(*s).value; }
-;;SETTER
-static inline fn Reactive_setValue(Reactive *s, _Atomic(pointer) v) { (*s).value = v; }
 ;;GETTER
-static inline ReactiveValueFn Reactive_valueOf(const Reactive *s) { return (*s).valueOf; }
-;;GETTER
-static inline ReactiveValueFn *Reactive_valueOfMut(Reactive *s) { return &(*s).valueOf; }
+static inline ReactiveValueFn Reactive_valueOfRaw(const Reactive *s) { return (*s).valueOf; }
 ;;SETTER
-static inline fn Reactive_setValueOf(Reactive *s, ReactiveValueFn v) { (*s).valueOf = v; }
+static inline fn Reactive_setValueOfRaw(Reactive *s, ReactiveValueFn v) { (*s).valueOf = v; }
 
 // SLOT RECORD: one observer entry (a callback + its context).
 typedef struct ReactiveObserver {
@@ -151,20 +135,14 @@ struct ReactiveObserverList {
 
 ;;GETTER
 static inline bytes ReactiveObserverList_cap(const ReactiveObserverList *s) { return (*s).cap; }
-;;GETTER
-static inline bytes *ReactiveObserverList_capMut(ReactiveObserverList *s) { return &(*s).cap; }
 ;;SETTER
 static inline fn ReactiveObserverList_setCap(ReactiveObserverList *s, bytes v) { (*s).cap = v; }
 ;;GETTER
 static inline bytes ReactiveObserverList_count(const ReactiveObserverList *s) { return (*s).count; }
-;;GETTER
-static inline bytes *ReactiveObserverList_countMut(ReactiveObserverList *s) { return &(*s).count; }
 ;;SETTER
 static inline fn ReactiveObserverList_setCount(ReactiveObserverList *s, bytes v) { (*s).count = v; }
 ;;GETTER
 static inline ReactiveObserver * ReactiveObserverList_items(const ReactiveObserverList *s) { return (*s).items; }
-;;GETTER
-static inline ReactiveObserver * *ReactiveObserverList_itemsMut(ReactiveObserverList *s) { return &(*s).items; }
 ;;SETTER
 static inline fn ReactiveObserverList_setItems(ReactiveObserverList *s, ReactiveObserver * v) { (*s).items = v; }
 
@@ -360,7 +338,7 @@ ReactiveDeliverFn Reactive_getDefaultDelivery() {
 fn Reactive_setValueOf(Reactive *self, ReactiveValueFn valueOf) {
     if (self == nullptr)
         return;
-    Reactive_setValueOf(self, valueOf);
+    Reactive_setValueOfRaw(self, valueOf);
 }
 
 const char *Reactive_valueOf(Reactive *self, char *out, bytes cap) {
@@ -371,8 +349,8 @@ const char *Reactive_valueOf(Reactive *self, char *out, bytes cap) {
         return out;
     }
     pointer word = atomic_load_explicit(Reactive_valueMut(self), memory_order_acquire);
-    if (Reactive_valueOf(self) != nullptr)
-        Reactive_valueOf(self)(word, out, cap);
+    if (Reactive_valueOfRaw(self) != nullptr)
+        Reactive_valueOfRaw(self)(word, out, cap);
     else
         snprintf(out, cap, "%llu", (u64) word);
     return out;
@@ -487,7 +465,7 @@ bytes Reactive_observerCount(const Reactive *self) {
 bool Reactive_isDirty(const Reactive *self) {
     if (self == nullptr)
         return false;
-    return atomic_load_explicit((_Atomic bool*) Reactive_dirtyMut(self), memory_order_acquire);
+    return atomic_load_explicit((_Atomic bool*) Reactive_dirtyPtr(self), memory_order_acquire);
 }
 
 bool Reactive_isActive(const Reactive *self) {
