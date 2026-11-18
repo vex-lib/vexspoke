@@ -47,27 +47,11 @@
 ;;GETTER
 static inline any ComputeJob_ctx(const ComputeJob *s) { return (*s).ctx; }
 ;;GETTER
-static inline any *ComputeJob_ctxMut(ComputeJob *s) { return &(*s).ctx; }
-;;SETTER
-static inline fn ComputeJob_setCtx(ComputeJob *s, any v) { (*s).ctx = v; }
-;;GETTER
 static inline ComputeJobFn ComputeJob_onDone(const ComputeJob *s) { return (*s).onDone; }
 ;;GETTER
-static inline ComputeJobFn *ComputeJob_onDoneMut(ComputeJob *s) { return &(*s).onDone; }
-;;SETTER
-static inline fn ComputeJob_setOnDone(ComputeJob *s, ComputeJobFn v) { (*s).onDone = v; }
-;;GETTER
-static inline ComputeJobFn ComputeJob_run(const ComputeJob *s) { return (*s).run; }
-;;GETTER
-static inline ComputeJobFn *ComputeJob_runMut(ComputeJob *s) { return &(*s).run; }
-;;SETTER
-static inline fn ComputeJob_setRun(ComputeJob *s, ComputeJobFn v) { (*s).run = v; }
+static inline ComputeJobFn ComputeJob_runRaw(const ComputeJob *s) { return (*s).run; }
 ;;GETTER
 static inline u64 ComputeJob_tag(const ComputeJob *s) { return (*s).tag; }
-;;GETTER
-static inline u64 *ComputeJob_tagMut(ComputeJob *s) { return &(*s).tag; }
-;;SETTER
-static inline fn ComputeJob_setTag(ComputeJob *s, u64 v) { (*s).tag = v; }
 
 // thread/compute.c — heavy-work job pool.
 
@@ -92,8 +76,8 @@ bool ComputeJob_run(any task) {
     ComputeJob *job = (ComputeJob*) task;
     if (!ComputeJob_isJob(job))
         return false;
-    if (ComputeJob_run(job) != nullptr)
-        ComputeJob_run(job)(ComputeJob_ctx(job));
+    if (ComputeJob_runRaw(job) != nullptr)
+        ComputeJob_runRaw(job)(ComputeJob_ctx(job));
     if (ComputeJob_onDone(job) != nullptr)
         ComputeJob_onDone(job)(ComputeJob_ctx(job));               // fire-and-forget; same worker
     return true;

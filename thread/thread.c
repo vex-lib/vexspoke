@@ -84,50 +84,32 @@ typedef struct Thread {
 
 ;;GETTER
 static inline bool Thread_core(const Thread *s) { return (*s).core; }
-;;GETTER
-static inline bool *Thread_coreMut(Thread *s) { return &(*s).core; }
 ;;SETTER
 static inline fn Thread_setCore(Thread *s, bool v) { (*s).core = v; }
 ;;GETTER
 static inline Thread_Job Thread_job(const Thread *s) { return (*s).job; }
-;;GETTER
-static inline Thread_Job *Thread_jobMut(Thread *s) { return &(*s).job; }
 ;;SETTER
 static inline fn Thread_setJob(Thread *s, Thread_Job v) { (*s).job = v; }
 ;;GETTER
 static inline pthread_t Thread_platform(const Thread *s) { return (*s).platform; }
 ;;GETTER
 static inline pthread_t *Thread_platformMut(Thread *s) { return &(*s).platform; }
-;;SETTER
-static inline fn Thread_setPlatform(Thread *s, pthread_t v) { (*s).platform = v; }
 ;;GETTER
 static inline bool Thread_platformStarted(const Thread *s) { return (*s).platformStarted; }
-;;GETTER
-static inline bool *Thread_platformStartedMut(Thread *s) { return &(*s).platformStarted; }
 ;;SETTER
 static inline fn Thread_setPlatformStarted(Thread *s, bool v) { (*s).platformStarted = v; }
-;;GETTER
-static inline RingBuffer Thread_queue(const Thread *s) { return (*s).queue; }
 ;;GETTER
 static inline RingBuffer *Thread_queueMut(Thread *s) { return &(*s).queue; }
 ;;SETTER
 static inline fn Thread_setQueue(Thread *s, RingBuffer v) { (*s).queue = v; }
 ;;GETTER
-static inline _Atomic i32 Thread_state(const Thread *s) { return (*s).state; }
-;;GETTER
 static inline _Atomic i32 *Thread_stateMut(Thread *s) { return &(*s).state; }
-;;SETTER
-static inline fn Thread_setState(Thread *s, _Atomic i32 v) { (*s).state = v; }
 ;;GETTER
 static inline bool Thread_tickWhenIdle(const Thread *s) { return (*s).tickWhenIdle; }
-;;GETTER
-static inline bool *Thread_tickWhenIdleMut(Thread *s) { return &(*s).tickWhenIdle; }
 ;;SETTER
 static inline fn Thread_setTickWhenIdle(Thread *s, bool v) { (*s).tickWhenIdle = v; }
 ;;GETTER
 static inline u64 Thread_typeId(const Thread *s) { return (*s).typeId; }
-;;GETTER
-static inline u64 *Thread_typeIdMut(Thread *s) { return &(*s).typeId; }
 ;;SETTER
 static inline fn Thread_setTypeId(Thread *s, u64 v) { (*s).typeId = v; }
 
@@ -164,7 +146,7 @@ Thread *Thread_5(u64 typeId, Thread_Job job, bytes queueCapacity,
     Thread_setTickWhenIdle(t, tickWhenIdle);
     Thread_setCore(t, core);
     Thread_setQueue(t, RingBuffer(THREAD_TASK_SIZE, queueCapacity));
-    if (RingBuffer_slots(Thread_queue(t)) == nullptr) {
+    if (RingBuffer_slots(Thread_queueMut(t)) == nullptr) {
         Memory_free(t);
         return nullptr;
     }
