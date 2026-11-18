@@ -71,6 +71,13 @@ static fn test_null_safety() {
     CHECK(KeyMap_getLongPressNanos(nullptr) == 0);
 }
 
+;;GETTER
+static inline i64 KeyBinding_combo(const KeyBinding *s) { return (*s).combo; }
+;;GETTER
+static inline KeyBindingFn KeyBinding_fn(const KeyBinding *s) { return (*s).fn; }
+;;GETTER
+static inline any KeyBinding_userdata(const KeyBinding *s) { return (*s).userdata; }
+
 // Checks exact combo binding, lookup hits, misses, and count updates.
 static fn test_bind_and_match() {
     MemoryArena *arena = MemoryArena_create(64u << 20);
@@ -284,25 +291,6 @@ static fn onResolveFire(any userdata, i64 combo) {
 // semantics as the 250ms platform drivers, without 250ms of test latency.
 #define TAP_WIN_NS 30000000ULL   // 30 ms tap window
 #define SETTLE_SLEEP_US 40000    // 40 ms > window, so settlement always lands
-
-;;GETTER
-static inline i64 KeyBinding_combo(const KeyBinding *s) { return (*s).combo; }
-;;GETTER
-static inline i64 *KeyBinding_comboMut(KeyBinding *s) { return &(*s).combo; }
-;;SETTER
-static inline fn KeyBinding_setCombo(KeyBinding *s, i64 v) { (*s).combo = v; }
-;;GETTER
-static inline KeyBindingFn KeyBinding_fn(const KeyBinding *s) { return (*s).fn; }
-;;GETTER
-static inline KeyBindingFn *KeyBinding_fnMut(KeyBinding *s) { return &(*s).fn; }
-;;SETTER
-static inline fn KeyBinding_setFn(KeyBinding *s, KeyBindingFn v) { (*s).fn = v; }
-;;GETTER
-static inline any KeyBinding_userdata(const KeyBinding *s) { return (*s).userdata; }
-;;GETTER
-static inline any *KeyBinding_userdataMut(KeyBinding *s) { return &(*s).userdata; }
-;;SETTER
-static inline fn KeyBinding_setUserdata(KeyBinding *s, any v) { (*s).userdata = v; }
 
 
 // Sends one synthetic key press/release using the requested tap window.
