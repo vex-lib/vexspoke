@@ -3,9 +3,8 @@
 // stdout line per call and consumes owned String exactly once. No terminal UI.
 
 #include "vex.h"
+#include "re.h"
 #include "cli/console.h"
-#include "primitive/vex-string.h"
-#include "nio/mem.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
