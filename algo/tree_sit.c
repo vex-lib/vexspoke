@@ -52,69 +52,35 @@
 
 ;;GETTER
 static inline u32 TreeSitNode_child_count(const TreeSitNode *s) { return (*s).child_count; }
-;;GETTER
-static inline u32 *TreeSitNode_child_countMut(TreeSitNode *s) { return &(*s).child_count; }
 ;;SETTER
 static inline fn TreeSitNode_setChild_count(TreeSitNode *s, u32 v) { (*s).child_count = v; }
 ;;GETTER
 static inline i32 TreeSitNode_first_child(const TreeSitNode *s) { return (*s).first_child; }
-;;GETTER
-static inline i32 *TreeSitNode_first_childMut(TreeSitNode *s) { return &(*s).first_child; }
 ;;SETTER
 static inline fn TreeSitNode_setFirst_child(TreeSitNode *s, i32 v) { (*s).first_child = v; }
-;;GETTER
-static inline u32 TreeSitNode_id(const TreeSitNode *s) { return (*s).id; }
-;;GETTER
-static inline u32 *TreeSitNode_idMut(TreeSitNode *s) { return &(*s).id; }
 ;;SETTER
 static inline fn TreeSitNode_setId(TreeSitNode *s, u32 v) { (*s).id = v; }
-;;GETTER
-static inline u16 TreeSitNode_kind(const TreeSitNode *s) { return (*s).kind; }
-;;GETTER
-static inline u16 *TreeSitNode_kindMut(TreeSitNode *s) { return &(*s).kind; }
 ;;SETTER
 static inline fn TreeSitNode_setKind(TreeSitNode *s, u16 v) { (*s).kind = v; }
 ;;GETTER
 static inline i32 TreeSitNode_next_sibling(const TreeSitNode *s) { return (*s).next_sibling; }
-;;GETTER
-static inline i32 *TreeSitNode_next_siblingMut(TreeSitNode *s) { return &(*s).next_sibling; }
 ;;SETTER
 static inline fn TreeSitNode_setNext_sibling(TreeSitNode *s, i32 v) { (*s).next_sibling = v; }
-;;GETTER
-static inline i32 TreeSitNode_parent(const TreeSitNode *s) { return (*s).parent; }
-;;GETTER
-static inline i32 *TreeSitNode_parentMut(TreeSitNode *s) { return &(*s).parent; }
 ;;SETTER
 static inline fn TreeSitNode_setParent(TreeSitNode *s, i32 v) { (*s).parent = v; }
-;;GETTER
-static inline any TreeSitNode_payload(const TreeSitNode *s) { return (*s).payload; }
-;;GETTER
-static inline any *TreeSitNode_payloadMut(TreeSitNode *s) { return &(*s).payload; }
 ;;SETTER
 static inline fn TreeSitNode_setPayload(TreeSitNode *s, any v) { (*s).payload = v; }
-;;GETTER
-static inline i32 TreeSitNode_prev_sibling(const TreeSitNode *s) { return (*s).prev_sibling; }
-;;GETTER
-static inline i32 *TreeSitNode_prev_siblingMut(TreeSitNode *s) { return &(*s).prev_sibling; }
 ;;SETTER
 static inline fn TreeSitNode_setPrev_sibling(TreeSitNode *s, i32 v) { (*s).prev_sibling = v; }
 ;;GETTER
 static inline TreeSitSpan TreeSitNode_span(const TreeSitNode *s) { return (*s).span; }
-;;GETTER
-static inline TreeSitSpan *TreeSitNode_spanMut(TreeSitNode *s) { return &(*s).span; }
 ;;SETTER
 static inline fn TreeSitNode_setSpan(TreeSitNode *s, TreeSitSpan v) { (*s).span = v; }
-;;GETTER
-static inline const char * TreeSitNode_symbol_name(const TreeSitNode *s) { return (*s).symbol_name; }
-;;GETTER
-static inline const char * *TreeSitNode_symbol_nameMut(TreeSitNode *s) { return &(*s).symbol_name; }
 ;;SETTER
 static inline fn TreeSitNode_setSymbol_name(TreeSitNode *s, const char * v) { (*s).symbol_name = v; }
 
 ;;GETTER
 static inline u32 TreeSitTree_node_capacity(const TreeSitTree *s) { return (*s).node_capacity; }
-;;GETTER
-static inline u32 *TreeSitTree_node_capacityMut(TreeSitTree *s) { return &(*s).node_capacity; }
 ;;SETTER
 static inline fn TreeSitTree_setNode_capacity(TreeSitTree *s, u32 v) { (*s).node_capacity = v; }
 ;;GETTER
@@ -125,14 +91,10 @@ static inline u32 *TreeSitTree_node_countMut(TreeSitTree *s) { return &(*s).node
 static inline fn TreeSitTree_setNode_count(TreeSitTree *s, u32 v) { (*s).node_count = v; }
 ;;GETTER
 static inline TreeSitNode * TreeSitTree_nodes(const TreeSitTree *s) { return (*s).nodes; }
-;;GETTER
-static inline TreeSitNode * *TreeSitTree_nodesMut(TreeSitTree *s) { return &(*s).nodes; }
 ;;SETTER
 static inline fn TreeSitTree_setNodes(TreeSitTree *s, TreeSitNode * v) { (*s).nodes = v; }
 ;;GETTER
 static inline i32 TreeSitTree_root(const TreeSitTree *s) { return (*s).root; }
-;;GETTER
-static inline i32 *TreeSitTree_rootMut(TreeSitTree *s) { return &(*s).root; }
 ;;SETTER
 static inline fn TreeSitTree_setRoot(TreeSitTree *s, i32 v) { (*s).root = v; }
 
@@ -188,7 +150,7 @@ i32 TreeSitTree_add_node(
     }
 
     i32 new_idx = (i32) (*TreeSitTree_node_countMut(tree))++;
-    TreeSitNode *node = &TreeSitTree_nodesMut(tree)[new_idx];
+    TreeSitNode *node = &TreeSitTree_nodes(tree)[new_idx];
 
     TreeSitNode_setId(node, (u32) new_idx);
     TreeSitNode_setKind(node, kind);
@@ -206,7 +168,7 @@ i32 TreeSitTree_add_node(
             TreeSitTree_setRoot(tree, new_idx);
         }
     } else if ((u32) parent_idx < TreeSitTree_node_count(tree) - 1) {
-        TreeSitNode *parent = &TreeSitTree_nodesMut(tree)[parent_idx];
+        TreeSitNode *parent = &TreeSitTree_nodes(tree)[parent_idx];
         if (TreeSitNode_first_child(parent) < 0) {
             TreeSitNode_setFirst_child(parent, new_idx);
         } else {
@@ -293,7 +255,7 @@ i32 TreeSitTree_find_by_byte(const TreeSitTree *tree, u32 byte_offset) {
     i32 best_match = -1;
 
     while (curr >= 0) {
-        const TreeSitNode *node = &TreeSitTree_nodesMut(tree)[curr];
+        const TreeSitNode *node = &TreeSitTree_nodes(tree)[curr];
         TreeSitSpan span = TreeSitNode_span(node);
         if (byte_offset >= span.start_byte && byte_offset <= span.end_byte) {
             best_match = curr;

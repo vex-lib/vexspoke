@@ -98,21 +98,9 @@
 ;;GETTER
 static inline u32 SegmentMatch_entry(const SegmentMatch *s) { return (*s).entry; }
 ;;GETTER
-static inline u32 *SegmentMatch_entryMut(SegmentMatch *s) { return &(*s).entry; }
-;;SETTER
-static inline fn SegmentMatch_setEntry(SegmentMatch *s, u32 v) { (*s).entry = v; }
-;;GETTER
 static inline u32 SegmentMatch_start(const SegmentMatch *s) { return (*s).start; }
 ;;GETTER
-static inline u32 *SegmentMatch_startMut(SegmentMatch *s) { return &(*s).start; }
-;;SETTER
-static inline fn SegmentMatch_setStart(SegmentMatch *s, u32 v) { (*s).start = v; }
-;;GETTER
 static inline u32 SegmentMatch_tier(const SegmentMatch *s) { return (*s).tier; }
-;;GETTER
-static inline u32 *SegmentMatch_tierMut(SegmentMatch *s) { return &(*s).tier; }
-;;SETTER
-static inline fn SegmentMatch_setTier(SegmentMatch *s, u32 v) { (*s).tier = v; }
 
 ;;GETTER
 static inline char *SegmentEntry_nameMut(SegmentEntry *s) { return (*s).name; }
@@ -120,52 +108,36 @@ static inline char *SegmentEntry_nameMut(SegmentEntry *s) { return (*s).name; }
 static inline const char *SegmentEntry_name(const SegmentEntry *s) { return (*s).name; }
 ;;GETTER
 static inline pointer SegmentEntry_payload(const SegmentEntry *s) { return (*s).payload; }
-;;GETTER
-static inline pointer *SegmentEntry_payloadMut(SegmentEntry *s) { return &(*s).payload; }
 ;;SETTER
 static inline fn SegmentEntry_setPayload(SegmentEntry *s, pointer v) { (*s).payload = v; }
 ;;GETTER
 static inline u32 SegmentEntry_segments(const SegmentEntry *s) { return (*s).segments; }
-;;GETTER
-static inline u32 *SegmentEntry_segmentsMut(SegmentEntry *s) { return &(*s).segments; }
 ;;SETTER
 static inline fn SegmentEntry_setSegments(SegmentEntry *s, u32 v) { (*s).segments = v; }
 
 ;;GETTER
 static inline bool SegmentIndex_active(const SegmentIndex *s) { return (*s).active; }
-;;GETTER
-static inline bool *SegmentIndex_activeMut(SegmentIndex *s) { return &(*s).active; }
 ;;SETTER
 static inline fn SegmentIndex_setActive(SegmentIndex *s, bool v) { (*s).active = v; }
 ;;GETTER
-static inline u32 SegmentIndex_count(const SegmentIndex *s) { return (*s).count; }
-;;GETTER
-static inline u32 *SegmentIndex_countMut(SegmentIndex *s) { return &(*s).count; }
+static inline u32 SegmentIndex_countRaw(const SegmentIndex *s) { return (*s).count; }
 ;;SETTER
 static inline fn SegmentIndex_setCount(SegmentIndex *s, u32 v) { (*s).count = v; }
 ;;GETTER
 static inline ChunkedList * SegmentIndex_entries(const SegmentIndex *s) { return (*s).entries; }
-;;GETTER
-static inline ChunkedList * *SegmentIndex_entriesMut(SegmentIndex *s) { return &(*s).entries; }
 ;;SETTER
 static inline fn SegmentIndex_setEntries(SegmentIndex *s, ChunkedList * v) { (*s).entries = v; }
 ;;GETTER
 static inline VariableHashMap * SegmentIndex_postings(const SegmentIndex *s) { return (*s).postings; }
-;;GETTER
-static inline VariableHashMap * *SegmentIndex_postingsMut(SegmentIndex *s) { return &(*s).postings; }
 ;;SETTER
 static inline fn SegmentIndex_setPostings(SegmentIndex *s, VariableHashMap * v) { (*s).postings = v; }
 
 ;;GETTER
 static inline u32 SegmentPosting_entry(const SegmentPosting *s) { return (*s).entry; }
-;;GETTER
-static inline u32 *SegmentPosting_entryMut(SegmentPosting *s) { return &(*s).entry; }
 ;;SETTER
 static inline fn SegmentPosting_setEntry(SegmentPosting *s, u32 v) { (*s).entry = v; }
 ;;GETTER
 static inline u32 SegmentPosting_position(const SegmentPosting *s) { return (*s).position; }
-;;GETTER
-static inline u32 *SegmentPosting_positionMut(SegmentPosting *s) { return &(*s).position; }
 ;;SETTER
 static inline fn SegmentPosting_setPosition(SegmentPosting *s, u32 v) { (*s).position = v; }
 
@@ -262,11 +234,11 @@ static bool matchBefore(const SegmentIndex *index, const SegmentMatch *a, const 
     const SegmentEntry *eb = entryAt(index, SegmentMatch_entry(b));
     if (!ea || !eb)
         return ea != nullptr;
-    bytes la = strlen(SegmentEntry_nameMut(ea));
-    bytes lb = strlen(SegmentEntry_nameMut(eb));
+    bytes la = strlen(SegmentEntry_name(ea));
+    bytes lb = strlen(SegmentEntry_name(eb));
     if (la != lb)
         return la < lb;
-    return strcmp(SegmentEntry_nameMut(ea), SegmentEntry_nameMut(eb)) < 0;
+    return strcmp(SegmentEntry_name(ea), SegmentEntry_name(eb)) < 0;
 }
 
 // Insert into the bounded best-first output array (top-`cap`, insertion sort).
@@ -292,10 +264,6 @@ typedef struct BuildCtx {
 
 ;;GETTER
 static inline SegmentIndex * BuildCtx_index(const BuildCtx *s) { return (*s).index; }
-;;GETTER
-static inline SegmentIndex * *BuildCtx_indexMut(BuildCtx *s) { return &(*s).index; }
-;;SETTER
-static inline fn BuildCtx_setIndex(BuildCtx *s, SegmentIndex * v) { (*s).index = v; }
 
 
 static fn buildFn(VariableSlot *slot, any userdata) {
@@ -562,7 +530,7 @@ bytes SegmentIndex_query(const SegmentIndex *index, const char *query, SegmentMa
 // GETTERS
 
 u32 SegmentIndex_count(const SegmentIndex *index) {
-    return index ? SegmentIndex_count(index) : 0u;
+    return index ? SegmentIndex_countRaw(index) : 0u;
 }
 
 bool SegmentIndex_isEmpty(const SegmentIndex *index) {

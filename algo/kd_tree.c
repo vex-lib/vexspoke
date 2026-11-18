@@ -66,39 +66,26 @@
 
 ;;GETTER
 static inline u8 KdNode_axis(const KdNode *s) { return (*s).axis; }
-;;GETTER
-static inline u8 *KdNode_axisMut(KdNode *s) { return &(*s).axis; }
 ;;SETTER
 static inline fn KdNode_setAxis(KdNode *s, u8 v) { (*s).axis = v; }
 ;;GETTER
 static inline struct KdNode * KdNode_left(const KdNode *s) { return (*s).left; }
-;;GETTER
-static inline struct KdNode * *KdNode_leftMut(KdNode *s) { return &(*s).left; }
 ;;SETTER
 static inline fn KdNode_setLeft(KdNode *s, struct KdNode * v) { (*s).left = v; }
 ;;GETTER
 static inline KdPoint KdNode_point(const KdNode *s) { return (*s).point; }
-;;GETTER
-static inline KdPoint *KdNode_pointMut(KdNode *s) { return &(*s).point; }
 ;;SETTER
 static inline fn KdNode_setPoint(KdNode *s, KdPoint v) { (*s).point = v; }
 ;;GETTER
 static inline struct KdNode * KdNode_right(const KdNode *s) { return (*s).right; }
-;;GETTER
-static inline struct KdNode * *KdNode_rightMut(KdNode *s) { return &(*s).right; }
 ;;SETTER
 static inline fn KdNode_setRight(KdNode *s, struct KdNode * v) { (*s).right = v; }
 
-;;GETTER
-static inline bytes KdTree_count(const KdTree *s) { return (*s).count; }
-;;GETTER
-static inline bytes *KdTree_countMut(KdTree *s) { return &(*s).count; }
+
 ;;SETTER
 static inline fn KdTree_setCount(KdTree *s, bytes v) { (*s).count = v; }
 ;;GETTER
 static inline KdNode * KdTree_root(const KdTree *s) { return (*s).root; }
-;;GETTER
-static inline KdNode * *KdTree_rootMut(KdTree *s) { return &(*s).root; }
 ;;SETTER
 static inline fn KdTree_setRoot(KdTree *s, KdNode * v) { (*s).root = v; }
 
