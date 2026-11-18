@@ -52,15 +52,11 @@
 
 
 ;;GETTER
-static inline u32 Struct_count(const Struct *s) { return (*s).count; }
-;;GETTER
-static inline u32 *Struct_countMut(Struct *s) { return &(*s).count; }
+static inline u32 Struct_countRaw(const Struct *s) { return (*s).count; }
 ;;SETTER
 static inline fn Struct_setCount(Struct *s, u32 v) { (*s).count = v; }
 ;;GETTER
 static inline ChunkedList * Struct_fields(const Struct *s) { return (*s).fields; }
-;;GETTER
-static inline ChunkedList * *Struct_fieldsMut(Struct *s) { return &(*s).fields; }
 ;;SETTER
 static inline fn Struct_setFields(Struct *s, ChunkedList * v) { (*s).fields = v; }
 ;;GETTER
@@ -69,10 +65,8 @@ static inline char *Struct_nameMut(Struct *s) { return (*s).name; }
 static inline const char *Struct_name(const Struct *s) { return (*s).name; }
 ;;GETTER
 static inline u32 Struct_size(const Struct *s) { return (*s).size; }
-;;GETTER
-static inline u32 *Struct_sizeMut(Struct *s) { return &(*s).size; }
 ;;SETTER
-static inline fn Struct_setSize(Struct *s, u32 v) { (*s).size = v; }
+static inline fn Struct_setSizeRaw(Struct *s, u32 v) { (*s).size = v; }
 
 static bool ensureFields(Struct *self) {
     if (Struct_fields(self))
@@ -188,17 +182,17 @@ bool Struct_setName(Struct *self, const char *name) {
 
 fn Struct_setSize(Struct *self, u32 size) {
     if (self != nullptr)
-        Struct_setSize(self, size);
+        Struct_setSizeRaw(self, size);
 }
 
 // GETTERS
 
 const char *Struct_getName(const Struct *self) {
-    return self ? Struct_nameMut(self) : nullptr;
+    return self ? Struct_name(self) : nullptr;
 }
 
 u32 Struct_count(const Struct *self) {
-    return self ? Struct_count(self) : 0u;
+    return self ? Struct_countRaw(self) : 0u;
 }
 
 u32 Struct_getSize(const Struct *self) {
@@ -223,7 +217,7 @@ fn Struct_toString(const Struct *self, char *dest, bytes cap, bool *outTruncated
         return;
     }
     i32 written = snprintf(dest, cap, "Struct(%s, fields=%u)",
-                           Struct_nameMut(self)[0] == '\0' ? "?" : Struct_nameMut(self), Struct_count(self));
+                           Struct_name(self)[0] == '\0' ? "?" : Struct_name(self), Struct_count(self));
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
@@ -240,7 +234,7 @@ fn Struct_toStringStruct(const Struct *self, char *dest, bytes cap, bool *outTru
         return;
     }
     i32 written = snprintf(dest, cap, "Struct { name=\"%s\", count=%u, size=%u, fields=0x%llx }",
-                           Struct_nameMut(self), Struct_count(self), Struct_size(self),
+                           Struct_name(self), Struct_count(self), Struct_size(self),
                            (u64) (pointer) Struct_fields(self));
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)

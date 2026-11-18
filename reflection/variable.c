@@ -55,17 +55,13 @@ static inline char *Variable_nameMut(Variable *s) { return (*s).name; }
 ;;GETTER
 static inline const char *Variable_name(const Variable *s) { return (*s).name; }
 ;;GETTER
-static inline VariableReadFn Variable_read(const Variable *s) { return (*s).read; }
-;;GETTER
-static inline VariableReadFn *Variable_readMut(Variable *s) { return &(*s).read; }
+static inline VariableReadFn Variable_readRaw(const Variable *s) { return (*s).read; }
 ;;SETTER
-static inline fn Variable_setRead(Variable *s, VariableReadFn v) { (*s).read = v; }
+static inline fn Variable_setReadRaw(Variable *s, VariableReadFn v) { (*s).read = v; }
 ;;GETTER
 static inline any Variable_target(const Variable *s) { return (*s).target; }
-;;GETTER
-static inline any *Variable_targetMut(Variable *s) { return &(*s).target; }
 ;;SETTER
-static inline fn Variable_setTarget(Variable *s, any v) { (*s).target = v; }
+static inline fn Variable_setTargetRaw(Variable *s, any v) { (*s).target = v; }
 
 // CONSTRUCTORS
 
@@ -77,8 +73,8 @@ bool Variable_init(Variable *self, const char *name, VariableReadFn read, any ta
         return false;
     memset(self, 0, sizeof(*self));
     memcpy(Variable_nameMut(self), folded, strlen(folded) + 1);
-    Variable_setRead(self, read);
-    Variable_setTarget(self, target);
+    Variable_setReadRaw(self, read);
+    Variable_setTargetRaw(self, target);
     return true;
 }
 
@@ -129,9 +125,9 @@ bool Variable_check(const Variable *self, u64 typeId) {
 }
 
 any Variable_read(Variable *self, any arg) {
-    if (self == nullptr || Variable_read(self) == nullptr)
+    if (self == nullptr || Variable_readRaw(self) == nullptr)
         return nullptr;
-    return Variable_read(self)(arg);
+    return Variable_readRaw(self)(arg);
 }
 
 // SETTERS
@@ -150,25 +146,25 @@ bool Variable_setName(Variable *self, const char *name) {
 fn Variable_setRead(Variable *self, VariableReadFn read) {
     if (self == nullptr)
         return;
-    Variable_setRead(self, read);
+    Variable_setReadRaw(self, read);
 }
 
 fn Variable_setTarget(Variable *self, any target) {
     if (self == nullptr)
         return;
-    Variable_setTarget(self, target);
+    Variable_setTargetRaw(self, target);
 }
 
 // GETTERS
 
 const char *Variable_getName(const Variable *self) {
-    return self ? Variable_nameMut(self) : nullptr;
+    return self ? Variable_name(self) : nullptr;
 }
 
 VariableReadFn Variable_getRead(const Variable *self) {
     if (self == nullptr)
         return nullptr;
-    return Variable_read(self);
+    return Variable_readRaw(self);
 }
 
 any Variable_getTarget(const Variable *self) {
@@ -188,7 +184,7 @@ fn Variable_toString(const Variable *self, char *dest, bytes cap, bool *outTrunc
         snprintf(dest, cap, "nullptr");
         return;
     }
-    i32 written = snprintf(dest, cap, "Variable(%s)", Variable_nameMut(self)[0] == '\0' ? "?" : Variable_nameMut(self));
+    i32 written = snprintf(dest, cap, "Variable(%s)", Variable_name(self)[0] == '\0' ? "?" : Variable_name(self));
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
@@ -205,8 +201,8 @@ fn Variable_toStringStruct(const Variable *self, char *dest, bytes cap, bool *ou
         return;
     }
     i32 written = snprintf(dest, cap, "Variable { name=\"%s\", read=0x%llx, target=0x%llx }",
-                           Variable_nameMut(self),
-                           (u64) (pointer) Variable_read(self),
+                           Variable_name(self),
+                           (u64) (pointer) Variable_readRaw(self),
                            (u64) (pointer) Variable_target(self));
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)

@@ -56,27 +56,19 @@
 
 
 ;;GETTER
-static inline ClassConstructFn Class_construct(const Class *s) { return (*s).construct; }
-;;GETTER
-static inline ClassConstructFn *Class_constructMut(Class *s) { return &(*s).construct; }
+static inline ClassConstructFn Class_constructRaw(const Class *s) { return (*s).construct; }
 ;;SETTER
-static inline fn Class_setConstruct(Class *s, ClassConstructFn v) { (*s).construct = v; }
+static inline fn Class_setConstructRaw(Class *s, ClassConstructFn v) { (*s).construct = v; }
 ;;GETTER
 static inline Struct * Class_layout(const Class *s) { return (*s).layout; }
-;;GETTER
-static inline Struct * *Class_layoutMut(Class *s) { return &(*s).layout; }
 ;;SETTER
-static inline fn Class_setLayout(Class *s, Struct * v) { (*s).layout = v; }
+static inline fn Class_setLayoutRaw(Class *s, Struct * v) { (*s).layout = v; }
 ;;GETTER
-static inline u32 Class_methodCount(const Class *s) { return (*s).methodCount; }
-;;GETTER
-static inline u32 *Class_methodCountMut(Class *s) { return &(*s).methodCount; }
+static inline u32 Class_methodCountRaw(const Class *s) { return (*s).methodCount; }
 ;;SETTER
 static inline fn Class_setMethodCount(Class *s, u32 v) { (*s).methodCount = v; }
 ;;GETTER
 static inline ChunkedList * Class_methods(const Class *s) { return (*s).methods; }
-;;GETTER
-static inline ChunkedList * *Class_methodsMut(Class *s) { return &(*s).methods; }
 ;;SETTER
 static inline fn Class_setMethods(Class *s, ChunkedList * v) { (*s).methods = v; }
 ;;GETTER
@@ -104,8 +96,8 @@ bool Class_init(Class *self, const char *name, Struct *layout, ClassConstructFn 
         return false;
     memset(self, 0, sizeof(*self));
     memcpy(Class_nameMut(self), folded, strlen(folded) + 1);
-    Class_setConstruct(self, construct);
-    Class_setLayout(self, layout);
+    Class_setConstructRaw(self, construct);
+    Class_setLayoutRaw(self, layout);
     return ensureMethods(self);
 }
 
@@ -163,9 +155,9 @@ bool Class_check(const Class *self, u64 typeId) {
 }
 
 any Class_construct(Class *self, any arg) {
-    if (self == nullptr || Class_construct(self) == nullptr)
+    if (self == nullptr || Class_constructRaw(self) == nullptr)
         return nullptr;
-    return Class_construct(self)(arg);
+    return Class_constructRaw(self)(arg);
 }
 
 u32 Class_addMethod(Class *self, const Method *method) {
@@ -215,13 +207,13 @@ bool Class_setName(Class *self, const char *name) {
 fn Class_setLayout(Class *self, Struct *layout) {
     if (self == nullptr)
         return;
-    Class_setLayout(self, layout);
+    Class_setLayoutRaw(self, layout);
 }
 
 fn Class_setConstruct(Class *self, ClassConstructFn construct) {
     if (self == nullptr)
         return;
-    Class_setConstruct(self, construct);
+    Class_setConstructRaw(self, construct);
 }
 
 // GETTERS
@@ -235,15 +227,15 @@ Struct *Class_getLayout(const Class *self) {
 ClassConstructFn Class_getConstruct(const Class *self) {
     if (self == nullptr)
         return nullptr;
-    return Class_construct(self);
+    return Class_constructRaw(self);
 }
 
 const char *Class_getName(const Class *self) {
-    return self ? Class_nameMut(self) : nullptr;
+    return self ? Class_name(self) : nullptr;
 }
 
 u32 Class_methodCount(const Class *self) {
-    return self ? Class_methodCount(self) : 0u;
+    return self ? Class_methodCountRaw(self) : 0u;
 }
 
 // STRING PROJECTIONS (the toString Law)
@@ -258,7 +250,7 @@ fn Class_toString(const Class *self, char *dest, bytes cap, bool *outTruncated) 
         return;
     }
     i32 written = snprintf(dest, cap, "Class(%s, methods=%u)",
-                           Class_nameMut(self)[0] == '\0' ? "?" : Class_nameMut(self), Class_methodCount(self));
+                           Class_name(self)[0] == '\0' ? "?" : Class_name(self), Class_methodCount(self));
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
@@ -275,8 +267,8 @@ fn Class_toStringStruct(const Class *self, char *dest, bytes cap, bool *outTrunc
         return;
     }
     i32 written = snprintf(dest, cap, "Class { name=\"%s\", construct=0x%llx, layout=0x%llx, methods=0x%llx, methodCount=%u }",
-                           Class_nameMut(self),
-                           (u64) (pointer) Class_construct(self),
+                           Class_name(self),
+                           (u64) (pointer) Class_constructRaw(self),
                            (u64) (pointer) Class_layout(self),
                            (u64) (pointer) Class_methods(self),
                            Class_methodCount(self));

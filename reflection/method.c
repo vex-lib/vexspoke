@@ -52,20 +52,16 @@
 
 ;;GETTER
 static inline MethodFn Method_invoke(const Method *s) { return (*s).invoke; }
-;;GETTER
-static inline MethodFn *Method_invokeMut(Method *s) { return &(*s).invoke; }
 ;;SETTER
-static inline fn Method_setInvoke(Method *s, MethodFn v) { (*s).invoke = v; }
+static inline fn Method_setInvokeRaw(Method *s, MethodFn v) { (*s).invoke = v; }
 ;;GETTER
 static inline char *Method_nameMut(Method *s) { return (*s).name; }
 ;;GETTER
 static inline const char *Method_name(const Method *s) { return (*s).name; }
 ;;GETTER
 static inline any Method_target(const Method *s) { return (*s).target; }
-;;GETTER
-static inline any *Method_targetMut(Method *s) { return &(*s).target; }
 ;;SETTER
-static inline fn Method_setTarget(Method *s, any v) { (*s).target = v; }
+static inline fn Method_setTargetRaw(Method *s, any v) { (*s).target = v; }
 
 // CONSTRUCTORS
 
@@ -77,8 +73,8 @@ bool Method_init(Method *self, const char *name, MethodFn invoke, any target) {
         return false;
     memset(self, 0, sizeof(*self));
     memcpy(Method_nameMut(self), folded, strlen(folded) + 1);
-    Method_setInvoke(self, invoke);
-    Method_setTarget(self, target);
+    Method_setInvokeRaw(self, invoke);
+    Method_setTargetRaw(self, target);
     return true;
 }
 
@@ -150,19 +146,19 @@ bool Method_setName(Method *self, const char *name) {
 fn Method_setInvoke(Method *self, MethodFn invoke) {
     if (self == nullptr)
         return;
-    Method_setInvoke(self, invoke);
+    Method_setInvokeRaw(self, invoke);
 }
 
 fn Method_setTarget(Method *self, any target) {
     if (self == nullptr)
         return;
-    Method_setTarget(self, target);
+    Method_setTargetRaw(self, target);
 }
 
 // GETTERS
 
 const char *Method_getName(const Method *self) {
-    return self ? Method_nameMut(self) : nullptr;
+    return self ? Method_name(self) : nullptr;
 }
 
 MethodFn Method_getInvoke(const Method *self) {
@@ -188,7 +184,7 @@ fn Method_toString(const Method *self, char *dest, bytes cap, bool *outTruncated
         snprintf(dest, cap, "nullptr");
         return;
     }
-    i32 written = snprintf(dest, cap, "Method(%s)", Method_nameMut(self)[0] == '\0' ? "?" : Method_nameMut(self));
+    i32 written = snprintf(dest, cap, "Method(%s)", Method_name(self)[0] == '\0' ? "?" : Method_name(self));
     if (written < 0 || (bytes) written >= cap) {
         if (outTruncated)
             *outTruncated = true;
@@ -205,7 +201,7 @@ fn Method_toStringStruct(const Method *self, char *dest, bytes cap, bool *outTru
         return;
     }
     i32 written = snprintf(dest, cap, "Method { name=\"%s\", invoke=0x%llx, target=0x%llx }",
-                           Method_nameMut(self),
+                           Method_name(self),
                            (u64) (pointer) Method_invoke(self),
                            (u64) (pointer) Method_target(self));
     if (written < 0 || (bytes) written >= cap) {
