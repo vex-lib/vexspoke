@@ -100,11 +100,14 @@ static i32 calculate_score(const char *candidate, const char *query) {
     return 0;
 }
 
+;;GETTER
+static inline i32 SpotlightMatch_score(const SpotlightMatch *s) { return (*s).score; }
+
 // Orders SpotlightMatch records by descending score for qsort.
 static i32 compare_matches(const_any a, const_any b) {
     const SpotlightMatch *ma = (const SpotlightMatch*) a;
     const SpotlightMatch *mb = (const SpotlightMatch*) b;
-    SpotlightEntry a = *ma; SpotlightEntry b = *mb; return b.score - a.score; // descending
+    return SpotlightMatch_score(mb) - SpotlightMatch_score(ma); // descending
 }
 
 // Writes up to maxCount ranked matches and returns the total number that scored.

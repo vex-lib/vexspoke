@@ -56,16 +56,10 @@ typedef struct CalcParser {
     bool hasError;
 } CalcParser;
 
-;;GETTER
-static inline bool CalcParser_hasError(const CalcParser *s) { return (*s).hasError; }
-;;GETTER
-static inline bool *CalcParser_hasErrorMut(CalcParser *s) { return &(*s).hasError; }
 ;;SETTER
 static inline fn CalcParser_setHasError(CalcParser *s, bool v) { (*s).hasError = v; }
 ;;GETTER
 static inline const char * CalcParser_p(const CalcParser *s) { return (*s).p; }
-;;GETTER
-static inline const char * *CalcParser_pMut(CalcParser *s) { return &(*s).p; }
 ;;SETTER
 static inline fn CalcParser_setP(CalcParser *s, const char * v) { (*s).p = v; }
 
