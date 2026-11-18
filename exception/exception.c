@@ -39,44 +39,28 @@
 
 ;;GETTER
 static inline ExceptionCategory Exception_category(const Exception *s) { return (*s).category; }
-;;GETTER
-static inline ExceptionCategory *Exception_categoryMut(Exception *s) { return &(*s).category; }
 ;;SETTER
 static inline fn Exception_setCategory(Exception *s, ExceptionCategory v) { (*s).category = v; }
 ;;GETTER
 static inline char * Exception_details(const Exception *s) { return (*s).details; }
-;;GETTER
-static inline char * *Exception_detailsMut(Exception *s) { return &(*s).details; }
 ;;SETTER
-static inline fn Exception_setDetails(Exception *s, char * v) { (*s).details = v; }
+static inline fn Exception_setDetailsRaw(Exception *s, char * v) { (*s).details = v; }
 ;;GETTER
 static inline const char * Exception_file(const Exception *s) { return (*s).file; }
-;;GETTER
-static inline const char * *Exception_fileMut(Exception *s) { return &(*s).file; }
 ;;SETTER
 static inline fn Exception_setFile(Exception *s, const char * v) { (*s).file = v; }
 ;;GETTER
 static inline i32 Exception_line(const Exception *s) { return (*s).line; }
-;;GETTER
-static inline i32 *Exception_lineMut(Exception *s) { return &(*s).line; }
 ;;SETTER
 static inline fn Exception_setLine(Exception *s, i32 v) { (*s).line = v; }
 ;;GETTER
 static inline char * Exception_message(const Exception *s) { return (*s).message; }
-;;GETTER
-static inline char * *Exception_messageMut(Exception *s) { return &(*s).message; }
 ;;SETTER
 static inline fn Exception_setMessage(Exception *s, char * v) { (*s).message = v; }
 ;;GETTER
 static inline const char * Exception_site(const Exception *s) { return (*s).site; }
-;;GETTER
-static inline const char * *Exception_siteMut(Exception *s) { return &(*s).site; }
 ;;SETTER
 static inline fn Exception_setSite(Exception *s, const char * v) { (*s).site = v; }
-;;GETTER
-static inline u64 Exception_type(const Exception *s) { return (*s).type; }
-;;GETTER
-static inline u64 *Exception_typeMut(Exception *s) { return &(*s).type; }
 ;;SETTER
 static inline fn Exception_setType(Exception *s, u64 v) { (*s).type = v; }
 
@@ -108,7 +92,7 @@ static fn exceptionInitializeV(Exception *self,
     Exception_setFile(self, (file != nullptr) ? file : "UnknownFile");
     Exception_setLine(self, line);
     Exception_setMessage(self, nullptr);
-    Exception_setDetails(self, nullptr);
+    Exception_setDetailsRaw(self, nullptr);
 
     if (fmt != nullptr) {
         va_list copy;
@@ -200,7 +184,7 @@ fn Exception_setDetailsV(Exception *self, const char *fmt, va_list args) {
         if (Exception_details(self) != nullptr) {
             free(Exception_details(self));
         }
-        Exception_setDetails(self, buf);
+        Exception_setDetailsRaw(self, buf);
     }
 }
 
@@ -222,7 +206,7 @@ fn Exception_free(Exception *self) {
     }
     if (Exception_details(self) != nullptr) {
         free(Exception_details(self));
-        Exception_setDetails(self, nullptr);
+        Exception_setDetailsRaw(self, nullptr);
     }
 }
 
