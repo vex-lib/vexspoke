@@ -46,32 +46,22 @@
 
 ;;GETTER
 static inline u64 Bespoke_checks(const Bespoke *s) { return (*s).checks; }
-;;GETTER
-static inline u64 *Bespoke_checksMut(Bespoke *s) { return &(*s).checks; }
 ;;SETTER
 static inline fn Bespoke_setChecks(Bespoke *s, u64 v) { (*s).checks = v; }
 ;;GETTER
 static inline BespokeState Bespoke_graphicsState(const Bespoke *s) { return (*s).graphicsState; }
-;;GETTER
-static inline BespokeState *Bespoke_graphicsStateMut(Bespoke *s) { return &(*s).graphicsState; }
 ;;SETTER
 static inline fn Bespoke_setGraphicsState(Bespoke *s, BespokeState v) { (*s).graphicsState = v; }
 ;;GETTER
 static inline BespokeState Bespoke_networkingState(const Bespoke *s) { return (*s).networkingState; }
-;;GETTER
-static inline BespokeState *Bespoke_networkingStateMut(Bespoke *s) { return &(*s).networkingState; }
 ;;SETTER
 static inline fn Bespoke_setNetworkingState(Bespoke *s, BespokeState v) { (*s).networkingState = v; }
 ;;GETTER
 static inline u64 Bespoke_runs(const Bespoke *s) { return (*s).runs; }
-;;GETTER
-static inline u64 *Bespoke_runsMut(Bespoke *s) { return &(*s).runs; }
 ;;SETTER
 static inline fn Bespoke_setRuns(Bespoke *s, u64 v) { (*s).runs = v; }
 ;;GETTER
 static inline BespokeState Bespoke_smthState(const Bespoke *s) { return (*s).smthState; }
-;;GETTER
-static inline BespokeState *Bespoke_smthStateMut(Bespoke *s) { return &(*s).smthState; }
 ;;SETTER
 static inline fn Bespoke_setSmthState(Bespoke *s, BespokeState v) { (*s).smthState = v; }
 
