@@ -55,11 +55,9 @@ typedef struct Global {
 } Global;
 
 ;;GETTER
-static inline atomic_uint_least64_t Global_value(const Global *s) { return (*s).value; }
+static inline const atomic_uint_least64_t *Global_valuePtr(const Global *s) { return &(*s).value; }
 ;;GETTER
 static inline atomic_uint_least64_t *Global_valueMut(Global *s) { return &(*s).value; }
-;;SETTER
-static inline fn Global_setValue(Global *s, atomic_uint_least64_t v) { (*s).value = v; }
 
 
 // Allocates one atomic global initialized to initialValue, or returns nullptr.
@@ -94,7 +92,7 @@ fn Global_free(Global *global) {
 // Loads the atomic value with acquire ordering, or returns zero for nullptr.
 u64 Global_get(const Global *global) {
     if (!global) return 0;
-    return atomic_load_explicit(Global_valueMut(global), memory_order_acquire);
+    return atomic_load_explicit(Global_valuePtr(global), memory_order_acquire);
 }
 
 // Stores value with release ordering when global is non-null.

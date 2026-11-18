@@ -74,6 +74,15 @@ typedef struct Choice {
     ChoiceSlot slots[];
 } Choice;
 
+;;GETTER
+static inline bytes Choice_countRaw(const Choice *s) { return (*s).count; }
+;;SETTER
+static inline fn Choice_setCount(Choice *s, bytes v) { (*s).count = v; }
+;;GETTER
+static inline ChoiceSlot *Choice_slotAt(Choice *s, bytes i) { return &(*s).slots[i]; }
+;;GETTER
+static inline const ChoiceSlot *Choice_slotAtConst(const Choice *s, bytes i) { return &(*s).slots[i]; }
+
 // Allocates one choice from parallel object and callback arrays.
 Choice *Choice_3(const u64 *objectPtrs, const ChoiceCallback *callbacks, bytes count) {
     if (count == 0) return nullptr;

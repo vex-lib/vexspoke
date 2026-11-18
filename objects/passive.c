@@ -63,26 +63,18 @@ struct Passive {
 
 ;;GETTER
 static inline u64 Passive_cachedValue(const Passive *s) { return (*s).cachedValue; }
-;;GETTER
-static inline u64 *Passive_cachedValueMut(Passive *s) { return &(*s).cachedValue; }
 ;;SETTER
 static inline fn Passive_setCachedValue(Passive *s, u64 v) { (*s).cachedValue = v; }
 ;;GETTER
 static inline PassiveGetter Passive_getter(const Passive *s) { return (*s).getter; }
-;;GETTER
-static inline PassiveGetter *Passive_getterMut(Passive *s) { return &(*s).getter; }
 ;;SETTER
 static inline fn Passive_setGetter(Passive *s, PassiveGetter v) { (*s).getter = v; }
 ;;GETTER
 static inline PassiveSetter Passive_setter(const Passive *s) { return (*s).setter; }
-;;GETTER
-static inline PassiveSetter *Passive_setterMut(Passive *s) { return &(*s).setter; }
 ;;SETTER
 static inline fn Passive_setSetter(Passive *s, PassiveSetter v) { (*s).setter = v; }
 ;;GETTER
 static inline any Passive_userdata(const Passive *s) { return (*s).userdata; }
-;;GETTER
-static inline any *Passive_userdataMut(Passive *s) { return &(*s).userdata; }
 ;;SETTER
 static inline fn Passive_setUserdata(Passive *s, any v) { (*s).userdata = v; }
 

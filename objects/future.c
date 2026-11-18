@@ -57,15 +57,11 @@ typedef struct Future {
 } Future;
 
 ;;GETTER
-static inline atomic_bool Future_isGiven(const Future *s) { return (*s).isGiven; }
+static inline const atomic_bool *Future_isGivenPtr(const Future *s) { return &(*s).isGiven; }
 ;;GETTER
 static inline atomic_bool *Future_isGivenMut(Future *s) { return &(*s).isGiven; }
-;;SETTER
-static inline fn Future_setIsGiven(Future *s, atomic_bool v) { (*s).isGiven = v; }
 ;;GETTER
 static inline u64 Future_value(const Future *s) { return (*s).value; }
-;;GETTER
-static inline u64 *Future_valueMut(Future *s) { return &(*s).value; }
 ;;SETTER
 static inline fn Future_setValue(Future *s, u64 v) { (*s).value = v; }
 
@@ -103,7 +99,7 @@ fn Future_free(Future *future) {
 // Reports whether the future's atomic fulfillment flag is set.
 bool Future_isGiven(const Future *future) {
     if (!future) return false;
-    return atomic_load_explicit(Future_isGivenMut(future), memory_order_acquire);
+    return atomic_load_explicit(Future_isGivenPtr(future), memory_order_acquire);
 }
 
 // Returns the payload, or zero for a null future.

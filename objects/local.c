@@ -67,14 +67,10 @@ typedef struct Local {
 
 ;;GETTER
 static inline bytes Local_slotCap(const Local *s) { return (*s).slotCap; }
-;;GETTER
-static inline bytes *Local_slotCapMut(Local *s) { return &(*s).slotCap; }
 ;;SETTER
 static inline fn Local_setSlotCap(Local *s, bytes v) { (*s).slotCap = v; }
 ;;GETTER
 static inline u64 * Local_slots(const Local *s) { return (*s).slots; }
-;;GETTER
-static inline u64 * *Local_slotsMut(Local *s) { return &(*s).slots; }
 ;;SETTER
 static inline fn Local_setSlots(Local *s, u64 * v) { (*s).slots = v; }
 

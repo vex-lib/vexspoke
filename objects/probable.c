@@ -58,30 +58,24 @@
 
 
 ;;GETTER
-static inline pointer Probable_object(const Probable *s) { return (*s).object; }
-;;GETTER
-static inline pointer *Probable_objectMut(Probable *s) { return &(*s).object; }
+static inline pointer Probable_objectRaw(const Probable *s) { return (*s).object; }
 ;;SETTER
-static inline fn Probable_setObject(Probable *s, pointer v) { (*s).object = v; }
+static inline fn Probable_setObjectRaw(Probable *s, pointer v) { (*s).object = v; }
 ;;GETTER
-static inline u32 Probable_total(const Probable *s) { return (*s).total; }
-;;GETTER
-static inline u32 *Probable_totalMut(Probable *s) { return &(*s).total; }
+static inline u32 Probable_totalRaw(const Probable *s) { return (*s).total; }
 ;;SETTER
-static inline fn Probable_setTotal(Probable *s, u32 v) { (*s).total = v; }
+static inline fn Probable_setTotalRaw(Probable *s, u32 v) { (*s).total = v; }
 ;;GETTER
-static inline u32 Probable_weight(const Probable *s) { return (*s).weight; }
-;;GETTER
-static inline u32 *Probable_weightMut(Probable *s) { return &(*s).weight; }
+static inline u32 Probable_weightRaw(const Probable *s) { return (*s).weight; }
 ;;SETTER
-static inline fn Probable_setWeight(Probable *s, u32 v) { (*s).weight = v; }
+static inline fn Probable_setWeightRaw(Probable *s, u32 v) { (*s).weight = v; }
 
 Probable *Probable_3(pointer object, u32 weight, u32 total) {
     Probable *p = (Probable*) Memory_alloc(TYPE_PROBABLE, sizeof(Probable));
     if (!p) return nullptr;
-    Probable_setObject(p, object);
-    Probable_setWeight(p, weight);
-    Probable_setTotal(p, total);
+    Probable_setObjectRaw(p, object);
+    Probable_setWeightRaw(p, weight);
+    Probable_setTotalRaw(p, total);
     return p;
 }
 
@@ -106,32 +100,32 @@ fn Probable_free(Probable *p) {
 
 pointer Probable_object(Probable *p) {
     if (!p) return 0;
-    return Probable_object(p);
+    return Probable_objectRaw(p);
 }
 
 u32 Probable_weight(Probable *p) {
     if (!p) return 0;
-    return Probable_weight(p);
+    return Probable_weightRaw(p);
 }
 
 u32 Probable_total(Probable *p) {
     if (!p) return 0;
-    return Probable_total(p);
+    return Probable_totalRaw(p);
 }
 
 fn Probable_setObject(Probable *p, pointer object) {
     if (!p) return;
-    Probable_setObject(p, object);
+    Probable_setObjectRaw(p, object);
 }
 
 fn Probable_setWeight(Probable *p, u32 weight) {
     if (!p) return;
-    Probable_setWeight(p, weight);
+    Probable_setWeightRaw(p, weight);
 }
 
 fn Probable_setTotal(Probable *p, u32 total) {
     if (!p) return;
-    Probable_setTotal(p, total);
+    Probable_setTotalRaw(p, total);
 }
 
 pointer Probable_get(Probable *p) {
