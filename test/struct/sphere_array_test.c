@@ -136,32 +136,22 @@ typedef struct WalkStats {
 
 ;;GETTER
 static inline bytes WalkStats_badDistance(const WalkStats *s) { return (*s).badDistance; }
-;;GETTER
-static inline bytes *WalkStats_badDistanceMut(WalkStats *s) { return &(*s).badDistance; }
 ;;SETTER
 static inline fn WalkStats_setBadDistance(WalkStats *s, bytes v) { (*s).badDistance = v; }
 ;;GETTER
 static inline i64 WalkStats_checksum(const WalkStats *s) { return (*s).checksum; }
-;;GETTER
-static inline i64 *WalkStats_checksumMut(WalkStats *s) { return &(*s).checksum; }
 ;;SETTER
 static inline fn WalkStats_setChecksum(WalkStats *s, i64 v) { (*s).checksum = v; }
 ;;GETTER
 static inline bytes WalkStats_count(const WalkStats *s) { return (*s).count; }
-;;GETTER
-static inline bytes *WalkStats_countMut(WalkStats *s) { return &(*s).count; }
 ;;SETTER
 static inline fn WalkStats_setCount(WalkStats *s, bytes v) { (*s).count = v; }
 ;;GETTER
 static inline bytes WalkStats_mismatchedOffset(const WalkStats *s) { return (*s).mismatchedOffset; }
-;;GETTER
-static inline bytes *WalkStats_mismatchedOffsetMut(WalkStats *s) { return &(*s).mismatchedOffset; }
 ;;SETTER
 static inline fn WalkStats_setMismatchedOffset(WalkStats *s, bytes v) { (*s).mismatchedOffset = v; }
 ;;GETTER
 static inline bytes WalkStats_nullVoxel(const WalkStats *s) { return (*s).nullVoxel; }
-;;GETTER
-static inline bytes *WalkStats_nullVoxelMut(WalkStats *s) { return &(*s).nullVoxel; }
 ;;SETTER
 static inline fn WalkStats_setNullVoxel(WalkStats *s, bytes v) { (*s).nullVoxel = v; }
 
